@@ -1,0 +1,17 @@
+ERC report (10/9/2012 7:48:13 PM)
+
+***** Sheet /
+
+***** Sheet /Data Interface Connector/
+
+***** Sheet /FPGA Module/
+
+***** Sheet /Hi Speed USB2 Interface /
+
+***** Sheet /Clock Generator/
+
+***** Sheet /Power Supply for Clock Generator/
+
+***** Sheet /I2C Port Expander/
+
+ >> Errors ERC: 0

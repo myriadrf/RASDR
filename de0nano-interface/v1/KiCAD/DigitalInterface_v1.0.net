@@ -1,0 +1,1666 @@
+# EESchema Netlist Version 1.1 created  10/9/2012 7:48:54 PM
+(
+ ( /4FE95220/4FE9526C SMD_FX10B-80S/8-SV  J2 FX10B-80S/8-SV {Lib=FX10B-80S/8-SV}
+  (    1 N-000139 )
+  (    2 N-000139 )
+  (    3 N-000139 )
+  (    4 N-000139 )
+  (    5 GND )
+  (    6 GND )
+  (    7 ? )
+  (    8 ? )
+  (    9 ? )
+  (   10 ? )
+  (   11 GND )
+  (   12 GND )
+  (   13 ? )
+  (   14 ? )
+  (   15 ? )
+  (   16 ? )
+  (   17 GND )
+  (   18 GND )
+  (   19 TXIQSEL )
+  (   20 ? )
+  (   21 ? )
+  (   22 ? )
+  (   23 TXD0 )
+  (   24 TXD1 )
+  (   25 TXD2 )
+  (   26 TXD3 )
+  (   27 GND )
+  (   28 GND )
+  (   29 TXD4 )
+  (   30 TXD5 )
+  (   31 TXD6 )
+  (   32 TXD7 )
+  (   33 TXD8 )
+  (   34 TXD9 )
+  (   35 TXD10 )
+  (   36 TXD11 )
+  (   37 GND )
+  (   38 GND )
+  (   39 RXIQSEL )
+  (   40 ? )
+  (   41 ? )
+  (   42 ? )
+  (   43 RXD0 )
+  (   44 RXD1 )
+  (   45 RXD2 )
+  (   46 RXD3 )
+  (   47 GND )
+  (   48 GND )
+  (   49 RXD4 )
+  (   50 RXD5 )
+  (   51 RXD6 )
+  (   52 RXD7 )
+  (   53 RXD8 )
+  (   54 RXD9 )
+  (   55 RXD10 )
+  (   56 RXD11 )
+  (   57 GND )
+  (   58 GND )
+  (   59 RXCLK )
+  (   60 TXCLK )
+  (   61 ? )
+  (   62 ? )
+  (   63 GND )
+  (   64 GND )
+  (   65 GPIO0 )
+  (   66 RESET )
+  (   67 GPIO1 )
+  (   68 SPI_MOSI )
+  (   69 GPIO2 )
+  (   70 SPI_MISO )
+  (   71 ? )
+  (   72 SPI_CLK )
+  (   73 GND )
+  (   74 SPI_NCS0 )
+  (   75 CLK_IN )
+  (   76 ? )
+  (   77 GND )
+  (   78 ? )
+  (   79 TXEN )
+  (   80 RXEN )
+  (   81 GND )
+  (   82 GND )
+  (   83 GND )
+  (   84 GND )
+  (   85 GND )
+  (   86 GND )
+  (   87 GND )
+  (   88 GND )
+  (   89 GND )
+  (   90 GND )
+ )
+ ( /4FE95220/4FE9526B TH_PINHD-1X2_V  J1 PINHD-1X2 {Lib=JUMPER2}
+  (    1 +5V )
+  (    2 N-000139 )
+ )
+ ( /4FE45400/50194153 0603  R41 10K {Lib=RESISTOR_0805}
+  (    1 /FPGA_Module/GPIO_1_VCC3P3 )
+  (    2 /FPGA_Module/FPGA_SDA )
+ )
+ ( /4FE45400/50194059 0603  R40 10K {Lib=RESISTOR_0805}
+  (    1 /FPGA_Module/GPIO_1_VCC3P3 )
+  (    2 /FPGA_Module/FPGA_SCL )
+ )
+ ( /4FE45400/5019400E SOT363  Q3 2N700PS {Lib=2N700PS}
+  (    1 /FPGA_Module/FPGA_SCL )
+  (    2 /FPGA_Module/GPIO_1_VCC3P3 )
+  (    3 EE_SDA )
+  (    4 /FPGA_Module/FPGA_SDA )
+  (    5 /FPGA_Module/GPIO_1_VCC3P3 )
+  (    6 EE_SCL )
+ )
+ ( /4FE45400/50193F47 SMD_DEO_NANO_NOJ5  JA1 Connector_Array_For_DE0-NANO {Lib=DE0_NANO_NOJ5}
+  (  0_1 USB_IFCLK )
+  (  0_2 TXIQSEL )
+  (  0_3 ? )
+  (  0_4 TXD2 )
+  (  0_5 TXD0 )
+  (  0_6 TXD6 )
+  (  0_7 TXD4 )
+  (  0_8 TXD8 )
+  (  0_9 RXD0 )
+  ( 0_10 RXD4 )
+  ( 0_11 ? )
+  ( 0_12 GND )
+  ( 0_13 RXD2 )
+  ( 0_14 RXIQSEL )
+  ( 0_15 TXD7 )
+  ( 0_16 RXD6 )
+  ( 0_17 TXD9 )
+  ( 0_18 RXD8 )
+  ( 0_19 TXD5 )
+  ( 0_20 RXD10 )
+  ( 0_21 TXD3 )
+  ( 0_22 RXD1 )
+  ( 0_23 TXD1 )
+  ( 0_24 RXD3 )
+  ( 0_25 TXD11 )
+  ( 0_26 RXD5 )
+  ( 0_27 TXD10 )
+  ( 0_28 RXD7 )
+  ( 0_29 ? )
+  ( 0_30 GND )
+  ( 0_31 RXD9 )
+  ( 0_32 RXD11 )
+  ( 0_33 GPIO0 )
+  ( 0_34 GPIO1 )
+  ( 0_35 TXEN )
+  ( 0_36 SPI_NCS0 )
+  ( 0_37 RXEN )
+  ( 0_38 SPI_MISO )
+  ( 0_39 SPI_CLK )
+  ( 0_40 SPI_MOSI )
+  (  1_1 FPGA_CLK )
+  (  1_2 /FPGA_Module/FPGA_SCL )
+  (  1_3 ? )
+  (  1_4 /FPGA_Module/FPGA_SDA )
+  (  1_5 N-000101 )
+  (  1_6 GPIO2 )
+  (  1_7 RESET )
+  (  1_8 ? )
+  (  1_9 ? )
+  ( 1_10 ? )
+  ( 1_11 ? )
+  ( 1_12 GND )
+  ( 1_13 USB_FD1 )
+  ( 1_14 USB_FD0 )
+  ( 1_15 USB_FD3 )
+  ( 1_16 USB_FD2 )
+  ( 1_17 USB_FD5 )
+  ( 1_18 USB_FD4 )
+  ( 1_19 USB_FD6 )
+  ( 1_20 USB_FD7 )
+  ( 1_21 USB_FLAGA )
+  ( 1_22 USB_FLAGB )
+  ( 1_23 USB_FLAGC )
+  ( 1_24 ? )
+  ( 1_25 USB_SLOE )
+  ( 1_26 USB_FIFOADR0 )
+  ( 1_27 USB_FIFOADR1 )
+  ( 1_28 USB_PKTEND )
+  ( 1_29 /FPGA_Module/GPIO_1_VCC3P3 )
+  ( 1_30 GND )
+  ( 1_31 USB_FD8 )
+  ( 1_32 USB_FD9 )
+  ( 1_33 USB_FD10 )
+  ( 1_34 USB_FD11 )
+  ( 1_35 USB_FD12 )
+  ( 1_36 USB_FD13 )
+  ( 1_37 USB_FD14 )
+  ( 1_38 USB_FD15 )
+  ( 1_39 USB_SLRD )
+  ( 1_40 USB_SLWR )
+  (  GND GND )
+  (  VCC N-000091 )
+ )
+ ( /4FE45400/50116320 TH_PINHD-1X2_V  J3 PINHD-1X2 {Lib=JUMPER2}
+  (    1 N-000091 )
+  (    2 +5V )
+ )
+ ( /4FE45400/50112F93 0603  R4 2K2 {Lib=RESISTOR_0603}
+  (    1 /FPGA_Module/GPIO_1_VCC3P3 )
+  (    2 N-000101 )
+ )
+ ( /4FE45400/50112E6E 0603  R2 2K2 {Lib=RESISTOR_0603}
+  (    1 /FPGA_Module/FPGA_SDA )
+  (    2 /FPGA_Module/GPIO_1_VCC3P3 )
+ )
+ ( /4FE45400/4FF2FF5E 0603  R1 2K2 {Lib=RESISTOR_0603}
+  (    1 /FPGA_Module/FPGA_SCL )
+  (    2 /FPGA_Module/GPIO_1_VCC3P3 )
+ )
+ ( /4FE45400/4FE95F5C 0603  R3 0 {Lib=RESISTOR_0603}
+  (    1 GEN_INTR )
+  (    2 N-000101 )
+ )
+ ( /4FE453F7/50462989 TH_PINHD-1X2_RA  J5 PINHD-1X2_RA {Lib=JUMPER2}
+  (    1 EE_SDA )
+  (    2 N-000048 )
+ )
+ ( /4FE453F7/50459FA8 0603  R49 0 {Lib=RESISTOR_0603}
+  (    1 N-000088 )
+  (    2 GPIO2 )
+ )
+ ( /4FE453F7/50459FA6 0603  R53 0 {Lib=RESISTOR_0603}
+  (    1 N-000078 )
+  (    2 GPIO1 )
+ )
+ ( /4FE453F7/50459F21 0603  R54 0 {Lib=RESISTOR_0603}
+  (    1 N-000062 )
+  (    2 GPIO0 )
+ )
+ ( /4FE453F7/50447E01 0603  R62 0 {Lib=RESISTOR_0603}
+  (    1 N-000086 )
+  (    2 GEN_INTR )
+ )
+ ( /4FE453F7/503E1E90 SMD_LED_2x1  D1 LED_Green {Lib=LED}
+  (    1 N-000044 )
+  (    2 GND )
+ )
+ ( /4FE453F7/503E1E8F 0603  R44 470 {Lib=RESISTOR_0603}
+  (    1 N-000044 )
+  (    2 +3V3 )
+ )
+ ( /4FE453F7/4FE45C47 SMD_UX60A-MB-5ST  J4 MINI-USB-UX60A-MB-5ST {Lib=MINI-USB-UX60A-MB-5ST}
+  (    1 N-000050 )
+  (    2 /Hi_Speed_USB2_Interface_/USBD_N )
+  (    3 /Hi_Speed_USB2_Interface_/USBD_P )
+  (    4 ? )
+  (    5 GND )
+  (   M1 N-000047 )
+  (   M2 N-000047 )
+  (   M3 N-000047 )
+  (   M4 N-000047 )
+ )
+ ( /4FE453F7/50193BE2 0603  C32 10n {Lib=C}
+  (    1 GND )
+  (    2 N-000047 )
+ )
+ ( /4FE453F7/50193BC3 0603  R37 100K {Lib=RESISTOR_0603}
+  (    1 GND )
+  (    2 N-000047 )
+ )
+ ( /4FE453F7/50115B48 0603  R6 100K {Lib=RESISTOR_0603}
+  (    1 +3V3 )
+  (    2 N-000082 )
+ )
+ ( /4FE453F7/50115334 0603  R12 0 {Lib=RESISTOR_0603}
+  (    1 N-000049 )
+  (    2 +3V3 )
+ )
+ ( /4FE453F7/50114F22 0603  R13 0 {Lib=RESISTOR_0603}
+  (    1 GND )
+  (    2 N-000049 )
+ )
+ ( /4FE453F7/50114BD8 0805  C16 1uF {Lib=C}
+  (    1 N-000045 )
+  (    2 GND )
+ )
+ ( /4FE453F7/501143BB 0603  C9 2.2u {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/50114161 0603  C17 100n {Lib=C}
+  (    1 GND )
+  (    2 +3V3 )
+ )
+ ( /4FE453F7/50114064 0603  C11 100n {Lib=C}
+  (    1 GND )
+  (    2 N-000056 )
+ )
+ ( /4FE453F7/50113EC3 0603  C10 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/50113EB9 0603  C8 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/50113E64 0603  C6 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/50113E60 0603  C5 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/50113E58 0603  C4 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/50113E51 0603  C3 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/50113E4C 0603  C2 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/501139F6 0603  C13 15 {Lib=C}
+  (    1 GND )
+  (    2 N-000090 )
+ )
+ ( /4FE453F7/50113037 0603  R11 2K2 {Lib=RESISTOR_0603}
+  (    1 EE_SDA )
+  (    2 +3V3 )
+ )
+ ( /4FE453F7/50112FFE 0603  R10 2K2 {Lib=RESISTOR_0603}
+  (    1 EE_SCL )
+  (    2 +3V3 )
+ )
+ ( /4FE453F7/50112FC5 0603  R8 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000086 )
+  (    2 +3V3 )
+ )
+ ( /4FE453F7/4FE45CBC 0603  C12 15 {Lib=C}
+  (    1 GND )
+  (    2 N-000083 )
+ )
+ ( /4FE453F7/4FE45CBA SMD_TXC_5x3  Q1 9C-24.000MAAJ-T {Lib=CRYTALHC49U-H}
+  (    1 N-000090 )
+  (    2 N-000083 )
+ )
+ ( /4FE453F7/4FE45CB9 0603  R7 0 {Lib=RESISTOR_0603}
+  (    1 USB_IFCLK )
+  (    2 N-000057 )
+ )
+ ( /4FE453F7/4FE45CB2 0603  R5 100K {Lib=RESISTOR_0603}
+  (    1 N-000056 )
+  (    2 +3V3 )
+ )
+ ( /4FE453F7/4FE45CAE QFN56  U1 CY7C68013A-56QFNLTXC {Lib=CY7C68013A-56QFNLFXC}
+  (    1 USB_SLRD )
+  (    2 USB_SLWR )
+  (    3 +3V3 )
+  (    4 N-000090 )
+  (    5 N-000083 )
+  (    6 GND )
+  (    7 +3V3 )
+  (    8 /Hi_Speed_USB2_Interface_/USBD_P )
+  (    9 /Hi_Speed_USB2_Interface_/USBD_N )
+  (   10 GND )
+  (   11 +3V3 )
+  (   12 GND )
+  (   13 N-000057 )
+  (   14 GND )
+  (   15 EE_SCL )
+  (   16 EE_SDA )
+  (   17 +3V3 )
+  (   18 USB_FD0 )
+  (   19 USB_FD1 )
+  (   20 USB_FD2 )
+  (   21 USB_FD3 )
+  (   22 USB_FD4 )
+  (   23 USB_FD5 )
+  (   24 USB_FD6 )
+  (   25 USB_FD7 )
+  (   26 GND )
+  (   27 +3V3 )
+  (   28 GND )
+  (   29 USB_FLAGA )
+  (   30 USB_FLAGB )
+  (   31 USB_FLAGC )
+  (   32 +3V3 )
+  (   33 N-000086 )
+  (   34 N-000062 )
+  (   35 USB_SLOE )
+  (   36 N-000078 )
+  (   37 USB_FIFOADR0 )
+  (   38 USB_FIFOADR1 )
+  (   39 USB_PKTEND )
+  (   40 N-000088 )
+  (   41 GND )
+  (   42 N-000056 )
+  (   43 +3V3 )
+  (   44 N-000082 )
+  (   45 USB_FD8 )
+  (   46 USB_FD9 )
+  (   47 USB_FD10 )
+  (   48 USB_FD11 )
+  (   49 USB_FD12 )
+  (   50 USB_FD13 )
+  (   51 USB_FD14 )
+  (   52 USB_FD15 )
+  (   53 GND )
+  (   54 ? )
+  (   55 +3V3 )
+  (   56 GND )
+  ( EPAD GND )
+ )
+ ( /4FE453F7/4FE45CA6 0603  C1 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/4FE45CA0 0603  C7 2.2u {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/4FE45C4D 0603  C14 10uF {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /4FE453F7/4FE45C4A 0805  C15 1uF {Lib=C}
+  (    1 N-000050 )
+  (    2 GND )
+ )
+ ( /4FE453F7/4FE45C48 0805  R9 100MHz/60/1A {Lib=RESISTOR_0805}
+  (    1 N-000050 )
+  (    2 N-000045 )
+ )
+ ( /4FE453F7/4FE45C46 SOT223  U2 LDO1117 {Lib=LDO1117}
+  (    1 GND )
+  (    2 +3V3 )
+  (    3 N-000045 )
+  (  TAB +3V3 )
+ )
+ ( /4FE453F7/4FE45C1F SO-08  U3 24LC128SN {Lib=24LC128SN}
+  (    1 N-000049 )
+  (    2 GND )
+  (    3 GND )
+  (    4 GND )
+  (    5 N-000048 )
+  (    6 EE_SCL )
+  (    7 GND )
+  (    8 +3V3 )
+ )
+ ( /4FE453EF/5020DEB4 0603  R24 0 {Lib=RESISTOR_0603}
+  (    1 N-000033 )
+  (    2 CLK_IN )
+ )
+ ( /4FE453EF/501949C1 SOT363  Q4 2N700PS {Lib=2N700PS}
+  (    1 /Clock_Generator/SYN_SDA )
+  (    2 +3V3_SYNTH )
+  (    3 EE_SCL )
+  (    4 /Clock_Generator/SYN_SCL )
+  (    5 +3V3_SYNTH )
+  (    6 EE_SDA )
+ )
+ ( /4FE453EF/501947CD 0603  R39 0 {Lib=RESISTOR_0603}
+  (    1 N-000015 )
+  (    2 TXCLK )
+ )
+ ( /4FE453EF/501947C5 0603  R38 0 {Lib=RESISTOR_0603}
+  (    1 N-000017 )
+  (    2 RXCLK )
+ )
+ ( /4FE453EF/5019464C 0603  R42 10K {Lib=RESISTOR_0805}
+  (    1 +3V3_SYNTH )
+  (    2 /Clock_Generator/SYN_SDA )
+ )
+ ( /4FE453EF/5019464B 0603  R43 10K {Lib=RESISTOR_0805}
+  (    1 +3V3_SYNTH )
+  (    2 /Clock_Generator/SYN_SCL )
+ )
+ ( /4FE453EF/50123683 0603  R30 0 {Lib=RESISTOR_0603}
+  (    1 N-000031 )
+  (    2 /Clock_Generator/EXT_CLK_BUF )
+ )
+ ( /4FE453EF/5012366E 0603  R28 0 {Lib=RESISTOR_0603}
+  (    1 N-000035 )
+  (    2 /Clock_Generator/RXCLK_BUF )
+ )
+ ( /4FE453EF/501168A6 SOT23-5  U7 SN74LVC1G04DBVR {Lib=SN74LVC1G04DBVR}
+  (    2 /Clock_Generator/EXT_CLK_BUF )
+  (    3 GND )
+  (    4 N-000023 )
+  (    5 +3V3_SYNTH )
+ )
+ ( /4FE453EF/50116870 SOT23-5  U5 SN74LVC1G04DBVR {Lib=SN74LVC1G04DBVR}
+  (    2 /Clock_Generator/TXCLK_BUF )
+  (    3 GND )
+  (    4 N-000015 )
+  (    5 +3V3_SYNTH )
+ )
+ ( /4FE453EF/501156B4 0603  R22 1K6 {Lib=RESISTOR_0805}
+  (    1 GND )
+  (    2 N-000027 )
+ )
+ ( /4FE453EF/50115591 0603  R19 3K {Lib=RESISTOR_0805}
+  (    1 N-000027 )
+  (    2 +3V3_SYNTH )
+ )
+ ( /4FE453EF/50115425 0603  R27 0 {Lib=RESISTOR_0603}
+  (    1 N-000030 )
+  (    2 FPGA_CLK )
+ )
+ ( /4FE453EF/50115421 0603  R26 0 {Lib=RESISTOR_0603}
+  (    1 N-000036 )
+  (    2 /Clock_Generator/TXCLK_BUF )
+ )
+ ( /4FE453EF/501153C9 0603  R23 0 {Lib=RESISTOR_0603}
+  (    1 GND )
+  (    2 N-000026 )
+ )
+ ( /4FE453EF/501153AA 0603  R15 0 {Lib=RESISTOR_0603}
+  (    1 N-000014 )
+  (    2 CLK_IN )
+ )
+ ( /4FE453EF/501150C4 0603  R31 0 {Lib=RESISTOR_0603}
+  (    1 N-000029 )
+  (    2 /Clock_Generator/EXT_CLK_BUF )
+ )
+ ( /4FE453EF/50115064 0603  R29 0 {Lib=RESISTOR_0603}
+  (    1 N-000034 )
+  (    2 FPGA_CLK )
+ )
+ ( /4FE453EF/5011501F 0603  R25 0 {Lib=RESISTOR_0603}
+  (    1 N-000032 )
+  (    2 CLK_IN )
+ )
+ ( /4FE453EF/50114FB9 0603  R17 0 {Lib=RESISTOR_0603}
+  (    1 GND )
+  (    2 /Clock_Generator/CLK_SYNTH )
+ )
+ ( /4FE453EF/50114F7E 0603  R16 0 {Lib=RESISTOR_0603}
+  (    1 /Clock_Generator/EXT_CLK_BUF )
+  (    2 N-000023 )
+ )
+ ( /4FE453EF/50114276 0603  C28 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/50114258 0603  C27 100n {Lib=C}
+  (    1 N-000024 )
+  (    2 GND )
+ )
+ ( /4FE453EF/501141FA 0603  C24 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/501141F8 0603  C23 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/501141F6 0603  C22 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/501141F4 0603  C21 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/501141F1 0603  C20 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/501141E7 0603  C19 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/501141A0 0603  C18 100n {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453EF/50113C0D 0603  C26 10n {Lib=C}
+  (    1 GND )
+  (    2 N-000028 )
+ )
+ ( /4FE453EF/50113144 0603  R35 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000021 )
+  (    2 N-000024 )
+ )
+ ( /4FE453EF/501130C3 0603  R33 2K2 {Lib=RESISTOR_0603}
+  (    1 +3V3_SYNTH )
+  (    2 /Clock_Generator/SYN_SDA )
+ )
+ ( /4FE453EF/501130BD 0603  R32 2K2 {Lib=RESISTOR_0603}
+  (    1 +3V3_SYNTH )
+  (    2 /Clock_Generator/SYN_SCL )
+ )
+ ( /4FE453EF/50113075 0603  R14 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000022 )
+  (    2 +3V3_SYNTH )
+ )
+ ( /4FE453EF/4FE8AC65 SMA-142-0711-821/826  J6 SMA-142-0711-821/826 {Lib=SMA}
+  (    1 N-000023 )
+  (    2 GND )
+  (    3 GND )
+  (    4 GND )
+  (    5 GND )
+ )
+ ( /4FE453EF/4FE85C58 SOT23-5  U4 SN74LVC1G04DBVR {Lib=SN74LVC1G04DBVR}
+  (    2 /Clock_Generator/RXCLK_BUF )
+  (    3 GND )
+  (    4 N-000017 )
+  (    5 +3V3_SYNTH )
+ )
+ ( /4FE453EF/4FE855C9 SMD_TRIMMER  R34 R-TRIMM3214W {Lib=POT}
+  (    1 GND )
+  (    2 N-000021 )
+  (    3 +3V3_SYNTH )
+ )
+ ( /4FE453EF/4FE854FC SMD_TXCO  U9 RACON_TXCO {Lib=RACON_TXCO}
+  (    1 N-000024 )
+  (    2 GND )
+  (    3 /Clock_Generator/CLK_TCXO )
+  (    4 +3V3_SYNTH )
+ )
+ ( /4FE453EF/4FE8516F TSSOP8  U6 CDCV304PW {Lib=CDCV304PW}
+  (    1 /Clock_Generator/CLK_TCXO )
+  (    2 N-000022 )
+  (    3 /Clock_Generator/CLK_SYNTH )
+  (    4 GND )
+  (    5 N-000014 )
+  (    6 +3V3_SYNTH )
+  (    7 ? )
+  (    8 ? )
+ )
+ ( /4FE453EF/4FE84EE6 TH_PINHD-2X2_V  J7 PINHD-2X2 {Lib=JUMPER_4}
+  (    1 GND )
+  (    2 N-000027 )
+  (    3 GND )
+  (    4 N-000011 )
+ )
+ ( /4FE453EF/4FE84A67 SMD_HC-49S  Q2 25MHz_CRYSTALSM49 {Lib=CRYTALHC49U-H}
+  (    1 N-000040 )
+  (    2 N-000028 )
+ )
+ ( /4FE453EF/4FE84A65 0603  C25 10n {Lib=C}
+  (    1 GND )
+  (    2 N-000040 )
+ )
+ ( /4FE453EF/4FE847DA 0603  R20 10K {Lib=RESISTOR_0805}
+  (    1 N-000026 )
+  (    2 +3V3_SYNTH )
+ )
+ ( /4FE453EF/4FE847C3 0603  R18 3K {Lib=RESISTOR_0805}
+  (    1 N-000011 )
+  (    2 +3V3_SYNTH )
+ )
+ ( /4FE453EF/4FE847B3 0603  R21 1K6 {Lib=RESISTOR_0805}
+  (    1 GND )
+  (    2 N-000011 )
+ )
+ ( /4FE453EF/4FE83361 QFN24  U8 SI5356 {Lib=SI5356}
+  (    1 N-000028 )
+  (    2 N-000040 )
+  (    3 N-000026 )
+  (    4 /Clock_Generator/CLK_SYNTH )
+  (    5 N-000027 )
+  (    6 N-000011 )
+  (    7 +3V3_SYNTH )
+  (    8 GEN_INTR )
+  (    9 N-000029 )
+  (   10 N-000031 )
+  (   11 +3V3_SYNTH )
+  (   12 /Clock_Generator/SYN_SCL )
+  (   13 N-000034 )
+  (   14 N-000035 )
+  (   15 +3V3_SYNTH )
+  (   16 +3V3_SYNTH )
+  (   17 N-000030 )
+  (   18 N-000036 )
+  (   19 /Clock_Generator/SYN_SDA )
+  (   20 +3V3_SYNTH )
+  (   21 N-000032 )
+  (   22 N-000033 )
+  (   23 GND )
+  (   24 +3V3_SYNTH )
+  ( EPAD GND )
+ )
+ ( /4FE453E2/503E1CE3 0603  R45 470 {Lib=RESISTOR_0603}
+  (    1 N-000003 )
+  (    2 +3V3_SYNTH )
+ )
+ ( /4FE453E2/503E1AE3 SMD_LED_2x1  D2 LED_Green {Lib=LED}
+  (    1 N-000003 )
+  (    2 GND )
+ )
+ ( /4FE453E2/50116356 TH_PINHD-1X2_V  J9 PINHD-1X2 {Lib=JUMPER2}
+  (    1 GND )
+  (    2 +5V )
+ )
+ ( /4FE453E2/50115EF8 SOT223  U10 LDO1117 {Lib=LDO1117}
+  (    1 GND )
+  (    2 +3V3_SYNTH )
+  (    3 N-000002 )
+  (  TAB +3V3_SYNTH )
+ )
+ ( /4FE453E2/50115C78 0805  R36 100MHz/60/1A {Lib=RESISTOR_0805}
+  (    1 +5V )
+  (    2 N-000002 )
+ )
+ ( /4FE453E2/50114C34 0805  C31 1uF {Lib=C}
+  (    1 N-000002 )
+  (    2 GND )
+ )
+ ( /4FE453E2/50114C22 0805  C30 1uF {Lib=C}
+  (    1 +5V )
+  (    2 GND )
+ )
+ ( /4FE453E2/5011493A 0603  C29 10uF {Lib=C}
+  (    1 +3V3_SYNTH )
+  (    2 GND )
+ )
+ ( /4FE453E2/4FE8292D SPC4077  J8 JACK-PLUG1 {Lib=JACK-PLUG1}
+  (    1 GND )
+  (    2 GND )
+  (    3 +5V )
+ )
+ ( /50447F00/50449140 0603  C33 100n {Lib=C}
+  (    1 N-000165 )
+  (    2 GND )
+ )
+ ( /50447F00/50449132 0603  R55 10K {Lib=RESISTOR_0805}
+  (    1 N-000165 )
+  (    2 +3V3 )
+ )
+ ( /50447F00/50448FFE 0603  R57 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000158 )
+  (    2 +3V3 )
+ )
+ ( /50447F00/50448FF5 0603  R58 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000159 )
+  (    2 +3V3 )
+ )
+ ( /50447F00/50448FD1 0603  R47 0 {Lib=RESISTOR_0603}
+  (    1 N-000159 )
+  (    2 EE_SDA )
+ )
+ ( /50447F00/50448FD0 0603  R50 0 {Lib=RESISTOR_0603}
+  (    1 N-000158 )
+  (    2 EE_SCL )
+ )
+ ( /50447F00/50448FCC 0603  R46 0 {Lib=RESISTOR_0603}
+  (    1 N-000161 )
+  (    2 SPI_MOSI )
+ )
+ ( /50447F00/50448FC9 0603  R51 0 {Lib=RESISTOR_0603}
+  (    1 N-000160 )
+  (    2 SPI_MISO )
+ )
+ ( /50447F00/50448FB3 0603  R56 0 {Lib=RESISTOR_0603}
+  (    1 N-000170 )
+  (    2 RESET )
+ )
+ ( /50447F00/50448FAD 0603  R48 0 {Lib=RESISTOR_0603}
+  (    1 N-000169 )
+  (    2 SPI_NCS0 )
+ )
+ ( /50447F00/50448EE7 0603  R52 0 {Lib=RESISTOR_0603}
+  (    1 N-000163 )
+  (    2 SPI_CLK )
+ )
+ ( /50447F00/50448E7E 0603  R61 0 {Lib=RESISTOR_0603}
+  (    1 N-000167 )
+  (    2 GND )
+ )
+ ( /50447F00/50448E75 0603  R60 0 {Lib=RESISTOR_0603}
+  (    1 N-000171 )
+  (    2 GND )
+ )
+ ( /50447F00/50448E6D 0603  R59 0 {Lib=RESISTOR_0603}
+  (    1 N-000168 )
+  (    2 GND )
+ )
+ ( /50447F00/50448E5F 0603  R66 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000167 )
+  (    2 +3V3 )
+ )
+ ( /50447F00/50448E5C 0603  R65 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000171 )
+  (    2 +3V3 )
+ )
+ ( /50447F00/50448E57 0603  R64 2K2 {Lib=RESISTOR_0603}
+  (    1 N-000168 )
+  (    2 +3V3 )
+ )
+ ( /50447F00/50448DD9 0603  R63 0 {Lib=RESISTOR_0603}
+  (    1 N-000166 )
+  (    2 GEN_INTR )
+ )
+ ( /50447F00/50448DA3 0603  C37 100n {Lib=C}
+  (    1 +3V3 )
+  (    2 GND )
+ )
+ ( /50447F00/50448CB0 TSSOP16  U11 SC18IS602B {Lib=SC18IS602B}
+  (    1 N-000169 )
+  (    2 N-000170 )
+  (    3 N-000165 )
+  (    4 GND )
+  (    5 N-000160 )
+  (    6 N-000161 )
+  (    7 N-000159 )
+  (    8 N-000158 )
+  (    9 N-000166 )
+  (   10 ? )
+  (   11 N-000163 )
+  (   12 +3V3 )
+  (   13 ? )
+  (   14 N-000167 )
+  (   15 N-000171 )
+  (   16 N-000168 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C32
+ SM*
+ C?
+ C1-1
+$endlist
+$component C16
+ SM*
+ C?
+ C1-1
+$endlist
+$component C9
+ SM*
+ C?
+ C1-1
+$endlist
+$component C17
+ SM*
+ C?
+ C1-1
+$endlist
+$component C11
+ SM*
+ C?
+ C1-1
+$endlist
+$component C10
+ SM*
+ C?
+ C1-1
+$endlist
+$component C8
+ SM*
+ C?
+ C1-1
+$endlist
+$component C6
+ SM*
+ C?
+ C1-1
+$endlist
+$component C5
+ SM*
+ C?
+ C1-1
+$endlist
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component C13
+ SM*
+ C?
+ C1-1
+$endlist
+$component C12
+ SM*
+ C?
+ C1-1
+$endlist
+$component U1
+ QFN56
+$endlist
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C7
+ SM*
+ C?
+ C1-1
+$endlist
+$component C14
+ SM*
+ C?
+ C1-1
+$endlist
+$component C15
+ SM*
+ C?
+ C1-1
+$endlist
+$component U2
+ SOT223
+$endlist
+$component C28
+ SM*
+ C?
+ C1-1
+$endlist
+$component C27
+ SM*
+ C?
+ C1-1
+$endlist
+$component C24
+ SM*
+ C?
+ C1-1
+$endlist
+$component C23
+ SM*
+ C?
+ C1-1
+$endlist
+$component C22
+ SM*
+ C?
+ C1-1
+$endlist
+$component C21
+ SM*
+ C?
+ C1-1
+$endlist
+$component C20
+ SM*
+ C?
+ C1-1
+$endlist
+$component C19
+ SM*
+ C?
+ C1-1
+$endlist
+$component C18
+ SM*
+ C?
+ C1-1
+$endlist
+$component C26
+ SM*
+ C?
+ C1-1
+$endlist
+$component C25
+ SM*
+ C?
+ C1-1
+$endlist
+$component U10
+ SOT223
+$endlist
+$component C31
+ SM*
+ C?
+ C1-1
+$endlist
+$component C30
+ SM*
+ C?
+ C1-1
+$endlist
+$component C29
+ SM*
+ C?
+ C1-1
+$endlist
+$component C33
+ SM*
+ C?
+ C1-1
+$endlist
+$component C37
+ SM*
+ C?
+ C1-1
+$endlist
+$endfootprintlist
+}
+{ Pin List by Nets
+Net 1 "GND" "GND"
+ C12 1
+ J2 18
+ J2 28
+ J2 38
+ J2 48
+ J2 87
+ C18 2
+ C19 2
+ JA1 1_30
+ JA1 0_30
+ JA1 GND
+ J2 27
+ J2 37
+ J2 47
+ J2 77
+ C16 2
+ C9 2
+ C17 1
+ C11 1
+ C26 1
+ C10 2
+ J4 5
+ J2 90
+ J2 11
+ J2 12
+ J2 86
+ J2 5
+ C20 2
+ C21 2
+ C22 2
+ C23 2
+ C27 2
+ C28 2
+ R17 1
+ C24 2
+ R13 1
+ U8 EPAD
+ U8 23
+ JA1 0_12
+ J2 57
+ J2 17
+ J2 89
+ J2 88
+ J2 58
+ J2 81
+ JA1 1_12
+ U9 2
+ U2 1
+ D2 2
+ R34 1
+ U1 6
+ U1 14
+ U4 3
+ C1 2
+ J6 5
+ J6 4
+ J6 3
+ J6 2
+ C33 2
+ U1 26
+ U1 56
+ J2 6
+ U1 28
+ C14 2
+ U1 EPAD
+ C15 2
+ U1 10
+ C31 2
+ C7 2
+ C29 2
+ C30 2
+ J8 2
+ U10 1
+ U1 53
+ U1 12
+ U1 41
+ J8 1
+ J9 1
+ U7 3
+ U11 4
+ R22 1
+ U5 3
+ R59 2
+ C37 2
+ C25 1
+ J2 64
+ J2 84
+ J2 85
+ J2 83
+ C32 1
+ R37 1
+ J2 73
+ J2 63
+ J2 82
+ R61 2
+ R60 2
+ R23 1
+ C5 2
+ C6 2
+ C8 2
+ R21 1
+ U3 2
+ U3 3
+ U3 4
+ U3 7
+ J7 3
+ J7 1
+ D1 2
+ C13 1
+ C2 2
+ U6 4
+ C3 2
+ C4 2
+Net 2 "" ""
+ U10 3
+ R36 2
+ C31 1
+Net 3 "" ""
+ D2 1
+ R45 1
+Net 4 "+3V3_SYNTH" "+3V3_SYNTH"
+ R14 2
+ R32 1
+ R33 1
+ R43 1
+ C18 1
+ C20 1
+ C21 1
+ C22 1
+ C23 1
+ C24 1
+ C28 1
+ R34 3
+ U9 4
+ U4 5
+ C29 1
+ U10 2
+ R45 2
+ U10 TAB
+ U5 5
+ R42 1
+ Q4 2
+ Q4 5
+ R19 2
+ U7 5
+ U6 6
+ U8 7
+ R18 2
+ R20 2
+ C19 1
+ U8 16
+ U8 15
+ U8 24
+ U8 11
+ U8 20
+Net 5 "+5V" "+5V"
+ J1 1
+ C30 1
+ J9 2
+ J3 2
+ R36 1
+ J8 3
+Net 6 "/Clock Generator/CLK_TCXO" "CLK_TCXO"
+ U9 3
+ U6 1
+Net 9 "/Clock Generator/RXCLK_BUF" "RXCLK_BUF"
+ R28 2
+ U4 2
+Net 10 "/Clock Generator/CLK_SYNTH" "CLK_SYNTH"
+ U6 3
+ U8 4
+ R17 2
+Net 11 "" ""
+ R21 2
+ U8 6
+ R18 1
+ J7 4
+Net 12 "GEN_INTR" "GEN_INTR"
+ U8 8
+ R3 1
+ R62 2
+ R63 2
+Net 13 "/Clock Generator/TXCLK_BUF" "TXCLK_BUF"
+ R26 2
+ U5 2
+Net 14 "" ""
+ R15 1
+ U6 5
+Net 15 "" ""
+ U5 4
+ R39 1
+Net 16 "TXCLK" "TXCLK"
+ R39 2
+ J2 60
+Net 17 "" ""
+ R38 1
+ U4 4
+Net 18 "RXCLK" "RXCLK"
+ R38 2
+ J2 59
+Net 19 "EE_SDA" "EE_SDA"
+ Q3 3
+ J5 1
+ Q4 6
+ R47 2
+ R11 1
+ U1 16
+Net 20 "EE_SCL" "EE_SCL"
+ U1 15
+ Q3 6
+ R50 2
+ Q4 3
+ U3 6
+ R10 1
+Net 21 "" ""
+ R34 2
+ R35 1
+Net 22 "" ""
+ R14 1
+ U6 2
+Net 23 "" ""
+ U7 4
+ R16 2
+ J6 1
+Net 24 "" ""
+ C27 1
+ R35 2
+ U9 1
+Net 25 "/Clock Generator/EXT_CLK_BUF" "EXT_CLK_BUF"
+ R31 2
+ U7 2
+ R16 1
+ R30 2
+Net 26 "" ""
+ R20 1
+ U8 3
+ R23 2
+Net 27 "" ""
+ U8 5
+ J7 2
+ R22 2
+ R19 1
+Net 28 "" ""
+ C26 2
+ Q2 2
+ U8 1
+Net 29 "" ""
+ R31 1
+ U8 9
+Net 30 "" ""
+ R27 1
+ U8 17
+Net 31 "" ""
+ U8 10
+ R30 1
+Net 32 "" ""
+ R25 1
+ U8 21
+Net 33 "" ""
+ U8 22
+ R24 1
+Net 34 "" ""
+ U8 13
+ R29 1
+Net 35 "" ""
+ U8 14
+ R28 1
+Net 36 "" ""
+ U8 18
+ R26 1
+Net 37 "/Clock Generator/SYN_SDA" "SYN_SDA"
+ U8 19
+ R33 2
+ R42 2
+ Q4 1
+Net 38 "FPGA_CLK" "FPGA_CLK"
+ R27 2
+ JA1 1_1
+ R29 2
+Net 39 "CLK_IN" "CLK_IN"
+ R24 2
+ J2 75
+ R15 2
+ R25 2
+Net 40 "" ""
+ Q2 1
+ C25 2
+ U8 2
+Net 41 "/Clock Generator/SYN_SCL" "SYN_SCL"
+ Q4 4
+ U8 12
+ R43 2
+ R32 2
+Net 43 "USB_IFCLK" "USB_IFCLK"
+ R7 1
+ JA1 0_1
+Net 44 "" ""
+ D1 1
+ R44 1
+Net 45 "" ""
+ U2 3
+ R9 2
+ C16 1
+Net 47 "" ""
+ R37 2
+ J4 M2
+ J4 M3
+ C32 2
+ J4 M4
+ J4 M1
+Net 48 "" ""
+ J5 2
+ U3 5
+Net 49 "" ""
+ R13 2
+ U3 1
+ R12 1
+Net 50 "" ""
+ J4 1
+ R9 1
+ C15 1
+Net 51 "USB_FD15" "USB_FD15"
+ JA1 1_38
+ U1 52
+Net 52 "USB_FD3" "USB_FD3"
+ U1 21
+ JA1 1_15
+Net 53 "USB_FLAGC" "USB_FLAGC"
+ U1 31
+ JA1 1_23
+Net 54 "USB_FD14" "USB_FD14"
+ JA1 1_37
+ U1 51
+Net 55 "USB_FD4" "USB_FD4"
+ JA1 1_18
+ U1 22
+Net 56 "" ""
+ U1 42
+ R5 1
+ C11 2
+Net 57 "" ""
+ U1 13
+ R7 2
+Net 58 "USB_FD5" "USB_FD5"
+ JA1 1_17
+ U1 23
+Net 59 "USB_FD6" "USB_FD6"
+ JA1 1_19
+ U1 24
+Net 60 "USB_SLRD" "USB_SLRD"
+ U1 1
+ JA1 1_39
+Net 61 "USB_SLWR" "USB_SLWR"
+ U1 2
+ JA1 1_40
+Net 62 "" ""
+ R54 1
+ U1 34
+Net 63 "/Hi Speed USB2 Interface /USBD_P" "USBD_P"
+ J4 3
+ U1 8
+Net 64 "/Hi Speed USB2 Interface /USBD_N" "USBD_N"
+ U1 9
+ J4 2
+Net 65 "USB_FD2" "USB_FD2"
+ JA1 1_16
+ U1 20
+Net 66 "USB_FLAGB" "USB_FLAGB"
+ U1 30
+ JA1 1_22
+Net 67 "USB_FD13" "USB_FD13"
+ JA1 1_36
+ U1 50
+Net 68 "USB_FD0" "USB_FD0"
+ U1 18
+ JA1 1_14
+Net 69 "USB_FIFOADR1" "USB_FIFOADR1"
+ JA1 1_27
+ U1 38
+Net 70 "USB_FD11" "USB_FD11"
+ JA1 1_34
+ U1 48
+Net 71 "USB_FD1" "USB_FD1"
+ JA1 1_13
+ U1 19
+Net 72 "USB_FLAGA" "USB_FLAGA"
+ JA1 1_21
+ U1 29
+Net 73 "USB_PKTEND" "USB_PKTEND"
+ U1 39
+ JA1 1_28
+Net 74 "USB_FD12" "USB_FD12"
+ U1 49
+ JA1 1_35
+Net 75 "USB_FD10" "USB_FD10"
+ U1 47
+ JA1 1_33
+Net 76 "USB_FIFOADR0" "USB_FIFOADR0"
+ JA1 1_26
+ U1 37
+Net 77 "USB_FD9" "USB_FD9"
+ JA1 1_32
+ U1 46
+Net 78 "" ""
+ R53 1
+ U1 36
+Net 79 "USB_FD8" "USB_FD8"
+ U1 45
+ JA1 1_31
+Net 80 "USB_SLOE" "USB_SLOE"
+ JA1 1_25
+ U1 35
+Net 81 "USB_FD7" "USB_FD7"
+ JA1 1_20
+ U1 25
+Net 82 "" ""
+ R6 2
+ U1 44
+Net 83 "" ""
+ Q1 2
+ C12 2
+ U1 5
+Net 84 "+3V3" "+3V3"
+ R12 2
+ U1 32
+ C37 1
+ U1 11
+ R64 2
+ R65 2
+ R66 2
+ U1 43
+ U11 12
+ U2 TAB
+ R58 2
+ R57 2
+ U1 7
+ U2 2
+ R55 2
+ C4 1
+ C3 1
+ C2 1
+ R11 2
+ R8 2
+ R10 2
+ C8 1
+ R44 2
+ C10 1
+ U3 8
+ U1 3
+ C14 1
+ C1 1
+ C7 1
+ U1 27
+ U1 17
+ C17 2
+ U1 55
+ C6 1
+ C5 1
+ R6 1
+ C9 1
+ R5 2
+Net 85 "GPIO1" "GPIO1"
+ R53 2
+ J2 67
+ JA1 0_34
+Net 86 "" ""
+ R8 1
+ R62 1
+ U1 33
+Net 87 "GPIO0" "GPIO0"
+ J2 65
+ R54 2
+ JA1 0_33
+Net 88 "" ""
+ R49 1
+ U1 40
+Net 89 "GPIO2" "GPIO2"
+ R49 2
+ JA1 1_6
+ J2 69
+Net 90 "" ""
+ U1 4
+ Q1 1
+ C13 2
+Net 91 "" ""
+ J3 1
+ JA1 VCC
+Net 92 "RESET" "RESET"
+ J2 66
+ JA1 1_7
+ R56 2
+Net 93 "SPI_CLK" "SPI_CLK"
+ J2 72
+ JA1 0_39
+ R52 2
+Net 94 "TXEN" "TXEN"
+ J2 79
+ JA1 0_35
+Net 95 "TXD11" "TXD11"
+ J2 36
+ JA1 0_25
+Net 96 "TXD3" "TXD3"
+ J2 26
+ JA1 0_21
+Net 97 "TXD9" "TXD9"
+ J2 34
+ JA1 0_17
+Net 98 "RXD2" "RXD2"
+ JA1 0_13
+ J2 45
+Net 99 "RXD0" "RXD0"
+ JA1 0_9
+ J2 43
+Net 100 "TXD0" "TXD0"
+ JA1 0_5
+ J2 23
+Net 101 "" ""
+ JA1 1_5
+ R3 2
+ R4 2
+Net 102 "TXD6" "TXD6"
+ J2 31
+ JA1 0_6
+Net 103 "TXD4" "TXD4"
+ J2 29
+ JA1 0_7
+Net 104 "TXD8" "TXD8"
+ J2 33
+ JA1 0_8
+Net 106 "TXD2" "TXD2"
+ JA1 0_4
+ J2 25
+Net 108 "RXD4" "RXD4"
+ J2 49
+ JA1 0_10
+Net 110 "RXD10" "RXD10"
+ JA1 0_20
+ J2 55
+Net 111 "/FPGA Module/FPGA_SDA" "FPGA_SDA"
+ R41 2
+ Q3 4
+ JA1 1_4
+ R2 1
+Net 112 "TXIQSEL" "TXIQSEL"
+ J2 19
+ JA1 0_2
+Net 115 "TXD5" "TXD5"
+ JA1 0_19
+ J2 30
+Net 116 "/FPGA Module/FPGA_SCL" "FPGA_SCL"
+ R40 2
+ JA1 1_2
+ R1 1
+ Q3 1
+Net 117 "TXD7" "TXD7"
+ J2 32
+ JA1 0_15
+Net 118 "TXD1" "TXD1"
+ JA1 0_23
+ J2 24
+Net 119 "TXD10" "TXD10"
+ JA1 0_27
+ J2 35
+Net 120 "RXD9" "RXD9"
+ J2 54
+ JA1 0_31
+Net 121 "RXEN" "RXEN"
+ J2 80
+ JA1 0_37
+Net 122 "/FPGA Module/GPIO_1_VCC3P3" "GPIO_1_VCC3P3"
+ JA1 1_29
+ Q3 5
+ Q3 2
+ R40 1
+ R2 2
+ R41 1
+ R1 2
+ R4 1
+Net 123 "SPI_NCS0" "SPI_NCS0"
+ J2 74
+ JA1 0_36
+ R48 2
+Net 124 "RXIQSEL" "RXIQSEL"
+ J2 39
+ JA1 0_14
+Net 125 "RXD8" "RXD8"
+ JA1 0_18
+ J2 53
+Net 126 "RXD1" "RXD1"
+ J2 44
+ JA1 0_22
+Net 127 "RXD5" "RXD5"
+ JA1 0_26
+ J2 50
+Net 128 "RXD11" "RXD11"
+ JA1 0_32
+ J2 56
+Net 129 "SPI_MOSI" "SPI_MOSI"
+ R46 2
+ J2 68
+ JA1 0_40
+Net 130 "SPI_MISO" "SPI_MISO"
+ J2 70
+ R51 2
+ JA1 0_38
+Net 131 "RXD7" "RXD7"
+ J2 52
+ JA1 0_28
+Net 132 "RXD3" "RXD3"
+ JA1 0_24
+ J2 46
+Net 133 "RXD6" "RXD6"
+ JA1 0_16
+ J2 51
+Net 139 "" ""
+ J2 4
+ J2 1
+ J2 2
+ J1 2
+ J2 3
+Net 158 "" ""
+ R57 1
+ R50 1
+ U11 8
+Net 159 "" ""
+ U11 7
+ R58 1
+ R47 1
+Net 160 "" ""
+ U11 5
+ R51 1
+Net 161 "" ""
+ R46 1
+ U11 6
+Net 163 "" ""
+ R52 1
+ U11 11
+Net 165 "" ""
+ C33 1
+ U11 3
+ R55 1
+Net 166 "" ""
+ U11 9
+ R63 1
+Net 167 "" ""
+ R61 1
+ U11 14
+ R66 1
+Net 168 "" ""
+ R59 1
+ R64 1
+ U11 16
+Net 169 "" ""
+ R48 1
+ U11 1
+Net 170 "" ""
+ U11 2
+ R56 1
+Net 171 "" ""
+ R65 1
+ R60 1
+ U11 15
+}
+#End
