@@ -4,14 +4,15 @@ This interface board forms part of the original Myriad RF Development Kit, and
 is intended to be used together with the Myriad-RF 1 RF module and a DEO-Nano
 FPGA development kit.
 
+The latest version of the Development Kit manual can be found in the docs/
+directory.
+
 ## Structure
 
 - docs - documentation
 - firmware - firmware for the DE0-Nano USB controller
   - bin - binaries
   - src - sources
-    - fx2lib - fx2lib for creating firmware for Cypress FX2
-    - usbio_1v08 - USB I/O firmware
 - gateware - FPGA RTL
   - prog_files - compiled RTL for device programming
 - hardware - hardware design files
