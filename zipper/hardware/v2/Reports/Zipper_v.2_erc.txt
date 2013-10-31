@@ -1,0 +1,21 @@
+ERC report (10/22/2013 5:45:38 PM)
+
+***** Sheet /
+
+***** Sheet /Data Interface Connector/
+
+***** Sheet /HSMC & Pin Header Connectors/
+
+***** Sheet /FMC Connector/
+
+***** Sheet /Clock Generator/
+
+***** Sheet /Power Supply /
+
+***** Sheet /Buffers/
+
+***** Sheet /Microcontroller/
+
+***** Sheet /ADF4002/
+
+ >> Errors ERC: 0
