@@ -6,13 +6,13 @@ This repository contains the [Myriad-RF](http://myriadrf.org/) reference hardwar
 
 The directory structure for the hardware designs is as follows:
 
-- <project>/hardware/<version>/
-    - BOM		- bill of materials spreadsheet
-    - Gerbers		- Gerber CAM files
-    - KiCAD		- KiCAD schematic and layout files
-    - Manufacturing	- Additional manufacturing information
-    - PDF		- Schematic and layout PDFs
-    - Reports		- DRC, ERC and drill reports
+    - <project>/hardware/<version>/
+        - BOM			- bill of materials spreadsheet
+        - Gerbers		- Gerber CAM files
+        - KiCAD			- KiCAD schematic and layout files
+        - Manufacturing		- Additional manufacturing information
+        - PDF			- Schematic and layout PDFs
+        - Reports		- DRC, ERC and drill reports
 
 ### Myriad-RF 1 module
 
