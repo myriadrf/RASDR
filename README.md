@@ -22,13 +22,13 @@ Note that there are two versions of the design: one with vias in pads, and anoth
 
 ### DE0-Nano Interface
 
-Hardware design files and firmware sources for the DE0-Nano interface.
+Hardware design files and firmware sources (FPGA HDL + Cypress FX2 code) for the DE0-Nano interface.
 
 ### Zipper Interface
 
 This is a new interface which allows the Myriad-RF 1 to be used with FPGA development boards that have either a HSMC or FMC connector.
 
-Note that v1 of this design was not made generally available.
+*Note that v1 of the hardware design was not made generally available.*
 
 ## Licensing
 
@@ -36,7 +36,7 @@ Note that v1 of this design was not made generally available.
 
 The hardware designs are licensed under a Creative Commons Attribution 3.0 Unported licence.
 
-''Note: The Myriad-RF 1 and DE0-Nano Interface hardware designs were initially published under the Creative Commons Attribution-ShareAlike 3.0 Unported licence. As of 30th September 2013 these have been re-licensed under the more permissive Creative Commons Attribution 3.0 Unported licence.''
+*Note: The Myriad-RF 1 and DE0-Nano Interface hardware designs were initially published under the Creative Commons Attribution-ShareAlike 3.0 Unported licence. As of 30th September 2013 these have been re-licensed under the more permissive Creative Commons Attribution 3.0 Unported licence.*
 
 ### Firmware
 
