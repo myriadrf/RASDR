@@ -1,0 +1,15 @@
+ERC report (5/30/2013 1:22:34 AM)
+
+***** Sheet /
+
+***** Sheet /Connectors/
+
+***** Sheet /Digital Interface/
+
+***** Sheet /USB3 Interface/
+
+***** Sheet /Power Supply/
+
+***** Sheet /Clock Generator/
+
+ >> Errors ERC: 0

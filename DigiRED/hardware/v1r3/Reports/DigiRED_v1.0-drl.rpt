@@ -1,0 +1,47 @@
+Drill report for D:\LIME-Ignas\PCB Design\PCB Projects\DigiMyriad\DigiRED_v.1_r.1\KiCAD Design Files\DigiRED_v1.0.kicad_pcb
+Created on 5/31/2013 11:52:30 AM
+Drill report for plated through holes :
+T1  0.20mm  0.008"  (282 holes)
+T2  0.20mm  0.008"  (559 holes)
+T3  0.30mm  0.012"  (41 holes)
+T4  0.50mm  0.020"  (4 holes)  (with 4 slots)
+T5  1.00mm  0.039"  (3 holes)
+T6  1.02mm  0.040"  (32 holes)
+T7  1.10mm  0.043"  (2 holes)
+T8  3.20mm  0.126"  (4 holes)
+
+Total plated holes count 927
+
+
+Drill report for buried and blind vias :
+
+Drill report for holes from layer Back.Cu to layer Power.Cu :
+
+Total plated holes count 0
+
+
+Drill report for holes from layer Power.Cu to layer Signal_2.Cu :
+
+Total plated holes count 0
+
+
+Drill report for holes from layer Signal_2.Cu to layer Signal_1.Cu :
+
+Total plated holes count 0
+
+
+Drill report for holes from layer Signal_1.Cu to layer GND.Cu :
+
+Total plated holes count 0
+
+
+Drill report for holes from layer GND.Cu to layer Front.Cu :
+
+Total plated holes count 0
+
+
+Drill report for unplated through holes :
+
+Total unplated holes count 0
+
+

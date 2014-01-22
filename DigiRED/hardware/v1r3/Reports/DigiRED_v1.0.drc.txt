@@ -1,0 +1,8 @@
+** Drc report for C:\DigiRED_v.1_r.1\KiCAD Design Files\DigiRED_v1.0.kicad_pcb **
+** Created on   **
+
+** Found 0 DRC errors **
+
+** Found 0 unconnected pads **
+
+** End of Report **
