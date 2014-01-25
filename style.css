@@ -1,0 +1,92 @@
+@charset "utf-8";
+
+body 
+{
+	color: #000;
+	background-color: #FFF;
+	font-family: sans-serif;
+	font-size:0.9em;
+
+}
+
+h1
+{
+	font-family: sans-serif;
+	padding-bottom:0.2em;
+	margin-top:35px;
+	margin-bottom:0.5em;
+	color:#84cf40;
+	border-bottom: 1px dashed #AAA;
+}
+
+h2
+{
+	font-family: sans-serif;
+	padding-bottom:0.2em;
+	margin-bottom:0.5em;
+    margin-top: 35px;
+	color:#84cf40;
+}
+
+h3
+{
+	font-family: sans-serif;
+	padding-bottom:0.2em;
+	margin-top:35px;
+	margin-bottom:0.5em;
+	color:#84cf40;
+}
+
+a
+{
+	color:#108F00;
+	text-decoration: none;
+}
+
+a:hover
+{
+	color:#108F00;
+	text-decoration: underline;
+}
+
+a:visit
+{
+	color:#108F00;
+}
+
+div#copyright
+{
+	text-align:center;
+	font-size:small;
+	clear: both;
+}
+
+div#content
+{
+	width:750px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+ul
+{
+	margin-top:0;
+	margin-bottom:0;
+}
+
+li
+{
+    padding-top: 7px;
+}
+
+div#rasdr2
+{
+	margin-left: auto;
+	margin-right: auto;
+	margin-top:-153px;
+	margin-bottom:0;
+	background: url(rasdr2-with-usb3.jpg) no-repeat;
+	width: 816px;
+	height: 459px;
+}
+

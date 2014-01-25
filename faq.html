@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC
+"-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="description" content="Frequently asked questions about RASDR, a hardware and software package specifically tuned for Radio Astronomy" />
+	<meta http-equiv="content-language" content="en"/>
+	<title>FAQ - RASDR</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+
+<div id="content">
+
+    <div id="rasdr2"></div>
+    
+    <h1>FAQ</h1>
+
+    <i>Bogdan Vacaliuc &lt;<a href="mailto:bvacaliuc@ieee.org">bvacaliuc@ieee.org</a>&gt;</i>
+
+    <p>The questions in this FAQ are questions compiled from the various discussions the RASDR team has been asked during the years of development.</p>
+    <p>This FAQ is updated periodically.  If there's a question you think belongs here, drop me an e-mail and I'll do my best to answer it.</p>
+
+    <hr />
+    <br />
+
+    <ul id="toc">
+        <li><b>1. Branding</b>
+            <ul>
+                <li><a href="#why-rasdr">1.1. Why <i>RASDR</i>?</a></li>
+                <li><a href="#logo">1.2. Do you have a logo?</a></li>
+            </ul>
+        </li>
+        <li><b>2. The Project</b>
+            <ul>
+                <li><a href="#people">2.1. How many people are working on this?</a></li>
+                <li><a href="#history">2.2. How did this start?</a></li>
+                <li><a href="#yet-another">2.3. Don't we already have all kinds of SDR products?</a></li>
+                <li><a href="#production">2.4. Is this stable enough for production?</a></li>
+                <li><a href="#licensing">2.5. Why CC-BY-3.0 and GPL?</a></li>
+            </ul>
+        </li>
+        <li><b>3. The Code</b>
+            <ul>
+                <li><a href="#github">3.1. Why GitHub?</a></li>
+                <li><a href="#build-system">3.2. What build system are you using?</a></li>
+            </ul>
+        </li>
+        <li><b>4. Future</b>
+            <ul>
+                <li><a href="#future">4.1. What's next for the project?</a></li>
+                <li><a href="#goals">4.2. What, ultimately, are you trying to achieve?</a></li>
+                <li><a href="#contribute">4.3. How can I contribute?</a></li>
+            </ul>
+        </li>
+    </ul>
+
+
+    <h1 id="branding">1. Branding</h1>
+
+        <h3 id="why-rasdr">1.1. Why <i>RASDR</i>?</h3>
+        <p>
+            <i>RASDR</i> -- We wanted something that captured the heart of what we were trying to do; Radio Astronomy and Software Defined Radio.  I guess we did not have any more imagination than that.
+        </p>
+
+        <h3 id="logo">1.2. Do you have a logo?</h3>
+        <p>
+            No, we do not.  Would you like to <a href="#contribute">contribute</a>?
+        </p>
+
+    <h1 id="the-project">1. The Project</h1>
+
+        <h3 id="people">2.1. How many people are working on this?</h3>
+        <p>
+        	A list of contributors is available in the <a href="https://github.com/myriadrf/RASDR/blob/master/AUTHORS">AUTHORS file</a>.
+        </p>
+
+        <h3 id="history">2.2. How did this start?</h3>
+        <p>
+        	Several SARA members including <a href="http://www.roanestate.edu/obs/">David Fields</a>, <a href="http://www.sbrac.org/">Marcus Leech</a> and Paul Oxley had started a discussion in early 2011 with the desire to develop a low cost receiver for radio astronomy and educational institutions.  They developed several block diagram designs which are archived <a href="http://sourceforge.net/projects/rf-sampler/files/">here</a>.  Some time later, Bogdan Vacaliuc joined the project to help with the programmable logic development part, along with <a href="http://www.iau.org/administration/membership/individual/917/">Stan Kurtz</a> providing guidance and support from the science aspect. 
+        </p><p>
+        	That summer, the team discovered the availability of the Lime Microsystems LMS6002D Field Programmable RF device.  This allowed the design to reduce cost relative to using discrete components and increase specifications (12-bit sampling vs. 8-bit sampling).  SARA provided a $2,500 grant to the team in September 2011 which were used to purchase an <a href="http://www.limemicro.com/products/LMS6002D.php?sector=consumer"> LMS6002D</a> <a href="http://www.limemicro.com/news/?lang=&pr=L0017&sector=consumer">RF Quick Start Kit</a>, Lattice CPLD development boards and parts to construct a prototype system.  Progress was tracked in <a href="http://www.radio-astronomy.org/Jupiter">SARA Journal</a> articles and the software development in the <a href="http://sourceforge.net/p/rf-sampler/code/commit_browser">sourceforge project</a>.
+        </p><p>
+        	In the summer of 2013, Lime Microsystems, Ltd. collaborated with the RASDR team to develop a USB 3.0 hardware interface board for the Open Hardware <a href="http://myriadrf.org/">MyriadRF-1</a> module.  This collaboration has led to the current project development status.
+        </p>
+
+        <h3 id="yet-another">2.3. Don't we already have all kinds of SDR products?</h3>
+        <p>
+            Indeed we do.  It is a very active area of development with several excellent Open Source projects obtaining Kickstarter funding such as <a href="https://www.kickstarter.com/projects/1085541682/bladerf-usb-30-software-defined-radio">BladeRF</a> and <a href="https://www.kickstarter.com/projects/mossmann/hackrf-an-open-source-sdr-platform">HackRF</a>.  Commercial products such as <a href="https://www.ettus.com/product/details/UB200-KIT">Ettus Research B200</a> and the <a href="http://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/">RTL-SDR</a> dongle also add to the constellation of cost-effective options for software defined radio.  Marcus recently published <a href="http://www.sbrac.org/files/budget_radio_telescope.pdf">"A 21cm Radio Telescope for the Cost-Conscious"</a>, about his experience using the RTL-SDR.
+        </p><p>
+            Our motivation is to develop a unified hardware+software product that is <i>specifically</i> tuned for radio astronomy observations.  We also desire to produce this product and offer it to SARA members <i>at the cost to manufacture it</i>.  In this way, we think we can provide the highest performance for the lowest cost.
+        </p>
+
+        <h3 id="production">2.4. Is this stable enough for production code?</h3>
+        <p>
+        	No way.  Not yet, at least.  Our team is made up of academics, retired or working telecommunications and electronics engineers.  We work on this during available evenings and weekends and during our vacations.  We would be grateful for your <a href="#contribute">help</a>.
+        </p>
+
+        <h3 id="licensing">2.5. Why CC-BY-3.0 and GPL?</h3>
+        <p>
+        	The development of open source software has enabled fantastic innovations by extremely talented people.  Each of us builds upon the efforts and development of others.  We recognize these contributions and desire to position our product to take advantage of any and all contributions and available technologies.  Since many tools, techniques and software codes are licensed under the Gnu Public License, we feel that keeping our software under that same license aligns us with the spirit of collaboration and openness that we have so far enjoyed.
+        </p><p>
+        	Similarly, global technology development has made it possible for individuals to produce electronic systems at modest cost.  Open Hardware Licensing efforts seek to provide a legal structure with which these <i>physical</i> systems can be developed, copied, enhanced and used collaboratively.
+        </p><p>
+        	Many Open Hardware projects release their design information under a <a href="http://creativecommons.org/licenses/">Creative Commons</a> license because it provides a expedient legal framework.  Our project website is released under this license and will remain that way.  Our hardware/firmware designs begin with this model, but are <i>not intended for manufacture</i>.  Once RASDR hardware modules are available in production quantity, the RASDR team intends to transition to using a <a href="http://www.ohwr.org/licenses">CERN Open Hardware</a> license.  This is because of the additional and unique considerations required for the production of tangible goods such as patent protection and indemnification.
+        </p>
+
+    <h1 id="the-code">3. The Code</h1>
+
+        <h3 id="github">3.1. Why GitHub?</h3>
+        <p>
+            GitHub is quickly becoming the industry standard for project hosting.  It is flexible, provides access to collaboration tools (forums, issue tracking, wiki) that everyone is familiar at using, and in addition provides a distributed webhosting service that serves the website you are reading right now.
+        </p>
+
+        <h3 id="build-system">3.2. What build system are you using?</h3>
+        <p>
+            The hardware designs use <a href="http://www.ohwr.org/projects/cern-kicad/wiki">KiCad</a>, which is becoming the standard for Open Hardware designs, not the least part because of CERN's investment in support of the project.
+        </p><p>
+            The USB 3.0 device firmware is built using the <a href="http://www.cypress.com/?app=search&searchType=advanced&keyword=&rtID=119&id=3521&applicationID=0&l=0">Cypress EZ-USB</a> software development environment.
+        </p><p>
+            The host software is built using <a href="http://www.codeblocks.org/">Code::Blocks</a>, an open-source cross-platform intelligent development environment. 
+        </p>
+
+    <h1 id="roadmap">4. Future</h1>
+
+        <h3 id="future">4.1. What's next for the project?</h3>
+        <p>
+            Well, we first have to make <i>this version</i> fully available for the lowest cost we can.  Its a challenge, because we are using two connected boards, once of which is commercially <a href="http://www.digikey.com/product-detail/en/MYRIADRF-1/1434-1001-ND/4177111">available</a>.
+        </p>
+
+        <h3 id="goals">4.2. What, ultimately, are you trying to achieve?</h3>
+        <p>
+            RASDR is a solution to a current problem:  the lack of low cost hardware specifically tuned for radio astronomical measurements and observations.
+        </p>
+        <p>
+            As for an ultimate goal: systems function through layer upon layer of abstraction, and we're trying to create an abstract over something that some people are interested in doing (connecting computers to radio telescopes) and is <i>*very*</i> hard to get right.  With luck, we'll have fun and share good ideas in the process.
+        </p>
+
+        <h3 id="contribute">4.3. How can I contribute?</h3>
+        <p>
+            We need help in a lot of areas.  In particular:
+        </p>
+        <ul>
+        	<li><a href="http://myriadrf.org/forums/forum/radio-astronomy-software-defined-radio-rasdr/">Discussions.</a> We have a discussion forum opened at <a href="http://myriadrf.org">myriadrf.org</a> to talk about aspects of the project and to get technical support questions answered.</li>
+            <li>Cross-platform.  Believe it or not, we have focused our development on Windows.  Our example/starter software doesn't work on Mac OS X or Linux, yet.  There are several open source projects which support the USB 3 interface these platforms and we could use help integrating.</li>
+            <li>Applications.  RASDR is intended to be useful to <i>your</i> projects by enabling access to the radio frequency spectrum.</li>
+            <li>The <a href="http://rasdr.org/docs" target="_blank">documentation</a> does not exist yet.</li>
+            <li>The <a href="https://github.com/myriadrf/RASDR/wiki" target="_blank">wiki</a> has no content nor organization.</li>
+            <li>The <a href="https://github.com/myriadrf/RASDR/issues" target="_blank">GitHub issue tracker</a> is empty.  As we progress, we will have outstanding issues to check or attempt to rectify.  Even something as simple as a &#8220;me too&#8221; comment is helpful, and a fix is obviously even better.</li>
+        </ul>
+</div>
+
+<div id="copyright">
+
+<br /><p style="font-size: 8pt;">Copyright &copy; The Society of Amateur Radio Astronomers 2011-2014<br />
+<a target="_blank" href="https://github.com/myriadrf/RASDR/tree/gh-pages">Repository for this page</a><br />
+<br />
+<a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported License</a>.
+</p>
+
+</div>
+
+</body>
+</html>
