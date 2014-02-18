@@ -24,6 +24,14 @@ FX3 controller firmware.
           bin/                   - binary releases
           src/                   - source code
 
+## Driver
+
+Windows drivers for the DigiRED Module
+
+      driver/
+          digired-windows.zip    - Windows Drivers for DigiRED
+
+
 ## Licensing
 
 ### Hardware
@@ -33,3 +41,7 @@ The hardware design is licensed under a Creative Commons Attribution 3.0 Unporte
 ### Firmware
 
 For details of firmware licensing please see the associated COPYING file(s).
+
+### Driver
+
+For details of driver files licensing please see the license.txt in the driver/
