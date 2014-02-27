@@ -1,7 +1,7 @@
 Board Description
 -----------------
 
-board designation           : Zipper v.2 r.0
+board designation           : Zipper v.2 r.2
 board type                  : Lead Free
 board size                  : 107 mm x 78 mm
 board thickness             : 1.6 mm +/- 10 %

@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 10/22/2013 5:46:29 PM
+Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 11/26/2013 12:49:36 PM
 
 BeginCmp
 TimeStamp = /4FE453EF/51F68FB8;
@@ -988,44 +988,44 @@ IdModule  = R_SM0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/5261D5F3;
+TimeStamp = /4FE453EF/5294AF43;
 Reference = R84;
-ValeurCmp = 0R_0603;
+ValeurCmp = 0R_0402;
 IdModule  = R_SM0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/5261D5E7;
+TimeStamp = /4FE453EF/5294AEFE;
 Reference = R85;
-ValeurCmp = 0R_0603_NF;
+ValeurCmp = 0R_0402_NF;
 IdModule  = R_SM0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/5261D5FF;
+TimeStamp = /4FE453EF/5294AF7A;
 Reference = R86;
-ValeurCmp = 0R_0603;
+ValeurCmp = 0R_0402;
 IdModule  = R_SM0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/5261D2BB;
+TimeStamp = /4FE453EF/5294AF92;
 Reference = R87;
-ValeurCmp = 0R_0603;
+ValeurCmp = 0R_0402;
 IdModule  = R_SM0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/5261D291;
+TimeStamp = /4FE453EF/5294AF3B;
 Reference = R88;
-ValeurCmp = 0R_0603_NF;
+ValeurCmp = 0R_0402_NF;
 IdModule  = R_SM0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/5261D2C7;
+TimeStamp = /4FE453EF/5294AF86;
 Reference = R89;
-ValeurCmp = 0R_0603;
+ValeurCmp = 0R_0402;
 IdModule  = R_SM0402;
 EndCmp
 
@@ -1058,10 +1058,10 @@ IdModule  = Switch_2way;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/51F87C1C;
+TimeStamp = /4FE453EF/51F8E523;
 Reference = U1;
-ValeurCmp = RACON_TXCO;
-IdModule  = SMD_TXCO;
+ValeurCmp = SN74LVC1G04DBVR;
+IdModule  = SOT23-5;
 EndCmp
 
 BeginCmp
@@ -1135,10 +1135,10 @@ IdModule  = QFN20;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/51F890A2;
+TimeStamp = /4FE453EF/51F8E4F0;
 Reference = U12;
-ValeurCmp = RACON_TXCO_PLUTO+;
-IdModule  = SMD_TXCO_Pluto+;
+ValeurCmp = SN74LVC1G04DBVR;
+IdModule  = SOT23-5;
 EndCmp
 
 BeginCmp
@@ -1158,7 +1158,7 @@ EndCmp
 BeginCmp
 TimeStamp = /51DAF578/51F86D9A;
 Reference = U15;
-ValeurCmp = AT90USB162-16AU;
+ValeurCmp = AT90USB162-16MU;
 IdModule  = QFN32;
 EndCmp
 
@@ -1170,24 +1170,24 @@ IdModule  = SC70;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE453EF/51F8E523;
-Reference = U17;
-ValeurCmp = SN74LVC1G04DBVR;
-IdModule  = SOT23-5;
-EndCmp
-
-BeginCmp
-TimeStamp = /4FE453EF/51F8E4F0;
-Reference = U18;
-ValeurCmp = SN74LVC1G04DBVR;
-IdModule  = SOT23-5;
-EndCmp
-
-BeginCmp
 TimeStamp = /51DAF578/51F9328D;
 Reference = X1;
 ValeurCmp = 8MHZ;
 IdModule  = HC49_4H_SMX;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FE453EF/51F87C1C;
+Reference = X2;
+ValeurCmp = RACON_TXCO;
+IdModule  = SMD_TXCO;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FE453EF/51F890A2;
+Reference = X3;
+ValeurCmp = RACON_TXCO_PLUTO+;
+IdModule  = SMD_TXCO_Pluto+;
 EndCmp
 
 EndListe

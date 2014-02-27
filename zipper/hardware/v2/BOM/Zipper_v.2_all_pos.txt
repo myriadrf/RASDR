@@ -1,4 +1,4 @@
-### Module positions - created on 10/22/2013 6:27:08 PM ###
+### Module positions - created on 1/7/2014 3:47:24 PM ###
 ### Printed by Pcbnew version pcbnew (2013-07-07 BZR 4022)-stable
 ## Unit = mm, Angle = deg.
 ## Side : All
@@ -20,13 +20,15 @@ D3       LED              LD_0603           111.8000  -126.0000       0.0    F.C
 D4       LED              LD_0603           131.4000  -132.6000       0.0    F.Cu
 D5       LED              LD_0603           169.8000  -131.4000       0.0    F.Cu
 D6       LED              LD_0603           158.9500  -122.5200       0.0    F.Cu
+Fiducial VAL**            Fiducial           97.2750   -58.9000       0.0    F.Cu
 Fiducial VAL**            Fiducial           96.9500  -132.5750       0.0    F.Cu
 Fiducial VAL**            Fiducial          162.2250   -56.8500       0.0    F.Cu
-Fiducial VAL**            Fiducial           97.2750   -58.9000       0.0    F.Cu
 J1       FX10B-80S/8-SV   FX10B_80S_8_SV    132.8100   -96.9500      90.0    F.Cu
 J2       FX10B-80S/8-SV   FX10B_80S_8_SV    152.1900   -96.0500     270.0    F.Cu
+J5       JUMPER2          pinhead2          111.1750  -130.5000       0.0    F.Cu
 J6       MINI-USB-UX60A-M SMD_UX60A-MB-5ST  161.2000  -127.6000      90.0    F.Cu
 J7       PINHEADER2X25    PinHeader2x25SMD  110.7400   -65.3000      90.0    F.Cu
+J8       SMA              SMA_vert          137.8000  -129.4000       0.0    F.Cu
 L1       22UH_XAL60XX_SER XAL60xx_series     96.7800   -65.8800      90.0    F.Cu
 MyriadRF FX10A - HSMC / P MyriadRF_frame    128.0000  -121.0000       0.0    F.Cu
 R3       330R_0402        R_SM0402          147.7400  -128.9500      90.0    F.Cu
@@ -45,12 +47,12 @@ R50      100K_0603        SM0603            169.6000  -128.6000       0.0    F.C
 R78      0R_0402          R_SM0402          146.8000  -109.3900     270.0    F.Cu
 R79      0R_0402          R_SM0402          144.7400  -109.4300     270.0    F.Cu
 R80      0R_0402          R_SM0402          146.2200  -127.9400      90.0    F.Cu
-R84      0R_0603          R_SM0402          146.4000   -68.9500     180.0    F.Cu
-R85      0R_0603_NF       R_SM0402          147.3300   -69.9900       0.0    F.Cu
-R86      0R_0603          R_SM0402          148.2700   -71.5600       0.0    F.Cu
-R87      0R_0603          R_SM0402          149.6200   -68.8800     180.0    F.Cu
-R88      0R_0603_NF       R_SM0402          150.5600   -70.0000       0.0    F.Cu
-R89      0R_0603          R_SM0402          151.5000   -71.5900       0.0    F.Cu
+R84      0R_0402          R_SM0402          146.4000   -68.9500     180.0    F.Cu
+R85      0R_0402_NF       R_SM0402          147.3300   -69.9900       0.0    F.Cu
+R86      0R_0402          R_SM0402          148.2700   -71.5600       0.0    F.Cu
+R87      0R_0402          R_SM0402          149.6200   -68.8800     180.0    F.Cu
+R88      0R_0402_NF       R_SM0402          150.5600   -70.0000       0.0    F.Cu
+R89      0R_0402          R_SM0402          151.5000   -71.5900       0.0    F.Cu
 R90      0R_0402_NF       R_SM0402          145.7500  -129.7200       0.0    F.Cu
 SW1      SW               Switch_2way       100.8000   -99.2000     270.0    F.Cu
 SW2      SW               Switch_2way       151.8700  -130.9100      90.0    F.Cu
@@ -89,9 +91,9 @@ C39      100NF_0402       C_SM0402          168.3750  -125.6000     270.0    B.C
 C41      2.2UF_0402       C_SM0402          155.5100   -72.2600     180.0    B.Cu
 FB1      FB_600OHM@100MHZ R_SM0402          126.6000  -132.0000     270.0    B.Cu
 FB2      FB_60OHM@100MHZ  R_SM0805          160.2500   -70.1100     180.0    B.Cu
-Fiducial VAL**            Fiducial          100.0000  -132.6500       0.0    B.Cu
-Fiducial VAL**            Fiducial          100.1250   -59.0250       0.0    B.Cu
 Fiducial VAL**            Fiducial          163.9750   -56.8750       0.0    B.Cu
+Fiducial VAL**            Fiducial          100.1250   -59.0250       0.0    B.Cu
+Fiducial VAL**            Fiducial          100.0000  -132.6500       0.0    B.Cu
 J3       ASP-122952-01_(H HSMC               91.7150   -95.0652     270.0    B.Cu
 J4       ASP-134604-01    FMC               184.0000   -95.0000      90.0    B.Cu
 R1       2K2_0603         SM0603            139.5200  -108.5300     270.0    B.Cu
@@ -162,21 +164,21 @@ R81      0R_0402          R_SM0402          157.5500   -72.2600     180.0    B.C
 R82      232R_0402        R_SM0402          156.6400   -69.8400     180.0    B.Cu
 R83      100R_0402        R_SM0402          154.5000   -69.8400       0.0    B.Cu
 R91      0R_0402_NF       R_SM0402          158.5900  -120.3600     180.0    B.Cu
-U1       RACON_TXCO       SMD_TXCO          124.4000  -116.6000      90.0    B.Cu
+U1       SN74LVC1G04DBVR  SOT23-5           160.0000   -75.6000     180.0    B.Cu
 U2       CDCV304PW        TSSOP-8           143.0000  -104.8000     180.0    B.Cu
 U3       SI5351C          QFN20             142.1600   -88.4900     270.0    B.Cu
 U4       SN74LVC1G04DBVR  SOT23-5           145.5400   -78.2200     180.0    B.Cu
 U5       SN74LVC1G04DBVR  SOT23-5           139.7500   -78.2600     180.0    B.Cu
 U8       MIC37122Y_ADJ_SO SOIC-8            159.6800   -66.5100      90.0    B.Cu
 U9       SN74LVC162244A   TSSOP-48          160.1000   -92.7600       0.0    B.Cu
-U10      SN74LVC162244A   TSSOP-48          160.1700  -111.9400       0.0    B.Cu
+U10      SN74LVC162244A   TSSOP-48          167.6500  -100.4300     180.0    B.Cu
 U11      ADF4002          QFN20             124.4250  -128.4750     180.0    B.Cu
-U12      RACON_TXCO_PLUTO SMD_TXCO_Pluto+   124.4000  -116.6000     270.0    B.Cu
+U12      SN74LVC1G04DBVR  SOT23-5           165.4000   -75.6000     180.0    B.Cu
 U13      SN74LVC162244A   TSSOP-48          125.0000   -98.2000     180.0    B.Cu
-U14      SN74LVC162244A   TSSOP-48          125.0000   -81.9500     180.0    B.Cu
-U15      AT90USB162-16AU  QFN32             151.6000  -128.0000     180.0    B.Cu
+U14      SN74LVC162244A   TSSOP-48          117.5100   -93.4500       0.0    B.Cu
+U15      AT90USB162-16MU  QFN32             151.6000  -128.0000     180.0    B.Cu
 U16      LP5900SD-3.3     SC70              166.5500  -125.0750     180.0    B.Cu
-U17      SN74LVC1G04DBVR  SOT23-5           160.0000   -75.6000     180.0    B.Cu
-U18      SN74LVC1G04DBVR  SOT23-5           165.4000   -75.6000     180.0    B.Cu
 X1       8MHZ             HC49_4H_SMX       165.7500  -131.2250       0.0    B.Cu
+X2       RACON_TXCO       SMD_TXCO          124.4000  -116.6000      90.0    B.Cu
+X3       RACON_TXCO_PLUTO SMD_TXCO_Pluto+   124.4000  -116.6000     270.0    B.Cu
 ## End

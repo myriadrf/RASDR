@@ -7,8 +7,8 @@ $Descr A4 8268 11693 portrait
 encoding utf-8
 Sheet 2 9
 Title "Zipper v.2"
-Date "22 oct 2013"
-Rev "0"
+Date "7 jan 2014"
+Rev "2"
 Comp ""
 Comment1 "THIS WORK IS COVERED UNDER A CREATIVE COMMONS LICENSE (CC BY 3.0)"
 Comment2 "Copyright 2013 AZIO Electronics Co., Ltd."

@@ -1,5 +1,5 @@
-update=10/22/2013 6:32:21 PM
-last_client=eeschema
+update=1/7/2014 4:26:40 PM
+last_client=kicad
 [cvpcb]
 version=1
 NetIExt=net
@@ -27,8 +27,6 @@ ModuleOutlineThickness=0.200000000000
 [pcbnew/libraries]
 LibDir=
 LibName1=Zipper
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=
@@ -39,3 +37,5 @@ RptLab=1
 LabSize=45
 [eeschema/libraries]
 LibName1=Zipper-cache
+[general]
+version=1

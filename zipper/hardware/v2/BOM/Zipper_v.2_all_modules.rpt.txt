@@ -1,4 +1,4 @@
-## Module report - date 10/22/2013 6:27:19 PM
+## Module report - date 1/7/2014 3:48:04 PM
 ## Created by Pcbnew version pcbnew (2013-07-07 BZR 4022)-stable
 ## Unit = inches, Angle = deg.
 ##
@@ -13564,8 +13564,8 @@ Layer  copper
 $EndPAD
 $EndMODULE  U2
 
-$MODULE "U12"
-reference "U12"
+$MODULE "X3"
+reference "X3"
 value "RACON_TXCO_PLUTO+"
 footprint "SMD_TXCO_Pluto+"
 attribut smd
@@ -13626,10 +13626,10 @@ orientation  -90.00
 Shape  Rect
 Layer  copper
 $EndPAD
-$EndMODULE  U12
+$EndMODULE  X3
 
-$MODULE "U1"
-reference "U1"
+$MODULE "X2"
+reference "X2"
 value "RACON_TXCO"
 footprint "SMD_TXCO"
 attribut smd
@@ -13672,7 +13672,7 @@ orientation  0.00
 Shape  Rect
 Layer  copper
 $EndPAD
-$EndMODULE  U1
+$EndMODULE  X2
 
 $MODULE "R12"
 reference "R12"
@@ -14195,62 +14195,6 @@ Shape  Rect
 Layer  copper
 $EndPAD
 $EndMODULE  R40
-
-$MODULE "D4"
-reference "D4"
-value "LED"
-footprint "LD_0603"
-attribut smd
-position  5.173228  5.220472
-orientation  0.00
-layer component
-$PAD "2"
-position  0.031500  0.000000
-size  0.031400  0.031400
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$PAD "1"
-position -0.031500  0.000000
-size  0.031400  0.031400
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$EndMODULE  D4
-
-$MODULE "D3"
-reference "D3"
-value "LED"
-footprint "LD_0603"
-attribut smd
-position  4.401575  4.960630
-orientation  0.00
-layer component
-$PAD "2"
-position  0.031500  0.000000
-size  0.031400  0.031400
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$PAD "1"
-position -0.031500  0.000000
-size  0.031400  0.031400
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$EndMODULE  D3
 
 $MODULE "C13"
 reference "C13"
@@ -21874,8 +21818,8 @@ Layer  copper
 $EndPAD
 $EndMODULE  U5
 
-$MODULE "U18"
-reference "U18"
+$MODULE "U12"
+reference "U12"
 value "SN74LVC1G04DBVR"
 footprint "SOT23-5"
 attribut smd
@@ -21933,10 +21877,10 @@ orientation  0.00
 Shape  Rect
 Layer  copper
 $EndPAD
-$EndMODULE  U18
+$EndMODULE  U12
 
-$MODULE "U17"
-reference "U17"
+$MODULE "U1"
+reference "U1"
 value "SN74LVC1G04DBVR"
 footprint "SOT23-5"
 attribut smd
@@ -21994,7 +21938,7 @@ orientation  0.00
 Shape  Rect
 Layer  copper
 $EndPAD
-$EndMODULE  U17
+$EndMODULE  U1
 
 $MODULE "R71"
 reference "R71"
@@ -23031,34 +22975,6 @@ Layer  component
 $EndPAD
 $EndMODULE  D2
 
-$MODULE "D1"
-reference "D1"
-value "TS4148"
-footprint "D_SM0805"
-attribut smd
-position  4.125197  3.602362
-orientation  180.00
-layer component
-$PAD "1"
-position  0.000000  0.000000
-size  0.050000  0.059800
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$PAD "2"
-position  0.000000  0.089800
-size  0.050000  0.059800
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$EndMODULE  D1
-
 $MODULE "SW1"
 reference "SW1"
 value "SW"
@@ -23155,7 +23071,7 @@ $MODULE "J5"
 reference "J5"
 value "JUMPER2"
 footprint "pinhead2"
-attribut none
+attribut smd
 position  4.376969  5.137795
 orientation  0.00
 layer component
@@ -23183,7 +23099,7 @@ $MODULE "J8"
 reference "J8"
 value "SMA"
 footprint "SMA_vert"
-attribut none
+attribut smd
 position  5.425197  5.094488
 orientation  0.00
 layer component
@@ -23587,7 +23503,7 @@ $EndMODULE  U11
 
 $MODULE "U15"
 reference "U15"
-value "AT90USB162-16AU"
+value "AT90USB162-16MU"
 footprint "QFN32"
 attribut smd
 position  5.968504  5.039370
@@ -26815,34 +26731,6 @@ Layer  copper
 $EndPAD
 $EndMODULE  R81
 
-$MODULE "D6"
-reference "D6"
-value "LED"
-footprint "LD_0603"
-attribut smd
-position  6.257874  4.823622
-orientation  0.00
-layer component
-$PAD "2"
-position  0.031500  0.000000
-size  0.031400  0.031400
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$PAD "1"
-position -0.031500  0.000000
-size  0.031400  0.031400
-drill  0.000000
-shape_offset  0.000000  0.000000
-orientation  0.00
-Shape  Rect
-Layer  component
-$EndPAD
-$EndMODULE  D6
-
 $MODULE "C41"
 reference "C41"
 value "2.2UF_0402"
@@ -27111,7 +26999,7 @@ $EndMODULE  U8
 
 $MODULE "R88"
 reference "R88"
-value "0R_0603_NF"
+value "0R_0402_NF"
 footprint "R_SM0402"
 attribut smd
 position  5.927559  2.755906
@@ -27139,7 +27027,7 @@ $EndMODULE  R88
 
 $MODULE "R87"
 reference "R87"
-value "0R_0603"
+value "0R_0402"
 footprint "R_SM0402"
 attribut smd
 position  5.890551  2.711811
@@ -27167,7 +27055,7 @@ $EndMODULE  R87
 
 $MODULE "R89"
 reference "R89"
-value "0R_0603"
+value "0R_0402"
 footprint "R_SM0402"
 attribut smd
 position  5.964567  2.818504
@@ -27195,7 +27083,7 @@ $EndMODULE  R89
 
 $MODULE "R85"
 reference "R85"
-value "0R_0603_NF"
+value "0R_0402_NF"
 footprint "R_SM0402"
 attribut smd
 position  5.800394  2.755512
@@ -27223,7 +27111,7 @@ $EndMODULE  R85
 
 $MODULE "R84"
 reference "R84"
-value "0R_0603"
+value "0R_0402"
 footprint "R_SM0402"
 attribut smd
 position  5.763780  2.714567
@@ -27251,7 +27139,7 @@ $EndMODULE  R84
 
 $MODULE "R86"
 reference "R86"
-value "0R_0603"
+value "0R_0402"
 footprint "R_SM0402"
 attribut smd
 position  5.837402  2.817323
@@ -27780,8 +27668,8 @@ reference "U14"
 value "SN74LVC162244A"
 footprint "TSSOP-48"
 attribut smd
-position  4.921260  3.226378
-orientation  180.00
+position  4.626378  3.679134
+orientation  0.00
 layer copper
 $PAD "1"
 position  0.000000  0.000000
@@ -28664,8 +28552,8 @@ reference "U10"
 value "SN74LVC162244A"
 footprint "TSSOP-48"
 attribut smd
-position  6.305906  4.407087
-orientation  0.00
+position  6.600394  3.953937
+orientation  180.00
 layer copper
 $PAD "1"
 position  0.000000  0.000000
@@ -29128,6 +29016,118 @@ Shape  Rect
 Layer  copper
 $EndPAD
 $EndMODULE  R91
+
+$MODULE "D1"
+reference "D1"
+value "TS4148"
+footprint "D_SM0805"
+attribut smd
+position  4.125197  3.602362
+orientation  180.00
+layer component
+$PAD "1"
+position  0.000000  0.000000
+size  0.050000  0.059800
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$PAD "2"
+position  0.000000  0.089800
+size  0.050000  0.059800
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$EndMODULE  D1
+
+$MODULE "D3"
+reference "D3"
+value "LED"
+footprint "LD_0603"
+attribut smd
+position  4.401575  4.960630
+orientation  0.00
+layer component
+$PAD "2"
+position  0.031500  0.000000
+size  0.031400  0.031400
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$PAD "1"
+position -0.031500  0.000000
+size  0.031400  0.031400
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$EndMODULE  D3
+
+$MODULE "D4"
+reference "D4"
+value "LED"
+footprint "LD_0603"
+attribut smd
+position  5.173228  5.220472
+orientation  0.00
+layer component
+$PAD "2"
+position  0.031500  0.000000
+size  0.031400  0.031400
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$PAD "1"
+position -0.031500  0.000000
+size  0.031400  0.031400
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$EndMODULE  D4
+
+$MODULE "D6"
+reference "D6"
+value "LED"
+footprint "LD_0603"
+attribut smd
+position  6.257874  4.823622
+orientation  0.00
+layer component
+$PAD "2"
+position  0.031500  0.000000
+size  0.031400  0.031400
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$PAD "1"
+position -0.031500  0.000000
+size  0.031400  0.031400
+drill  0.000000
+shape_offset  0.000000  0.000000
+orientation  0.00
+Shape  Rect
+Layer  component
+$EndPAD
+$EndMODULE  D6
 
 $ARC 
 centre 6.988189 2.303150

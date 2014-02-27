@@ -1,4 +1,4 @@
-EESchema-LIBRARY Version 2.3  Date: 10/22/2013 6:32:22 PM
+EESchema-LIBRARY Version 2.3  Date: 1/7/2014 4:22:53 PM
 #encoding utf-8
 #
 # +12V
@@ -2038,8 +2038,8 @@ ENDDEF
 #
 # RACON_TXCO
 #
-DEF ~RACON_TXCO U 0 40 Y Y 1 F N
-F0 "U" 150 200 50 H V C CNN
+DEF ~RACON_TXCO X 0 40 Y Y 1 F N
+F0 "X" 150 200 50 H V C CNN
 F1 "RACON_TXCO" 700 950 60 H I C CNN
 F2 "SMD_TXCO" 0 0 60 H I C CNN
 F3 "~" 0 0 60 H V C CNN
@@ -2048,7 +2048,7 @@ F5 "E5280LF" 350 400 60 H I C CNN "Manufacturer Part Number"
 F6 "E5280LF" 650 700 60 H I C CNN "Vendor Part Number"
 F7 "Rakon" 450 500 60 H I C CNN "Manufacturer"
 F8 "Rakon" 550 600 60 H I C CNN "Vendor"
-F9 "RACON_TXCO" 0 -200 50 H V C CNN "Component Value"
+F9 "30.72MHz_TXCO" 0 -200 50 H V C CNN "Component Value"
 DRAW
 S -250 150 250 -150 0 1 0 N
 X VC 1 -450 0 200 R 50 50 1 1 P
@@ -2060,8 +2060,8 @@ ENDDEF
 #
 # RACON_TXCO_Pluto+
 #
-DEF ~RACON_TXCO_Pluto+ U 0 40 Y Y 1 F N
-F0 "U" -200 200 50 H V C CNN
+DEF ~RACON_TXCO_Pluto+ X 0 40 Y Y 1 F N
+F0 "X" -200 200 50 H V C CNN
 F1 "RACON_TXCO_Pluto+" 0 -350 60 H I C CNN
 F2 "SMD_TXCO_Pluto+" 0 0 60 H I C CNN
 F3 "~" 0 0 60 H V C CNN
@@ -2070,7 +2070,7 @@ F5 "E6245LF" 350 400 60 H I C CNN "Manufacturer Part Number"
 F6 "E6245LF" 650 700 60 H I C CNN "Vendor Part Number"
 F7 "Rakon" 450 500 60 H I C CNN "Manufacturer"
 F8 "Rakon" 550 600 60 H I C CNN "Vendor"
-F9 "RACON_TXCO_PLUTO+" 50 -200 50 H V C CNN "Component Value"
+F9 "30.72MHz_TXCO_P+" 50 -200 50 H V C CNN "Component Value"
 F10 "NF" 0 100 50 H V C CNN "Placement"
 F11 "NOFIT" 600 1000 60 H I C CNN "Assemble"
 DRAW

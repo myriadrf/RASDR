@@ -7,8 +7,8 @@ $Descr User 8263 11692
 encoding utf-8
 Sheet 1 9
 Title "Zipper v.2"
-Date "22 oct 2013"
-Rev "0"
+Date "7 jan 2014"
+Rev "2"
 Comp ""
 Comment1 "THIS WORK IS COVERED UNDER A CREATIVE COMMONS LICENSE (CC BY 3.0)"
 Comment2 "Copyright 2013 AZIO Electronics Co., Ltd."
