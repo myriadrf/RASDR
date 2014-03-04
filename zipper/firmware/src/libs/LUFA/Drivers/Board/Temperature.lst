@@ -1,0 +1,238 @@
+   1               		.file	"Temperature.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               		.section	.text.Temperature_GetTemperature,"ax",@progbits
+  17               	.global	Temperature_GetTemperature
+  19               	Temperature_GetTemperature:
+  20               	.LFB10:
+  21               	.LSM0:
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	.LBB11:
+  25               	.LBB12:
+  26               	.LBB13:
+  27               	.LBB14:
+  28               	.LSM1:
+  29 0000 80E4      		ldi r24,lo8(64)
+  30 0002 8093 7C00 		sts 124,r24
+  31               	.LSM2:
+  32 0006 8091 7A00 		lds r24,122
+  33 000a 8064      		ori r24,lo8(64)
+  34 000c 8093 7A00 		sts 122,r24
+  35               	.L2:
+  36               	.LBE14:
+  37               	.LBE13:
+  38               	.LSM3:
+  39 0010 8091 7A00 		lds r24,122
+  40 0014 86FD      		sbrc r24,6
+  41 0016 00C0      		rjmp .L2
+  42               	.LSM4:
+  43 0018 6091 7800 		lds r22,120
+  44 001c 7091 7900 		lds r23,(120)+1
+  45               	.LVL0:
+  46               	.LBE12:
+  47               	.LBE11:
+  48               	.LBB15:
+  49               	.LSM5:
+  50 0020 40E0      		ldi r20,lo8(Temperature_Lookup)
+  51 0022 50E0      		ldi r21,hi8(Temperature_Lookup)
+  52               	.LVL1:
+  53 0024 FA01      		movw r30,r20
+  54               	/* #APP */
+  55               	 ;  50 "../../../LUFA/Drivers/Board/Temperature.c" 1
+  56 0026 8591      		lpm r24, Z+
+  57 0028 9491      		lpm r25, Z
+  58               		
+  59               	 ;  0 "" 2
+  60               	.LVL2:
+  61               	/* #NOAPP */
+  62               	.LBE15:
+  63 002a 8617      		cp r24,r22
+  64 002c 9707      		cpc r25,r23
+  65 002e 00F4      		brsh .L3
+  66 0030 8BEE      		ldi r24,lo8(-21)
+  67               	.LVL3:
+  68 0032 0895      		ret
+  69               	.LVL4:
+  70               	.L3:
+  71 0034 20E0      		ldi r18,lo8(0)
+  72 0036 30E0      		ldi r19,hi8(0)
+  73               	.LVL5:
+  74               	.L6:
+  75               	.LBB16:
+  76               	.LBB17:
+  77               	.LSM6:
+  78 0038 FA01      		movw r30,r20
+  79               	/* #APP */
+  80               	 ;  55 "../../../LUFA/Drivers/Board/Temperature.c" 1
+  81 003a 8591      		lpm r24, Z+
+  82 003c 9491      		lpm r25, Z
+  83               		
+  84               	 ;  0 "" 2
+  85               	.LVL6:
+  86               	/* #NOAPP */
+  87               	.LBE17:
+  88 003e 8617      		cp r24,r22
+  89 0040 9707      		cpc r25,r23
+  90 0042 00F4      		brsh .L5
+  91               	.LSM7:
+  92 0044 822F      		mov r24,r18
+  93               	.LVL7:
+  94 0046 8551      		subi r24,lo8(-(-21))
+  95 0048 0895      		ret
+  96               	.LVL8:
+  97               	.L5:
+  98               	.LSM8:
+  99 004a 2F5F      		subi r18,lo8(-(1))
+ 100 004c 3F4F      		sbci r19,hi8(-(1))
+ 101 004e 4E5F      		subi r20,lo8(-(2))
+ 102 0050 5F4F      		sbci r21,hi8(-(2))
+ 103 0052 2837      		cpi r18,120
+ 104 0054 3105      		cpc r19,__zero_reg__
+ 105 0056 01F4      		brne .L6
+ 106 0058 82E6      		ldi r24,lo8(98)
+ 107               	.LVL9:
+ 108               	.LBE16:
+ 109               	.LSM9:
+ 110 005a 0895      		ret
+ 111               	.LFE10:
+ 113               		.section	.progmem.data,"a",@progbits
+ 116               	Temperature_Lookup:
+ 117 0000 B403      		.word	948
+ 118 0002 B003      		.word	944
+ 119 0004 AB03      		.word	939
+ 120 0006 A603      		.word	934
+ 121 0008 A003      		.word	928
+ 122 000a 9A03      		.word	922
+ 123 000c 9403      		.word	916
+ 124 000e 8E03      		.word	910
+ 125 0010 8803      		.word	904
+ 126 0012 8103      		.word	897
+ 127 0014 7A03      		.word	890
+ 128 0016 7303      		.word	883
+ 129 0018 6B03      		.word	875
+ 130 001a 6303      		.word	867
+ 131 001c 5B03      		.word	859
+ 132 001e 5303      		.word	851
+ 133 0020 4A03      		.word	842
+ 134 0022 4103      		.word	833
+ 135 0024 3803      		.word	824
+ 136 0026 2F03      		.word	815
+ 137 0028 2503      		.word	805
+ 138 002a 1B03      		.word	795
+ 139 002c 1103      		.word	785
+ 140 002e 0703      		.word	775
+ 141 0030 FC02      		.word	764
+ 142 0032 F102      		.word	753
+ 143 0034 E602      		.word	742
+ 144 0036 DB02      		.word	731
+ 145 0038 D002      		.word	720
+ 146 003a C402      		.word	708
+ 147 003c B802      		.word	696
+ 148 003e AC02      		.word	684
+ 149 0040 A002      		.word	672
+ 150 0042 9402      		.word	660
+ 151 0044 8802      		.word	648
+ 152 0046 7C02      		.word	636
+ 153 0048 6F02      		.word	623
+ 154 004a 6302      		.word	611
+ 155 004c 5602      		.word	598
+ 156 004e 4A02      		.word	586
+ 157 0050 3D02      		.word	573
+ 158 0052 3102      		.word	561
+ 159 0054 2502      		.word	549
+ 160 0056 1802      		.word	536
+ 161 0058 0C02      		.word	524
+ 162 005a 0002      		.word	512
+ 163 005c F301      		.word	499
+ 164 005e E701      		.word	487
+ 165 0060 DB01      		.word	475
+ 166 0062 CF01      		.word	463
+ 167 0064 C401      		.word	452
+ 168 0066 B801      		.word	440
+ 169 0068 AC01      		.word	428
+ 170 006a A101      		.word	417
+ 171 006c 9601      		.word	406
+ 172 006e 8B01      		.word	395
+ 173 0070 8001      		.word	384
+ 174 0072 7601      		.word	374
+ 175 0074 6B01      		.word	363
+ 176 0076 6101      		.word	353
+ 177 0078 5701      		.word	343
+ 178 007a 4D01      		.word	333
+ 179 007c 4401      		.word	324
+ 180 007e 3A01      		.word	314
+ 181 0080 3101      		.word	305
+ 182 0082 2801      		.word	296
+ 183 0084 1F01      		.word	287
+ 184 0086 1701      		.word	279
+ 185 0088 0F01      		.word	271
+ 186 008a 0601      		.word	262
+ 187 008c FE00      		.word	254
+ 188 008e F700      		.word	247
+ 189 0090 EF00      		.word	239
+ 190 0092 E800      		.word	232
+ 191 0094 E100      		.word	225
+ 192 0096 DA00      		.word	218
+ 193 0098 D300      		.word	211
+ 194 009a CD00      		.word	205
+ 195 009c C700      		.word	199
+ 196 009e C000      		.word	192
+ 197 00a0 BA00      		.word	186
+ 198 00a2 B500      		.word	181
+ 199 00a4 AF00      		.word	175
+ 200 00a6 AA00      		.word	170
+ 201 00a8 A400      		.word	164
+ 202 00aa 9F00      		.word	159
+ 203 00ac 9A00      		.word	154
+ 204 00ae 9600      		.word	150
+ 205 00b0 9100      		.word	145
+ 206 00b2 8C00      		.word	140
+ 207 00b4 8800      		.word	136
+ 208 00b6 8400      		.word	132
+ 209 00b8 8000      		.word	128
+ 210 00ba 7C00      		.word	124
+ 211 00bc 7800      		.word	120
+ 212 00be 7400      		.word	116
+ 213 00c0 7100      		.word	113
+ 214 00c2 6D00      		.word	109
+ 215 00c4 6A00      		.word	106
+ 216 00c6 6700      		.word	103
+ 217 00c8 6400      		.word	100
+ 218 00ca 6100      		.word	97
+ 219 00cc 5E00      		.word	94
+ 220 00ce 5B00      		.word	91
+ 221 00d0 5800      		.word	88
+ 222 00d2 5500      		.word	85
+ 223 00d4 5300      		.word	83
+ 224 00d6 5000      		.word	80
+ 225 00d8 4E00      		.word	78
+ 226 00da 4C00      		.word	76
+ 227 00dc 4900      		.word	73
+ 228 00de 4700      		.word	71
+ 229 00e0 4500      		.word	69
+ 230 00e2 4300      		.word	67
+ 231 00e4 4100      		.word	65
+ 232 00e6 3F00      		.word	63
+ 233 00e8 3D00      		.word	61
+ 234 00ea 3C00      		.word	60
+ 235 00ec 3A00      		.word	58
+ 236 00ee 3800      		.word	56
+ 261               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Temperature.c
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:19     .text.Temperature_GetTemperature:00000000 Temperature_GetTemperature
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/ccPzBOig.s:116    .progmem.data:00000000 Temperature_Lookup
+
+NO UNDEFINED SYMBOLS

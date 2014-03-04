@@ -1,0 +1,249 @@
+   1               		.file	"RingBuff.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               		.section	.text.Buffer_Initialize,"ax",@progbits
+  17               	.global	Buffer_Initialize
+  19               	Buffer_Initialize:
+  20               	.LFB12:
+  21               	.LSM0:
+  22               	.LVL0:
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25 0000 FC01      		movw r30,r24
+  26               	.LBB17:
+  27               	.LSM1:
+  28 0002 8FB7      		in r24,__SREG__
+  29               	.LVL1:
+  30               	.LBB18:
+  31               	.LBB19:
+  32               	.LSM2:
+  33               	/* #APP */
+  34               	 ;  50 "c:/winavr-20100110/lib/gcc/../../avr/include/util/atomic.h" 1
+  35 0004 F894      		cli
+  36               	 ;  0 "" 2
+  37               	/* #NOAPP */
+  38               	.LBE19:
+  39               	.LBE18:
+  40               	.LSM3:
+  41 0006 DF01      		movw r26,r30
+  42 0008 A058      		subi r26,lo8(-(128))
+  43 000a BF4F      		sbci r27,hi8(-(128))
+  44 000c 1196      		adiw r26,1
+  45 000e FC93      		st X,r31
+  46 0010 EE93      		st -X,r30
+  47               	.LSM4:
+  48 0012 DF01      		movw r26,r30
+  49 0014 AE57      		subi r26,lo8(-(130))
+  50 0016 BF4F      		sbci r27,hi8(-(130))
+  51 0018 1196      		adiw r26,1
+  52 001a FC93      		st X,r31
+  53 001c EE93      		st -X,r30
+  54               	.LSM5:
+  55 001e EC57      		subi r30,lo8(-(132))
+  56 0020 FF4F      		sbci r31,hi8(-(132))
+  57 0022 1082      		st Z,__zero_reg__
+  58               	.LBB20:
+  59               	.LBB21:
+  60               	.LSM6:
+  61 0024 8FBF      		out __SREG__,r24
+  62               	.LSM7:
+  63               	/* epilogue start */
+  64               	.LBE21:
+  65               	.LBE20:
+  66               	.LBE17:
+  67               	.LSM8:
+  68 0026 0895      		ret
+  69               	.LFE12:
+  71               		.section	.text.Buffer_StoreElement,"ax",@progbits
+  72               	.global	Buffer_StoreElement
+  74               	Buffer_StoreElement:
+  75               	.LFB13:
+  76               	.LSM9:
+  77               	.LVL2:
+  78               	/* prologue: function */
+  79               	/* frame size = 0 */
+  80 0000 AC01      		movw r20,r24
+  81               	.LBB22:
+  82               	.LSM10:
+  83 0002 7FB7      		in r23,__SREG__
+  84               	.LVL3:
+  85               	.LBB23:
+  86               	.LBB24:
+  87               	.LSM11:
+  88               	/* #APP */
+  89               	 ;  50 "c:/winavr-20100110/lib/gcc/../../avr/include/util/atomic.h" 1
+  90 0004 F894      		cli
+  91               	 ;  0 "" 2
+  92               	/* #NOAPP */
+  93               	.LBE24:
+  94               	.LBE23:
+  95               	.LSM12:
+  96 0006 FC01      		movw r30,r24
+  97 0008 EC57      		subi r30,lo8(-(132))
+  98 000a FF4F      		sbci r31,hi8(-(132))
+  99 000c 8081      		ld r24,Z
+ 100               	.LVL4:
+ 101 000e 8038      		cpi r24,lo8(-128)
+ 102 0010 01F4      		brne .L4
+ 103               	.LSM13:
+ 104 0012 FA01      		movw r30,r20
+ 105 0014 EE57      		subi r30,lo8(-(130))
+ 106 0016 FF4F      		sbci r31,hi8(-(130))
+ 107 0018 8081      		ld r24,Z
+ 108 001a 9181      		ldd r25,Z+1
+ 109 001c 0196      		adiw r24,1
+ 110 001e 9183      		std Z+1,r25
+ 111 0020 8083      		st Z,r24
+ 112               	.LSM14:
+ 113 0022 2081      		ld r18,Z
+ 114 0024 3181      		ldd r19,Z+1
+ 115 0026 CA01      		movw r24,r20
+ 116 0028 8058      		subi r24,lo8(-(128))
+ 117 002a 9F4F      		sbci r25,hi8(-(128))
+ 118 002c 2817      		cp r18,r24
+ 119 002e 3907      		cpc r19,r25
+ 120 0030 01F4      		brne .L5
+ 121               	.LSM15:
+ 122 0032 5183      		std Z+1,r21
+ 123 0034 4083      		st Z,r20
+ 124 0036 00C0      		rjmp .L5
+ 125               	.L4:
+ 126               	.LSM16:
+ 127 0038 8081      		ld r24,Z
+ 128 003a 8F5F      		subi r24,lo8(-(1))
+ 129 003c 8083      		st Z,r24
+ 130               	.L5:
+ 131               	.LSM17:
+ 132 003e DA01      		movw r26,r20
+ 133 0040 A058      		subi r26,lo8(-(128))
+ 134 0042 BF4F      		sbci r27,hi8(-(128))
+ 135 0044 ED91      		ld r30,X+
+ 136 0046 FC91      		ld r31,X
+ 137 0048 1197      		sbiw r26,1
+ 138 004a 6083      		st Z,r22
+ 139               	.LSM18:
+ 140 004c 8D91      		ld r24,X+
+ 141 004e 9C91      		ld r25,X
+ 142 0050 1197      		sbiw r26,1
+ 143 0052 0196      		adiw r24,1
+ 144 0054 1196      		adiw r26,1
+ 145 0056 9C93      		st X,r25
+ 146 0058 8E93      		st -X,r24
+ 147               	.LSM19:
+ 148 005a ED91      		ld r30,X+
+ 149 005c FC91      		ld r31,X
+ 150 005e 1197      		sbiw r26,1
+ 151 0060 EA17      		cp r30,r26
+ 152 0062 FB07      		cpc r31,r27
+ 153 0064 01F4      		brne .L6
+ 154               	.LSM20:
+ 155 0066 5183      		std Z+1,r21
+ 156 0068 4083      		st Z,r20
+ 157               	.L6:
+ 158               	.LBB25:
+ 159               	.LBB26:
+ 160               	.LSM21:
+ 161 006a 7FBF      		out __SREG__,r23
+ 162               	.LSM22:
+ 163               	/* epilogue start */
+ 164               	.LBE26:
+ 165               	.LBE25:
+ 166               	.LBE22:
+ 167               	.LSM23:
+ 168 006c 0895      		ret
+ 169               	.LFE13:
+ 171               		.section	.text.Buffer_GetElement,"ax",@progbits
+ 172               	.global	Buffer_GetElement
+ 174               	Buffer_GetElement:
+ 175               	.LFB14:
+ 176               	.LSM24:
+ 177               	.LVL5:
+ 178               	/* prologue: function */
+ 179               	/* frame size = 0 */
+ 180 0000 AC01      		movw r20,r24
+ 181               	.LBB27:
+ 182               	.LSM25:
+ 183 0002 7FB7      		in r23,__SREG__
+ 184               	.LVL6:
+ 185               	.LBB28:
+ 186               	.LBB29:
+ 187               	.LSM26:
+ 188               	/* #APP */
+ 189               	 ;  50 "c:/winavr-20100110/lib/gcc/../../avr/include/util/atomic.h" 1
+ 190 0004 F894      		cli
+ 191               	 ;  0 "" 2
+ 192               	/* #NOAPP */
+ 193               	.LBE29:
+ 194               	.LBE28:
+ 195               	.LSM27:
+ 196 0006 DC01      		movw r26,r24
+ 197 0008 AE57      		subi r26,lo8(-(130))
+ 198 000a BF4F      		sbci r27,hi8(-(130))
+ 199 000c ED91      		ld r30,X+
+ 200 000e FC91      		ld r31,X
+ 201 0010 1197      		sbiw r26,1
+ 202 0012 6081      		ld r22,Z
+ 203               	.LVL7:
+ 204               	.LSM28:
+ 205 0014 8D91      		ld r24,X+
+ 206 0016 9C91      		ld r25,X
+ 207 0018 1197      		sbiw r26,1
+ 208               	.LVL8:
+ 209 001a 0196      		adiw r24,1
+ 210 001c 1196      		adiw r26,1
+ 211 001e 9C93      		st X,r25
+ 212 0020 8E93      		st -X,r24
+ 213               	.LSM29:
+ 214 0022 FA01      		movw r30,r20
+ 215 0024 EC57      		subi r30,lo8(-(132))
+ 216 0026 FF4F      		sbci r31,hi8(-(132))
+ 217 0028 8081      		ld r24,Z
+ 218 002a 8150      		subi r24,lo8(-(-1))
+ 219 002c 8083      		st Z,r24
+ 220               	.LSM30:
+ 221 002e 2D91      		ld r18,X+
+ 222 0030 3C91      		ld r19,X
+ 223 0032 1197      		sbiw r26,1
+ 224 0034 CA01      		movw r24,r20
+ 225 0036 8058      		subi r24,lo8(-(128))
+ 226 0038 9F4F      		sbci r25,hi8(-(128))
+ 227 003a 2817      		cp r18,r24
+ 228 003c 3907      		cpc r19,r25
+ 229 003e 01F4      		brne .L9
+ 230               	.LSM31:
+ 231 0040 1196      		adiw r26,1
+ 232 0042 5C93      		st X,r21
+ 233 0044 4E93      		st -X,r20
+ 234               	.L9:
+ 235               	.LBB30:
+ 236               	.LBB31:
+ 237               	.LSM32:
+ 238 0046 7FBF      		out __SREG__,r23
+ 239               	.LSM33:
+ 240               	.LBE31:
+ 241               	.LBE30:
+ 242               	.LBE27:
+ 243               	.LSM34:
+ 244 0048 862F      		mov r24,r22
+ 245               	/* epilogue start */
+ 246 004a 0895      		ret
+ 247               	.LFE14:
+ 289               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 RingBuff.c
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:19     .text.Buffer_Initialize:00000000 Buffer_Initialize
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:74     .text.Buffer_StoreElement:00000000 Buffer_StoreElement
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cchOASq5.s:174    .text.Buffer_GetElement:00000000 Buffer_GetElement
+
+NO UNDEFINED SYMBOLS

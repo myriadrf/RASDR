@@ -1,0 +1,598 @@
+   1               		.file	"mipi_rffe.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               		.section	.text.MIPI_RFFE_Init,"ax",@progbits
+  17               	.global	MIPI_RFFE_Init
+  19               	MIPI_RFFE_Init:
+  20               	.LFB2:
+  21               	.LSM0:
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	.LSM1:
+  25 0000 4298      		cbi 40-32,2
+  26               	.LSM2:
+  27 0002 4598      		cbi 40-32,5
+  28               	.LSM3:
+  29 0004 3D9A      		sbi 39-32,5
+  30               	.LSM4:
+  31 0006 3A9A      		sbi 39-32,2
+  32               	/* epilogue start */
+  33               	.LSM5:
+  34 0008 0895      		ret
+  35               	.LFE2:
+  37               		.section	.text.MIPI_RFFE_Write,"ax",@progbits
+  38               	.global	MIPI_RFFE_Write
+  40               	MIPI_RFFE_Write:
+  41               	.LFB3:
+  42               	.LSM6:
+  43               	.LVL0:
+  44 0000 DF93      		push r29
+  45 0002 CF93      		push r28
+  46 0004 00D0      		rcall .
+  47 0006 00D0      		rcall .
+  48 0008 CDB7      		in r28,__SP_L__
+  49 000a DEB7      		in r29,__SP_H__
+  50               	/* prologue: function */
+  51               	/* frame size = 4 */
+  52 000c 8A83      		std Y+2,r24
+  53 000e 6B83      		std Y+3,r22
+  54 0010 4C83      		std Y+4,r20
+  55               	.LSM7:
+  56 0012 82E0      		ldi r24,lo8(2)
+  57               	.LVL1:
+  58 0014 8983      		std Y+1,r24
+  59               	.LVL2:
+  60               	.LSM8:
+  61 0016 4298      		cbi 40-32,2
+  62               	.LSM9:
+  63 0018 4598      		cbi 40-32,5
+  64               	.LSM10:
+  65 001a 3D9A      		sbi 39-32,5
+  66               	.LSM11:
+  67 001c 459A      		sbi 40-32,5
+  68               	.LSM12:
+  69               	/* #APP */
+  70               	 ;  46 "libs/mipi_rffe/mipi_rffe.c" 1
+  71 001e 0000      		nop
+  72               	 ;  0 "" 2
+  73               	 ;  46 "libs/mipi_rffe/mipi_rffe.c" 1
+  74 0020 0000      		nop
+  75               	 ;  0 "" 2
+  76               	 ;  46 "libs/mipi_rffe/mipi_rffe.c" 1
+  77 0022 0000      		nop
+  78               	 ;  0 "" 2
+  79               	 ;  46 "libs/mipi_rffe/mipi_rffe.c" 1
+  80 0024 0000      		nop
+  81               	 ;  0 "" 2
+  82               	 ;  46 "libs/mipi_rffe/mipi_rffe.c" 1
+  83 0026 0000      		nop
+  84               	 ;  0 "" 2
+  85               	.LSM13:
+  86               	/* #NOAPP */
+  87 0028 4598      		cbi 40-32,5
+  88 002a 51E0      		ldi r21,lo8(1)
+  89               	.LVL3:
+  90 002c 23E0      		ldi r18,lo8(3)
+  91 002e 30E0      		ldi r19,hi8(3)
+  92               	.LSM14:
+  93 0030 FE01      		movw r30,r28
+  94 0032 3296      		adiw r30,2
+  95               	.LSM15:
+  96 0034 41E0      		ldi r20,lo8(1)
+  97               	.LVL4:
+  98               	.L6:
+  99               	.LSM16:
+ 100 0036 429A      		sbi 40-32,2
+ 101               	.LSM17:
+ 102 0038 8081      		ld r24,Z
+ 103 003a 90E0      		ldi r25,lo8(0)
+ 104 003c 022E      		mov r0,r18
+ 105 003e 00C0      		rjmp 2f
+ 106 0040 9595      	1:	asr r25
+ 107 0042 8795      		ror r24
+ 108 0044 0A94      	2:	dec r0
+ 109 0046 02F4      		brpl 1b
+ 110 0048 80FF      		sbrs r24,0
+ 111 004a 00C0      		rjmp .L4
+ 112               	.LSM18:
+ 113 004c 459A      		sbi 40-32,5
+ 114               	.LSM19:
+ 115 004e 5427      		eor r21,r20
+ 116 0050 00C0      		rjmp .L5
+ 117               	.L4:
+ 118               	.LSM20:
+ 119 0052 4598      		cbi 40-32,5
+ 120               	.L5:
+ 121               	.LSM21:
+ 122 0054 4298      		cbi 40-32,2
+ 123 0056 2150      		subi r18,lo8(-(-1))
+ 124 0058 3040      		sbci r19,hi8(-(-1))
+ 125               	.LSM22:
+ 126 005a 8FEF      		ldi r24,hi8(-1)
+ 127 005c 2F3F      		cpi r18,lo8(-1)
+ 128 005e 3807      		cpc r19,r24
+ 129 0060 01F4      		brne .L6
+ 130               	.LSM23:
+ 131 0062 8B81      		ldd r24,Y+3
+ 132 0064 8823      		tst r24
+ 133 0066 01F4      		brne .L7
+ 134               	.LVL5:
+ 135               	.LSM24:
+ 136 0068 429A      		sbi 40-32,2
+ 137               	.LSM25:
+ 138 006a 459A      		sbi 40-32,5
+ 139               	.LSM26:
+ 140 006c 4298      		cbi 40-32,2
+ 141 006e 26E0      		ldi r18,lo8(6)
+ 142 0070 30E0      		ldi r19,hi8(6)
+ 143               	.LSM27:
+ 144 0072 FE01      		movw r30,r28
+ 145 0074 3496      		adiw r30,4
+ 146               	.LVL6:
+ 147               	.L10:
+ 148               	.LSM28:
+ 149 0076 429A      		sbi 40-32,2
+ 150               	.LSM29:
+ 151 0078 8081      		ld r24,Z
+ 152 007a 90E0      		ldi r25,lo8(0)
+ 153 007c 022E      		mov r0,r18
+ 154 007e 00C0      		rjmp 2f
+ 155 0080 9595      	1:	asr r25
+ 156 0082 8795      		ror r24
+ 157 0084 0A94      	2:	dec r0
+ 158 0086 02F4      		brpl 1b
+ 159 0088 80FF      		sbrs r24,0
+ 160 008a 00C0      		rjmp .L8
+ 161               	.LSM30:
+ 162 008c 459A      		sbi 40-32,5
+ 163 008e 00C0      		rjmp .L9
+ 164               	.L8:
+ 165               	.LSM31:
+ 166 0090 4598      		cbi 40-32,5
+ 167               	.L9:
+ 168               	.LSM32:
+ 169 0092 4298      		cbi 40-32,2
+ 170 0094 2150      		subi r18,lo8(-(-1))
+ 171 0096 3040      		sbci r19,hi8(-(-1))
+ 172               	.LSM33:
+ 173 0098 8FEF      		ldi r24,hi8(-1)
+ 174 009a 2F3F      		cpi r18,lo8(-1)
+ 175 009c 3807      		cpc r19,r24
+ 176 009e 01F4      		brne .L10
+ 177               	.LSM34:
+ 178 00a0 41E0      		ldi r20,lo8(1)
+ 179               	.LVL7:
+ 180 00a2 4527      		eor r20,r21
+ 181 00a4 00C0      		rjmp .L11
+ 182               	.LVL8:
+ 183               	.L7:
+ 184 00a6 22E0      		ldi r18,lo8(2)
+ 185 00a8 30E0      		ldi r19,hi8(2)
+ 186               	.LSM35:
+ 187 00aa FE01      		movw r30,r28
+ 188 00ac 3196      		adiw r30,1
+ 189               	.LSM36:
+ 190 00ae 41E0      		ldi r20,lo8(1)
+ 191               	.LVL9:
+ 192               	.L14:
+ 193               	.LSM37:
+ 194 00b0 429A      		sbi 40-32,2
+ 195               	.LSM38:
+ 196 00b2 8081      		ld r24,Z
+ 197 00b4 90E0      		ldi r25,lo8(0)
+ 198 00b6 022E      		mov r0,r18
+ 199 00b8 00C0      		rjmp 2f
+ 200 00ba 9595      	1:	asr r25
+ 201 00bc 8795      		ror r24
+ 202 00be 0A94      	2:	dec r0
+ 203 00c0 02F4      		brpl 1b
+ 204 00c2 80FF      		sbrs r24,0
+ 205 00c4 00C0      		rjmp .L12
+ 206               	.LSM39:
+ 207 00c6 459A      		sbi 40-32,5
+ 208               	.LSM40:
+ 209 00c8 5427      		eor r21,r20
+ 210 00ca 00C0      		rjmp .L13
+ 211               	.L12:
+ 212               	.LSM41:
+ 213 00cc 4598      		cbi 40-32,5
+ 214               	.L13:
+ 215               	.LSM42:
+ 216 00ce 4298      		cbi 40-32,2
+ 217 00d0 2150      		subi r18,lo8(-(-1))
+ 218 00d2 3040      		sbci r19,hi8(-(-1))
+ 219               	.LSM43:
+ 220 00d4 8FEF      		ldi r24,hi8(-1)
+ 221 00d6 2F3F      		cpi r18,lo8(-1)
+ 222 00d8 3807      		cpc r19,r24
+ 223 00da 01F4      		brne .L14
+ 224 00dc 24E0      		ldi r18,lo8(4)
+ 225 00de 30E0      		ldi r19,hi8(4)
+ 226               	.LSM44:
+ 227 00e0 FE01      		movw r30,r28
+ 228 00e2 3396      		adiw r30,3
+ 229               	.LSM45:
+ 230 00e4 41E0      		ldi r20,lo8(1)
+ 231               	.L17:
+ 232               	.LSM46:
+ 233 00e6 429A      		sbi 40-32,2
+ 234               	.LSM47:
+ 235 00e8 8081      		ld r24,Z
+ 236 00ea 90E0      		ldi r25,lo8(0)
+ 237 00ec 022E      		mov r0,r18
+ 238 00ee 00C0      		rjmp 2f
+ 239 00f0 9595      	1:	asr r25
+ 240 00f2 8795      		ror r24
+ 241 00f4 0A94      	2:	dec r0
+ 242 00f6 02F4      		brpl 1b
+ 243 00f8 80FF      		sbrs r24,0
+ 244 00fa 00C0      		rjmp .L15
+ 245               	.LSM48:
+ 246 00fc 459A      		sbi 40-32,5
+ 247               	.LSM49:
+ 248 00fe 5427      		eor r21,r20
+ 249 0100 00C0      		rjmp .L16
+ 250               	.L15:
+ 251               	.LSM50:
+ 252 0102 4598      		cbi 40-32,5
+ 253               	.L16:
+ 254               	.LSM51:
+ 255 0104 4298      		cbi 40-32,2
+ 256 0106 2150      		subi r18,lo8(-(-1))
+ 257 0108 3040      		sbci r19,hi8(-(-1))
+ 258               	.LSM52:
+ 259 010a 8FEF      		ldi r24,hi8(-1)
+ 260 010c 2F3F      		cpi r18,lo8(-1)
+ 261 010e 3807      		cpc r19,r24
+ 262 0110 01F4      		brne .L17
+ 263               	.LSM53:
+ 264 0112 429A      		sbi 40-32,2
+ 265               	.LSM54:
+ 266 0114 5523      		tst r21
+ 267 0116 01F0      		breq .L18
+ 268 0118 459A      		sbi 40-32,5
+ 269 011a 00C0      		rjmp .L19
+ 270               	.L18:
+ 271               	.LSM55:
+ 272 011c 4598      		cbi 40-32,5
+ 273               	.L19:
+ 274               	.LSM56:
+ 275 011e 4298      		cbi 40-32,2
+ 276 0120 41E0      		ldi r20,lo8(1)
+ 277               	.LVL10:
+ 278 0122 27E0      		ldi r18,lo8(7)
+ 279 0124 30E0      		ldi r19,hi8(7)
+ 280               	.LSM57:
+ 281 0126 FE01      		movw r30,r28
+ 282 0128 3496      		adiw r30,4
+ 283               	.LSM58:
+ 284 012a 51E0      		ldi r21,lo8(1)
+ 285               	.L22:
+ 286               	.LSM59:
+ 287 012c 429A      		sbi 40-32,2
+ 288               	.LSM60:
+ 289 012e 8081      		ld r24,Z
+ 290 0130 90E0      		ldi r25,lo8(0)
+ 291 0132 022E      		mov r0,r18
+ 292 0134 00C0      		rjmp 2f
+ 293 0136 9595      	1:	asr r25
+ 294 0138 8795      		ror r24
+ 295 013a 0A94      	2:	dec r0
+ 296 013c 02F4      		brpl 1b
+ 297 013e 80FF      		sbrs r24,0
+ 298 0140 00C0      		rjmp .L20
+ 299               	.LSM61:
+ 300 0142 459A      		sbi 40-32,5
+ 301               	.LSM62:
+ 302 0144 4527      		eor r20,r21
+ 303 0146 00C0      		rjmp .L21
+ 304               	.L20:
+ 305               	.LSM63:
+ 306 0148 4598      		cbi 40-32,5
+ 307               	.L21:
+ 308               	.LSM64:
+ 309 014a 4298      		cbi 40-32,2
+ 310 014c 2150      		subi r18,lo8(-(-1))
+ 311 014e 3040      		sbci r19,hi8(-(-1))
+ 312               	.LSM65:
+ 313 0150 8FEF      		ldi r24,hi8(-1)
+ 314 0152 2F3F      		cpi r18,lo8(-1)
+ 315 0154 3807      		cpc r19,r24
+ 316 0156 01F4      		brne .L22
+ 317               	.L11:
+ 318               	.LSM66:
+ 319 0158 429A      		sbi 40-32,2
+ 320               	.LSM67:
+ 321 015a 4423      		tst r20
+ 322 015c 01F0      		breq .L23
+ 323 015e 459A      		sbi 40-32,5
+ 324 0160 00C0      		rjmp .L24
+ 325               	.L23:
+ 326               	.LSM68:
+ 327 0162 4598      		cbi 40-32,5
+ 328               	.L24:
+ 329               	.LSM69:
+ 330 0164 4298      		cbi 40-32,2
+ 331               	.LSM70:
+ 332 0166 429A      		sbi 40-32,2
+ 333               	.LSM71:
+ 334 0168 4598      		cbi 40-32,5
+ 335               	.LSM72:
+ 336 016a 3D98      		cbi 39-32,5
+ 337               	.LSM73:
+ 338 016c 4298      		cbi 40-32,2
+ 339               	/* epilogue start */
+ 340               	.LSM74:
+ 341 016e 0F90      		pop __tmp_reg__
+ 342 0170 0F90      		pop __tmp_reg__
+ 343 0172 0F90      		pop __tmp_reg__
+ 344 0174 0F90      		pop __tmp_reg__
+ 345 0176 CF91      		pop r28
+ 346 0178 DF91      		pop r29
+ 347 017a 0895      		ret
+ 348               	.LFE3:
+ 350               		.section	.text.MIPI_RFFE_Read,"ax",@progbits
+ 351               	.global	MIPI_RFFE_Read
+ 353               	MIPI_RFFE_Read:
+ 354               	.LFB4:
+ 355               	.LSM75:
+ 356               	.LVL11:
+ 357 0000 DF93      		push r29
+ 358 0002 CF93      		push r28
+ 359 0004 00D0      		rcall .
+ 360 0006 0F92      		push __tmp_reg__
+ 361 0008 CDB7      		in r28,__SP_L__
+ 362 000a DEB7      		in r29,__SP_H__
+ 363               	/* prologue: function */
+ 364               	/* frame size = 3 */
+ 365 000c 8A83      		std Y+2,r24
+ 366 000e 6B83      		std Y+3,r22
+ 367               	.LSM76:
+ 368 0010 83E0      		ldi r24,lo8(3)
+ 369               	.LVL12:
+ 370 0012 8983      		std Y+1,r24
+ 371               	.LVL13:
+ 372               	.LSM77:
+ 373 0014 4298      		cbi 40-32,2
+ 374               	.LSM78:
+ 375 0016 4598      		cbi 40-32,5
+ 376               	.LSM79:
+ 377 0018 3D9A      		sbi 39-32,5
+ 378               	.LSM80:
+ 379 001a 459A      		sbi 40-32,5
+ 380               	.LSM81:
+ 381               	/* #APP */
+ 382               	 ;  203 "libs/mipi_rffe/mipi_rffe.c" 1
+ 383 001c 0000      		nop
+ 384               	 ;  0 "" 2
+ 385               	 ;  203 "libs/mipi_rffe/mipi_rffe.c" 1
+ 386 001e 0000      		nop
+ 387               	 ;  0 "" 2
+ 388               	 ;  203 "libs/mipi_rffe/mipi_rffe.c" 1
+ 389 0020 0000      		nop
+ 390               	 ;  0 "" 2
+ 391               	 ;  203 "libs/mipi_rffe/mipi_rffe.c" 1
+ 392 0022 0000      		nop
+ 393               	 ;  0 "" 2
+ 394               	 ;  203 "libs/mipi_rffe/mipi_rffe.c" 1
+ 395 0024 0000      		nop
+ 396               	 ;  0 "" 2
+ 397               	.LSM82:
+ 398               	/* #NOAPP */
+ 399 0026 4598      		cbi 40-32,5
+ 400 0028 41E0      		ldi r20,lo8(1)
+ 401               	.LVL14:
+ 402 002a 23E0      		ldi r18,lo8(3)
+ 403 002c 30E0      		ldi r19,hi8(3)
+ 404               	.LSM83:
+ 405 002e FE01      		movw r30,r28
+ 406 0030 3296      		adiw r30,2
+ 407               	.LSM84:
+ 408 0032 51E0      		ldi r21,lo8(1)
+ 409               	.LVL15:
+ 410               	.L34:
+ 411               	.LSM85:
+ 412 0034 429A      		sbi 40-32,2
+ 413               	.LSM86:
+ 414 0036 8081      		ld r24,Z
+ 415 0038 90E0      		ldi r25,lo8(0)
+ 416 003a 022E      		mov r0,r18
+ 417 003c 00C0      		rjmp 2f
+ 418 003e 9595      	1:	asr r25
+ 419 0040 8795      		ror r24
+ 420 0042 0A94      	2:	dec r0
+ 421 0044 02F4      		brpl 1b
+ 422 0046 80FF      		sbrs r24,0
+ 423 0048 00C0      		rjmp .L32
+ 424               	.LSM87:
+ 425 004a 459A      		sbi 40-32,5
+ 426               	.LSM88:
+ 427 004c 4527      		eor r20,r21
+ 428 004e 00C0      		rjmp .L33
+ 429               	.L32:
+ 430               	.LSM89:
+ 431 0050 4598      		cbi 40-32,5
+ 432               	.L33:
+ 433               	.LSM90:
+ 434 0052 4298      		cbi 40-32,2
+ 435 0054 2150      		subi r18,lo8(-(-1))
+ 436 0056 3040      		sbci r19,hi8(-(-1))
+ 437               	.LSM91:
+ 438 0058 8FEF      		ldi r24,hi8(-1)
+ 439 005a 2F3F      		cpi r18,lo8(-1)
+ 440 005c 3807      		cpc r19,r24
+ 441 005e 01F4      		brne .L34
+ 442 0060 22E0      		ldi r18,lo8(2)
+ 443 0062 30E0      		ldi r19,hi8(2)
+ 444               	.LSM92:
+ 445 0064 FE01      		movw r30,r28
+ 446 0066 3196      		adiw r30,1
+ 447               	.LSM93:
+ 448 0068 51E0      		ldi r21,lo8(1)
+ 449               	.L37:
+ 450               	.LSM94:
+ 451 006a 429A      		sbi 40-32,2
+ 452               	.LSM95:
+ 453 006c 8081      		ld r24,Z
+ 454 006e 90E0      		ldi r25,lo8(0)
+ 455 0070 022E      		mov r0,r18
+ 456 0072 00C0      		rjmp 2f
+ 457 0074 9595      	1:	asr r25
+ 458 0076 8795      		ror r24
+ 459 0078 0A94      	2:	dec r0
+ 460 007a 02F4      		brpl 1b
+ 461 007c 80FF      		sbrs r24,0
+ 462 007e 00C0      		rjmp .L35
+ 463               	.LSM96:
+ 464 0080 459A      		sbi 40-32,5
+ 465               	.LSM97:
+ 466 0082 4527      		eor r20,r21
+ 467 0084 00C0      		rjmp .L36
+ 468               	.L35:
+ 469               	.LSM98:
+ 470 0086 4598      		cbi 40-32,5
+ 471               	.L36:
+ 472               	.LSM99:
+ 473 0088 4298      		cbi 40-32,2
+ 474 008a 2150      		subi r18,lo8(-(-1))
+ 475 008c 3040      		sbci r19,hi8(-(-1))
+ 476               	.LSM100:
+ 477 008e 8FEF      		ldi r24,hi8(-1)
+ 478 0090 2F3F      		cpi r18,lo8(-1)
+ 479 0092 3807      		cpc r19,r24
+ 480 0094 01F4      		brne .L37
+ 481 0096 24E0      		ldi r18,lo8(4)
+ 482 0098 30E0      		ldi r19,hi8(4)
+ 483               	.LSM101:
+ 484 009a FE01      		movw r30,r28
+ 485 009c 3396      		adiw r30,3
+ 486               	.LSM102:
+ 487 009e 51E0      		ldi r21,lo8(1)
+ 488               	.L40:
+ 489               	.LSM103:
+ 490 00a0 429A      		sbi 40-32,2
+ 491               	.LSM104:
+ 492 00a2 8081      		ld r24,Z
+ 493 00a4 90E0      		ldi r25,lo8(0)
+ 494 00a6 022E      		mov r0,r18
+ 495 00a8 00C0      		rjmp 2f
+ 496 00aa 9595      	1:	asr r25
+ 497 00ac 8795      		ror r24
+ 498 00ae 0A94      	2:	dec r0
+ 499 00b0 02F4      		brpl 1b
+ 500 00b2 80FF      		sbrs r24,0
+ 501 00b4 00C0      		rjmp .L38
+ 502               	.LSM105:
+ 503 00b6 459A      		sbi 40-32,5
+ 504               	.LSM106:
+ 505 00b8 4527      		eor r20,r21
+ 506 00ba 00C0      		rjmp .L39
+ 507               	.L38:
+ 508               	.LSM107:
+ 509 00bc 4598      		cbi 40-32,5
+ 510               	.L39:
+ 511               	.LSM108:
+ 512 00be 4298      		cbi 40-32,2
+ 513 00c0 2150      		subi r18,lo8(-(-1))
+ 514 00c2 3040      		sbci r19,hi8(-(-1))
+ 515               	.LSM109:
+ 516 00c4 8FEF      		ldi r24,hi8(-1)
+ 517 00c6 2F3F      		cpi r18,lo8(-1)
+ 518 00c8 3807      		cpc r19,r24
+ 519 00ca 01F4      		brne .L40
+ 520               	.LSM110:
+ 521 00cc 429A      		sbi 40-32,2
+ 522               	.LSM111:
+ 523 00ce 4423      		tst r20
+ 524 00d0 01F0      		breq .L41
+ 525 00d2 459A      		sbi 40-32,5
+ 526 00d4 00C0      		rjmp .L42
+ 527               	.L41:
+ 528               	.LSM112:
+ 529 00d6 4598      		cbi 40-32,5
+ 530               	.L42:
+ 531               	.LSM113:
+ 532 00d8 4298      		cbi 40-32,2
+ 533               	.LSM114:
+ 534 00da 429A      		sbi 40-32,2
+ 535               	.LSM115:
+ 536 00dc 4598      		cbi 40-32,5
+ 537               	.LSM116:
+ 538 00de 3D98      		cbi 39-32,5
+ 539               	.LSM117:
+ 540 00e0 4298      		cbi 40-32,2
+ 541 00e2 40E0      		ldi r20,lo8(0)
+ 542               	.LVL16:
+ 543 00e4 27E0      		ldi r18,lo8(7)
+ 544 00e6 30E0      		ldi r19,hi8(7)
+ 545               	.LSM118:
+ 546 00e8 61E0      		ldi r22,lo8(1)
+ 547 00ea 70E0      		ldi r23,hi8(1)
+ 548               	.L44:
+ 549               	.LSM119:
+ 550 00ec 429A      		sbi 40-32,2
+ 551               	.LSM120:
+ 552 00ee 4298      		cbi 40-32,2
+ 553               	.LSM121:
+ 554 00f0 359B      		sbis 38-32,5
+ 555 00f2 00C0      		rjmp .L43
+ 556               	.LSM122:
+ 557 00f4 CB01      		movw r24,r22
+ 558 00f6 022E      		mov r0,r18
+ 559 00f8 00C0      		rjmp 2f
+ 560 00fa 880F      	1:	lsl r24
+ 561 00fc 991F      		rol r25
+ 562 00fe 0A94      	2:	dec r0
+ 563 0100 02F4      		brpl 1b
+ 564 0102 482B      		or r20,r24
+ 565               	.L43:
+ 566 0104 2150      		subi r18,lo8(-(-1))
+ 567 0106 3040      		sbci r19,hi8(-(-1))
+ 568               	.LSM123:
+ 569 0108 8FEF      		ldi r24,hi8(-1)
+ 570 010a 2F3F      		cpi r18,lo8(-1)
+ 571 010c 3807      		cpc r19,r24
+ 572 010e 01F4      		brne .L44
+ 573               	.LSM124:
+ 574 0110 429A      		sbi 40-32,2
+ 575               	.LSM125:
+ 576 0112 4298      		cbi 40-32,2
+ 577               	.LSM126:
+ 578 0114 86B1      		in r24,38-32
+ 579               	.LSM127:
+ 580 0116 429A      		sbi 40-32,2
+ 581               	.LSM128:
+ 582 0118 4598      		cbi 40-32,5
+ 583               	.LSM129:
+ 584 011a 3D98      		cbi 39-32,5
+ 585               	.LSM130:
+ 586 011c 4298      		cbi 40-32,2
+ 587               	.LSM131:
+ 588 011e 842F      		mov r24,r20
+ 589               	/* epilogue start */
+ 590 0120 0F90      		pop __tmp_reg__
+ 591 0122 0F90      		pop __tmp_reg__
+ 592 0124 0F90      		pop __tmp_reg__
+ 593 0126 CF91      		pop r28
+ 594 0128 DF91      		pop r29
+ 595 012a 0895      		ret
+ 596               	.LFE4:
+ 638               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 mipi_rffe.c
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:19     .text.MIPI_RFFE_Init:00000000 MIPI_RFFE_Init
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:40     .text.MIPI_RFFE_Write:00000000 MIPI_RFFE_Write
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cclgRzwe.s:353    .text.MIPI_RFFE_Read:00000000 MIPI_RFFE_Read
+
+NO UNDEFINED SYMBOLS

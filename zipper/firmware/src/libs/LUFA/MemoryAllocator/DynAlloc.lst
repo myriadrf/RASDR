@@ -1,0 +1,798 @@
+   1               		.file	"DynAlloc.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               		.section	.text.Mem_SetBlockFlags,"ax",@progbits
+  18               	Mem_SetBlockFlags:
+  19               	.LFB3:
+  20               	.LSM0:
+  21               	.LVL0:
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	.LSM1:
+  25 0000 982F      		mov r25,r24
+  26 0002 9695      		lsr r25
+  27 0004 9695      		lsr r25
+  28               	.LSM2:
+  29 0006 E0E0      		ldi r30,lo8(Mem_MemData)
+  30 0008 F0E0      		ldi r31,hi8(Mem_MemData)
+  31 000a DF01      		movw r26,r30
+  32 000c A90F      		add r26,r25
+  33 000e B11D      		adc r27,__zero_reg__
+  34 0010 A85B      		subi r26,lo8(-(840))
+  35 0012 BC4F      		sbci r27,hi8(-(840))
+  36 0014 70E0      		ldi r23,lo8(0)
+  37               	.LVL1:
+  38               	.LSM3:
+  39 0016 8370      		andi r24,lo8(3)
+  40               	.LVL2:
+  41               	.LSM4:
+  42 0018 E80F      		add r30,r24
+  43 001a F11D      		adc r31,__zero_reg__
+  44 001c EB59      		subi r30,lo8(-(869))
+  45 001e FC4F      		sbci r31,hi8(-(869))
+  46 0020 0080      		ld r0,Z
+  47 0022 00C0      		rjmp 2f
+  48 0024 660F      	1:	lsl r22
+  49 0026 771F      		rol r23
+  50 0028 0A94      	2:	dec r0
+  51 002a 02F4      		brpl 1b
+  52               	.LVL3:
+  53 002c 3497      		sbiw r30,4
+  54 002e 8081      		ld r24,Z
+  55               	.LVL4:
+  56 0030 8095      		com r24
+  57 0032 9C91      		ld r25,X
+  58 0034 8923      		and r24,r25
+  59 0036 862B      		or r24,r22
+  60 0038 8C93      		st X,r24
+  61               	/* epilogue start */
+  62               	.LSM5:
+  63 003a 0895      		ret
+  64               	.LFE3:
+  66               		.section	.text.Mem_FindFreeBlocks,"ax",@progbits
+  68               	Mem_FindFreeBlocks:
+  69               	.LFB5:
+  70               	.LSM6:
+  71               	.LVL5:
+  72 0000 CF93      		push r28
+  73 0002 DF93      		push r29
+  74               	/* prologue: function */
+  75               	/* frame size = 0 */
+  76 0004 EC01      		movw r28,r24
+  77               	.LSM7:
+  78 0006 30E0      		ldi r19,lo8(0)
+  79               	.LVL6:
+  80 0008 40E0      		ldi r20,lo8(0)
+  81 000a 50E0      		ldi r21,hi8(0)
+  82               	.LVL7:
+  83               	.L8:
+  84 000c 742F      		mov r23,r20
+  85               	.LBB27:
+  86               	.LBB28:
+  87               	.LBB29:
+  88               	.LSM8:
+  89 000e FA01      		movw r30,r20
+  90 0010 E370      		andi r30,lo8(3)
+  91 0012 F070      		andi r31,hi8(3)
+  92               	.LBE29:
+  93               	.LBE28:
+  94               	.LSM9:
+  95 0014 A42F      		mov r26,r20
+  96 0016 A695      		lsr r26
+  97 0018 A695      		lsr r26
+  98 001a B0E0      		ldi r27,lo8(0)
+  99 001c A050      		subi r26,lo8(-(Mem_MemData+840))
+ 100 001e B040      		sbci r27,hi8(-(Mem_MemData+840))
+ 101 0020 E050      		subi r30,lo8(-(Mem_MemData))
+ 102 0022 F040      		sbci r31,hi8(-(Mem_MemData))
+ 103 0024 EF59      		subi r30,lo8(-(865))
+ 104 0026 FC4F      		sbci r31,hi8(-(865))
+ 105 0028 8C91      		ld r24,X
+ 106 002a 2081      		ld r18,Z
+ 107 002c 8223      		and r24,r18
+ 108 002e 90E0      		ldi r25,lo8(0)
+ 109 0030 3496      		adiw r30,4
+ 110 0032 0080      		ld r0,Z
+ 111 0034 00C0      		rjmp 2f
+ 112 0036 9595      	1:	asr r25
+ 113 0038 8795      		ror r24
+ 114 003a 0A94      	2:	dec r0
+ 115 003c 02F4      		brpl 1b
+ 116 003e 80FF      		sbrs r24,0
+ 117 0040 00C0      		rjmp .L4
+ 118               	.LVL8:
+ 119 0042 30E0      		ldi r19,lo8(0)
+ 120 0044 00C0      		rjmp .L5
+ 121               	.L4:
+ 122               	.LSM10:
+ 123 0046 3F5F      		subi r19,lo8(-(1))
+ 124               	.L5:
+ 125               	.LSM11:
+ 126 0048 3617      		cp r19,r22
+ 127 004a 00F0      		brlo .L6
+ 128               	.LSM12:
+ 129 004c 7883      		st Y,r23
+ 130 004e 81E0      		ldi r24,lo8(1)
+ 131 0050 00C0      		rjmp .L7
+ 132               	.L6:
+ 133               	.LSM13:
+ 134 0052 4F5F      		subi r20,lo8(-(1))
+ 135 0054 5F4F      		sbci r21,hi8(-(1))
+ 136               	.LVL9:
+ 137               	.LSM14:
+ 138 0056 4436      		cpi r20,100
+ 139 0058 5105      		cpc r21,__zero_reg__
+ 140 005a 01F4      		brne .L8
+ 141 005c 80E0      		ldi r24,lo8(0)
+ 142               	.LVL10:
+ 143               	.L7:
+ 144               	/* epilogue start */
+ 145               	.LBE27:
+ 146               	.LSM15:
+ 147 005e DF91      		pop r29
+ 148 0060 CF91      		pop r28
+ 149               	.LVL11:
+ 150 0062 0895      		ret
+ 151               	.LFE5:
+ 153               		.section	.text.Mem_Free,"ax",@progbits
+ 154               	.global	Mem_Free
+ 156               	Mem_Free:
+ 157               	.LFB9:
+ 158               	.LSM16:
+ 159               	.LVL12:
+ 160 0000 FF92      		push r15
+ 161 0002 0F93      		push r16
+ 162 0004 1F93      		push r17
+ 163 0006 CF93      		push r28
+ 164 0008 DF93      		push r29
+ 165               	/* prologue: function */
+ 166               	/* frame size = 0 */
+ 167 000a EC01      		movw r28,r24
+ 168               	.LSM17:
+ 169 000c 8881      		ld r24,Y
+ 170 000e 9981      		ldd r25,Y+1
+ 171               	.LVL13:
+ 172               	.LSM18:
+ 173 0010 2097      		sbiw r28,0
+ 174 0012 01F0      		breq .L14
+ 175 0014 0097      		sbiw r24,0
+ 176 0016 01F0      		breq .L14
+ 177               	.LSM19:
+ 178 0018 8050      		subi r24,lo8(Mem_MemData)
+ 179 001a 9040      		sbci r25,hi8(Mem_MemData)
+ 180 001c 23E0      		ldi r18,3
+ 181 001e 9695      	1:	lsr r25
+ 182 0020 8795      		ror r24
+ 183 0022 2A95      		dec r18
+ 184 0024 01F4      		brne 1b
+ 185 0026 F82E      		mov r15,r24
+ 186               	.LVL14:
+ 187               	.L13:
+ 188               	.LBB30:
+ 189               	.LBB31:
+ 190               	.LSM20:
+ 191 0028 EF2D      		mov r30,r15
+ 192 002a F0E0      		ldi r31,lo8(0)
+ 193 002c E370      		andi r30,lo8(3)
+ 194 002e F070      		andi r31,hi8(3)
+ 195               	.LSM21:
+ 196 0030 AF2D      		mov r26,r15
+ 197 0032 A695      		lsr r26
+ 198 0034 A695      		lsr r26
+ 199 0036 B0E0      		ldi r27,lo8(0)
+ 200 0038 A050      		subi r26,lo8(-(Mem_MemData+840))
+ 201 003a B040      		sbci r27,hi8(-(Mem_MemData+840))
+ 202 003c E050      		subi r30,lo8(-(Mem_MemData))
+ 203 003e F040      		sbci r31,hi8(-(Mem_MemData))
+ 204 0040 EF59      		subi r30,lo8(-(865))
+ 205 0042 FC4F      		sbci r31,hi8(-(865))
+ 206 0044 0C91      		ld r16,X
+ 207 0046 8081      		ld r24,Z
+ 208               	.LVL15:
+ 209 0048 0823      		and r16,r24
+ 210 004a 10E0      		ldi r17,lo8(0)
+ 211 004c 3496      		adiw r30,4
+ 212 004e 0080      		ld r0,Z
+ 213 0050 00C0      		rjmp 2f
+ 214 0052 1595      	1:	asr r17
+ 215 0054 0795      		ror r16
+ 216 0056 0A94      	2:	dec r0
+ 217 0058 02F4      		brpl 1b
+ 218               	.LBE31:
+ 219               	.LBE30:
+ 220               	.LSM22:
+ 221 005a 8F2D      		mov r24,r15
+ 222 005c 60E0      		ldi r22,lo8(0)
+ 223 005e 0E94 0000 		call Mem_SetBlockFlags
+ 224               	.LSM23:
+ 225 0062 F394      		inc r15
+ 226               	.LSM24:
+ 227 0064 01FD      		sbrc r16,1
+ 228 0066 00C0      		rjmp .L13
+ 229               	.LVL16:
+ 230               	.LSM25:
+ 231 0068 1982      		std Y+1,__zero_reg__
+ 232 006a 1882      		st Y,__zero_reg__
+ 233               	.LVL17:
+ 234               	.L14:
+ 235               	/* epilogue start */
+ 236               	.LSM26:
+ 237 006c DF91      		pop r29
+ 238 006e CF91      		pop r28
+ 239               	.LVL18:
+ 240 0070 1F91      		pop r17
+ 241 0072 0F91      		pop r16
+ 242               	.LVL19:
+ 243 0074 FF90      		pop r15
+ 244               	.LVL20:
+ 245 0076 0895      		ret
+ 246               	.LFE9:
+ 248               		.section	.text.Mem_TotalFreeBlocks,"ax",@progbits
+ 249               	.global	Mem_TotalFreeBlocks
+ 251               	Mem_TotalFreeBlocks:
+ 252               	.LFB10:
+ 253               	.LSM27:
+ 254               	/* prologue: function */
+ 255               	/* frame size = 0 */
+ 256               	.LSM28:
+ 257 0000 30E0      		ldi r19,lo8(0)
+ 258               	.LVL21:
+ 259 0002 40E0      		ldi r20,lo8(0)
+ 260 0004 50E0      		ldi r21,hi8(0)
+ 261               	.L18:
+ 262               	.LBB32:
+ 263               	.LBB33:
+ 264               	.LBB34:
+ 265               	.LSM29:
+ 266 0006 FA01      		movw r30,r20
+ 267 0008 E370      		andi r30,lo8(3)
+ 268 000a F070      		andi r31,hi8(3)
+ 269               	.LBE34:
+ 270               	.LBE33:
+ 271               	.LSM30:
+ 272 000c A42F      		mov r26,r20
+ 273 000e A695      		lsr r26
+ 274 0010 A695      		lsr r26
+ 275 0012 B0E0      		ldi r27,lo8(0)
+ 276 0014 A050      		subi r26,lo8(-(Mem_MemData+840))
+ 277 0016 B040      		sbci r27,hi8(-(Mem_MemData+840))
+ 278 0018 E050      		subi r30,lo8(-(Mem_MemData))
+ 279 001a F040      		sbci r31,hi8(-(Mem_MemData))
+ 280 001c EF59      		subi r30,lo8(-(865))
+ 281 001e FC4F      		sbci r31,hi8(-(865))
+ 282 0020 8C91      		ld r24,X
+ 283 0022 2081      		ld r18,Z
+ 284 0024 8223      		and r24,r18
+ 285 0026 90E0      		ldi r25,lo8(0)
+ 286 0028 3496      		adiw r30,4
+ 287 002a 0080      		ld r0,Z
+ 288 002c 00C0      		rjmp 2f
+ 289 002e 9595      	1:	asr r25
+ 290 0030 8795      		ror r24
+ 291 0032 0A94      	2:	dec r0
+ 292 0034 02F4      		brpl 1b
+ 293 0036 80FF      		sbrs r24,0
+ 294               	.LSM31:
+ 295 0038 3F5F      		subi r19,lo8(-(1))
+ 296               	.L17:
+ 297 003a 4F5F      		subi r20,lo8(-(1))
+ 298 003c 5F4F      		sbci r21,hi8(-(1))
+ 299               	.LSM32:
+ 300 003e 4436      		cpi r20,100
+ 301 0040 5105      		cpc r21,__zero_reg__
+ 302 0042 01F4      		brne .L18
+ 303               	.LBE32:
+ 304               	.LSM33:
+ 305 0044 832F      		mov r24,r19
+ 306               	/* epilogue start */
+ 307 0046 0895      		ret
+ 308               	.LFE10:
+ 310               		.section	.text.Mem_TotalFreeHandles,"ax",@progbits
+ 311               	.global	Mem_TotalFreeHandles
+ 313               	Mem_TotalFreeHandles:
+ 314               	.LFB11:
+ 315               	.LSM34:
+ 316               	/* prologue: function */
+ 317               	/* frame size = 0 */
+ 318               	.LSM35:
+ 319 0000 E0E0      		ldi r30,lo8(Mem_MemData+800)
+ 320 0002 F0E0      		ldi r31,hi8(Mem_MemData+800)
+ 321 0004 20E0      		ldi r18,lo8(0)
+ 322               	.LVL22:
+ 323               	.L23:
+ 324               	.LBB35:
+ 325               	.LSM36:
+ 326 0006 8081      		ld r24,Z
+ 327 0008 9181      		ldd r25,Z+1
+ 328 000a 892B      		or r24,r25
+ 329 000c 01F4      		brne .L22
+ 330               	.LSM37:
+ 331 000e 2F5F      		subi r18,lo8(-(1))
+ 332               	.L22:
+ 333 0010 3296      		adiw r30,2
+ 334               	.LSM38:
+ 335 0012 80E0      		ldi r24,hi8(Mem_MemData+840)
+ 336 0014 E030      		cpi r30,lo8(Mem_MemData+840)
+ 337 0016 F807      		cpc r31,r24
+ 338 0018 01F4      		brne .L23
+ 339               	.LBE35:
+ 340               	.LSM39:
+ 341 001a 822F      		mov r24,r18
+ 342               	/* epilogue start */
+ 343 001c 0895      		ret
+ 344               	.LFE11:
+ 346               		.section	.text.Mem_Alloc,"ax",@progbits
+ 347               	.global	Mem_Alloc
+ 349               	Mem_Alloc:
+ 350               	.LFB6:
+ 351               	.LSM40:
+ 352               	.LVL23:
+ 353 0000 DF92      		push r13
+ 354 0002 EF92      		push r14
+ 355 0004 FF92      		push r15
+ 356 0006 0F93      		push r16
+ 357 0008 1F93      		push r17
+ 358 000a DF93      		push r29
+ 359 000c CF93      		push r28
+ 360 000e 0F92      		push __tmp_reg__
+ 361 0010 CDB7      		in r28,__SP_L__
+ 362 0012 DEB7      		in r29,__SP_H__
+ 363               	/* prologue: function */
+ 364               	/* frame size = 1 */
+ 365               	.LSM41:
+ 366 0014 9C01      		movw r18,r24
+ 367 0016 73E0      		ldi r23,3
+ 368 0018 3695      	1:	lsr r19
+ 369 001a 2795      		ror r18
+ 370 001c 7A95      		dec r23
+ 371 001e 01F4      		brne 1b
+ 372 0020 D22E      		mov r13,r18
+ 373               	.LVL24:
+ 374               	.LSM42:
+ 375 0022 8770      		andi r24,lo8(7)
+ 376 0024 9070      		andi r25,hi8(7)
+ 377               	.LVL25:
+ 378 0026 892B      		or r24,r25
+ 379 0028 01F0      		breq .L27
+ 380               	.LSM43:
+ 381 002a D394      		inc r13
+ 382               	.L27:
+ 383               	.LSM44:
+ 384 002c CE01      		movw r24,r28
+ 385               	.LVL26:
+ 386 002e 0196      		adiw r24,1
+ 387 0030 6D2D      		mov r22,r13
+ 388 0032 0E94 0000 		call Mem_FindFreeBlocks
+ 389 0036 8823      		tst r24
+ 390 0038 01F0      		breq .L28
+ 391               	.LVL27:
+ 392               	.L40:
+ 393 003a FF24      		clr r15
+ 394               	.LVL28:
+ 395               	.LBB36:
+ 396               	.LSM45:
+ 397 003c 0D2D      		mov r16,r13
+ 398               	.LVL29:
+ 399 003e 10E0      		ldi r17,lo8(0)
+ 400 0040 0150      		subi r16,lo8(-(-1))
+ 401 0042 1040      		sbci r17,hi8(-(-1))
+ 402 0044 00C0      		rjmp .L29
+ 403               	.LVL30:
+ 404               	.L28:
+ 405               	.LBE36:
+ 406               	.LSM46:
+ 407 0046 40E0      		ldi r20,lo8(0)
+ 408 0048 50E0      		ldi r21,hi8(0)
+ 409               	.LVL31:
+ 410               	.L33:
+ 411 004a 742F      		mov r23,r20
+ 412               	.LBB37:
+ 413               	.LBB38:
+ 414               	.LBB43:
+ 415               	.LBB44:
+ 416               	.LSM47:
+ 417 004c FA01      		movw r30,r20
+ 418 004e E370      		andi r30,lo8(3)
+ 419 0050 F070      		andi r31,hi8(3)
+ 420               	.LBE44:
+ 421               	.LBE43:
+ 422               	.LSM48:
+ 423 0052 A42F      		mov r26,r20
+ 424 0054 A695      		lsr r26
+ 425 0056 A695      		lsr r26
+ 426 0058 B0E0      		ldi r27,lo8(0)
+ 427 005a A050      		subi r26,lo8(-(Mem_MemData+840))
+ 428 005c B040      		sbci r27,hi8(-(Mem_MemData+840))
+ 429 005e E050      		subi r30,lo8(-(Mem_MemData))
+ 430 0060 F040      		sbci r31,hi8(-(Mem_MemData))
+ 431 0062 EF59      		subi r30,lo8(-(865))
+ 432 0064 FC4F      		sbci r31,hi8(-(865))
+ 433 0066 8C91      		ld r24,X
+ 434 0068 2081      		ld r18,Z
+ 435 006a 8223      		and r24,r18
+ 436 006c 90E0      		ldi r25,lo8(0)
+ 437 006e 3496      		adiw r30,4
+ 438 0070 0080      		ld r0,Z
+ 439 0072 00C0      		rjmp 2f
+ 440 0074 9595      	1:	asr r25
+ 441 0076 8795      		ror r24
+ 442 0078 0A94      	2:	dec r0
+ 443 007a 02F4      		brpl 1b
+ 444 007c 80FD      		sbrc r24,0
+ 445 007e 00C0      		rjmp .L30
+ 446               	.LVL32:
+ 447               	.LSM49:
+ 448 0080 7A01      		movw r14,r20
+ 449               	.LVL33:
+ 450 0082 63E0      		ldi r22,3
+ 451 0084 EE0C      	1:	lsl r14
+ 452 0086 FF1C      		rol r15
+ 453 0088 6A95      		dec r22
+ 454 008a 01F4      		brne 1b
+ 455 008c 80E0      		ldi r24,lo8(Mem_MemData)
+ 456 008e 90E0      		ldi r25,hi8(Mem_MemData)
+ 457 0090 E80E      		add r14,r24
+ 458 0092 F91E      		adc r15,r25
+ 459               	.LSM50:
+ 460 0094 E114      		cp r14,__zero_reg__
+ 461 0096 F104      		cpc r15,__zero_reg__
+ 462 0098 01F4      		brne .+2
+ 463 009a 00C0      		rjmp .L31
+ 464 009c 042F      		mov r16,r20
+ 465               	.LVL34:
+ 466 009e 00C0      		rjmp .L52
+ 467               	.LVL35:
+ 468               	.L30:
+ 469 00a0 4F5F      		subi r20,lo8(-(1))
+ 470 00a2 5F4F      		sbci r21,hi8(-(1))
+ 471               	.LVL36:
+ 472               	.LSM51:
+ 473 00a4 4436      		cpi r20,100
+ 474 00a6 5105      		cpc r21,__zero_reg__
+ 475 00a8 01F4      		brne .L33
+ 476 00aa 00C0      		rjmp .L31
+ 477               	.LVL37:
+ 478               	.L38:
+ 479               	.LBB39:
+ 480               	.LBB40:
+ 481               	.LBB41:
+ 482               	.LSM52:
+ 483 00ac 402F      		mov r20,r16
+ 484 00ae 50E0      		ldi r21,lo8(0)
+ 485 00b0 FA01      		movw r30,r20
+ 486 00b2 E370      		andi r30,lo8(3)
+ 487 00b4 F070      		andi r31,hi8(3)
+ 488               	.LSM53:
+ 489 00b6 A02F      		mov r26,r16
+ 490 00b8 A695      		lsr r26
+ 491 00ba A695      		lsr r26
+ 492 00bc B0E0      		ldi r27,lo8(0)
+ 493 00be A050      		subi r26,lo8(-(Mem_MemData+840))
+ 494 00c0 B040      		sbci r27,hi8(-(Mem_MemData+840))
+ 495 00c2 E050      		subi r30,lo8(-(Mem_MemData))
+ 496 00c4 F040      		sbci r31,hi8(-(Mem_MemData))
+ 497 00c6 EF59      		subi r30,lo8(-(865))
+ 498 00c8 FC4F      		sbci r31,hi8(-(865))
+ 499 00ca 8C91      		ld r24,X
+ 500               	.LVL38:
+ 501 00cc 2081      		ld r18,Z
+ 502 00ce 8223      		and r24,r18
+ 503 00d0 90E0      		ldi r25,lo8(0)
+ 504 00d2 3496      		adiw r30,4
+ 505 00d4 0080      		ld r0,Z
+ 506 00d6 00C0      		rjmp 2f
+ 507 00d8 9595      	1:	asr r25
+ 508 00da 8795      		ror r24
+ 509 00dc 0A94      	2:	dec r0
+ 510 00de 02F4      		brpl 1b
+ 511 00e0 682F      		mov r22,r24
+ 512               	.LBE41:
+ 513               	.LBE40:
+ 514               	.LBE39:
+ 515               	.LBE38:
+ 516               	.LSM54:
+ 517 00e2 80FF      		sbrs r24,0
+ 518 00e4 00C0      		rjmp .L52
+ 519               	.LVL39:
+ 520               	.LBB46:
+ 521               	.LBB45:
+ 522               	.LSM55:
+ 523 00e6 9A01      		movw r18,r20
+ 524               	.LVL40:
+ 525 00e8 53E0      		ldi r21,3
+ 526 00ea 220F      	1:	lsl r18
+ 527 00ec 331F      		rol r19
+ 528 00ee 5A95      		dec r21
+ 529 00f0 01F4      		brne 1b
+ 530 00f2 2050      		subi r18,lo8(-(Mem_MemData))
+ 531 00f4 3040      		sbci r19,hi8(-(Mem_MemData))
+ 532 00f6 E0E0      		ldi r30,lo8(Mem_MemData+800)
+ 533 00f8 F0E0      		ldi r31,hi8(Mem_MemData+800)
+ 534 00fa A0E0      		ldi r26,lo8(0)
+ 535 00fc B0E0      		ldi r27,hi8(0)
+ 536               	.LVL41:
+ 537               	.L36:
+ 538               	.LBB42:
+ 539               	.LSM56:
+ 540 00fe 8081      		ld r24,Z
+ 541 0100 9181      		ldd r25,Z+1
+ 542 0102 8217      		cp r24,r18
+ 543 0104 9307      		cpc r25,r19
+ 544 0106 01F4      		brne .L34
+ 545               	.LSM57:
+ 546 0108 AA0F      		lsl r26
+ 547 010a BB1F      		rol r27
+ 548 010c A050      		subi r26,lo8(-(Mem_MemData+800))
+ 549 010e B040      		sbci r27,hi8(-(Mem_MemData+800))
+ 550 0110 ED92      		st X+,r14
+ 551 0112 FC92      		st X,r15
+ 552 0114 00C0      		rjmp .L35
+ 553               	.L34:
+ 554 0116 1196      		adiw r26,1
+ 555 0118 3296      		adiw r30,2
+ 556               	.LSM58:
+ 557 011a A431      		cpi r26,20
+ 558 011c B105      		cpc r27,__zero_reg__
+ 559 011e 01F4      		brne .L36
+ 560               	.L35:
+ 561               	.LBE42:
+ 562               	.LSM59:
+ 563 0120 D701      		movw r26,r14
+ 564 0122 F901      		movw r30,r18
+ 565 0124 88E0      		ldi r24,lo8(8)
+ 566               	.LVL42:
+ 567               	.L37:
+ 568 0126 0190      		ld r0,Z+
+ 569 0128 0D92      		st X+,r0
+ 570 012a 8150      		subi r24,lo8(-(-1))
+ 571 012c 01F4      		brne .L37
+ 572               	.LSM60:
+ 573 012e 88E0      		ldi r24,lo8(8)
+ 574 0130 90E0      		ldi r25,hi8(8)
+ 575 0132 E80E      		add r14,r24
+ 576 0134 F91E      		adc r15,r25
+ 577               	.LVL43:
+ 578               	.LSM61:
+ 579 0136 172F      		mov r17,r23
+ 580 0138 1F5F      		subi r17,lo8(-(1))
+ 581               	.LVL44:
+ 582 013a 872F      		mov r24,r23
+ 583 013c 0E94 0000 		call Mem_SetBlockFlags
+ 584               	.LVL45:
+ 585               	.LSM62:
+ 586 0140 802F      		mov r24,r16
+ 587 0142 60E0      		ldi r22,lo8(0)
+ 588 0144 0E94 0000 		call Mem_SetBlockFlags
+ 589 0148 712F      		mov r23,r17
+ 590               	.LVL46:
+ 591               	.L52:
+ 592               	.LBE45:
+ 593               	.LSM63:
+ 594 014a 0F5F      		subi r16,lo8(-(1))
+ 595 014c 0436      		cpi r16,lo8(100)
+ 596 014e 00F4      		brsh .+2
+ 597 0150 00C0      		rjmp .L38
+ 598               	.LVL47:
+ 599               	.L31:
+ 600               	.LBE46:
+ 601               	.LBE37:
+ 602               	.LSM64:
+ 603 0152 CE01      		movw r24,r28
+ 604               	.LVL48:
+ 605 0154 0196      		adiw r24,1
+ 606 0156 6D2D      		mov r22,r13
+ 607               	.LVL49:
+ 608 0158 0E94 0000 		call Mem_FindFreeBlocks
+ 609               	.LVL50:
+ 610 015c 8823      		tst r24
+ 611 015e 01F0      		breq .+2
+ 612 0160 00C0      		rjmp .L40
+ 613 0162 00C0      		rjmp .L39
+ 614               	.LVL51:
+ 615               	.L41:
+ 616               	.LBB47:
+ 617               	.LSM65:
+ 618 0164 8F2D      		mov r24,r15
+ 619               	.LVL52:
+ 620 0166 820F      		add r24,r18
+ 621 0168 63E0      		ldi r22,lo8(3)
+ 622 016a 0E94 0000 		call Mem_SetBlockFlags
+ 623               	.LVL53:
+ 624               	.LSM66:
+ 625 016e F394      		inc r15
+ 626               	.L29:
+ 627 0170 8F2D      		mov r24,r15
+ 628 0172 90E0      		ldi r25,lo8(0)
+ 629               	.LVL54:
+ 630 0174 2981      		ldd r18,Y+1
+ 631 0176 8017      		cp r24,r16
+ 632 0178 9107      		cpc r25,r17
+ 633 017a 04F0      		brlt .L41
+ 634               	.LVL55:
+ 635               	.LBE47:
+ 636               	.LSM67:
+ 637 017c 2150      		subi r18,lo8(-(-1))
+ 638 017e 822F      		mov r24,r18
+ 639               	.LVL56:
+ 640 0180 8D0D      		add r24,r13
+ 641 0182 61E0      		ldi r22,lo8(1)
+ 642 0184 0E94 0000 		call Mem_SetBlockFlags
+ 643               	.LVL57:
+ 644 0188 E0E0      		ldi r30,lo8(Mem_MemData+800)
+ 645 018a F0E0      		ldi r31,hi8(Mem_MemData+800)
+ 646               	.LVL58:
+ 647               	.L44:
+ 648 018c DF01      		movw r26,r30
+ 649               	.LBB48:
+ 650               	.LBB49:
+ 651               	.LSM68:
+ 652 018e 8081      		ld r24,Z
+ 653 0190 9181      		ldd r25,Z+1
+ 654 0192 892B      		or r24,r25
+ 655 0194 01F4      		brne .L42
+ 656               	.LSM69:
+ 657 0196 8981      		ldd r24,Y+1
+ 658               	.LVL59:
+ 659 0198 90E0      		ldi r25,lo8(0)
+ 660               	.LVL60:
+ 661 019a 33E0      		ldi r19,3
+ 662 019c 880F      	1:	lsl r24
+ 663 019e 991F      		rol r25
+ 664 01a0 3A95      		dec r19
+ 665 01a2 01F4      		brne 1b
+ 666               	.LVL61:
+ 667 01a4 8050      		subi r24,lo8(-(Mem_MemData))
+ 668 01a6 9040      		sbci r25,hi8(-(Mem_MemData))
+ 669               	.LVL62:
+ 670 01a8 9183      		std Z+1,r25
+ 671 01aa 8083      		st Z,r24
+ 672 01ac 00C0      		rjmp .L43
+ 673               	.LVL63:
+ 674               	.L42:
+ 675               	.LSM70:
+ 676 01ae 3296      		adiw r30,2
+ 677               	.LBE49:
+ 678               	.LSM71:
+ 679 01b0 90E0      		ldi r25,hi8(Mem_MemData+840)
+ 680 01b2 E030      		cpi r30,lo8(Mem_MemData+840)
+ 681 01b4 F907      		cpc r31,r25
+ 682 01b6 01F4      		brne .L44
+ 683               	.LVL64:
+ 684               	.L39:
+ 685 01b8 A0E0      		ldi r26,lo8(0)
+ 686 01ba B0E0      		ldi r27,hi8(0)
+ 687               	.LVL65:
+ 688               	.L43:
+ 689               	.LBE48:
+ 690               	.LSM72:
+ 691 01bc CD01      		movw r24,r26
+ 692               	.LVL66:
+ 693               	/* epilogue start */
+ 694 01be 0F90      		pop __tmp_reg__
+ 695 01c0 CF91      		pop r28
+ 696 01c2 DF91      		pop r29
+ 697 01c4 1F91      		pop r17
+ 698 01c6 0F91      		pop r16
+ 699               	.LVL67:
+ 700 01c8 FF90      		pop r15
+ 701               	.LVL68:
+ 702 01ca EF90      		pop r14
+ 703               	.LVL69:
+ 704 01cc DF90      		pop r13
+ 705               	.LVL70:
+ 706 01ce 0895      		ret
+ 707               	.LFE6:
+ 709               		.section	.text.Mem_Calloc,"ax",@progbits
+ 710               	.global	Mem_Calloc
+ 712               	Mem_Calloc:
+ 713               	.LFB8:
+ 714               	.LSM73:
+ 715               	.LVL71:
+ 716 0000 0F93      		push r16
+ 717 0002 1F93      		push r17
+ 718 0004 CF93      		push r28
+ 719 0006 DF93      		push r29
+ 720               	/* prologue: function */
+ 721               	/* frame size = 0 */
+ 722 0008 182F      		mov r17,r24
+ 723 000a 092F      		mov r16,r25
+ 724               	.LVL72:
+ 725               	.LSM74:
+ 726 000c 0E94 0000 		call Mem_Alloc
+ 727               	.LVL73:
+ 728 0010 EC01      		movw r28,r24
+ 729               	.LVL74:
+ 730               	.LSM75:
+ 731 0012 0097      		sbiw r24,0
+ 732 0014 01F0      		breq .L54
+ 733               	.LVL75:
+ 734               	.LSM76:
+ 735 0016 8881      		ld r24,Y
+ 736               	.LVL76:
+ 737 0018 9981      		ldd r25,Y+1
+ 738 001a 60E0      		ldi r22,lo8(0)
+ 739 001c 70E0      		ldi r23,hi8(0)
+ 740 001e 412F      		mov r20,r17
+ 741 0020 502F      		mov r21,r16
+ 742 0022 0E94 0000 		call memset
+ 743               	.LVL77:
+ 744               	.L54:
+ 745               	.LSM77:
+ 746 0026 CE01      		movw r24,r28
+ 747               	.LVL78:
+ 748               	/* epilogue start */
+ 749 0028 DF91      		pop r29
+ 750 002a CF91      		pop r28
+ 751 002c 1F91      		pop r17
+ 752               	.LVL79:
+ 753 002e 0F91      		pop r16
+ 754               	.LVL80:
+ 755 0030 0895      		ret
+ 756               	.LFE8:
+ 758               		.section	.text.Mem_Realloc,"ax",@progbits
+ 759               	.global	Mem_Realloc
+ 761               	Mem_Realloc:
+ 762               	.LFB7:
+ 763               	.LSM78:
+ 764               	.LVL81:
+ 765 0000 0F93      		push r16
+ 766 0002 1F93      		push r17
+ 767               	/* prologue: function */
+ 768               	/* frame size = 0 */
+ 769 0004 8B01      		movw r16,r22
+ 770               	.LSM79:
+ 771 0006 0E94 0000 		call Mem_Free
+ 772               	.LVL82:
+ 773               	.LSM80:
+ 774 000a C801      		movw r24,r16
+ 775 000c 0E94 0000 		call Mem_Alloc
+ 776               	/* epilogue start */
+ 777               	.LSM81:
+ 778 0010 1F91      		pop r17
+ 779 0012 0F91      		pop r16
+ 780               	.LVL83:
+ 781 0014 0895      		ret
+ 782               	.LFE7:
+ 784               	.global	Mem_MemData
+ 785               		.data
+ 788               	Mem_MemData:
+ 789 0000 0000 0000 		.skip 865,0
+ 789      0000 0000 
+ 789      0000 0000 
+ 789      0000 0000 
+ 789      0000 0000 
+ 790 0361 03        		.byte	3
+ 791 0362 0C        		.byte	12
+ 792 0363 30        		.byte	48
+ 793 0364 C0        		.byte	-64
+ 794 0365 00        		.byte	0
+ 795 0366 02        		.byte	2
+ 796 0367 04        		.byte	4
+ 797 0368 06        		.byte	6
+ 878               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 DynAlloc.c
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:18     .text.Mem_SetBlockFlags:00000000 Mem_SetBlockFlags
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:788    .data:00000000 Mem_MemData
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:68     .text.Mem_FindFreeBlocks:00000000 Mem_FindFreeBlocks
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:156    .text.Mem_Free:00000000 Mem_Free
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:251    .text.Mem_TotalFreeBlocks:00000000 Mem_TotalFreeBlocks
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:313    .text.Mem_TotalFreeHandles:00000000 Mem_TotalFreeHandles
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:349    .text.Mem_Alloc:00000000 Mem_Alloc
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:712    .text.Mem_Calloc:00000000 Mem_Calloc
+C:\DOCUME~1\Dovydas\LOCALS~1\Temp/cc3y6iBY.s:761    .text.Mem_Realloc:00000000 Mem_Realloc
+
+UNDEFINED SYMBOLS
+memset
+__do_copy_data
