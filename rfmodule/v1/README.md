@@ -6,6 +6,8 @@ Previous versions are retained for reference and are not intended for use in man
 
 ## Changes
 
+Note that r1 and r2 were interim updates and were not manufactured.
+
 ### 2014-03-03 r.3
 
 Updated due to obsolete components.
@@ -27,10 +29,8 @@ Changed:
 
 #### BOM updates
 
-1. Manufacturer of the capacitors is to KEMET:
-Capacitor values: 1.2pF, 1.8pF and 3.9pF
-- In "Read Me" file:
-1. Included Board revision line
-2. Changed dimensions to 48 x 46 mm
-3. Included Drawings layout in list of gerber files
-4. Included more report files in report folder
+1. Manufacturer of the capacitors is to KEMET: Capacitor values: 1.2pF, 1.8pF and 3.9pF
+2. Included Board revision line
+3. Changed dimensions to 48 x 46 mm
+4. Included Drawings layout in list of gerber files
+5. Included more report files in report folder
