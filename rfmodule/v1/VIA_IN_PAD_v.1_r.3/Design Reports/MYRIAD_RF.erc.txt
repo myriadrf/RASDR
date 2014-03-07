@@ -1,0 +1,17 @@
+ERC report (06/03/2014 15:56:21)
+
+***** Sheet /
+
+***** Sheet /RF Circuits/
+
+***** Sheet /Analog Circuits/
+
+***** Sheet /Clocks, RF FE/
+
+***** Sheet /Connectors/
+
+***** Sheet /Digital Circuits/
+
+***** Sheet /Power Supply/
+
+ >> Errors ERC: 0
