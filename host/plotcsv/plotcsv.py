@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from StringIO import StringIO
 
-DEF_VERSION = '1.0.5-pl3'	# to match RASDRviewer version
+DEF_VERSION = '1.0.5-pl4'	# to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -71,22 +71,22 @@ def open_spectrum_file(filename,opts):
         obj['freq'] = freq
         obj['time'] = time
         obj['opts'] = opts
-    elif opts.datetime:
-        # this is the "Excel-datetime" .csv format (proposed for RASDRviewer_W_1_0_4, but not implemented)
-        f=open(filename,'r')
-        freq = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
-        t=np.genfromtxt(f,delimiter=opts.delimiter,usecols=[0],dtype='float')
-        time = []
-        for i in range(len(t)):
-            time.append(excel2dt(t[i]))
-        f.seek(0)               # start over
-        f.readline()            # dump the first line
-        f.readline()            # dump the second line
-        # update the object to return
-        obj['file'] = f
-        obj['freq'] = freq
-        obj['time'] = time
-        obj['opts'] = opts
+##    elif opts.datetime:
+##        # this is the "Excel-datetime" .csv format (proposed for RASDRviewer_W_1_0_4, but not implemented)
+##        f=open(filename,'r')
+##        freq = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
+##        t=np.genfromtxt(f,delimiter=opts.delimiter,usecols=[0],dtype='float')
+##        time = []
+##        for i in range(len(t)):
+##            time.append(excel2dt(t[i]))
+##        f.seek(0)               # start over
+##        f.readline()            # dump the first line
+##        f.readline()            # dump the second line
+##        # update the object to return
+##        obj['file'] = f
+##        obj['freq'] = freq
+##        obj['time'] = time
+##        obj['opts'] = opts
     else:
         # this is the "Extended" .csv format produced by RASDRviewer_W_1_0_5
         from dateutil import parser
@@ -126,23 +126,23 @@ def open_spectrum_file(filename,opts):
 def read_spectrum_line(obj):
     opts = obj['opts']
     f    = obj['file']
-    if opts.datetime:
-        data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter)
-        data = data[1:]
-    else:
-        freq = obj['freq']
-        data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
+##    if opts.datetime:
+##        data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter)
+##        data = data[1:]
+##    else:
+    freq = obj['freq']
+    data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
     return data         # spectral information in colums 1..N-2 (last column is junk)
 
 def read_spectrum_array(obj):
     opts = obj['opts']
     f    = obj['file']
-    if opts.datetime:
-        data = np.genfromtxt(f,delimiter=opts.delimiter)
-        data = data[1:,1:]
-    else:
-        freq = obj['freq']
-        data = np.genfromtxt(f,delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
+##    if opts.datetime:
+##        data = np.genfromtxt(f,delimiter=opts.delimiter)
+##        data = data[1:,1:]
+##    else:
+    freq = obj['freq']
+    data = np.genfromtxt(f,delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
     return data         # spectral information in colums 1..N-2 (last column is junk)
 
 def generate_spectrum_plots(filename,opts):
@@ -234,18 +234,19 @@ def generate_spectrum_plots(filename,opts):
                 title = 'Collected between %s and %s\nAveraged over %d frames'%(tstart,tstop,n)
             else:
                 title = 'Collected at %s'%tstop
-            if len(opts.background):
+            if len(opts.background) > 0:
                 title = title + ', with background subtraction'
-            if opts.calibration:
-                title = title + ', cal=%.1f'%opts.calibration
+##            if opts.calibration:
+##                title = title + ', cal=%.1f'%opts.calibration
 
-            plt.plot(fMHz,s,hold=False)
+            plt.plot(fMHz,s,hold=True,color='b')
             plt.axis([fMHz[0],fMHz[nbin-1],min,max])
             plt.xlabel('frequency (MHz)')
-            if opts.dbm:
-                plt.ylabel('spectral power (dBm/Hz)')
-            elif opts.background:
+##            if opts.dbm:
+##                plt.ylabel('spectral power (dBm/Hz)')
+            if len(opts.background) > 0:
                 plt.ylabel('spectral power (dB relative to background)')
+                plt.plot(fMHz,bkg,color='r')
             else:
                 plt.ylabel('spectral power (arbitrary unit)')
             plt.title(title)
@@ -279,10 +280,10 @@ if __name__ == '__main__':
         help='Specify the calibration constant for the system; 0.0=uncal, default=%f'%DEF_CALIB)
     p.add_option('-l', '--line', dest='line', action='store_true', default=False,
         help='Perform line-by-line processing instead of loading entire file(s); NOTE: much slower but tolerates low memory better.')
-    p.add_option('-m', '--milliwatt', dest='dbm', action='store_true', default=False,
-        help='Plot in decibels referenced to 1mW (dBm/Hz)')
-    p.add_option('-t', '--datetime', dest='datetime', action='store_true', default=False,
-        help='Indicate that timestamps in the .csv file are in Excel\'s datetime format')
+##    p.add_option('-m', '--milliwatt', dest='dbm', action='store_true', default=False,
+##        help='Plot in decibels referenced to 1mW (dBm/Hz)')
+##    p.add_option('-t', '--datetime', dest='datetime', action='store_true', default=False,
+##        help='Indicate that timestamps in the .csv file are in Excel\'s datetime format')
     p.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
         help='Verbose')
     opts, args = p.parse_args(sys.argv[1:])
