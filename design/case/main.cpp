@@ -2,8 +2,8 @@
 #include <ooml/core/IndentWriter.h>
 
 #include "casefactory.h"
-#include "cubieboard.h"
-#include "bb-atxra.h"   // Added by: Anthony W. Rainer <pristine.source@gmail.com>
+//#include "cubieboard.h"
+//#include "bb-atxra.h"   // Added by: Anthony W. Rainer <pristine.source@gmail.com>
 #include "posts.h"      // Testing POSTS+HOLES for manufacturability
 #include "rasdr2.h"
 
