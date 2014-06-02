@@ -2,16 +2,16 @@
 
 This sub-project generates a case model and manufacturing files for the RASDR project.  RASDR is an Open Hardware project undertaken by members of the Society of Amateur Radio Astronomers (SARA) to develop a low cost, high performance software defined receiver for use by SARA members.  The goal of RASDR is to provide a low cost hardware that enables radio astronomers and educational institutions to perform high quality astronomical measurements.
 
-At the core of this capability is the Object Oriented Mechanics Library ([OOML](http://iearobotics.com/oomlwiki/doku.php), which is used by the [OOML Case Factory](http://www.thingiverse.com/thing:70838) and custom code to produce the 
+At the core of this capability is the Object Oriented Mechanics Library ([OOML](http://iearobotics.com/oomlwiki/doku.php)), which is used by the [OOML Case Factory](http://www.thingiverse.com/thing:70838) and custom code to produce the CAD files that are used to generate the STereoLithograpy (STL) files needed to produce a design.
 
 ![RASDR](https://github.com/myriadrf/RASDR/raw/master/design/case/rasdr2-case-mfg.png )
-*RASDR2 case design generated *
+*RASDR2 case design generated using the OOML Case Factory with manufacturing aids*
 
 ## Setup of the Tools ##
 
 You will need to setup the OOML and OpenSCAD on your machine.  Here are links:
-[1. OOML](http://iearobotics.com/oomlwiki/doku.php?id=download:start)
-[2. OpenSCAD](http://www.openscad.org/)
+- [OOML](http://iearobotics.com/oomlwiki/doku.php?id=download:start)
+- [OpenSCAD](http://www.openscad.org/)
 
 Forgive me if at this point, I don't have a step-by-step for all platforms.  The above links do a good job.  If you have problems, please send me an email and I'll try to help you out.
 
@@ -21,8 +21,8 @@ Once you have done that, just edit the Makefile to help it find the install loca
 
 Then, simply issue the following commands:
 
-$ make
-$ ./casefactory
+- $ make
+- $ ./casefactory
 
 This will produce (at least) the following files:
 
