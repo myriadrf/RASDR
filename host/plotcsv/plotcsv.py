@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from StringIO import StringIO
 
-DEF_VERSION = '1.0.5-pl4'	# to match RASDRviewer version
+DEF_VERSION = '1.0.5.2'     # to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -258,6 +258,49 @@ def generate_spectrum_plots(filename,opts):
             acc = np.zeros(nbin)
             n   = 0
 
+def dump_spectrum_info(filename,opts):
+    log = logging.getLogger(__name__)
+    fg = open_spectrum_file(filename,opts)
+    ts_a = fg['time']
+    fMHz = fg['freq']
+    zidx = np.searchsorted(fMHz,0)
+    nbin = len(fMHz)
+    lastrow = len(ts_a)-1
+    bw   = (fMHz.max() - fMHz.min())*1e6/nbin
+
+    log.info('range (MHz)=[%f,%f]',fMHz.min(),fMHz.max())
+    log.info('zero index=%d',zidx)
+    log.info('frequency bins=%d',nbin)
+    log.info('bandwidth/bin (Hz)=%f',bw)
+
+    tstart = ts_a[0].strftime('%Y-%m-%dT%H:%M:%S')
+    if lastrow > 0:
+        delta = ts_a[lastrow] - ts_a[lastrow-1]
+        log.info('start=%s',str(ts_a[0]))
+        log.info('end  =%s',str(ts_a[lastrow]))
+        deltaT = dt = float(delta.seconds)+(float(delta.microseconds)/1e6)
+        if len(ts_a) > 0:
+            deltaT = ts_a[lastrow] - ts_a[0]
+            deltaT = float(deltaT.seconds)+(float(deltaT.microseconds)/1e6)
+            deltaT = deltaT / len(ts_a)
+        tstop  = ts_a[lastrow].strftime('%Y-%m-%dT%H:%M:%S')
+        log.info('seconds between records=%f (avg=%f)',dt,deltaT)
+        title  = 'Collected between %s and %s'%(tstart,tstop)
+        deltaT = min(dt,deltaT)
+    else:
+        title  = 'Collected at %s'%tstart
+        deltaT = 0.0
+
+    log.info('Analyzing records...')
+    d0  = ts_a[0]
+    for fr in range(len(ts_a)):
+        if fr > 0:
+            dt = ts_a[fr] - d0
+            dt = float(dt.seconds)+(float(dt.microseconds)/1e6)
+            if abs(dt - deltaT) > (deltaT*0.5):
+                log.info('*** SKIP: frame %d -> %d delta %f sec, expected %f (@%s)',fr-1,fr,dt,deltaT,ts_a[fr].strftime('%Y-%m-%dT%H:%M:%S'))
+            d0 = ts_a[fr]
+
 if __name__ == '__main__':
     from optparse import OptionParser
 
@@ -284,6 +327,8 @@ if __name__ == '__main__':
 ##        help='Plot in decibels referenced to 1mW (dBm/Hz)')
 ##    p.add_option('-t', '--datetime', dest='datetime', action='store_true', default=False,
 ##        help='Indicate that timestamps in the .csv file are in Excel\'s datetime format')
+    p.add_option('-i', '--info', dest='info', action='store_true', default=False,
+        help='Produce information about a file only; do not generate any plots')
     p.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
         help='Verbose')
     opts, args = p.parse_args(sys.argv[1:])
@@ -302,6 +347,9 @@ if __name__ == '__main__':
         logger.addHandler(handler)
         logger.setLevel(logging.DEBUG if opts.verbose else logging.INFO)
         try:
-            generate_spectrum_plots(args[0],opts)
+            if opts.info:
+                dump_spectrum_info(args[0],opts)
+            else:
+                generate_spectrum_plots(args[0],opts)
         except Exception, e:
             logger.error('generate_spectrum_plots', exc_info=True)
