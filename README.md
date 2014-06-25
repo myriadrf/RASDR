@@ -26,7 +26,7 @@ Hardware design files and firmware sources (FPGA HDL + Cypress FX2 code) for the
 
 ### Zipper Interface
 
-This is a new interface which allows the Myriad-RF 1 to be used with FPGA development boards that have either a HSMC or FMC connector.
+This interface allows the Myriad-RF 1 to be used with FPGA development boards that have either a HSMC or FMC connector.
 
 *Note that v1 of the hardware design was not made generally available.*
 

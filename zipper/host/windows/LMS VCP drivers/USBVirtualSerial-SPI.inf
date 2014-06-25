@@ -1,0 +1,57 @@
+;------------------------------------------------------------------------------
+;  LIME MICROSYSTEMS
+;------------------------------------------------------------------------------
+
+[Version] 
+Signature="$Windows NT$" 
+Class=Ports
+ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318} 
+Provider=%COMPANY% 
+LayoutFile=layout.inf
+DriverVer=23/07/2009,1.0.0.0
+
+[Manufacturer] 
+%MFGNAME% = ManufName
+
+[DestinationDirs] 
+DefaultDestDir=12 
+
+[ManufName] 
+%Modem3% = Modem3, USB\VID_03EB&PID_204B
+
+;------------------------------------------------------------------------------
+;  Windows 2000/XP/Vista32 Sections
+;------------------------------------------------------------------------------
+
+[Modem3.nt]
+include=mdmcpq.inf
+CopyFiles=USBModemCopyFileSection
+AddReg=Modem3.nt.AddReg 
+
+[USBModemCopyFileSection]
+usbser.sys,,,0x20
+
+[Modem3.nt.AddReg] 
+HKR,,DevLoader,,*ntkern 
+HKR,,NTMPDriver,,usbser.sys 
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider" 
+
+[Modem3.nt.Services] 
+AddService=usbser, 0x00000002, DriverService
+
+[DriverService] 
+DisplayName=%SERVICE%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\usbser.sys 
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+
+[Strings] 
+COMPANY="Lime Microsystems"
+MFGNAME="LMS Virtual COM Port"
+Modem3="USB Virtual Serial Port" 
+SERVICE="USB Virtual Serial Port CDC Driver"
