@@ -45,7 +45,7 @@ import matplotlib as mpl
 data_files += mpl.get_py2exe_datafiles()
 
 setup(
-    windows=PROGRAM,
+    console=PROGRAM,
                           # compressed and optimize reduce the size
     options = {"py2exe": {"compressed": 2, 
                           "optimize": 2,

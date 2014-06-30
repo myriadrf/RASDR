@@ -4,10 +4,9 @@ import datetime
 import pytz
 import logging
 import numpy as np
-from matplotlib import pyplot as plt
 from StringIO import StringIO
 
-DEF_VERSION = '1.0.5-pl4'	# to match RASDRviewer version
+DEF_VERSION = '1.0.5.2-dev'     # to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -239,20 +238,25 @@ def generate_spectrum_plots(filename,opts):
 ##            if opts.calibration:
 ##                title = title + ', cal=%.1f'%opts.calibration
 
-            plt.plot(fMHz,s,hold=True,color='b')
-            plt.axis([fMHz[0],fMHz[nbin-1],min,max])
-            plt.xlabel('frequency (MHz)')
+            from matplotlib.pyplot import figure, plot, axis, xlabel, ylabel, savefig
+            from matplotlib.pyplot import title as _title
+            if opts.gui:
+                figure()
+
+            plot(fMHz,s,hold=True,color='b')
+            axis([fMHz[0],fMHz[nbin-1],min,max])
+            xlabel('frequency (MHz)')
 ##            if opts.dbm:
-##                plt.ylabel('spectral power (dBm/Hz)')
+##                ylabel('spectral power (dBm/Hz)')
             if len(opts.background) > 0:
-                plt.ylabel('spectral power (dB relative to background)')
-                plt.plot(fMHz,bkg,color='r')
+                ylabel('spectral power (dB relative to background)')
+                plot(fMHz,bkg,color='r')
             else:
-                plt.ylabel('spectral power (arbitrary unit)')
-            plt.title(title)
+                ylabel('spectral power (arbitrary unit)')
+            _title(title)
 
             name = 'spectrum-%s.png'%dt.strftime('%Y_%b_%d_%H_%M_%S')
-            plt.savefig(name)
+            savefig(name)
             log.info('Saved '+name)
 
             acc = np.zeros(nbin)
@@ -264,6 +268,8 @@ if __name__ == '__main__':
     p = OptionParser(version=DEF_VERSION)
     p.set_usage('plotcsv.py <filename.csv> [options]')
     p.set_description(__doc__)
+    # call matplotlib.use() only once
+    p.set_defaults(matplotlib_use = False)
     p.add_option('-a', '--average', dest='average', type='int', default=DEF_AVERAGE,
         help='Specify the number of spectra to average for each plot; default=%d'%DEF_AVERAGE)
     p.add_option('-b', '--background', dest='background', type='str', default='',
@@ -286,6 +292,8 @@ if __name__ == '__main__':
 ##        help='Indicate that timestamps in the .csv file are in Excel\'s datetime format')
     p.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
         help='Verbose')
+    p.add_option('-g', '--gui', dest='gui', action='store_true', default=False,
+        help='Create interactive PLOTS')
     opts, args = p.parse_args(sys.argv[1:])
 
     logging.basicConfig(format='%(message)s',level=logging.DEBUG)
@@ -302,6 +310,17 @@ if __name__ == '__main__':
         logger.addHandler(handler)
         logger.setLevel(logging.DEBUG if opts.verbose else logging.INFO)
         try:
+            if opts.gui:
+                from platform import system
+                if not opts.matplotlib_use and system().startswith('Windows'):
+                    from matplotlib import use
+                    use('wxagg')
+                    opts.matplotlib_use = True
+
             generate_spectrum_plots(args[0],opts)
+            if opts.gui:
+                from pylab import show
+                print '=== Display interactive graphs ==='
+                show()
         except Exception, e:
             logger.error('generate_spectrum_plots', exc_info=True)
