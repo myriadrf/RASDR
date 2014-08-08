@@ -6,7 +6,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.0.5.2-dev'     # to match RASDRviewer version
+DEF_VERSION = '1.0.5.3-dev'     # to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -237,7 +237,18 @@ def generate_spectrum_plots(filename,opts):
                 title = title + ', with background subtraction'
 ##            if opts.calibration:
 ##                title = title + ', cal=%.1f'%opts.calibration
-
+            if opts.smooth > 0:
+                title = title + ' and %d point smoothing'%opts.smooth
+                ll = len(s)
+                hh = opts.smooth/2
+                ss = np.zeros(ll)
+                for xx in range(hh):
+                    ss[xx]      = s[xx]
+                    ss[ll-xx-1] = s[ll-xx-1]
+                for xx in range(ll-opts.smooth+1):
+                    ss[hh+xx] = np.mean(s[xx:xx+opts.smooth])
+                s = ss
+                    
             from matplotlib.pyplot import figure, plot, axis, xlabel, ylabel, savefig
             from matplotlib.pyplot import title as _title
             if opts.gui:
@@ -294,6 +305,8 @@ if __name__ == '__main__':
         help='Verbose')
     p.add_option('-g', '--gui', dest='gui', action='store_true', default=False,
         help='Create interactive PLOTS')
+    p.add_option('-s', '--smooth', dest='smooth', type='int', default=0,
+        help='Smooth final plot using a sliding window of N points')
     opts, args = p.parse_args(sys.argv[1:])
 
     logging.basicConfig(format='%(message)s',level=logging.DEBUG)
