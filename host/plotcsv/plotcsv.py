@@ -1,12 +1,11 @@
 #import math import time
 import sys
 import datetime
-import pytz
 import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.0.5.3-dev'     # to match RASDRviewer version
+DEF_VERSION = '1.0.5.4-dev'     # to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -19,6 +18,7 @@ def excel2dt(et):
     return datetime.datetime.fromtimestamp(float(ts))
 
 def dt2excel(dt,tz=None):
+    import pytz
     # http://stackoverflow.com/questions/9574793/how-to-convert-a-python-datetime-datetime-to-excel-serial-date-number
     # http://stackoverflow.com/questions/4530069/python-how-to-get-a-value-of-datetime-today-that-is-timezone-aware
     dte = datetime.datetime(1899, 12, 30, tzinfo=pytz.timezone(tz)) if tz else datetime.datetime(1899, 12, 29)
@@ -27,10 +27,16 @@ def dt2excel(dt,tz=None):
 
 def translate_tz(tz):
     # Paul uses some wierd strings in RASDRviewer to represent timezones
-    tz=tz.replace('UT20','US/Eastern').replace('UT','UTC')
+    # FIXME: I am still unhappy with this...  But I need this to make the plots we took in June-July 2014
     tzo=''
-    if tz.startswith('US/Eastern'):
-        tzo='+0500'
+    if tz.startswith('UT20'):
+        tzo='-0500'
+        tz=tz.replace('UT20','UTC')
+    elif tz.startswith('US/Eastern'):
+        tzo='-0500'
+        tz=tz.replace('US/Eastern','UTC')
+    elif not tz.startswith('UTC'):  # FIXME: weak...
+        tz=tz.replace('UT','UTC')
     return tz, tzo
 
 def open_spectrum_file(filename,opts):
@@ -105,7 +111,7 @@ def open_spectrum_file(filename,opts):
         time = []
         for i in range(1,t.shape[0]):
             a,x,b = t[i].rpartition(':')  # deal with Paul's 'YYYY-MM-DDTHH:MM:SS:sssZ' format in RASDRviewer_W_1_0_5
-            time.append(parser.parse(a+'.'+b+tzo))
+            time.append(parser.parse(d+'T'+a+'.'+b+tzo))
         f.seek(0)               # start over
         f.readline()            # dump the first line
         f.readline()            # dump the second line
@@ -118,6 +124,7 @@ def open_spectrum_file(filename,opts):
     if opts.verbose:
         log = logging.getLogger(__name__)
         x,y,name = f.name.replace('\\','/').rpartition('/')
+        log.info('%s.date=%s (%s)'%(name,key[4]+' '+key[6],str(obj['time'][0])))
         log.info('%s.time=%d'%(name,len(obj['time'])))
         log.info('%s.freq=%s'%(name,str(obj['freq'].shape)))
     return obj
@@ -178,7 +185,7 @@ def generate_spectrum_plots(filename,opts):
         bkg = np.zeros(len(fg['freq']))
 
     ts_a = fg['time']
-    fMHz = fg['freq']
+    fMHz = fg['freq']+opts.fc
     zidx = np.searchsorted(fMHz,0)
     nbin = len(fMHz)
     lastrow = len(ts_a)-1
@@ -219,7 +226,7 @@ def generate_spectrum_plots(filename,opts):
             log.debug('Cancel DC: ftr %s',str(s[zidx-4:zidx+5]))
         log.debug('line %d/%d max@%d val=%f',fr,len(ts_a),s.argmax(),s.max())
         if n == 0:
-            tstart = dt.strftime('%Y-%m-%dT%H:%M:%S')
+            tstart = dt.strftime('%Y-%m-%dT%H:%M:%S%z')
         n    = n+1
         acc += s
         if n >= opts.average or fr == lastrow:
@@ -228,11 +235,11 @@ def generate_spectrum_plots(filename,opts):
             s   = s - bkg           # vector-vector
             min = np.floor(s.min())-1.0
             max = np.ceil(s.max())+1.0
-            tstop = dt.strftime('%Y-%m-%dT%H:%M:%S')
+            tstop = dt.strftime('%Y-%m-%dT%H:%M:%S%z')
             if n > 1:
                 title = 'Collected between %s and %s\nAveraged over %d frames'%(tstart,tstop,n)
             else:
-                title = 'Collected at %s'%tstop
+                title = 'Collected at %s'%tstart
             if len(opts.background) > 0:
                 title = title + ', with background subtraction'
 ##            if opts.calibration:
@@ -248,14 +255,18 @@ def generate_spectrum_plots(filename,opts):
                 for xx in range(ll-opts.smooth+1):
                     ss[hh+xx] = np.mean(s[xx:xx+opts.smooth])
                 s = ss
-                    
-            from matplotlib.pyplot import figure, plot, axis, xlabel, ylabel, savefig
+
+            # http://stackoverflow.com/questions/6352740/matplotlib-label-each-bin
+            from matplotlib.pyplot import figure, plot, axis, xlabel, ylabel, savefig, subplots
             from matplotlib.pyplot import title as _title
+            from matplotlib.ticker import FormatStrFormatter
             if opts.gui:
                 figure()
 
+            fig, ax = subplots()
             plot(fMHz,s,hold=True,color='b')
             axis([fMHz[0],fMHz[nbin-1],min,max])
+            ax.xaxis.set_major_formatter(FormatStrFormatter('%4.1f'))
             xlabel('frequency (MHz)')
 ##            if opts.dbm:
 ##                ylabel('spectral power (dBm/Hz)')
@@ -272,6 +283,7 @@ def generate_spectrum_plots(filename,opts):
 
             acc = np.zeros(nbin)
             n   = 0
+            del fig, ax
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -307,6 +319,8 @@ if __name__ == '__main__':
         help='Create interactive PLOTS')
     p.add_option('-s', '--smooth', dest='smooth', type='int', default=0,
         help='Smooth final plot using a sliding window of N points')
+    p.add_option('--fcenter', dest='fc', type='float', default=0.0,
+        help='Define the offset for the center frequency in Hz; default=%f'%0.0)
     opts, args = p.parse_args(sys.argv[1:])
 
     logging.basicConfig(format='%(message)s',level=logging.DEBUG)
