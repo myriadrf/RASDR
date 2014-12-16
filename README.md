@@ -6,6 +6,8 @@ This repository contains the [Myriad-RF](http://myriadrf.org/) reference hardwar
 
 The directory structure for the hardware designs is as follows:
 
+      docs/                      - platform documentation
+
       <project>/hardware/<version>/
           BOM/                   - bill of materials spreadsheet
           Gerbers/               - Gerber CAM files
@@ -13,6 +15,12 @@ The directory structure for the hardware designs is as follows:
           Manufacturing/         - Additional manufacturing information
           PDF/                   - Schematic and layout PDFs
           Reports/               - DRC, ERC and drill reports
+
+### Documentation
+
+* RFDIO Connector Specification
+
+The Myriad-RF Radio Frequency Digital Input Output (RFDIO) connector specification defines the electrical and mechanical properties of a high speed card interface for Field Programmable Gate Array (FPGA) based carrier boards. This specification ensures interoperability between carrier (mother) boards and add-on (daughter) RF cards.
 
 ### Myriad-RF 1 module
 
