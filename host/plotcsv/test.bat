@@ -23,6 +23,11 @@
 @REM                         entire file(s); NOTE: much slower but tolerates low
 @REM                         memory better.
 @REM   -v, --verbose         Verbose
-plotcsv.exe FFTOut-example.csv -e -a 3
-plotcsv.exe FFTOut-general.csv
+@REM   -g, --gui             Create interactive PLOTS
+@REM   -s SMOOTH, --smooth=SMOOTH
+@REM                         Smooth final plot using a sliding window of N points
+@REM   --fcenter=FC          Define the offset for the center frequency in Hz;
+@REM                         default=0.000000
+plotcsv.exe FFTOut-example.csv -a 3 -g
+plotcsv.exe FFTOut-general.csv -s 20 -g
 pause

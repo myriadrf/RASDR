@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.0.5.4-dev'     # to match RASDRviewer version
+DEF_VERSION = '1.0.5.5-dev'     # to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -103,6 +103,21 @@ def open_spectrum_file(filename,opts):
         tz=key[6].replace('"','') if len(key) > 7 else 'UTC'
         # translate strange labels from RASDRviewer_W_1_0_5
         tz,tzo=translate_tz(tz)
+        ## RASDRViewer 1.2.x, Paul "adds" a specifier to the 2nd line and moves the rest of the lines down
+        key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+        dumplines = 2
+        fscale = 1.0
+        tag = key[0].lower()
+        if tag.find('hz')>0:
+            if tag.startswith('khz'):
+                fscale = 0.001
+            elif tag.startswith('ghz'):
+                fscale = 1000.0
+            # need to dump an extra line later
+            dumplines = dumplines + 1
+        else:
+            f.seek(0)
+            f.readline()    # dump the first line, so we are back to our 2nd line
         ## second line: frequency bin information
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
@@ -111,13 +126,16 @@ def open_spectrum_file(filename,opts):
         time = []
         for i in range(1,t.shape[0]):
             a,x,b = t[i].rpartition(':')  # deal with Paul's 'YYYY-MM-DDTHH:MM:SS:sssZ' format in RASDRviewer_W_1_0_5
-            time.append(parser.parse(d+'T'+a+'.'+b+tzo))
+            if a.find('T')>0:
+                time.append(parser.parse(a+'.'+b+tzo))
+            else:
+                time.append(parser.parse(d+'T'+a+'.'+b+tzo))
         f.seek(0)               # start over
         f.readline()            # dump the first line
         f.readline()            # dump the second line
         # update the object to return
         obj['file'] = f
-        obj['freq'] = freq
+        obj['freq'] = freq*fscale
         obj['time'] = time
         obj['opts'] = opts
     
@@ -126,7 +144,7 @@ def open_spectrum_file(filename,opts):
         x,y,name = f.name.replace('\\','/').rpartition('/')
         log.info('%s.date=%s (%s)'%(name,key[4]+' '+key[6],str(obj['time'][0])))
         log.info('%s.time=%d'%(name,len(obj['time'])))
-        log.info('%s.freq=%s'%(name,str(obj['freq'].shape)))
+        log.info('%s.freq=%s (scale=%f)'%(name,str(obj['freq'].shape,fscale)))
     return obj
 
 def read_spectrum_line(obj):
@@ -260,8 +278,6 @@ def generate_spectrum_plots(filename,opts):
             from matplotlib.pyplot import figure, plot, axis, xlabel, ylabel, savefig, subplots
             from matplotlib.pyplot import title as _title
             from matplotlib.ticker import FormatStrFormatter
-            if opts.gui:
-                figure()
 
             fig, ax = subplots()
             plot(fMHz,s,hold=True,color='b')

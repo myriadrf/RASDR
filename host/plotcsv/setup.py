@@ -18,11 +18,11 @@ shutil.rmtree("build", ignore_errors=True)
 shutil.rmtree("dist",  ignore_errors=True)
 
 data_files = []
-includes = ["matplotlib.backends",  "matplotlib.backends.backend_qt4agg",
+includes = ["matplotlib.backends", "matplotlib.backends.backend_wxagg",
             "matplotlib.figure","pylab", "numpy"]
-excludes = ['bsddb', 'curses', 'pywin.debugger',
+excludes = ['_gtkagg', '_tkagg', 'bsddb', 'curses', 'pywin.debugger',
             'pywin.debugger.dbgcon', 'pywin.dialogs', 'tcl',
-            'Tkconstants', 'Tkinter', 'pydoc', 'doctest', 'test', 'sqlite3'
+            'pydoc', 'doctest', 'test', 'sqlite3'
             ]
 packages = ['matplotlib', 'pytz']
 
@@ -45,7 +45,7 @@ import matplotlib as mpl
 data_files += mpl.get_py2exe_datafiles()
 
 setup(
-    console=PROGRAM,
+    console=PROGRAM,      # console=commandline, windows=GUI
                           # compressed and optimize reduce the size
     options = {"py2exe": {"compressed": 2, 
                           "optimize": 2,
@@ -65,7 +65,7 @@ setup(
               },
 
     # using zipfile to reduce number of files in dist
-    zipfile = r'lib\library.zip',
+    zipfile = r'library.zip',
 
     data_files=data_files
 )
