@@ -1,8 +1,0 @@
-** Drc report for C:\KiCAD Design Files\MYRIAD_RF.brd **
-** Created on   **
-
-** Found 0 DRC errors **
-
-** Found 0 unconnected pads **
-
-** End of Report **
