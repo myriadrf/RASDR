@@ -44,6 +44,8 @@ One RF transceiver chip provides receive functionality.  The transmit section is
 
 - **DigiRED** � contains the hardware design files, firmware and information needed to manufacture the various host interfaces modules.  The embedded firmware for the FX3 provides the SuperSpeed USB 3.0 interface and can also be customized for conditional on board processing within the limits of the internal RAM.
 
+- **rfmodule** � contains the hardware design files and information needed to manufacture the MyriadRF module that sits atop the DigiRED.
+
 - **host** � the host directory contains host processor APIs, device drivers and libraries for accessing the RASDR modules via USB. Support is provided for embedded C/C++ development.
 
 ## Licensing ##
