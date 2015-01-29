@@ -1,8 +1,10 @@
+
+
 Board Description
 -----------------
 
 board designation           : MYRIAD RF Via Off Pad 
-board version		    : version 1, revision 3	
+board version		    : version 1, revision 3, eco 1
 board type                  : Lead Free
 board size                  : 48.0 mm x 46.0 mm
 board thickness             : 1.6 mm +/- 10 %
@@ -27,7 +29,8 @@ plating finish (both sides) : immersion gold
                               0.08-0.20 um of gold over
                               2.50-5.00 um of nickel
 
-edge connector plating      : 1.27 um hard gold over 1.27 um nickel
+pads plating                : 1.27 um hard gold over 1.27 um nickel
+
 
 
 Important Notes
@@ -50,6 +53,10 @@ Basic grid increment is 5 um.
 Design software used:  KiCad
 
 
+The BOM contains several NOFIT parts.  These have been carefully identified and do not need to be placed.  
+
+The BOM contains an EMI shield from Laird Technologies (BMI-S-204-F) that comes in two parts.  The part that is soldered onto the PCB should be fitted, but the upper part does not need to be attached, and may be provided in a parts bag separately.  Both parts should be obtained when purchasing parts.
+
 
 Controlled Impedance
 --------------------
@@ -62,41 +69,34 @@ Controlled Impedance
 Board Stackup
 ----------------
 
-1. Solder Paste Front		: MYRIAD_RF-SoldP_Front.gtp
-2. Silk Screen Front		: MYRIAD_RF-SilkS_Front.gto
-3. SolderMask Front		: MYRIAD_RF-Mask_Front.gts
+Solder Paste Front              : MYRIAD_RF-F_Paste.gtp
+Silk Screen Front               : MYRIAD_RF-F_SilkS.gto
+SolderMask Front                : MYRIAD_RF-F_Mask.gts
 
-4. Front Layer			: MYRIAD_RF-Front.gtl
-5. Inner GND Layer		: MYRIAD_RF-Inner_GND.gbr																	
-6. Inner Analog Signal Layer	: MYRIAD_RF-Inner_Analog_Signal.gbr
-7. Inner Power Layer		: MYRIAD_RF-Inner_Power.gbr
-8. Inner Digital Signal Layer	: MYRIAD_RF-Inner_Digital_Signal.gbr
-9. Back Layer			: MYRIAD_RF-Back.gbl
+1. Top Layer                    : MYRIAD_RF-01-Front.gtl
+2. Inner GND Layer              : MYRIAD_RF-02-Inner_GND.gbr
 
-10. SolderMask Back		: MYRIAD_RF-Mask_Back.gbs
-11. Silk Screen Back		: MYRIAD_RF-SilkS_Back.gbo
-12. Solder Paste Back      	: MYRIAD_RF-SoldP_Back.gbp
+3. Inner Layer 1                : MYRIAD_RF-03-Inner_Analog_Signal.gbr
+4. Inner Power Layer            : MYRIAD_RF-04-Inner_Power.gbr
+5. Inner Layer 2                : MYRIAD_RF-05-Inner_Digital_Signal.gbr
+6. Bottom Layer                 : MYRIAD_RF-06-Back.gbl
 
-
-
---------------------------------------------------
-13. PCB edges           	: MYRIAD_RF-PCB_Edges.gbr
-14. Drawings			: MYRIAD_RF-Dwgs_User.gbr
-
-15. Drill map            	: MYRIAD_RF-drl.pho
-16. NC Drill file	 	: MYRIAD_RF.drl
-
-15. 
+SolderMask Back                 : MYRIAD_RF-B_Mask.gbs
+Silk Screen Back                : MYRIAD_RF-B_SilkS.gbo
+Solder Paste Back               : MYRIAD_RF-B_Paste.gbp
 
 
+Additional Files
+----------------
+PCB edges                       : MYRIAD_RF-Edge_Cuts.gbr
+Drawings                        : MYRIAD_RF-Dwgs_User.gbr
+Drill map                       : MYRIAD_RF-drl_map.pho
+NC Drill file                   : MYRIAD_RF.drl
+Bill of Materials File          : MYRIAD_RF_BOM.xls
 
-Reports folder
---------------
-                  
-MYRIAD_RF_erc.txt
-MYRIAD_RF_drc.txt
-MYRIAD_RF-drl.rpt.txt
-MYRIAD_RF_all_models.txt
+Descriptive Layer Stack Up      : MYRIAD_RF_PCB_Layer_Stack_Up.pdf
 
+Schematics                      : MYRIAD_RF_Schematics_v1r2.pdf
 
+Component Positions Reference   : MYRIAD_RF-all_pos.txt
 
