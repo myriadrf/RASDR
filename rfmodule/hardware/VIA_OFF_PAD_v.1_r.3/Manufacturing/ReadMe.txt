@@ -1,5 +1,4 @@
 
-
 Board Description
 -----------------
 
@@ -25,13 +24,10 @@ Gerber file format          : RS-274-X
 
 drill diameters             : finished hole
 
-plating finish (both sides) : immersion gold
-                              0.08-0.20 um of gold over
-                              2.50-5.00 um of nickel
-
-pads plating                : 1.27 um hard gold over 1.27 um nickel
-
-
+plating finish (both sides) : electroless nickel immersion gold (ENIG)
+                              0.08-0.13 um of gold over
+                              3.00-6.00 um of nickel
+                              per IPC-4552 Amendment 1
 
 Important Notes
 ---------------
