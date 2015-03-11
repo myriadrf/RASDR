@@ -14,11 +14,11 @@ Top layer copper foil thickness	: 18 um
 Dielectric thickness between Top layer and 2nd layer: 180 um
 Dielectric between Top layer and 2nd layer relative permittivity (Er): 4.4
 
-Plating finish (both sides) : immersion gold
-                              0.08-0.20 um of gold over
-                              2.50-5.00 um of nickel
+plating finish (both sides) : electroless nickel immersion gold (ENIG)
+                              0.08-0.13 um of gold over
+                              3.00-6.00 um of nickel
+                              per IPC-4552 Amendment 1
 
-Edge connector plating      : 1.27 um hard gold over 1.27 um nickel
 Min track width 	    : 0.20 mm  
 Min Via hole drill          : 0.20 mm  
 Min pads and track clearance: 0.10 mm   	
