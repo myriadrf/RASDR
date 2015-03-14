@@ -1,0 +1,49 @@
+Thing2D:
+  name: USB 3 Extension Cable, Panel Mount
+  version: 7.5
+  description: USB 3.0 B PANEL ADAPTER
+  manufacturer: "USBFireWire.com"
+  partnumber: RR-MSBFPM-06GR
+  ID: cc50e5b2-c5df-4a95-b5d6-e24e40ec0672
+  verified: true
+  Parser:
+    verified: false
+    version: 7.5
+    id: 86156cd6-6511-4926-91d4-dacb7330795a
+    partnumber: 86156cd6-6511-4926-91d4-dacb7330795a
+    manufacturer: ''
+    name: 47650928-d672-4fe3-a503-e3010c68a871
+    Parameters:
+    - {name: PartsGap, default: PartsGap}
+    - {name: Overhang, default: Overhang}
+    - {name: TabSize, default: TabSize}
+    - {name: Width, default: Base Width, description: the length of the chassis}
+    - {name: Depth, default: Depth}
+    - {name: NotchSize, default: NotchSize, description: the width of a Notch}
+    - {name: Height, default: Height, description: the height of the chassis}
+    - {name: Thickness, default: Base Thickness, description: the thickness of the chassis}
+    - {name: MetalType, default: MetalType, description: The Metal Type used}
+    - {name: FlangeSize, default: FlangeSize, description: the width of a flange}
+    - {name: CoverBendRad, default: CoverBendRad, description: the bend radius}
+    - {name: BaseBendRad, default: BaseBendRad, description: the bend radius}
+    - {name: BaseKFactor, default: BaseKFactor}
+    - {name: ChassisColor, default: Base Color}
+    - {name: HoleOffsetH, default: HoleOffsetH}
+    - {name: ChassisFlangeHoleOffset, default: ChassisFlangeHoleOffset}
+    - {name: HoleOffsetD, default: HoleOffsetD}
+    - {name: CoverNut, default: CoverNut}
+    - {name: FLD, default: FLD}
+    - {name: FLH, default: FLH}
+    - {name: FLW, default: FLW}
+  Bounds: {width: (17.1)/(25.4), height: (31.3)/(25.4), x: (-8.6)/(25.4), y: (-15.6)/(25.4)}
+  Attachment2Ds:
+  - Circle: {radius: '  0.044500', type: CUTOUT, name: circle, version: 7.5, ID: c1f837f1-99b2-4c49-9101-6bf0f7bb1789,
+      verified: false, layer: Default, OriginX: '-0.0010826772', OriginY: '0.5723267717000001',
+      onSameSide: true}
+  - Circle: {radius: '  0.044500', type: CUTOUT, name: circle, version: 7.5, ID: 14633a22-4e40-44d4-a9d6-8f49b02add8d,
+      verified: false, layer: Default, OriginX: '-0.0010826772', OriginY: '-0.5696732283',
+      onSameSide: true}
+  - Rectangle: {width: '0.46850393700787407', height: '0.46850393700787407', type: CUTOUT,
+      name: rectangle, version: 7.5, ID: 4e61f569-c3e4-447a-b1dc-78af628ac38b, verified: false,
+      layer: Default, OriginX: '-0.23425196850393704', OriginY: '-0.23425196850393704',
+      onSameSide: true, thickness: '1.0'}

@@ -1,0 +1,22 @@
+Thing2D:
+  name: PAN MNT HEADER 3.81MM SOLD 8POS
+  version: 7.5
+  description: 'Plug component, Nominal current: 8 A, Rated voltage (III/2): 160 V,
+    Number of positions: 8, Pitch: 3.81 mm, Connection method: Solder/Slip-on connection,
+    Color: green, Contact surface: Tin, Mounting: Direct mounting'
+  manufacturer: Phoenix Contact
+  partnumber: '1827596'
+  ID: 3c4bb13f-b053-4069-9c08-7d4c150e5ee1
+  verified: false
+  Bounds: {width: (47)/(25.4), height: (17)/(25.4), x: '-0.9251968504', y: '-0.3346456693'}
+  Attachment2Ds:
+  - Rectangle: {width: '1.6299212598425197', height: '0.3425196850393701', type: CUTOUT,
+      name: rectangle, version: 7.5, ID: aa7af610-640e-476b-b8c9-479f94f5fbe8, verified: false,
+      layer: Default, OriginX: '-0.814764', OriginY: '-0.224406', onSameSide: true,
+      thickness: '1.0'}
+  - Circle: {radius: '0.0452755905511811', type: CUTOUT, name: circle, version: 7.5,
+      ID: 911167a1-927a-4b62-97a9-dc01f8cc7f2a, verified: false, layer: Default, OriginX: '-0.7224409448818898',
+      OriginY: '0.22244094488188978', onSameSide: true, thickness: '1.0'}
+  - Circle: {radius: '0.0452755905511811', type: CUTOUT, name: circle, version: 7.5,
+      ID: f763fc44-1653-49b4-a44b-7e9fd7703c51, verified: false, layer: Default, OriginX: '0.7204724409448819',
+      OriginY: '0.22440944881889766', onSameSide: true, thickness: '1.0'}

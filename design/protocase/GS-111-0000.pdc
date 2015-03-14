@@ -1,0 +1,19 @@
+Thing2D:
+  name: SWITCH SLIDE SPDT 500MA 125V
+  version: 7.5
+  manufacturer: CW Industries
+  partnumber: GS-111-0000
+  ID: 92afe17f-9759-4928-ac8b-c644e764ffa5
+  verified: false
+  Bounds: {width: (7.92)/(25.4), height: (19.35)/(25.4), x: '-0.1559055118', y: '-0.3809055118'}
+  Attachment2Ds:
+  - Circle: {radius: '0.05', type: CUTOUT, name: circle, version: 7.5, ID: b43fea28-b9ba-4316-a387-7af053604cb7,
+      verified: false, layer: Default, OriginX: '0.0', OriginY: '-0.28090551181102363',
+      onSameSide: true, thickness: '1.0'}
+  - Circle: {radius: '0.05', type: CUTOUT, name: circle, version: 7.5, ID: 874726a0-e0a0-405b-8096-c94f1dbeda88,
+      verified: false, layer: Default, OriginX: '0.0', OriginY: '0.28090551181102363',
+      onSameSide: true, thickness: '1.0'}
+  - Rectangle: {width: '0.11811023622047245', height: '0.2755905511811024', type: CUTOUT,
+      name: rectangle, version: 7.5, ID: 1e005f71-ac00-460d-8d70-a9911c5663fc, verified: false,
+      layer: Default, OriginX: '-0.05905511811023623', OriginY: '-0.1377952755905512',
+      onSameSide: true, thickness: '1.0'}
