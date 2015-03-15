@@ -1,0 +1,4 @@
+The RASDRviewer software is Copyright 2013-2015 Paul L. Oxley.
+Please contact the author for specific details regarding its use.
+
+Paul Oxley 770-887-3493 oxleys@att.net
