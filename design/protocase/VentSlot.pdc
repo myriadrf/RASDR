@@ -1,0 +1,18 @@
+Thing2D:
+  name: Vent Slot
+  version: 7.5
+  partnumber: Vent Slot
+  ID: 428375ba-51f4-4aa4-a920-ec48423729f0
+  verified: false
+  Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4), y: (-1.0)/(25.4)}
+  Attachment2Ds:
+  - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622', type: CUTOUT,
+      name: rectangle, version: 7.5, ID: 664f25b6-460c-4521-a4e5-1a4e771277b2, verified: false,
+      layer: Default, OriginX: '-0.14763779527559057', OriginY: '-0.03149606299212599',
+      onSameSide: true, thickness: '1.0'}
+  - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle, version: 7.5,
+      ID: 3c5c9995-28dd-4032-999b-68b76c812996, verified: false, layer: Default, OriginX: '0.1456692913385827',
+      OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+  - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle, version: 7.5,
+      ID: 880ff808-dacf-4907-81c1-598d2897f370, verified: false, layer: Default, OriginX: '-0.1456692913385827',
+      OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}

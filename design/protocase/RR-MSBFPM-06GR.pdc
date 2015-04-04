@@ -35,15 +35,15 @@ Thing2D:
     - {name: FLD, default: FLD}
     - {name: FLH, default: FLH}
     - {name: FLW, default: FLW}
-  Bounds: {width: (17.1)/(25.4), height: (31.3)/(25.4), x: (-8.6)/(25.4), y: (-15.6)/(25.4)}
+  Bounds: {width: (17.1)/(25.4), height: (31.75)/(25.4), x: (-8.6)/(25.4), y: (-15.875)/(25.4)}
   Attachment2Ds:
-  - Circle: {radius: '  0.044500', type: CUTOUT, name: circle, version: 7.5, ID: c1f837f1-99b2-4c49-9101-6bf0f7bb1789,
-      verified: false, layer: Default, OriginX: '-0.0010826772', OriginY: '0.5723267717000001',
+  - Circle: {radius: '  0.0689', type: CUTOUT, name: circle, version: 7.5, ID: c1f837f1-99b2-4c49-9101-6bf0f7bb1789,
+      verified: false, layer: Default, OriginX: '-0.0010826772', OriginY: '0.59055118',
       onSameSide: true}
-  - Circle: {radius: '  0.044500', type: CUTOUT, name: circle, version: 7.5, ID: 14633a22-4e40-44d4-a9d6-8f49b02add8d,
-      verified: false, layer: Default, OriginX: '-0.0010826772', OriginY: '-0.5696732283',
+  - Circle: {radius: '  0.0689', type: CUTOUT, name: circle, version: 7.5, ID: 14633a22-4e40-44d4-a9d6-8f49b02add8d,
+      verified: false, layer: Default, OriginX: '-0.0010826772', OriginY: '-0.59055118',
       onSameSide: true}
-  - Rectangle: {width: '0.46850393700787407', height: '0.46850393700787407', type: CUTOUT,
+  - Rectangle: {width: '0.51181102', height: '0.49212598', type: CUTOUT,
       name: rectangle, version: 7.5, ID: 4e61f569-c3e4-447a-b1dc-78af628ac38b, verified: false,
-      layer: Default, OriginX: '-0.23425196850393704', OriginY: '-0.23425196850393704',
+      layer: Default, OriginX: '-0.25590551', OriginY: '-0.24606299',
       onSameSide: true, thickness: '1.0'}

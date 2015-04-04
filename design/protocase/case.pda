@@ -1,12 +1,6 @@
 # Protocase Designer Configuration 
 Assembly:
-  designer: {'Mar 14, 2015 2:58:00 PM EDT': '4.4.8 Sep29,14', 'Mar 14, 2015 3:29:40 PM EDT': '4.4.8
-      Sep29,14', 'Mar 14, 2015 3:45:15 PM EDT': '4.4.8 Sep29,14', 'Mar 14, 2015 3:56:45 PM EDT': '4.4.8
-      Sep29,14', 'Mar 14, 2015 3:58:24 PM EDT': '4.4.8 Sep29,14', 'Mar 14, 2015 4:00:47 PM EDT': '4.4.8
-      Sep29,14', 'Mar 14, 2015 6:20:08 AM EDT': '4.4.8 Sep29,14', 'Mar 14, 2015 6:38:00 AM EDT': '4.4.8
-      Sep29,14', 'Mar 14, 2015 6:47:01 AM EDT': '4.4.8 Sep29,14', 'Mar 14, 2015 7:18:22 AM EDT': '4.4.8
-      Sep29,14', 'Mar 14, 2015 7:48:07 AM EDT': '4.4.8 Sep29,14', 'Mar 14, 2015 7:54:39 AM EDT': '4.4.8
-      Sep29,14'}
+  designer: {'Apr 4, 2015 2:04:05 PM EDT': '4.4.8 Sep29,14'}
   QuotedUnits: MM
   DesignID: L-Shape Template Rev 10
   name: L Shape
@@ -735,25 +729,25 @@ Assembly:
                       ID: 5011c914-a48b-418a-a1a9-94dbc3635a13
                       verified: true
                       rotation: '90'
-                      OriginX: '0.8661417322834639'
+                      OriginX: '0.9448818897637796'
                       OriginY: '0.4911732283464567'
                       onSameSide: true
                       scaleFactorX: '-1.0'
-                      Bounds: {width: (17.1)/(25.4), height: (31.3)/(25.4), x: (-8.6)/(25.4),
-                        y: (-15.6)/(25.4)}
+                      Bounds: {width: (17.1)/(25.4), height: (31.75)/(25.4), x: (-8.6)/(25.4),
+                        y: (-15.875)/(25.4)}
                       Attachment2Ds:
-                      - Circle: {radius: '  0.044500', type: CUTOUT, name: circle,
+                      - Circle: {radius: '  0.0689', type: CUTOUT, name: circle,
                           version: 7.5, ID: 3c0a7fc6-ffbb-44b6-9e5b-fd7e2cfbaeea,
                           verified: false, layer: Default, OriginX: '-0.0010826772',
-                          OriginY: '0.5723267717000001', onSameSide: true}
-                      - Circle: {radius: '  0.044500', type: CUTOUT, name: circle,
+                          OriginY: '0.59055118', onSameSide: true}
+                      - Circle: {radius: '  0.0689', type: CUTOUT, name: circle,
                           version: 7.5, ID: 8a4a4b23-1272-4358-88bc-332f6e16da51,
                           verified: false, layer: Default, OriginX: '-0.0010826772',
-                          OriginY: '-0.5696732283', onSameSide: true}
-                      - Rectangle: {width: '0.46850393700787407', height: '0.46850393700787407',
+                          OriginY: '-0.59055118', onSameSide: true}
+                      - Rectangle: {width: '0.51181102', height: '0.49212598',
                           type: CUTOUT, name: rectangle, version: 7.5, ID: 355209d8-341f-4f1f-8ee5-b1984adb5b93,
-                          verified: false, layer: Default, OriginX: '-0.23425196850393704',
-                          OriginY: '-0.23425196850393704', onSameSide: true, thickness: '1.0'}
+                          verified: false, layer: Default, OriginX: '-0.25590551',
+                          OriginY: '-0.24606299', onSameSide: true, thickness: '1.0'}
                   - Thing2D:
                       name: SWITCH SLIDE SPDT 500MA 125V
                       version: 7.5
@@ -762,7 +756,7 @@ Assembly:
                       ID: 4ee4a224-2452-4a42-ae40-a18789d9e122
                       verified: false
                       rotation: '-0.0'
-                      OriginX: '1.850393700787401'
+                      OriginX: '1.8897637795275584'
                       OriginY: '0.4911732283464567'
                       onSameSide: true
                       scaleFactorX: '-1.0'
@@ -847,6 +841,39 @@ Assembly:
                       rotation: '-0.0', OriginX: '3.622047244094488', OriginY: '0.5856614173228347',
                       onSameSide: true, scaleFactorX: '-1.0', content: REFCLK  IN,
                       fontFamily: Tahoma, fontStyle: Regular, fontSize: '12.0', sizeCorrected: true}
+                  - Text2D: {type: SILKSCREEN, color: Blue Pantone Process C, name: Text,
+                      version: 7.5, ID: 660ff47e-ebbd-49a8-a3cd-fddc9098e45e, verified: false,
+                      layer: Default, rotation: '-0.0', OriginX: '4.366141732283465',
+                      OriginY: '0.39274803149606297', onSameSide: true, scaleFactorX: '-1.0',
+                      content: ACT, fontFamily: Tahoma, fontStyle: Regular, fontSize: '12.0',
+                      sizeCorrected: true}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: cc162a25-bcfd-4a46-ad5a-6898dbf4bd52
+                      verified: false
+                      layer: Default
+                      rotation: '-0.0'
+                      OriginX: '4.228346456692913'
+                      OriginY: '0.3494409448818898'
+                      onSameSide: true
+                      scaleFactorX: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 5d809a17-cfe2-428e-a262-7905221e0898,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 2e9fff57-40c6-4e74-9688-67f980d9f39e,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: b5bd7e22-bc57-4d79-8b3d-bd1879dca788,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
               Connections:
               - {className: Seam, parentSide: '0', parentSideLoc: 'IfElse(Height>1.5,Width,Width-2*BaseBendRad-2*Thickness)',
                 childSideLoc: '0'}
@@ -1120,6 +1147,240 @@ Assembly:
                 0, -BaseBendRad-Thickness))+((1.0)*(Width - 0.25)))+((0.0)*(0.25))',
               OriginY: ((-BaseBendRad-Thickness)+((0.0)*(Width - 0.25)))+((1.0)*(0.25)),
               onSameSide: true}
+          - PEM:
+              type: PEM
+              name: S-632-1ZI 6-32 heat treated carbon Nut
+              version: 7.5
+              description: |-
+                S-632-1ZI 6-32 heat treated carbon Nut
+                Self-Clinching Nut
+                Standard
+                finish: ZI
+                Compatibility: Cold Rolled Steel, Galvanized Steel,  Aluminum
+              partnumber: S-632-1ZI
+              ID: 'PEM Nut: S-632-1ZI'
+              verified: true
+              OriginX: '5.802196850393701'
+              OriginY: '2.1210944881889766'
+              onSameSide: false
+              scaleFactorX: '-1.0'
+              inLibrary: byID
+          - PEM:
+              type: PEM
+              name: S-632-1ZI 6-32 heat treated carbon Nut
+              version: 7.5
+              description: |-
+                S-632-1ZI 6-32 heat treated carbon Nut
+                Self-Clinching Nut
+                Standard
+                finish: ZI
+                Compatibility: Cold Rolled Steel, Galvanized Steel,  Aluminum
+              partnumber: S-632-1ZI
+              ID: 'PEM Nut: S-632-1ZI'
+              verified: true
+              OriginX: '0.44786614173228345'
+              OriginY: '2.1210944881889766'
+              onSameSide: false
+              scaleFactorX: '-1.0'
+              inLibrary: byID
+          - PEM:
+              type: PEM
+              name: S-632-1ZI 6-32 heat treated carbon Nut
+              version: 7.5
+              description: |-
+                S-632-1ZI 6-32 heat treated carbon Nut
+                Self-Clinching Nut
+                Standard
+                finish: ZI
+                Compatibility: Cold Rolled Steel, Galvanized Steel,  Aluminum
+              partnumber: S-632-1ZI
+              ID: 'PEM Nut: S-632-1ZI'
+              verified: true
+              OriginX: '5.802196850393701'
+              OriginY: '0.3888110236220472'
+              onSameSide: false
+              scaleFactorX: '-1.0'
+              inLibrary: byID
+          - PEM:
+              type: PEM
+              name: S-632-1ZI 6-32 heat treated carbon Nut
+              version: 7.5
+              description: |-
+                S-632-1ZI 6-32 heat treated carbon Nut
+                Self-Clinching Nut
+                Standard
+                finish: ZI
+                Compatibility: Cold Rolled Steel, Galvanized Steel,  Aluminum
+              partnumber: S-632-1ZI
+              ID: 'PEM Nut: S-632-1ZI'
+              verified: true
+              OriginX: '0.44786614173228345'
+              OriginY: '0.3888110236220472'
+              onSameSide: false
+              scaleFactorX: '-1.0'
+              inLibrary: byID
+          - Thing2D:
+              name: Mounting Screw Cutout
+              version: 7.5
+              partnumber: Mounting Screw Cutout
+              ID: 0316318a-b2f8-452c-a8d6-40ce0fdc3a47
+              verified: false
+              layer: Default
+              rotation: '180.0'
+              OriginX: '5.093535433070866'
+              OriginY: '1.8848740157480315'
+              onSameSide: true
+              scaleFactorX: '-1.0'
+              Bounds: {width: (18.0)/(25.4), height: (18.0)/(25.4), x: '-0.35433070865',
+                y: '-0.35433070865'}
+              Attachment2Ds:
+              - CompositePath:
+                  type: CUTOUT
+                  name: path
+                  version: '7.5'
+                  ID: 1a3bf3d2-211b-413f-a35d-845bcb3bb4d1
+                  verified: false
+                  layer: Default
+                  OriginX: '-0.07874015748031496'
+                  OriginY: '-0.23622047244094488'
+                  onSameSide: true
+                  thickness: '1.0'
+                  pathSegments:
+                  - Line: ['0.0', '0.31496062992125984']
+                  - Line: ['0.15748031496062992', '0.0']
+                  - Line: ['0.0', '-0.31496062992125984']
+                  - Line: [(-0.15748031496062992)-(0.0), (0.0)-(0.0)]
+              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
+                  type: CUTOUT, name: ellipse, version: 7.5, ID: c56148d2-ef20-4fe2-9c6c-9785fd9d107c,
+                  verified: false, layer: Default, OriginX: '-0.23622047244094488',
+                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
+              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
+                  type: CUTOUT, name: ellipse, version: 7.5, ID: 9d34e973-3fdd-4c15-93c4-9f4aa4460088,
+                  verified: false, layer: Default, OriginX: '0.2362204724409449',
+                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
+              - CompositePath:
+                  type: CUTOUT
+                  name: Trim Path
+                  version: '7.5'
+                  ID: f5029225-21c4-499c-bee2-0857d124af08
+                  verified: false
+                  layer: Default
+                  OriginX: '-0.2362204724'
+                  OriginY: '0.07874015748031496'
+                  onSameSide: true
+                  pathSegments:
+                  - Line: ['0.0', '-0.157480315']
+                  - Line: ['0.1113328981726443', '0.0']
+                  - CircleArc3:
+                      end: ['0.24977514844211296', '0.0']
+                      mid: ['0.1248875742210565', '-0.06889763778031494']
+                  - Line: ['0.11133289828524273', '0.0']
+                  - Line: ['0.0', '0.157480315']
+                  - Line: ['-0.11133289826042035', '0.0']
+                  - CircleArc3:
+                      end: ['-0.24977514849175772', '0.0']
+                      mid: ['-0.12488757424587887', '0.06889763781968505']
+                  - Line: [(-0.11133289812971169)-(0.0), (0.0)-(0.0)]
+              - CompositePath:
+                  type: CUTOUT
+                  name: Trim Path
+                  version: '7.5'
+                  ID: 3f0af889-a460-4d3f-8e52-eb6207139d7f
+                  verified: false
+                  layer: Default
+                  OriginX: '0.0'
+                  OriginY: '-0.15748031491968503'
+                  onSameSide: true
+                  pathSegments:
+                  - EllipticArc:
+                      end: ['0.0', '0.0']
+                      center: ['-0.0', '-0.0787401575']
+                      majorRad: '0.07874015748031496'
+                      minorRad: '0.07874015748031496'
+                      theta0: '0.0'
+                      theta: '6.283185307179586'
+                      phi: '1.5707963267948966'
+          - Thing2D:
+              name: Mounting Screw Cutout
+              version: 7.5
+              partnumber: Mounting Screw Cutout
+              ID: 0316318a-b2f8-452c-a8d6-40ce0fdc3a47
+              verified: false
+              layer: Default
+              rotation: '180.0'
+              OriginX: '1.1565275590551183'
+              OriginY: '1.8848740157480315'
+              onSameSide: true
+              scaleFactorX: '-1.0'
+              Bounds: {width: (18.0)/(25.4), height: (18.0)/(25.4), x: '-0.35433070865',
+                y: '-0.35433070865'}
+              Attachment2Ds:
+              - CompositePath:
+                  type: CUTOUT
+                  name: path
+                  version: '7.5'
+                  ID: 1a3bf3d2-211b-413f-a35d-845bcb3bb4d1
+                  verified: false
+                  layer: Default
+                  OriginX: '-0.07874015748031496'
+                  OriginY: '-0.23622047244094488'
+                  onSameSide: true
+                  thickness: '1.0'
+                  pathSegments:
+                  - Line: ['0.0', '0.31496062992125984']
+                  - Line: ['0.15748031496062992', '0.0']
+                  - Line: ['0.0', '-0.31496062992125984']
+                  - Line: [(-0.15748031496062992)-(0.0), (0.0)-(0.0)]
+              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
+                  type: CUTOUT, name: ellipse, version: 7.5, ID: c56148d2-ef20-4fe2-9c6c-9785fd9d107c,
+                  verified: false, layer: Default, OriginX: '-0.23622047244094488',
+                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
+              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
+                  type: CUTOUT, name: ellipse, version: 7.5, ID: 9d34e973-3fdd-4c15-93c4-9f4aa4460088,
+                  verified: false, layer: Default, OriginX: '0.2362204724409449',
+                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
+              - CompositePath:
+                  type: CUTOUT
+                  name: Trim Path
+                  version: '7.5'
+                  ID: f5029225-21c4-499c-bee2-0857d124af08
+                  verified: false
+                  layer: Default
+                  OriginX: '-0.2362204724'
+                  OriginY: '0.07874015748031496'
+                  onSameSide: true
+                  pathSegments:
+                  - Line: ['0.0', '-0.157480315']
+                  - Line: ['0.1113328981726443', '0.0']
+                  - CircleArc3:
+                      end: ['0.24977514844211296', '0.0']
+                      mid: ['0.1248875742210565', '-0.06889763778031494']
+                  - Line: ['0.11133289828524273', '0.0']
+                  - Line: ['0.0', '0.157480315']
+                  - Line: ['-0.11133289826042035', '0.0']
+                  - CircleArc3:
+                      end: ['-0.24977514849175772', '0.0']
+                      mid: ['-0.12488757424587887', '0.06889763781968505']
+                  - Line: [(-0.11133289812971169)-(0.0), (0.0)-(0.0)]
+              - CompositePath:
+                  type: CUTOUT
+                  name: Trim Path
+                  version: '7.5'
+                  ID: 3f0af889-a460-4d3f-8e52-eb6207139d7f
+                  verified: false
+                  layer: Default
+                  OriginX: '0.0'
+                  OriginY: '-0.15748031491968503'
+                  onSameSide: true
+                  pathSegments:
+                  - EllipticArc:
+                      end: ['0.0', '0.0']
+                      center: ['-0.0', '-0.0787401575']
+                      majorRad: '0.07874015748031496'
+                      minorRad: '0.07874015748031496'
+                      theta0: '0.0'
+                      theta: '6.283185307179586'
+                      phi: '1.5707963267948966'
   - Part:
       name: L Shape Cover Top Side Part
       version: 7.5
@@ -1233,7 +1494,8 @@ Assembly:
                         end: [-CornerRad, -CornerRad]
                         mid: [-CornerRad/2, -CornerRad + sqrt3o2*CornerRad]
                         exist: (! CoverMounts)
-                    - Line: [(((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0), (((((-Height + Cover Thickness + CoverBendRad + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
+                    - Line: [((((((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0),
+                        ((((((((-Height + Cover Thickness + CoverBendRad + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
                       exist: (! CoverMounts)
                     - Line: ['0', -Height + Cover Thickness + CoverBendRad + CoverBendRad + Cover Thickness + CornerRad]
                       exist: CoverMounts
@@ -1287,7 +1549,8 @@ Assembly:
                             - CircleArc3:
                                 end: [-CornerRad, -CornerRad]
                                 mid: [-CornerRad/2, -CornerRad + sqrt3o2*CornerRad]
-                            - Line: [(((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0), (((((- CoverWide + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
+                            - Line: [((((((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0),
+                                ((((((((- CoverWide + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
                           FaceCoordinateTransform:
                             invertX: 'true'
                             Origin: [Depth - Overhang - Cover Thickness, -CoverBendRad - Cover Thickness]
@@ -1359,6 +1622,162 @@ Assembly:
                       template: true, verified: true, layer: Default, OriginX: ((Depth - Overhang - Cover Thickness)+((-1.0)*(0)))+((0.0)*(0)),
                       OriginY: ((Height - (CoverBendRad+Cover Thickness))+((0.0)*(0)))+((-1.0)*(0)),
                       onSameSide: true}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: 71faf9dc-8369-461d-a5ec-edd51e219ff2
+                      verified: false
+                      rotation: '-45'
+                      OriginX: '1.3385826777952756'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 4887e29a-347f-4380-a0da-cb7740a83402,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 58c6bf89-27b1-4e40-a755-a2900f0d93c7,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 00cf5591-0749-4cfa-b2c0-03210c6fc77f,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
+                      verified: false
+                      rotation: '-45'
+                      OriginX: '1.2440944888188978'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 0bff2d99-0396-4dc9-ad5f-b4b80ba0b750,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 4fa2cb4f-c486-49fa-a733-5df527300d05,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 9c3045ee-f3d3-49ce-a843-20dad59fcdff,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
+                      verified: false
+                      rotation: '-45.0'
+                      OriginX: '1.1496062998425198'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 0bff2d99-0396-4dc9-ad5f-b4b80ba0b750,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 4fa2cb4f-c486-49fa-a733-5df527300d05,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 9c3045ee-f3d3-49ce-a843-20dad59fcdff,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
+                      verified: false
+                      rotation: '-45.0'
+                      OriginX: '1.0551181108661416'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 0bff2d99-0396-4dc9-ad5f-b4b80ba0b750,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 4fa2cb4f-c486-49fa-a733-5df527300d05,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 9c3045ee-f3d3-49ce-a843-20dad59fcdff,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
+                      verified: false
+                      rotation: '-45.0'
+                      OriginX: '0.9606299218897638'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 0bff2d99-0396-4dc9-ad5f-b4b80ba0b750,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 4fa2cb4f-c486-49fa-a733-5df527300d05,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 9c3045ee-f3d3-49ce-a843-20dad59fcdff,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
+                      verified: false
+                      rotation: '-45.0'
+                      OriginX: '0.8661417329133858'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 0bff2d99-0396-4dc9-ad5f-b4b80ba0b750,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 4fa2cb4f-c486-49fa-a733-5df527300d05,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 9c3045ee-f3d3-49ce-a843-20dad59fcdff,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
               Connections:
               - {className: Seam, parentSide: '1', parentSideLoc: Depth-CoverBendRad-Cover Thickness,
                 childSideLoc: '0'}
@@ -1405,7 +1824,8 @@ Assembly:
                     - CircleArc3:
                         end: [-CornerRad, -CornerRad]
                         mid: [-CornerRad/2, -CornerRad + sqrt3o2*CornerRad]
-                    - Line: [(((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0), (((((- Height + Cover Thickness + CoverBendRad + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
+                    - Line: [((((((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0),
+                        ((((((((- Height + Cover Thickness + CoverBendRad + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
                   FaceCoordinateTransform:
                     invertX: 'true'
                     Origin: [Width - Cover Thickness - PartsGap, Height - (CoverBendRad+Cover Thickness)]
@@ -1492,7 +1912,8 @@ Assembly:
                         end: [-BaseOuterRad, -BaseOuterRad]
                         mid: [-BaseOuterRad/2, -BaseOuterRad + sqrt3o2*BaseOuterRad]
                         exist: (! CoverMounts)
-                    - Line: [(((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0), (((((-Height + Cover Thickness + CoverBendRad + BaseOuterRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
+                    - Line: [((((((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0),
+                        ((((((((-Height + Cover Thickness + CoverBendRad + BaseOuterRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
                       exist: (! CoverMounts)
                     - Line: ['0', -Height + Cover Thickness + CoverBendRad + CoverBendRad + Cover Thickness + BaseOuterRad]
                       exist: CoverMounts
@@ -1544,7 +1965,8 @@ Assembly:
                             - CircleArc3:
                                 end: [-CornerRad, -CornerRad]
                                 mid: [-CornerRad/2, -CornerRad + sqrt3o2*CornerRad]
-                            - Line: [(((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0), (((((- CoverWide + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
+                            - Line: [((((((((0)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0),
+                                ((((((((- CoverWide + CornerRad)-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0))-(0.0)]
                           FaceCoordinateTransform:
                             invertY: 'true'
                             Origin: [Overhang, -Width - PartsGap - Cover Thickness - CoverBendRad]
@@ -1616,6 +2038,162 @@ Assembly:
                       template: true, verified: true, layer: Default, OriginX: ((Overhang)+((1.0)*(0)))+((0.0)*(0)),
                       OriginY: ((Height - (CoverBendRad+Cover Thickness))+((0.0)*(0)))+((-1.0)*(0)),
                       onSameSide: true}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
+                      verified: false
+                      rotation: '45'
+                      OriginX: '1.6835433070866144'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: cb721678-1ba5-40e5-8b90-3a74782ee9c6,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: d74e064e-02b2-4a6d-96c0-634f0a46a0ba,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: ed687196-2bc4-4f76-818f-4a9ed077c2b9,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
+                      verified: false
+                      rotation: '45'
+                      OriginX: '1.5890551181102364'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: cb721678-1ba5-40e5-8b90-3a74782ee9c6,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: d74e064e-02b2-4a6d-96c0-634f0a46a0ba,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: ed687196-2bc4-4f76-818f-4a9ed077c2b9,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
+                      verified: false
+                      rotation: '45'
+                      OriginX: '1.4945669291338586'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: cb721678-1ba5-40e5-8b90-3a74782ee9c6,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: d74e064e-02b2-4a6d-96c0-634f0a46a0ba,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: ed687196-2bc4-4f76-818f-4a9ed077c2b9,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
+                      verified: false
+                      rotation: '45'
+                      OriginX: '1.4000787401574804'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: cb721678-1ba5-40e5-8b90-3a74782ee9c6,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: d74e064e-02b2-4a6d-96c0-634f0a46a0ba,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: ed687196-2bc4-4f76-818f-4a9ed077c2b9,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: 00aaca8d-b653-438c-8525-271e2550d6d1
+                      verified: false
+                      rotation: '45'
+                      OriginX: '1.3055905511811023'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 4098cbe2-b689-422f-ac45-711413704512,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: f3bcb3db-df6c-4b70-bd6e-666416419f24,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 42e9ac98-b42f-468f-b484-7f50d4f7dbe6,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                  - Thing2D:
+                      name: Vent Slot
+                      version: 7.5
+                      partnumber: Vent Slot
+                      ID: 00aaca8d-b653-438c-8525-271e2550d6d1
+                      verified: false
+                      rotation: '45'
+                      OriginX: '1.2111023622047246'
+                      OriginY: '0.26570866137322824'
+                      onSameSide: true
+                      scaleFactorY: '-1.0'
+                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
+                        y: (-1.0)/(25.4)}
+                      Attachment2Ds:
+                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
+                          type: CUTOUT, name: rectangle, version: 7.5, ID: 4098cbe2-b689-422f-ac45-711413704512,
+                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
+                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: f3bcb3db-df6c-4b70-bd6e-666416419f24,
+                          verified: false, layer: Default, OriginX: '0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
+                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
+                          version: 7.5, ID: 42e9ac98-b42f-468f-b484-7f50d4f7dbe6,
+                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
+                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
               Connections:
               - {className: Seam, parentSide: '3', parentSideLoc: Depth-(CoverBendRad+Cover Thickness),
                 childSideLoc: '0'}
@@ -1679,11 +2257,11 @@ Assembly:
               fontStyle: Regular, fontSize: '12.0', sizeCorrected: true}
           - Text2D: {type: SILKSCREEN, color: Blue Pantone Process C, name: Text,
               version: 7.5, ID: 3b47f94f-664b-4e88-8d5f-94665c19dce0, verified: false,
-              rotation: '-0.0', OriginX: '1.9822440944622048', OriginY: '0.10874015748031496',
+              rotation: '-0.0', OriginX: '2.0216141732023623', OriginY: '0.10874015748031496',
               onSameSide: true, scaleFactorX: '-1.0', content: PROG, fontFamily: Tahoma,
               fontStyle: Regular, fontSize: '12.0', sizeCorrected: true}
           - Text2D: {type: SILKSCREEN, color: Blue Pantone Process C, name: Text,
               version: 7.5, ID: ea6d5f58-3337-4e4b-b391-20144b8617c3, verified: false,
-              rotation: '-0.0', OriginX: '1.11610236217874', OriginY: '0.10874015748031496',
+              rotation: '-0.0', OriginX: '1.1554724409188974', OriginY: '0.10874015748031496',
               onSameSide: true, scaleFactorX: '-1.0', content: USB 3.0, fontFamily: Tahoma,
               fontStyle: Regular, fontSize: '12.0', sizeCorrected: true}

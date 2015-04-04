@@ -1,0 +1,74 @@
+Thing2D:
+  name: Mounting Screw Cutout
+  version: 7.5
+  partnumber: Mounting Screw Cutout
+  ID: 1a6b78cb-c38d-4b80-bd48-c063fb085954
+  verified: false
+  Bounds: {width: (18.0)/(25.4), height: (18.0)/(25.4), x: '-0.35433070865', y: '-0.35433070865'}
+  Attachment2Ds:
+  - CompositePath:
+      type: CUTOUT
+      name: path
+      version: '7.5'
+      ID: 75278f83-1e62-4c30-b4de-205fb4c2d181
+      verified: false
+      layer: Default
+      OriginX: '-0.07874015748031496'
+      OriginY: '-0.23622047244094488'
+      onSameSide: true
+      thickness: '1.0'
+      pathSegments:
+      - Line: ['0.0', '0.31496062992125984']
+      - Line: ['0.15748031496062992', '0.0']
+      - Line: ['0.0', '-0.31496062992125984']
+      - Line: [(-0.15748031496062992)-(0.0), (0.0)-(0.0)]
+  - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496', type: CUTOUT,
+      name: ellipse, version: 7.5, ID: e541d852-7eb1-4f2b-a75a-af8712ac3724, verified: false,
+      layer: Default, OriginX: '-0.23622047244094488', OriginY: '0.0', onSameSide: true,
+      thickness: '1.0'}
+  - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496', type: CUTOUT,
+      name: ellipse, version: 7.5, ID: c568aaee-18cb-4051-a2fc-4df3bb6196d1, verified: false,
+      layer: Default, OriginX: '0.2362204724409449', OriginY: '0.0', onSameSide: true,
+      thickness: '1.0'}
+  - CompositePath:
+      type: CUTOUT
+      name: Trim Path
+      version: '7.5'
+      ID: fc7e5bb8-d64f-4eb3-ab0b-e545087961b2
+      verified: false
+      layer: Default
+      OriginX: '-0.2362204724'
+      OriginY: '0.07874015748031496'
+      onSameSide: true
+      pathSegments:
+      - Line: ['0.0', '-0.157480315']
+      - Line: ['0.1113328981726443', '0.0']
+      - CircleArc3:
+          end: ['0.24977514844211296', '0.0']
+          mid: ['0.1248875742210565', '-0.06889763778031494']
+      - Line: ['0.11133289828524273', '0.0']
+      - Line: ['0.0', '0.157480315']
+      - Line: ['-0.11133289826042035', '0.0']
+      - CircleArc3:
+          end: ['-0.24977514849175772', '0.0']
+          mid: ['-0.12488757424587887', '0.06889763781968505']
+      - Line: [(-0.11133289812971169)-(0.0), (0.0)-(0.0)]
+  - CompositePath:
+      type: CUTOUT
+      name: Trim Path
+      version: '7.5'
+      ID: 4a2953bc-2078-4ccc-a3f0-8a0a44ef59e4
+      verified: false
+      layer: Default
+      OriginX: '0.0'
+      OriginY: '-0.15748031491968503'
+      onSameSide: true
+      pathSegments:
+      - EllipticArc:
+          end: ['0.0', '0.0']
+          center: ['-0.0', '-0.0787401575']
+          majorRad: '0.07874015748031496'
+          minorRad: '0.07874015748031496'
+          theta0: '0.0'
+          theta: '6.283185307179586'
+          phi: '1.5707963267948966'
