@@ -54,26 +54,33 @@ Controlled Impedance
 Board Stackup
 -------------
 
-Solder Paste Front              : DigiRED_v1.0-F_Paste.gbp
-Silk Screen Front               : DigiRED_v1.0-F_SilkS.gto
-Solder Mask Front               : DigiRED_v1.0-F_Mask.gts
+Solder Paste Front              : DigiRED_v1-F_Paste.gtp        (DigiRED_v1.0-F_Paste.gtp)
+Silk Screen Front               : DigiRED_v1-F_SilkS.gto        (DigiRED_v1.0-F_SilkS.gto)
+Solder Mask Front               : DigiRED_v1-F_Mask.gts         (DigiRED_v1.0-F_Mask.gts)
 
-1. Top Layer                    : DigiRED_v1.0-Front_Cu.gtl
-2. GND Layer                    : DigiRED_v1.0-GND_Cu.gbr				
-3. Inner Layer 1                : DigiRED_v1.0-Signal_1_Cu.gbr
-4. Inner Layer 2                : DigiRED_v1.0-Signal_2_Cu.gbr
-5. Power Layer                  : DigiRED_v1.0-Power_Cu.gbr
-6. Bottom Layer                 : DigiRED_v1.0-Back_Cu.gbl
+1. Top Layer                    : DigiRED_v1-01-Front_Cu.gtl    (DigiRED_v1.0-F_Cu.gtl)
+2. GND Layer                    : DigiRED_v1-02-GND_Cu.gbr      (DigiRED_v1.0-Inner4_Cu.gbr)			
+3. Inner Layer 1                : DigiRED_v1-03-Signal_1_Cu.gbr (DigiRED_v1.0-Inner3_Cu.gbr)
+4. Inner Layer 2                : DigiRED_v1-04-Signal_2_Cu.gbr (DigiRED_v1.0-Inner2_Cu.gbr)
+5. Power Layer                  : DigiRED_v1-05-Power_Cu.gbr    (DigiRED_v1.0-Inner1_Cu.gbr)
+6. Bottom Layer                 : DigiRED_v1-06-Back_Cu.gbl     (DigiRED_v1.0-B_Cu.gbl)
 
-Solder Mask Back                : DigiRED_v1.0-B_Mask.gbs
-Silk Screen Back                : DigiRED_v1.0-B_SilkS.gbo
-Solder Paste Back               : DigiRED_v1.0-B_Paste.gbp
+Solder Mask Back                : DigiRED_v1-B_Mask.gbs         (DigiRED_v1.0-B_Mask.gbs)
+Silk Screen Back                : DigiRED_v1-B_SilkS.gbo        (DigiRED_v1.0-B_SilkS.gbo)
+Solder Paste Back               : DigiRED_v1-B_Paste.gbp        (DigiRED_v1.0-B_Paste.gbp)
 
 
 Additional Files
 ----------------
 
-PCB edges                       : DigiRED_v1.0-Edge_Cuts.gbr
-Drill map                       : DigiRED_v1-drl_map.pho
-NC Drill file                   : DigiRED_v1.0.drl
+PCB edges                       : DigiRED_v1-Edge_Cuts.gbr      (DigiRED_v1.0-Edge_Cuts.gbr)
+Drill map                       : DigiRED_v1-drl_map.pho        (DigiRED_v1.0-drl_map.pho)
+NC Drill file                   : DigiRED_v1.drl                (DigiRED_v1.0.drl)
+Bill of Materials File          : DigiRED_v1_BOM.xls
+
+Descriptive Layer Stack Up      : DigiRED_v1_PCB_Layer_Stack_Up.pdf
+
+Schematics                      : DigiRED_v1_Schematics_v1r1.pdf
+Component Positions Reference   : DigiRED_v1-all_pos.txt
+
 
