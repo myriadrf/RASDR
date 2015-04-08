@@ -1236,70 +1236,42 @@ Assembly:
               Attachment2Ds:
               - CompositePath:
                   type: CUTOUT
-                  name: path
-                  version: '7.5'
-                  ID: 1a3bf3d2-211b-413f-a35d-845bcb3bb4d1
-                  verified: false
-                  layer: Default
-                  OriginX: '-0.07874015748031496'
-                  OriginY: '-0.23622047244094488'
-                  onSameSide: true
-                  thickness: '1.0'
-                  pathSegments:
-                  - Line: ['0.0', '0.31496062992125984']
-                  - Line: ['0.15748031496062992', '0.0']
-                  - Line: ['0.0', '-0.31496062992125984']
-                  - Line: [(-0.15748031496062992)-(0.0), (0.0)-(0.0)]
-              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
-                  type: CUTOUT, name: ellipse, version: 7.5, ID: c56148d2-ef20-4fe2-9c6c-9785fd9d107c,
-                  verified: false, layer: Default, OriginX: '-0.23622047244094488',
-                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
-              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
-                  type: CUTOUT, name: ellipse, version: 7.5, ID: 9d34e973-3fdd-4c15-93c4-9f4aa4460088,
-                  verified: false, layer: Default, OriginX: '0.2362204724409449',
-                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
-              - CompositePath:
-                  type: CUTOUT
                   name: Trim Path
                   version: '7.5'
-                  ID: f5029225-21c4-499c-bee2-0857d124af08
+                  ID: 2ff28fc3-158f-4758-a5e9-0fd56a11ecd8
                   verified: false
                   layer: Default
                   OriginX: '-0.2362204724'
-                  OriginY: '0.07874015748031496'
+                  OriginY: '-0.07874015751968505'
                   onSameSide: true
                   pathSegments:
-                  - Line: ['0.0', '-0.157480315']
                   - Line: ['0.1113328981726443', '0.0']
                   - CircleArc3:
-                      end: ['0.24977514844211296', '0.0']
-                      mid: ['0.1248875742210565', '-0.06889763778031494']
-                  - Line: ['0.11133289828524273', '0.0']
-                  - Line: ['0.0', '0.157480315']
-                  - Line: ['-0.11133289826042035', '0.0']
+                      end: ['0.046147416727355686', '-0.04614741673334104']
+                      mid: ['0.020491888014132875', '-0.025655528715880588']
+                  - Line: ['0.0', '-0.1113328981469739']
                   - CircleArc3:
-                      end: ['-0.24977514849175772', '0.0']
-                      mid: ['-0.12488757424587887', '0.06889763781968505']
-                  - Line: [(-0.11133289812971169)-(0.0), (0.0)-(0.0)]
-              - CompositePath:
-                  type: CUTOUT
-                  name: Trim Path
-                  version: '7.5'
-                  ID: 3f0af889-a460-4d3f-8e52-eb6207139d7f
-                  verified: false
-                  layer: Default
-                  OriginX: '0.0'
-                  OriginY: '-0.15748031491968503'
-                  onSameSide: true
-                  pathSegments:
-                  - EllipticArc:
-                      end: ['0.0', '0.0']
-                      center: ['-0.0', '-0.0787401575']
-                      majorRad: '0.07874015748031496'
-                      minorRad: '0.07874015748031496'
-                      theta0: '0.0'
-                      theta: '6.283185307179586'
-                      phi: '1.5707963267948966'
+                      end: ['0.15748031498', '-2.1259827232000816E-11']
+                      mid: ['0.07874015746937009', '-0.07874015750125984']
+                  - Line: ['0.0', '0.11133289810883484']
+                  - CircleArc3:
+                      end: ['0.046147416754127354', '0.04614741675022027']
+                      mid: ['0.025655528728805013', '0.02049188802315026']
+                  - Line: ['0.11133289828524273', '0.0']
+                  - CircleArc3:
+                      end: ['0.07874015742000001', '0.07874015751968505']
+                      mid: ['0.055677699289110205', '0.023062458221062808']
+                  - CircleArc3:
+                      end: ['-0.07874015742000001', '0.07874015748031496']
+                      mid: ['-0.02306245815872865', '0.05567769929862224']
+                  - Line: ['-0.11133289829999998', '0.0']
+                  - CircleArc3:
+                      end: ['-0.2497751485', '0.0']
+                      mid: ['-0.12488757425000004', '0.06889763781968508']
+                  - Line: ['-0.11133289810000002', '0.0']
+                  - CircleArc3:
+                      end: [(0.0)-(3.937003500986691E-11), (-0.157480315)-(5.90551219037394E-11)]
+                      mid: ['-0.07874015750031493', '-0.07874015748031496']
           - Thing2D:
               name: Mounting Screw Cutout
               version: 7.5
@@ -1317,70 +1289,42 @@ Assembly:
               Attachment2Ds:
               - CompositePath:
                   type: CUTOUT
-                  name: path
-                  version: '7.5'
-                  ID: 1a3bf3d2-211b-413f-a35d-845bcb3bb4d1
-                  verified: false
-                  layer: Default
-                  OriginX: '-0.07874015748031496'
-                  OriginY: '-0.23622047244094488'
-                  onSameSide: true
-                  thickness: '1.0'
-                  pathSegments:
-                  - Line: ['0.0', '0.31496062992125984']
-                  - Line: ['0.15748031496062992', '0.0']
-                  - Line: ['0.0', '-0.31496062992125984']
-                  - Line: [(-0.15748031496062992)-(0.0), (0.0)-(0.0)]
-              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
-                  type: CUTOUT, name: ellipse, version: 7.5, ID: c56148d2-ef20-4fe2-9c6c-9785fd9d107c,
-                  verified: false, layer: Default, OriginX: '-0.23622047244094488',
-                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
-              - Ellipse: {radiusX: '0.07874015748031496', radiusY: '0.07874015748031496',
-                  type: CUTOUT, name: ellipse, version: 7.5, ID: 9d34e973-3fdd-4c15-93c4-9f4aa4460088,
-                  verified: false, layer: Default, OriginX: '0.2362204724409449',
-                  OriginY: '0.0', onSameSide: true, thickness: '1.0'}
-              - CompositePath:
-                  type: CUTOUT
                   name: Trim Path
                   version: '7.5'
-                  ID: f5029225-21c4-499c-bee2-0857d124af08
+                  ID: 2ff28fc3-158f-4758-a5e9-0fd56a11ecd8
                   verified: false
                   layer: Default
                   OriginX: '-0.2362204724'
-                  OriginY: '0.07874015748031496'
+                  OriginY: '-0.07874015751968505'
                   onSameSide: true
                   pathSegments:
-                  - Line: ['0.0', '-0.157480315']
                   - Line: ['0.1113328981726443', '0.0']
                   - CircleArc3:
-                      end: ['0.24977514844211296', '0.0']
-                      mid: ['0.1248875742210565', '-0.06889763778031494']
-                  - Line: ['0.11133289828524273', '0.0']
-                  - Line: ['0.0', '0.157480315']
-                  - Line: ['-0.11133289826042035', '0.0']
+                      end: ['0.046147416727355686', '-0.04614741673334104']
+                      mid: ['0.020491888014132875', '-0.025655528715880588']
+                  - Line: ['0.0', '-0.1113328981469739']
                   - CircleArc3:
-                      end: ['-0.24977514849175772', '0.0']
-                      mid: ['-0.12488757424587887', '0.06889763781968505']
-                  - Line: [(-0.11133289812971169)-(0.0), (0.0)-(0.0)]
-              - CompositePath:
-                  type: CUTOUT
-                  name: Trim Path
-                  version: '7.5'
-                  ID: 3f0af889-a460-4d3f-8e52-eb6207139d7f
-                  verified: false
-                  layer: Default
-                  OriginX: '0.0'
-                  OriginY: '-0.15748031491968503'
-                  onSameSide: true
-                  pathSegments:
-                  - EllipticArc:
-                      end: ['0.0', '0.0']
-                      center: ['-0.0', '-0.0787401575']
-                      majorRad: '0.07874015748031496'
-                      minorRad: '0.07874015748031496'
-                      theta0: '0.0'
-                      theta: '6.283185307179586'
-                      phi: '1.5707963267948966'
+                      end: ['0.15748031498', '-2.1259827232000816E-11']
+                      mid: ['0.07874015746937009', '-0.07874015750125984']
+                  - Line: ['0.0', '0.11133289810883484']
+                  - CircleArc3:
+                      end: ['0.046147416754127354', '0.04614741675022027']
+                      mid: ['0.025655528728805013', '0.02049188802315026']
+                  - Line: ['0.11133289828524273', '0.0']
+                  - CircleArc3:
+                      end: ['0.07874015742000001', '0.07874015751968505']
+                      mid: ['0.055677699289110205', '0.023062458221062808']
+                  - CircleArc3:
+                      end: ['-0.07874015742000001', '0.07874015748031496']
+                      mid: ['-0.02306245815872865', '0.05567769929862224']
+                  - Line: ['-0.11133289829999998', '0.0']
+                  - CircleArc3:
+                      end: ['-0.2497751485', '0.0']
+                      mid: ['-0.12488757425000004', '0.06889763781968508']
+                  - Line: ['-0.11133289810000002', '0.0']
+                  - CircleArc3:
+                      end: [(0.0)-(3.937003500986691E-11), (-0.157480315)-(5.90551219037394E-11)]
+                      mid: ['-0.07874015750031493', '-0.07874015748031496']
   - Part:
       name: L Shape Cover Top Side Part
       version: 7.5
@@ -1628,7 +1572,7 @@ Assembly:
                       partnumber: Vent Slot
                       ID: 71faf9dc-8369-461d-a5ec-edd51e219ff2
                       verified: false
-                      rotation: '-45'
+                      rotation: '-45.0'
                       OriginX: '1.3385826777952756'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
@@ -1654,8 +1598,8 @@ Assembly:
                       partnumber: Vent Slot
                       ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
                       verified: false
-                      rotation: '-45'
-                      OriginX: '1.2440944888188978'
+                      rotation: '-45.0'
+                      OriginX: '1.1889763785826775'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -1681,7 +1625,7 @@ Assembly:
                       ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
                       verified: false
                       rotation: '-45.0'
-                      OriginX: '1.1496062998425198'
+                      OriginX: '1.0393700793700789'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -1707,7 +1651,7 @@ Assembly:
                       ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
                       verified: false
                       rotation: '-45.0'
-                      OriginX: '1.0551181108661416'
+                      OriginX: '0.8897637801574805'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -1733,33 +1677,7 @@ Assembly:
                       ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
                       verified: false
                       rotation: '-45.0'
-                      OriginX: '0.9606299218897638'
-                      OriginY: '0.26570866137322824'
-                      onSameSide: true
-                      scaleFactorY: '-1.0'
-                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
-                        y: (-1.0)/(25.4)}
-                      Attachment2Ds:
-                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
-                          version: 7.5, ID: 0bff2d99-0396-4dc9-ad5f-b4b80ba0b750,
-                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
-                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
-                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
-                          version: 7.5, ID: 4fa2cb4f-c486-49fa-a733-5df527300d05,
-                          verified: false, layer: Default, OriginX: '0.1456692913385827',
-                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
-                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
-                          type: CUTOUT, name: rectangle, version: 7.5, ID: 9c3045ee-f3d3-49ce-a843-20dad59fcdff,
-                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
-                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
-                  - Thing2D:
-                      name: Vent Slot
-                      version: 7.5
-                      partnumber: Vent Slot
-                      ID: aff6225e-5b41-4d7a-8e3d-dec7c5915ca3
-                      verified: false
-                      rotation: '-45.0'
-                      OriginX: '0.8661417329133858'
+                      OriginX: '0.7401574809448819'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -2044,8 +1962,8 @@ Assembly:
                       partnumber: Vent Slot
                       ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
                       verified: false
-                      rotation: '45'
-                      OriginX: '1.6835433070866144'
+                      rotation: '45.0'
+                      OriginX: '1.8111023622047246'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -2070,8 +1988,8 @@ Assembly:
                       partnumber: Vent Slot
                       ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
                       verified: false
-                      rotation: '45'
-                      OriginX: '1.5890551181102364'
+                      rotation: '45.0'
+                      OriginX: '1.6611023622047245'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -2096,8 +2014,8 @@ Assembly:
                       partnumber: Vent Slot
                       ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
                       verified: false
-                      rotation: '45'
-                      OriginX: '1.4945669291338586'
+                      rotation: '45.0'
+                      OriginX: '1.5111023622047244'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -2122,8 +2040,8 @@ Assembly:
                       partnumber: Vent Slot
                       ID: 5567dfdc-09c8-4bed-9f70-f9b4d96c510e
                       verified: false
-                      rotation: '45'
-                      OriginX: '1.4000787401574804'
+                      rotation: '45.0'
+                      OriginX: '1.3611023622047247'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
                       scaleFactorY: '-1.0'
@@ -2148,33 +2066,7 @@ Assembly:
                       partnumber: Vent Slot
                       ID: 00aaca8d-b653-438c-8525-271e2550d6d1
                       verified: false
-                      rotation: '45'
-                      OriginX: '1.3055905511811023'
-                      OriginY: '0.26570866137322824'
-                      onSameSide: true
-                      scaleFactorY: '-1.0'
-                      Bounds: {width: (9.0)/(25.4), height: (2.0)/(25.4), x: (-4.5)/(25.4),
-                        y: (-1.0)/(25.4)}
-                      Attachment2Ds:
-                      - Rectangle: {width: '0.29527559055118113', height: '0.05905511811023622',
-                          type: CUTOUT, name: rectangle, version: 7.5, ID: 4098cbe2-b689-422f-ac45-711413704512,
-                          verified: false, layer: Default, OriginX: '-0.14763779527559057',
-                          OriginY: '-0.03149606299212599', onSameSide: true, thickness: '1.0'}
-                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
-                          version: 7.5, ID: f3bcb3db-df6c-4b70-bd6e-666416419f24,
-                          verified: false, layer: Default, OriginX: '0.1456692913385827',
-                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
-                      - Circle: {radius: '0.029527559055118113', type: CUTOUT, name: circle,
-                          version: 7.5, ID: 42e9ac98-b42f-468f-b484-7f50d4f7dbe6,
-                          verified: false, layer: Default, OriginX: '-0.1456692913385827',
-                          OriginY: '-0.0019685039370078744', onSameSide: true, thickness: '1.0'}
-                  - Thing2D:
-                      name: Vent Slot
-                      version: 7.5
-                      partnumber: Vent Slot
-                      ID: 00aaca8d-b653-438c-8525-271e2550d6d1
-                      verified: false
-                      rotation: '45'
+                      rotation: '45.0'
                       OriginX: '1.2111023622047246'
                       OriginY: '0.26570866137322824'
                       onSameSide: true
