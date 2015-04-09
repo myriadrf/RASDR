@@ -1,0 +1,47 @@
+To produce GERBER manufacturing files from KICAD (pcbnew)
+
+1) Choose File->Plot
+2) select Plot Format 'Gerber', output directory '../Gerbers/', select layers
+   a. see 'digired-gerber-files-output.png'
+   b. press 'PLOT'
+3) in the same window, press 'Generate Drill File'
+   a. see 'digired-drill-files-output.png'
+   b. press 'Drill File'
+   c. press 'Map File'
+   d. press 'Report File'
+      1. choose ../Reports/DigiRED_v1.0-drl.rpt'
+
+
+
+To compare Gerber files
+
+1) download and install 'gerbv'
+   a. see http://gerbv.geda-project.org/
+2) Load a full set of gerber files, and set the rendering color to WHITE
+   a. turn all layers OFF (to prevent re-rendering while colors are changed)
+   b. select each layer, press F6
+   c. set the R=255, G=255, B=255
+3) Load the comparison set of gerber files, and set the rending color to WHITE
+   a. see 2) above
+   b. alternatively, you can edit the project file and set each layer color to #(65535 65535 65535)
+4) Fit all layers into the rendering window
+   a. Select Layer->All On
+   b. View->Rendering->Fast
+   c. View->Best Fit
+5) Prepare to compare
+   a. Select Layer->All Off
+   b. View->Rendering->Fast(XOR)
+6) select pairs of matching layers to enable.  Each pair you enable will be rendered in XOR and differences highlighted.  if there are no differences, the resulting image will be black.
+
+
+
+To translate Gerber files to PDF:
+
+1) download 'gerber2pdf.py'
+   a. see http://pages.swcp.com/~jchavez/gerber2pdf.html
+2) ensure dependencies are satisfied
+   a. dos> pip install plex
+   b. dos> pip install reportlab
+3) python gerber2pdf.py
+   a. follow the prompts.  Choose 'fit to page=1' to get any output
+   b. gerber.pdf is produced in the same folder as the first gerber file in the list
