@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.1.0-dev'     # to match RASDRviewer version
+DEF_VERSION = '1.2.1.1-dev'     # to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -147,9 +147,9 @@ def open_spectrum_file(filename,opts):
     if opts.verbose:
         log = logging.getLogger(__name__)
         x,y,name = f.name.replace('\\','/').rpartition('/')
-        log.info('%s.date=%s (%s)'%(name,key[4]+' '+key[6],str(obj['time'][0])))
+        log.info('%s.date=%s (%s)'%(name,d+' '+tz,str(obj['time'][0])))
         log.info('%s.time=%d'%(name,len(obj['time'])))
-        log.info('%s.freq=%s (scale=%f)'%(name,str(obj['freq'].shape,fscale)))
+        log.info('%s.freq=%s (scale=%f)'%(name,str(obj['freq'].shape),fscale))
     return obj
 
 def read_spectrum_line(obj):
@@ -177,7 +177,10 @@ def read_spectrum_array(obj):
 def generate_spectrum_plots(filename,opts):
     log = logging.getLogger(__name__)
     if len(opts.background) > 0:
-        bg = open_spectrum_file(opts.background,opts)
+        if opts.background.lower() == 'automatic':
+            bg = open_spectrum_file(filename,opts)
+        else:
+            bg = open_spectrum_file(opts.background,opts)
         lastrow = len(bg['time'])-1
         bkg = np.zeros(len(bg['freq']))
         acc = np.zeros(len(bg['freq']))
@@ -194,7 +197,11 @@ def generate_spectrum_plots(filename,opts):
             else:
                 acc += s[fr]
         bkg += acc / float(n)
-        log.info('background %d samples=[%f,%f]',n,bkg.min(),bkg.max())
+        log.info('background %d samples=[%f,%f] mean=%f',n,bkg.min(),bkg.max(),bkg.mean())
+        if opts.background.lower() == 'automatic':
+            # distribute mean value of to all frequency bins to construct a total average over all samples
+            # this is needed if doing a 'self' background correction
+            bkg = np.ones(len(bg['freq'])) * bkg.mean()
         if not opts.line:
             del s
         fg = open_spectrum_file(filename,opts)
@@ -214,7 +221,7 @@ def generate_spectrum_plots(filename,opts):
     lastrow = len(ts_a)-1
     bw   = (fMHz.max() - fMHz.min())*1e6/nbin
     if opts.calibration > 0.0:
-        dbm = 10.0 * np.log( opts.calibration * bw * 0.001 )   # power referenced to 1mW
+        dbm = 10.0 * np.log10( opts.calibration * bw * 0.001 )  # power referenced to 1mW
     else:
         dbm = 0.0
 
@@ -226,7 +233,9 @@ def generate_spectrum_plots(filename,opts):
         delta = ts_a[lastrow] - ts_a[lastrow-1]
         log.info('start=%s',str(ts_a[0]))
         log.info('end  =%s',str(ts_a[lastrow]))
-        log.info('seconds between samples=%f',(float(delta.seconds)+(float(delta.microseconds)/1e6)))
+        s = (float(delta.seconds)+(float(delta.microseconds)/1e6))
+        if s > 0.0:
+            log.info('inter-frame period=%f sec (%.0f fr/s)',s,1.0/s)
     log.info('averaging=%s',str(opts.average))
 
     if not opts.line:
@@ -240,6 +249,7 @@ def generate_spectrum_plots(filename,opts):
             s = read_spectrum_line(fg)
         else:
             s = s_a[fr]
+        s = s - bkg
         if opts.canceldc:
             log.debug('Cancel DC: frq %s',str(fMHz[zidx-4:zidx+5]))
             log.debug('Cancel DC: b4 %s',str(s[zidx-4:zidx+5]))
@@ -255,7 +265,7 @@ def generate_spectrum_plots(filename,opts):
         if n >= opts.average or fr == lastrow:
             s   = acc / float(n)    # vector/scalar
             s   = s - dbm           # vector-scalar
-            s   = s - bkg           # vector-vector
+            #s   = s - bkg           # vector-vector
             min = np.floor(s.min())-1.0
             max = np.ceil(s.max())+1.0
             tstop = dt.strftime('%Y-%m-%dT%H:%M:%S%z')
@@ -265,6 +275,10 @@ def generate_spectrum_plots(filename,opts):
                 title = 'Collected at %s'%tstart
             if len(opts.background) > 0:
                 title = title + ', with background subtraction'
+            if opts.background.lower() == 'automatic':
+                title = title + ' (automatic, %.2f dB)'%bkg.mean()
+            else:
+                title = title + ' (file)'
 ##            if opts.calibration:
 ##                title = title + ', cal=%.1f'%opts.calibration
             if opts.smooth > 0:
@@ -289,7 +303,7 @@ def generate_spectrum_plots(filename,opts):
             axis([fMHz[0],fMHz[nbin-1],min,max])
             ax.xaxis.set_major_formatter(FormatStrFormatter('%4.1f'))
             xlabel('frequency (MHz)')
-##            if opts.dbm:
+##            if opts.dbm != 0.0:
 ##                ylabel('spectral power (dBm/Hz)')
             if len(opts.background) > 0:
                 ylabel('spectral power (dB relative to background)')
@@ -339,15 +353,33 @@ def dump_spectrum_info(filename,opts):
         title  = 'Collected at %s'%tstart
         deltaT = 0.0
 
-    log.info('Analyzing records...')
+    log.info('Analyzing records...  acceptable inter-frame time is [%f,%f] sec',deltaT-(deltaT*0.5),deltaT+(deltaT*0.5))
     d0  = ts_a[0]
+    dX  = 0.0
     for fr in range(len(ts_a)):
-        if fr > 0:
-            dt = ts_a[fr] - d0
-            dt = float(dt.seconds)+(float(dt.microseconds)/1e6)
-            if abs(dt - deltaT) > (deltaT*0.5):
-                log.info('*** SKIP: frame %d -> %d delta %f sec, expected %f (@%s)',fr-1,fr,dt,deltaT,ts_a[fr].strftime('%Y-%m-%dT%H:%M:%S'))
-            d0 = ts_a[fr]
+        if fr == 0:
+            continue
+        log.debug('  d0=%s ts_a[%d]=%s',str(d0),fr,str(ts_a[fr]))
+        dt = ts_a[fr] - d0
+        dt = float(dt.seconds)+(float(dt.microseconds)/1e6)
+        log.debug('    dt=%.6f abs(dt - deltaT)=%.6f',dt,abs(dt - deltaT))
+        if dt < 1e-6:
+            log.info('*** DUPLICATE: frame %d -> %d delta %f sec, expected %f+/-%f (@%s)',fr-1,fr,dt,deltaT,(deltaT*0.5),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
+        elif ts_a[fr] < d0:
+            log.info('*** REGRESSION: frame %d -> %d has earlier timestamp (%s) than (@%s)',fr-1,fr,ts_a[fr].strftime('%Y-%m-%dT%H:%M:%S.%f'),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
+        elif abs(dt - deltaT) > (deltaT*0.5):
+            log.info('*** SKIP: frame %d -> %d delta %f sec, expected %f+/-%f (@%s)',fr-1,fr,dt,deltaT,(deltaT*0.5),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
+            dX = dX + (dt - deltaT)
+        d0 = ts_a[fr]
+    if dX > 0.0:
+        d0 = ts_a[0]
+        dN = ts_a[-1]
+        dt = dN - d0
+        dt = float(dt.seconds)+(float(dt.microseconds)/1e6)
+        if dt > 0.0:
+            log.info('*** %f sec unaccounted for in %f sec capture (%.3f%%)',dX,dt,(dX*100.0/dt))
+        else:
+            log.info('*** %f sec unaccounted for but total capture length appears to be 0.0',dX)
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -360,9 +392,10 @@ if __name__ == '__main__':
     p.add_option('-a', '--average', dest='average', type='int', default=DEF_AVERAGE,
         help='Specify the number of spectra to average for each plot; default=%d'%DEF_AVERAGE)
     p.add_option('-b', '--background', dest='background', type='str', default='',
-        help='Specify a file to treat as background;'+
-             'it has the same format as the foreground file.  '+
-             'The file will be processed according to the same statistics as the foreground file.')
+        help='Specify how to perform background subtraction;'+
+             'if the word automatic is used, then the background will be taken'+
+             'from the average of all lines in the file.  Otherwise, it is taken'+
+             'as a file to process.  The file must have the same frequency plan as the foreground file.')
     p.add_option('-c', '--cancel-dc', dest='canceldc', action='store_true', default=False,
         help='Cancel out component at frequency bin for 0Hz')
     p.add_option('-d', '--delimiter', dest='delimiter', type='str', default=DEF_DELIM,
