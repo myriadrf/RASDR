@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.0.5.6-dev'     # to match RASDRviewer version
+DEF_VERSION = '1.2.1.0-dev'     # to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -93,21 +93,26 @@ def open_spectrum_file(filename,opts):
 ##        obj['time'] = time
 ##        obj['opts'] = opts
     else:
-        # this is the "Extended" .csv format produced by RASDRviewer_W_1_0_5
+        # this is the "Extended" .csv format produced by RASDRviewer_W_1_2_1
         from dateutil import parser
 
         f=open(filename,'r')
         ## first line: key-value pairs
-        key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+        key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str',comments='\\')
+        if len(np.atleast_1d(key)) < 2:
+            raise Exception('unable to parse %s -- check first line'%filename)
         d=key[4].replace('"','') if len(key) > 4 else '00/00/00'
         tz=key[6].replace('"','') if len(key) > 7 else 'UTC'
         # translate strange labels from RASDRviewer_W_1_0_5
         tz,tzo=translate_tz(tz)
         ## RASDRViewer 1.2.x, Paul "adds" a specifier to the 2nd line and moves the rest of the lines down
         key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
-        dumplines = 2
+        dumplines = 1
         fscale = 1.0
-        tag = key[0].lower()
+        if len(np.atleast_1d(key)) < 2:
+            tag = str(key).lower()
+        else:
+            tag = str(key[0]).lower()
         if tag.find('hz')>0:
             if tag.startswith('khz'):
                 fscale = 0.001
@@ -115,10 +120,10 @@ def open_spectrum_file(filename,opts):
                 fscale = 1000.0
             # need to dump an extra line later
             dumplines = dumplines + 1
-        else:
-            f.seek(0)
-            f.readline()    # dump the first line, so we are back to our 2nd line
-        ## second line: frequency bin information
+        f.seek(0)
+        for i in range(dumplines):
+            f.readline()    # dump the first line, so we are back to our 2nd/3rd line
+        ## second/third line: frequency bin information
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
         ## third line-to-end: extract first *column* as text
@@ -130,9 +135,9 @@ def open_spectrum_file(filename,opts):
                 time.append(parser.parse(a+'.'+b+tzo))
             else:
                 time.append(parser.parse(d+'T'+a+'.'+b+tzo))
-        f.seek(0)               # start over
-        f.readline()            # dump the first line
-        f.readline()            # dump the second line
+        f.seek(0)
+        for i in range(dumplines):
+            f.readline()    # dump the first line, so we are back to our 2nd/3rd line
         # update the object to return
         obj['file'] = f
         obj['freq'] = freq*fscale
@@ -194,7 +199,7 @@ def generate_spectrum_plots(filename,opts):
             del s
         fg = open_spectrum_file(filename,opts)
         if not len(fg['freq'])==len(bg['freq']):
-            raise 'background file must have same number of frequency bins as the foreground file'
+            raise Exception('background file must have same number of frequency bins as the foreground file')
         if not np.array_equal(fg['freq'],bg['freq']):
             log.warn('background file does not specify the same frequency bins as the foreground file')
         del bg

@@ -32,10 +32,15 @@ packages = ['matplotlib', 'pytz']
 # you do this by running 'vcxxx', which I would copy into installation folder before
 # .zip.  It is not needed if one has already installed a Microsoft compiler.
 # See also: http://www.microsoft.com/en-us/download/details.aspx?id=29
+#
+# http://stackoverflow.com/questions/2104611/memoryloaderror-when-trying-to-run-py2exe-application
+# http://sourceforge.net/p/py2exe/bugs/108/
+#
+# the above problem affected the rasdr-distribution-1.2.1
 
 dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgdk_pixbuf-2.0-0.dll',
-                'libgobject-2.0-0.dll', 'tcl84.dll',
-                'tk84.dll', 'MSVCP90.dll', ]
+                'libgobject-2.0-0.dll', 'tcl85.dll',
+                'tk85.dll', 'MSVCP90.dll', 'mswsock.dll', 'powrprof.dll' ]
 icon_resources = []
 bitmap_resources = []
 other_resources = []
@@ -53,6 +58,7 @@ setup(
                           "excludes": excludes,
                           "packages": packages,
                           "dll_excludes": dll_excludes,
+                          # using 3 sometimes makes things 'just work' (but generates enormous # of files)
                           # using 2 to reduce number of files in dist folder
                           # using 1 is not recommended as it often does not work
                           "bundle_files": 2,
