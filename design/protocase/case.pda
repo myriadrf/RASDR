@@ -834,11 +834,11 @@ Assembly:
                   - Circle: {radius: '0.12992125984251968', type: CUTOUT, name: circle,
                       version: 7.5, ID: 4d3332e1-76a1-45f7-9a53-1ed583b7cd7e, verified: false,
                       layer: Default, rotation: '-0.0', OriginX: '3.2283464566929134',
-                      OriginY: '0.31400787401574803', onSameSide: true, scaleFactorX: '-1.0',
+                      OriginY: '0.282757874015748', onSameSide: true, scaleFactorX: '-1.0',
                       thickness: '1.0'}
                   - Text2D: {type: SILKSCREEN, color: Blue Pantone Process C, name: Text,
                       version: 7.5, ID: 1c1c719e-e111-4b00-a87f-001cf7ed05e9, verified: false,
-                      rotation: '-0.0', OriginX: '3.622047244094488', OriginY: '0.5856614173228347',
+                      rotation: '-0.0', OriginX: '3.622047244094488', OriginY: '0.554411417322834',
                       onSameSide: true, scaleFactorX: '-1.0', content: REFCLK  IN,
                       fontFamily: Tahoma, fontStyle: Regular, fontSize: '12.0', sizeCorrected: true}
                   - Text2D: {type: SILKSCREEN, color: Blue Pantone Process C, name: Text,
