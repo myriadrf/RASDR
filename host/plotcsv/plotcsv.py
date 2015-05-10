@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.1.1-dev'     # to match RASDRviewer version
+DEF_VERSION = '1.2.2.0-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -41,8 +41,8 @@ def translate_tz(tz):
 
 def open_spectrum_file(filename,opts):
     obj = {}
-    if opts.excel:
-        # this is Paul's "Excel-optimized" .csv format
+    if opts.localtime:
+        # this is Paul's "Localtime" .csv format
         # http://stackoverflow.com/questions/13311471/skip-a-specified-number-of-columns-with-numpy-genfromtxt
         # http://stackoverflow.com/questions/466345/converting-string-into-datetime
         # http://stackoverflow.com/questions/698223/how-can-i-parse-a-time-string-containing-milliseconds-in-it-with-python
@@ -53,10 +53,30 @@ def open_spectrum_file(filename,opts):
         tz=key[6].replace('"','') if len(key) > 7 else 'UTC'
         # translate strange labels from RASDRviewer_W_1_0_5
         tz=translate_tz(tz)
-        ## second line: frequency bin information
+        dumplines = 1
+        fscale = 1.0
+        ## RASDRviewer 1.2.2, Paul "adds" a line with a ',' in it - just kill it
+        ## RASDRviewer 1.2.2.1, we negotiate that this line will be '*** BEGIN DATA COLLECTION ***'
+        if opts.format.startswith('1.2.2'):
+            dumplines = dumplines + 1
+            tag = f.readline()
+        ## RASDRViewer 1.1.1, Paul "adds" a specifier to the 2nd line and moves the rest of the lines down
+        if opts.format.startswith('1.1.') or opts.format.startswith('1.2.'):
+            dumplines = dumplines + 1
+            key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+            if len(np.atleast_1d(key)) < 2:
+                tag = str(key).lower()
+            else:
+                tag = str(key[0]).lower()
+            if tag.find('hz')>0:
+                if tag.startswith('khz'):
+                    fscale = 0.001
+                elif tag.startswith('ghz'):
+                    fscale = 1000.0
+        ## second/third/fourth line: frequency bin information
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
-        ## third line-to-end: extract first *column* as text
+        ## third/fourth/fifth line-to-end: extract first *column* as text
         t=np.genfromtxt(f,delimiter=opts.delimiter,usecols=[0],dtype='str')
         time = []
         for i in range(1,t.shape[0]):
@@ -68,9 +88,9 @@ def open_spectrum_file(filename,opts):
                 b = '0'
             ts=a+'.'+b
             time.append(datetime.datetime.strptime(d+'T'+ts, '%m/%d/%yT%H:%M:%S.%f'))
-        f.seek(0)               # start over
-        f.readline()            # dump the first line
-        f.readline()            # dump the second line
+        f.seek(0)
+        for i in range(dumplines):  # dump lines so we are at beginning of data collected
+            f.readline()
         # update the object to return
         obj['file'] = f
         obj['freq'] = freq
@@ -105,28 +125,30 @@ def open_spectrum_file(filename,opts):
         tz=key[6].replace('"','') if len(key) > 7 else 'UTC'
         # translate strange labels from RASDRviewer_W_1_0_5
         tz,tzo=translate_tz(tz)
-        ## RASDRViewer 1.2.x, Paul "adds" a specifier to the 2nd line and moves the rest of the lines down
-        key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
         dumplines = 1
         fscale = 1.0
-        if len(np.atleast_1d(key)) < 2:
-            tag = str(key).lower()
-        else:
-            tag = str(key[0]).lower()
-        if tag.find('hz')>0:
-            if tag.startswith('khz'):
-                fscale = 0.001
-            elif tag.startswith('ghz'):
-                fscale = 1000.0
-            # need to dump an extra line later
+        ## RASDRviewer 1.2.2, Paul "adds" a line with a ',' in it - just kill it
+        ## RASDRviewer 1.2.2.1, we negotiate that this line will be '*** BEGIN DATA COLLECTION ***'
+        if opts.format.startswith('1.2.2'):
             dumplines = dumplines + 1
-        f.seek(0)
-        for i in range(dumplines):
-            f.readline()    # dump the first line, so we are back to our 2nd/3rd line
-        ## second/third line: frequency bin information
+            f.readline()
+        ## RASDRViewer 1.1.1, Paul "adds" a specifier to the 2nd line and moves the rest of the lines down
+        if opts.format.startswith('1.1.') or opts.format.startswith('1.2.'):
+            dumplines = dumplines + 1
+            key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+            if len(np.atleast_1d(key)) < 2:
+                tag = str(key).lower()
+            else:
+                tag = str(key[0]).lower()
+            if tag.find('hz')>0:
+                if tag.startswith('khz'):
+                    fscale = 0.001
+                elif tag.startswith('ghz'):
+                    fscale = 1000.0
+        ## second/third/fourth line: frequency bin information
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
-        ## third line-to-end: extract first *column* as text
+        ## third/fourth/fifth line-to-end: extract first *column* as text
         t=np.genfromtxt(f,delimiter=opts.delimiter,usecols=[0],dtype='str')                # 1st column are *almost* ISO-8601 datetime strings
         time = []
         for i in range(1,t.shape[0]):
@@ -136,8 +158,8 @@ def open_spectrum_file(filename,opts):
             else:
                 time.append(parser.parse(d+'T'+a+'.'+b+tzo))
         f.seek(0)
-        for i in range(dumplines):
-            f.readline()    # dump the first line, so we are back to our 2nd/3rd line
+        for i in range(dumplines):  # dump lines so we are at beginning of data collected
+            f.readline()
         # update the object to return
         obj['file'] = f
         obj['freq'] = freq*fscale
@@ -242,6 +264,7 @@ def generate_spectrum_plots(filename,opts):
         log.info('loading %s...',fg['file'].name)
         s_a = read_spectrum_array(fg)
     acc = np.zeros(nbin)
+    hold = np.zeros(nbin)
     n   = 0
     for fr in range(len(ts_a)):
         dt = ts_a[fr]
@@ -258,6 +281,8 @@ def generate_spectrum_plots(filename,opts):
                 s[zidx] = a
             log.debug('Cancel DC: ftr %s',str(s[zidx-4:zidx+5]))
         log.debug('line %d/%d max@%d val=%f',fr,len(ts_a),s.argmax(),s.max())
+        if opts.hold:
+            hold = np.maximum(s,hold)
         if n == 0:
             tstart = dt.strftime('%Y-%m-%dT%H:%M:%S%z')
         n    = n+1
@@ -268,6 +293,13 @@ def generate_spectrum_plots(filename,opts):
             #s   = s - bkg           # vector-vector
             min = np.floor(s.min())-1.0
             max = np.ceil(s.max())+1.0
+            log.debug('-> plot min=%f max=%f',min,max)
+            if opts.hold:
+                hmin = np.floor(hold.min())-1.0
+                hmax = np.ceil(hold.max())+1.0
+                log.debug('-> hold min=%f max=%f',hmin,hmax)
+                min = hmin if hmin < min else min
+                min = hmax if hmax > max else max
             tstop = dt.strftime('%Y-%m-%dT%H:%M:%S%z')
             if n > 1:
                 title = 'Collected between %s and %s\nAveraged over %d frames'%(tstart,tstop,n)
@@ -292,6 +324,16 @@ def generate_spectrum_plots(filename,opts):
                 for xx in range(ll-opts.smooth+1):
                     ss[hh+xx] = np.mean(s[xx:xx+opts.smooth])
                 s = ss
+                if opts.hold:
+                    ll = len(hold)
+                    hh = opts.smooth/2
+                    ss = np.zeros(ll)
+                    for xx in range(hh):
+                        ss[xx]      = hold[xx]
+                        ss[ll-xx-1] = hold[ll-xx-1]
+                    for xx in range(ll-opts.smooth+1):
+                        ss[hh+xx] = np.mean(hold[xx:xx+opts.smooth])
+                    hold = ss
 
             # http://stackoverflow.com/questions/6352740/matplotlib-label-each-bin
             from matplotlib.pyplot import figure, plot, axis, xlabel, ylabel, savefig, subplots
@@ -299,7 +341,9 @@ def generate_spectrum_plots(filename,opts):
             from matplotlib.ticker import FormatStrFormatter
 
             fig, ax = subplots()
-            plot(fMHz,s,hold=True,color='b')
+            plot(fMHz,s,hold=True,color='b',label='foreground')
+            if opts.hold:
+                plot(fMHz,hold,hold=True,color='g',label='hold')
             axis([fMHz[0],fMHz[nbin-1],min,max])
             ax.xaxis.set_major_formatter(FormatStrFormatter('%4.1f'))
             xlabel('frequency (MHz)')
@@ -307,7 +351,7 @@ def generate_spectrum_plots(filename,opts):
 ##                ylabel('spectral power (dBm/Hz)')
             if len(opts.background) > 0:
                 ylabel('spectral power (dB relative to background)')
-                plot(fMHz,bkg,color='r')
+                #plot(fMHz,bkg,color='r',hold=True,label='background')
             else:
                 ylabel('spectral power (arbitrary unit)')
             _title(title)
@@ -400,8 +444,8 @@ if __name__ == '__main__':
         help='Cancel out component at frequency bin for 0Hz')
     p.add_option('-d', '--delimiter', dest='delimiter', type='str', default=DEF_DELIM,
         help='Specify the delimiter character to use; default=%s'%DEF_DELIM)
-    p.add_option('-e', '--excel', dest='excel', action='store_true', default=False,
-        help='Indicate that .csv file is in RASDRviewer\'s "Excel-optimized" format')
+    p.add_option('-e', '--excel', '--localtime', dest='localtime', action='store_true', default=False,
+        help='Indicate that .csv file has timestamps in RASDRviewer\'s "LocalTime" format')
     p.add_option('-k', '--calibration', dest='calibration', type='float', default=DEF_CALIB,
         help='Specify the calibration constant for the system; 0.0=uncal, default=%f'%DEF_CALIB)
     p.add_option('-l', '--line', dest='line', action='store_true', default=False,
@@ -420,6 +464,13 @@ if __name__ == '__main__':
         help='Smooth final plot using a sliding window of N points')
     p.add_option('--fcenter', dest='fc', type='float', default=0.0,
         help='Define the offset for the center frequency in Hz; default=%f'%0.0)
+    p.add_option('--hold', dest='hold', action='store_true', default=False,
+        help='Perform a maximum value HOLD during averaging and plot it as a second line')
+    ## for handling RASDRviewer versions
+    v = DEF_VERSION.split('.')
+    ver = v[0]+'.'+v[1]+'.'+v[2]
+    p.add_option('--format', dest='format', type='str', default=ver,
+        help='Specify the RASDRviewer .csv output format to interpret; default=%s'%ver)
     opts, args = p.parse_args(sys.argv[1:])
 
     logging.basicConfig(format='%(message)s',level=logging.DEBUG)
