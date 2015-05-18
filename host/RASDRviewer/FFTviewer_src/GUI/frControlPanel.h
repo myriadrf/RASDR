@@ -1,3 +1,33 @@
+// -----------------------------------------------------------------------------
+// FILE:        "frControlPanel.h"
+// DESCRIPTION: "Header File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
 #ifndef FRCONTROLPANEL_H
 #define FRCONTROLPANEL_H
 
@@ -102,8 +132,6 @@ class frControlPanel: public wxFrame
 		wxMenu* Menu2;
 		wxToolBarToolBase* ToolBarItem2;
 		wxMenuItem* mnuSave;
-		wxMenuItem* mnuSaveRegisters;
-		wxMenuItem* mnuReadRVF_hex;
 		//*)
 
 	protected:
@@ -128,8 +156,6 @@ class frControlPanel: public wxFrame
 		static const long ID_MENUITEM3;
 		static const long ID_MENUITEM4;
 		static const long ID_MENUITEM9;
-		static const long ID_MENUITEM12;
-		static const long ID_MENUITEM11;
 		static const long ID_MENUITEM10;
 		static const long ID_MENUITEM5;
 		static const long ID_MENUITEM6;
@@ -165,6 +191,7 @@ class frControlPanel: public wxFrame
 		void OnmnuReadRVF_hexSelected(wxCommandEvent& event);
 		void OnmnuReadRVF_rfifSelected(wxCommandEvent& event);
 		void OnmnuSaveRegistersSelected(wxCommandEvent& event);
+		void Onm_CustomerPaint(wxPaintEvent& event);
 		//*)
 
 		dlgSerPort *dSerPort;

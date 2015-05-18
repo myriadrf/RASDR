@@ -1,0 +1,86 @@
+// -----------------------------------------------------------------------------
+// FILE:        "globals.h"
+// DESCRIPTION: "Header File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
+//Globals.h - Place for Global variables
+#ifndef GLOBAL_H
+#define GLOBAL_H
+#define CLOSE_DEBUG true
+////include <wx/string.h>
+extern int g_frame_delay;
+extern int g_closedelay;
+extern double g_framepwr;
+extern float g_DisplayTimeSpan;
+extern int g_DisplayFrames;
+extern int g_MaxDispFrames;
+extern int g_PwrSpanSec;
+extern int g_MaxPwrSpanSec;
+extern float g_framesPerMin;
+extern char g_FFTfileName[1024];
+extern char g_PWRfileName[1024];
+extern char g_CfgFileName[80];
+extern bool g_CfgChanged;
+extern int g_FFTfileAction;
+extern bool g_FFTfileSetup;
+extern bool g_FFTfileRecording;
+extern bool g_OverwriteFFTfile;
+extern bool g_FFTfileIsOpen;
+extern int g_PWRfileAction;
+extern bool g_PWRfileSetup;
+extern bool g_PWRfileRecording;
+extern bool g_OverwritePWRfile;
+extern bool g_PWRfileIsOpen;
+extern int g_FFTframeSkip;
+extern int g_FFTframesOut;
+extern int g_FFTFileType;
+extern int g_PWRFileType;
+extern int g_NumbFFTFiles;
+extern int g_NumbPWRFiles;
+extern int g_FFT_TimeStandard;
+extern int g_PWRTimeStandard;
+extern bool g_PendingRestartCapture;
+extern bool g_capturingData;
+extern int g_PwrRecordRate;
+extern int g_MaxFFTbins;
+extern int g_FFTDataSource;
+extern bool g_Pulsar_Sim_Running;
+extern bool g_Pulsar_Capture_Running;
+extern float g_Min_DM_Range;
+extern float g_Max_DM_Range;
+extern float g_DM_Inc;
+extern float g_Min_Period_Range;
+extern float g_Max_Period_Range;
+extern float g_Period_Inc;
+extern float g_Margin;
+extern float g_Sim_DM;
+extern float g_Sim_Period;
+extern float g_Sim_Duty;
+extern float g_Sim_Factor;
+//extern long ID_FFTOKBUTTON;
+#endif

@@ -7,7 +7,6 @@
 		<id_arg>0</id_arg>
 		<style>wxDEFAULT_FRAME_STYLE|wxSTATIC_BORDER</style>
 		<handler function="OnClose" entry="EVT_CLOSE" />
-		<handler function="OnEraseBackground" entry="EVT_ERASE_BACKGROUND" />
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
 			<cols>1</cols>
 			<rows>2</rows>

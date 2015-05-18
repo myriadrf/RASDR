@@ -1,3 +1,33 @@
+// -----------------------------------------------------------------------------
+// FILE:        "pnlSamplesGenerator.cpp"
+// DESCRIPTION: "Source Code File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
 #include "pnlSamplesGenerator.h"
 #include "ctr_6002dr2_LogicDLL.h"
 
@@ -5,34 +35,11 @@
 using namespace std;
 
 //(*InternalHeaders(pnlSamplesGenerator)
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/radiobox.h>
-#include <wx/textctrl.h>
-#include <wx/glcanvas.h>
-#include <wx/spinctrl.h>
 #include <wx/intl.h>
-#include <wx/button.h>
 #include <wx/string.h>
 //*)
 
 //(*IdInit(pnlSamplesGenerator)
-const long pnlSamplesGenerator::ID_RADIOBOX1 = wxNewId();
-const long pnlSamplesGenerator::ID_BUTTON1 = wxNewId();
-const long pnlSamplesGenerator::ID_BUTTON2 = wxNewId();
-const long pnlSamplesGenerator::ID_BUTTON3 = wxNewId();
-const long pnlSamplesGenerator::ID_STATICTEXT1 = wxNewId();
-const long pnlSamplesGenerator::ID_TEXTCTRL1 = wxNewId();
-const long pnlSamplesGenerator::ID_STATICTEXT2 = wxNewId();
-const long pnlSamplesGenerator::ID_SPINCTRL1 = wxNewId();
-const long pnlSamplesGenerator::ID_STATICTEXT3 = wxNewId();
-const long pnlSamplesGenerator::ID_SPINCTRL2 = wxNewId();
-const long pnlSamplesGenerator::ID_PANEL1 = wxNewId();
-const long pnlSamplesGenerator::ID_GLCANVAS1 = wxNewId();
-const long pnlSamplesGenerator::ID_PANEL2 = wxNewId();
-const long pnlSamplesGenerator::ID_STATICTEXT4 = wxNewId();
-const long pnlSamplesGenerator::ID_STATICTEXT5 = wxNewId();
-const long pnlSamplesGenerator::ID_TEXTCTRL2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(pnlSamplesGenerator,wxPanel)
@@ -51,66 +58,7 @@ pnlSamplesGenerator::pnlSamplesGenerator(wxWindow* parent,wxWindowID id,const wx
 void pnlSamplesGenerator::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
 {
 	//(*Initialize(pnlSamplesGenerator)
-	wxFlexGridSizer* FlexGridSizer2;
-	wxFlexGridSizer* FlexGridSizer1;
-
-	Create(parent, id, wxDefaultPosition, wxSize(779,400), wxTAB_TRAVERSAL, _T("id"));
-	wxString __wxRadioBoxChoices_1[5] =
-	{
-		_("Signal generator"),
-		_("Text File"),
-		_("Binary File"),
-		_("Square"),
-		_("Hex input")
-	};
-	rgrDataSource = new wxRadioBox(this, ID_RADIOBOX1, _("Data Source:"), wxPoint(8,8), wxDefaultSize, 5, __wxRadioBoxChoices_1, 1, wxRA_SPECIFY_COLS, wxDefaultValidator, _T("ID_RADIOBOX1"));
-	rgrDataSource->SetSelection(4);
-	btnStartGenerating = new wxButton(this, ID_BUTTON1, _("Start Transmitting Samples"), wxPoint(128,16), wxSize(144,32), 0, wxDefaultValidator, _T("ID_BUTTON1"));
-	btnStopGenerating = new wxButton(this, ID_BUTTON2, _("Stop Transmitting Samples"), wxPoint(128,56), wxSize(144,32), 0, wxDefaultValidator, _T("ID_BUTTON2"));
-	btnOpenFile = new wxButton(this, ID_BUTTON3, _("Generate"), wxPoint(8,160), wxSize(112,23), 0, wxDefaultValidator, _T("ID_BUTTON3"));
-	Panel1 = new wxPanel(this, ID_PANEL1, wxPoint(8,190), wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	FlexGridSizer1 = new wxFlexGridSizer(3, 2, 0, 0);
-	StaticText1 = new wxStaticText(Panel1, ID_STATICTEXT1, _("Frequency:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer1->Add(StaticText1, 1, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	txtFreq = new wxTextCtrl(Panel1, ID_TEXTCTRL1, _("2.5"), wxDefaultPosition, wxSize(52,21), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	FlexGridSizer1->Add(txtFreq, 1, wxLEFT|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT2, _("Amplitude:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-	FlexGridSizer1->Add(StaticText2, 1, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	spinAmplitude = new wxSpinCtrl(Panel1, ID_SPINCTRL1, _T("1024"), wxDefaultPosition, wxSize(63,21), 0, 0, 2048, 1024, _T("ID_SPINCTRL1"));
-	spinAmplitude->SetValue(_T("1024"));
-	FlexGridSizer1->Add(spinAmplitude, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText3 = new wxStaticText(Panel1, ID_STATICTEXT3, _("SamplingRate:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-	FlexGridSizer1->Add(StaticText3, 1, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	spinSamplingRate = new wxSpinCtrl(Panel1, ID_SPINCTRL2, _T("100"), wxDefaultPosition, wxDefaultSize, 0, 0, 10000000, 100, _T("ID_SPINCTRL2"));
-	spinSamplingRate->SetValue(_T("100"));
-	FlexGridSizer1->Add(spinSamplingRate, 1, wxTOP|wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	Panel1->SetSizer(FlexGridSizer1);
-	FlexGridSizer1->Fit(Panel1);
-	FlexGridSizer1->SetSizeHints(Panel1);
-	Panel2 = new wxPanel(this, ID_PANEL2, wxPoint(280,16), wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-	FlexGridSizer2 = new wxFlexGridSizer(0, 3, 0, 0);
-	FlexGridSizer2->AddGrowableCol(0);
-	FlexGridSizer2->AddGrowableRow(0);
-	int GLCanvasAttributes_1[] = {
-		WX_GL_RGBA,
-		WX_GL_DOUBLEBUFFER,
-		WX_GL_DEPTH_SIZE,      16,
-		WX_GL_STENCIL_SIZE,    0,
-		0, 0 };
-	glSignalGraph = new OpenGLGraph(Panel2, ID_GLCANVAS1, wxDefaultPosition, wxSize(430,156), 0, _T("ID_GLCANVAS1"), GLCanvasAttributes_1);
-	glSignalGraph->SetMinSize(wxSize(400,150));
-	FlexGridSizer2->Add(glSignalGraph, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	Panel2->SetSizer(FlexGridSizer2);
-	FlexGridSizer2->Fit(Panel2);
-	FlexGridSizer2->SetSizeHints(Panel2);
-	StaticText4 = new wxStaticText(this, ID_STATICTEXT4, _("CURRENTLY NOT TESTED!"), wxPoint(288,192), wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-	StaticText5 = new wxStaticText(this, ID_STATICTEXT5, _("Hex input:"), wxPoint(224,240), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
-	txtHexInput = new wxTextCtrl(this, ID_TEXTCTRL2, _("FF FF 00 00"), wxPoint(280,238), wxSize(408,21), 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-
-	Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&pnlSamplesGenerator::OnrgrDataSourceSelect);
-	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSamplesGenerator::OnbtnStartGeneratingClick);
-	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSamplesGenerator::OnbtnStopGeneratingClick);
-	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSamplesGenerator::OnbtnOpenFileClick);
+	Create(parent, wxID_ANY, wxDefaultPosition, wxSize(913,263), wxTAB_TRAVERSAL, _T("wxID_ANY"));
 	//*)
 
 	glSignalGraph->settings.useVBO = false;
@@ -219,4 +167,12 @@ void pnlSamplesGenerator::OnbtnOpenFileClick(wxCommandEvent& event)
     glSignalGraph->series[0]->AssignValues(m_xaxis, m_isamples, samplesCount);
     glSignalGraph->series[1]->AssignValues(m_xaxis, m_qsamples, samplesCount);
     glSignalGraph->Draw();
+}
+
+void pnlSamplesGenerator::OnPanel3Paint(wxPaintEvent& event)
+{
+}
+
+void pnlSamplesGenerator::OnPaint(wxPaintEvent& event)
+{
 }

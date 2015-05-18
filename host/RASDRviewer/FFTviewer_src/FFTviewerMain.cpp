@@ -1,3 +1,33 @@
+// -----------------------------------------------------------------------------
+// FILE:        "FFTviewerMain.cpp"
+// DESCRIPTION: "Source Code File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
 /***************************************************************
  * Name:      FFTviewerMain.cpp
  * Purpose:   Code for Application Frame
@@ -8,13 +38,21 @@
  **************************************************************/
 
 #include "FFTviewerMain.h"
+#include "globals.h"
 #include <wx/msgdlg.h>
-
 #include "ctr_6002dr2_LogicDLL.h"
 #include "CallbackCodes.h"
 #include "frControlPanel.h"
 #include "version.h"
 #include <dbt.h>
+#include "PopList.h"
+#include "PopTimeSpan.h"
+#include "SetupFFTout.h"
+#include "SetupPWROut.h"
+#include "SeupPulsePeriod.h"
+#include "SetupDMOut.h"
+#include "Setup_Simulator.h"
+//#include <errno.h>
 
 //(*InternalHeaders(FFTviewerFrame)
 #include <wx/intl.h>
@@ -28,17 +66,26 @@ const long FFTviewerFrame::ID_NOTEBOOK1 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM1 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM2 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM3 = wxNewId();
-const long FFTviewerFrame::ID_MENUITEM4 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM5 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM6 = wxNewId();
+const long FFTviewerFrame::idFrameDelay = wxNewId();
+const long FFTviewerFrame::idDsplayTime = wxNewId();
+const long FFTviewerFrame::ID_MENUITEM4 = wxNewId();
+const long FFTviewerFrame::ID_MENUITEM7 = wxNewId();
+const long FFTviewerFrame::ID_MENUITEM10 = wxNewId();
+const long FFTviewerFrame::ID_MENUITEM9 = wxNewId();
+const long FFTviewerFrame::ID_MENUITEM8 = wxNewId();
+const long FFTviewerFrame::ID_MENUITEM11 = wxNewId();
 const long FFTviewerFrame::idMenuAbout = wxNewId();
 const long FFTviewerFrame::ID_STATUSBAR1 = wxNewId();
 //*)
 const long FFTviewerFrame::ID_CONTROL_PANEL = wxNewId();
+pnlSpectrum *mSpectrum;
 
 BEGIN_EVENT_TABLE(FFTviewerFrame,wxFrame)
     //(*EventTable(FFTviewerFrame)
     //*)
+
 END_EVENT_TABLE()
 
 FFTviewerFrame* frmFFTMainWindow = NULL;
@@ -46,8 +93,11 @@ FFTviewerFrame* frmFFTMainWindow = NULL;
 FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
 {
     m_ControlPanel = NULL;
+    mSpectrum = NULL;
+    m_CFG_FileClassPtr = NULL;
     LMAL_Initialize();
     m_ControlPanel = new frControlPanel(this, ID_CONTROL_PANEL);
+
     //(*Initialize(FFTviewerFrame)
     wxMenuItem* MenuItem2;
     wxMenuItem* MenuItem1;
@@ -56,7 +106,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
 
-    Create(parent, wxID_ANY, _("FFT viewer"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
+    Create(parent, wxID_ANY, _("RASDRviewer"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX, _T("wxID_ANY"));
     SetClientSize(wxSize(900,700));
     SetMinSize(wxSize(900,700));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -64,10 +114,10 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer1->AddGrowableRow(0);
     Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxSize(800,600), 0, _T("ID_NOTEBOOK1"));
     Notebook1->SetMinSize(wxSize(900,500));
-    mSpectrum = new pnlSpectrum(Notebook1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-    mTransmitter = new pnlSamplesGenerator(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
+    mSpectrum = new pnlSpectrum(Notebook1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_PANEL1"));
+    mPulsar = new PulsarPnl(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, 0, _T("ID_PANEL2"));
     Notebook1->AddPage(mSpectrum, _("Spectrum"), false);
-    Notebook1->AddPage(mTransmitter, _("Transmitter"), false);
+    Notebook1->AddPage(mPulsar, _("Pulsar"), false);
     FlexGridSizer1->Add(Notebook1, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
@@ -78,15 +128,35 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
     Menu1->Append(MenuItem3);
     MenuItem4 = new wxMenuItem(Menu1, ID_MENUITEM3, _("Stop capturing samples"), wxEmptyString, wxITEM_NORMAL);
     Menu1->Append(MenuItem4);
-    MenuItem5 = new wxMenuItem(Menu1, ID_MENUITEM4, _("Read settings"), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem5);
-    MenuItem6 = new wxMenuItem(Menu1, ID_MENUITEM5, _("Send settings"), wxEmptyString, wxITEM_NORMAL);
+    MenuItem6 = new wxMenuItem(Menu1, ID_MENUITEM5, _("Save Configuration"), wxEmptyString, wxITEM_NORMAL);
     Menu1->Append(MenuItem6);
     MenuBar1->Append(Menu1, _("&File"));
     Menu3 = new wxMenu();
     MenuItem7 = new wxMenuItem(Menu3, ID_MENUITEM6, _("Control Panel"), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem7);
     MenuBar1->Append(Menu3, _("Tools"));
+    Menu4 = new wxMenu();
+    MenuItem8 = new wxMenuItem(Menu4, idFrameDelay, _("Frame Delay"), wxEmptyString, wxITEM_NORMAL);
+    Menu4->Append(MenuItem8);
+    DispTime = new wxMenuItem(Menu4, idDsplayTime, _("Display Time"), wxEmptyString, wxITEM_NORMAL);
+    Menu4->Append(DispTime);
+    MenuBar1->Append(Menu4, _("Performance Parameters"));
+    Menu5 = new wxMenu();
+    MenuItem5 = new wxMenuItem(Menu5, ID_MENUITEM4, _("Setup FFT  Output"), wxEmptyString, wxITEM_NORMAL);
+    Menu5->Append(MenuItem5);
+    MenuItem9 = new wxMenuItem(Menu5, ID_MENUITEM7, _("Setup Powerr Output"), wxEmptyString, wxITEM_NORMAL);
+    Menu5->Append(MenuItem9);
+    MenuItem10 = new wxMenu();
+    SetupDMOutMenu = new wxMenuItem(MenuItem10, ID_MENUITEM10, _("Setup DM Data Output"), wxEmptyString, wxITEM_NORMAL);
+    MenuItem10->Append(SetupDMOutMenu);
+    MenuItem11 = new wxMenuItem(MenuItem10, ID_MENUITEM9, _("Setup Pulse Data Output"), wxEmptyString, wxITEM_NORMAL);
+    MenuItem10->Append(MenuItem11);
+    Menu5->Append(ID_MENUITEM8, _("Setup Pulse Output"), MenuItem10, wxEmptyString);
+    MenuBar1->Append(Menu5, _("Define Output"));
+    Menu6 = new wxMenu();
+    Setup_Sim = new wxMenuItem(Menu6, ID_MENUITEM11, _("Setup Simulation"), wxEmptyString, wxITEM_NORMAL);
+    Menu6->Append(Setup_Sim);
+    MenuBar1->Append(Menu6, _("Simulation"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     Menu2->Append(MenuItem2);
@@ -101,47 +171,85 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
     SetSizer(FlexGridSizer1);
     Layout();
 
+    mSpectrum->Connect(wxEVT_PAINT,(wxObjectEventFunction)&FFTviewerFrame::OnmSpectrumPaint,0,this);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnQuit);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuStartCaptureSelected);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuStopCaptureSelected);
-    Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuReadSettingsSelected);
-    Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuSendSettingsSelected);
+    Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuItemSaveConfigSelected);
     Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuItem7Selected);
+    Connect(idFrameDelay,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnFrameDelaySelected);
+    Connect(idDsplayTime,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnDispTimeSelected);
+    Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupFFTOutSelected);
+    Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPWROutSelected);
+    Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupDMOutSelected);
+    Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPulsePeriodOutSelected);
+    Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetup_SimSelected);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnAbout);
     Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&FFTviewerFrame::OnClose);
     //*)
-
+//    Connect(wxID_YES,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&FFTviewerFrame::OnFFTfileYESbtnClick);
     frmFFTMainWindow = this;
+//cout << "Before 1st Yield in Main" << endl;
+    wxYield();
     //initialize library and set callback functions
-
+//cout << "Before set call back in viewer main" << endl;
 	LMAL_MainSetCallbackInterfaceUpdate(UpdateInterface);
 	LMLL_Testing_SetCallbackUpdateInterface(UpdateInterface);
 
 	this->SetTitle(this->GetTitle() + " v" + AutoVersion::FULLVERSION_STRING);
 	UpdateInterface(UPDATE_VER_REV_MASK, NULL);
-
+//    wxYield();
+//    cout <<"After 2nd Yield in Main" << endl;
     #ifdef WIN32
 	SetIcon(wxICON(aaaa));
 	#endif
+//	cout << "After SetIcon in viewer main" << endl;
 }
 
 FFTviewerFrame::~FFTviewerFrame()
 {
+//    if(CLOSE_DEGUG) cout << "Entering ~FFTviewerFrame()" << endl;
+/*
+cout << "Before Notebook1 Destroy " << endl;
+    if(Notebook1 != NULL) {
+        Notebook1->Destroy();
+        Notebook1 = NULL;
+        cout << "After Notebook1 Destroy" << endl;
+        mSpectrum = NULL;}
+    Sleep(1000); */
+
+ /*   if(mSpectrum != NULL) {
+//        if(mSpectrum->m_capturingData) mSpectrum->StopCapturing();
+        mSpectrum->Destroy();}
+
+    cout << "After return from mSpectrum->Destory" << endl; */
+ //   wxFrame::Destroy();
+    //GetParent()->Close(true);
+//    Exit(0);
+  //  GetParent()->Destroy();
+//    CloseWindow(FFTviewerFrame);
+//    Close();
+//   Show(false);
+
+  //  Destroy();
+
     //(*Destroy(FFTviewerFrame)
     //*)
 }
 
 void FFTviewerFrame::OnQuit(wxCommandEvent& event)
 {
-    if(mSpectrum)
-        mSpectrum->StopCapturing();
-    LMAL_Quit();
+    if(CLOSE_DEBUG) cout << "Entering OnQuit()" << endl;
+    shutdown();
+    if(CLOSE_DEBUG) cout << "After shutdown()" << endl;
+    Destroy();
 }
+string DelayStr;
 
 void FFTviewerFrame::OnAbout(wxCommandEvent& event)
 {
     //wxString msg = wxbuildinfo(long_f);
-    wxString msg = "FFT viewer v";
+    wxString msg = "RASDR viewer v";
     msg.Append(AutoVersion::FULLVERSION_STRING);
     msg.Append("\nBuild date: ");
     msg.Append(AutoVersion::YEAR);
@@ -154,12 +262,180 @@ void FFTviewerFrame::OnAbout(wxCommandEvent& event)
     dlg->ShowModal();
     delete dlg;
 }
-
+/*
+void FFTviewerFrame::term_error(int num)
+{
+    cout<<"term_error exit"<<endl;
+    exit(-1);
+} */
 void FFTviewerFrame::OnClose(wxCloseEvent& event)
 {
-    if(mSpectrum)
-        mSpectrum->StopCapturing();
+    if(CLOSE_DEBUG) cout << "Entering OnClose()" <<endl;
+    shutdown();
+    if(CLOSE_DEBUG) cout << "After shutdown()" << endl;
     Destroy();
+};
+void FFTviewerFrame :: shutdown()
+{
+    //Avoid redundant processing
+  //  Disconnect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnQuit);
+
+
+    SaveConfiguration();
+
+/*
+    if(mWaterfall != NULL) {
+        mWaterfall->Destroy();
+        mWaterfall = NULL;
+        cout << "mWaterfall Destroyed " << endl;}
+*/
+
+//    g_frame_delay = 0; // Release any data in processing.
+
+    if(mSpectrum != NULL) {
+        // Turn off Power recording
+//        if(g_PWRfileRecording) g_PWRfileRecording = false;
+        if(mSpectrum->m_capturingData) {
+                mSpectrum->StopCapturing();
+                if(CLOSE_DEBUG) cout << "Capturing Stopped" << endl; }
+//        ogl_FFTline->Destroy();
+//        ogl_IQline->Destroy();
+//        ogl_IQscatter->Destroy();
+//        mSpectrum->Destroy();
+ //       mSpectrum = NULL;
+ //       wxYield();
+ //       m_updateTimer->Destroy();
+
+        mSpectrum->Disconnect(wxEVT_PAINT,(wxObjectEventFunction)&FFTviewerFrame::OnmSpectrumPaint,0,this);
+
+    }
+ /*      if(m_ControlPanel != NULL) {
+        m_ControlPanel->Destroy();
+        m_ControlPanel = NULL;
+        cout << " After Control Panel Destroy()" << endl;} */
+
+ /*   if(MenuItem8 != NULL) {
+        MenuItem8->Destroy();
+        MenuItem8 = NULL;  }*/
+
+   /* if(MenuItem7 != NULL) {
+        MenuItem7->Destroy();
+        MenuItem7 = NULL;  }*/
+
+   /* if(MenuItem5 != NULL) {
+        MenuItem5->Destroy();
+        MenuItem5 = NULL;  }*/
+
+   /* if(Menu3 != NULL) {
+        Menu3->Destroy();
+        Menu3 = NULL;  }*/
+
+   /* if(Menu4 != NULL) {
+        Menu4->Destroy();
+        Menu4 = NULL;  }*/
+/*
+    if(mStatusBar != NULL) {
+        mStatusBar->Destroy();
+        mStatusBar = NULL;
+        cout << "mStatusBar Destroyed" << endl;
+    }
+*/
+  //  SetMenu(false);
+/*
+    if(MenuBar1 != NULL) {
+        MenuBar1->Destroy();
+        MenuBar1 = NULL);
+    } */
+//    MenuBar1.Destroy();
+
+/*    FFTviewerApp *parent = GetParent();
+    parent->Close(); */
+//    GetParent()->CloseWindow();
+//    GetParent()->Destroy);
+//    Destroy();
+//    GetParent()->Destroy();
+//   exit(-1);
+//    CleanUp();
+//    GetTopWindow(NULL)->CleanUp();
+//    wxGetActiveWindow()->DeletePendingEvents();
+//    wxGetActiveWindow()->ClearEventHashTable();
+  //  GetParent()->DestroyChildren();
+
+ //   wxGetActiveWindow()->Destroy();
+//    FFTviewerFrame = NULL;
+/*
+    if(frmFFTMainWindow != NULL) {
+        frmFFTMainWindow->Destroy();
+        frmFFTMainWindow = NULL; }
+*/
+
+//MenuBar1->Destroy();
+
+//cout << "After menubar1` Destroy" << endl;
+
+  if(mSpectrum != NULL) {
+
+    if(mSpectrum->m_updateTimer!=NULL) {
+            if(mSpectrum->m_updateTimer->IsRunning()) {
+                    mSpectrum->m_updateTimer->Stop();
+                    mSpectrum->m_updateTimer->DeletePendingEvents();
+                    if(CLOSE_DEBUG) cout << "m_updateTimer stoped" << endl;}
+//            m_updateTimer->Delete();
+//            mSpectrum->m_updateTimer = NULL;
+            }
+
+        LMAL_Quit();
+        if(CLOSE_DEBUG) {
+            cout<< "After LMAL_quit" << endl;
+            Sleep(1000); }
+
+        mSpectrum -> shutdown();
+
+        if(CLOSE_DEBUG) {
+            cout << "After mSpectrum -> Shutdown()" << endl;
+            Sleep(1000); }
+
+        mSpectrum->Destroy();
+        if(CLOSE_DEBUG) cout << "After mSpectrum->Destroy()" <<endl;
+        mSpectrum = NULL;
+        if(CLOSE_DEBUG) Sleep(1000);
+        Destroy();
+
+/*
+        mSpectrum->Destroy();
+        cout << "After mSpectrum->Destroy()" << endl;
+
+        mSpectrum = NULL; */
+  }
+  /*
+cout << "Before Notebook1 Destroy " << endl;
+    if(Notebook1 != NULL) {
+        Notebook1->Destroy();
+        Notebook1 = NULL;
+        cout << "After Notebook1 Destroy" << endl; }
+    Sleep(1000); */
+
+
+//  Sleep(1000);
+
+//mSpectrum = NULL;
+/*
+cout << "Before Destroy in fftviewermain()" << endl;
+    Sleep(1000);
+    Destroy();
+    Sleep(1000); */
+/*
+cout << "After Destroy in fftviewermain" << endl;
+
+  LMAL_Quit(); */
+/*
+    if(m_ControlPanel != NULL) {
+        m_ControlPanel->Destroy();
+        m_ControlPanel = NULL;
+        cout << "After Control Panel Destroy" << endl;} */
+
+
+return;
 }
 
 /**
@@ -244,4 +520,212 @@ void FFTviewerFrame::OnMenuStartCaptureSelected(wxCommandEvent& event)
 void FFTviewerFrame::OnMenuStopCaptureSelected(wxCommandEvent& event)
 {
     mSpectrum->StopCapturing();
+}
+
+void FFTviewerFrame::OnFrameDelaySelected(wxCommandEvent& event)
+{
+  PopList dialog(this);
+  dialog.ShowModal();
+}
+
+void FFTviewerFrame::OnmSpectrumPaint(wxPaintEvent& event)
+{
+}
+
+/*void FFTviewerFrame::OnmTransmitterPaint(wxPaintEvent& event)
+{
+}
+*/
+
+bool FFTviewerFrame::SaveConfiguration()
+{
+    char outbuf[80];
+    char newline[3];
+    wxSprintf(newline,"\r\n");
+    if(g_CfgChanged) {
+            g_CfgChanged = false; //Avoid repeated writes
+            if(m_CFG_FileClassPtr == NULL) m_CFG_FileClassPtr = new wxFile();
+            m_CFG_FileClassPtr->Create("\RASDR.cfg",TRUE,wxS_DEFAULT);
+            if(!m_CFG_FileClassPtr->IsOpened()) {
+                cout << "CFG File Open Fail" << endl;
+                if(m_CFG_FileClassPtr != NULL) {
+                    m_CFG_FileClassPtr->Close();
+                    m_CFG_FileClassPtr = NULL;
+                }
+                return(false);
+            }
+            m_CFG_FileClassPtr->Write("RASDRviewer Version ");
+            m_CFG_FileClassPtr->Write(AutoVersion::FULLVERSION_STRING,wxStrlen(AutoVersion::FULLVERSION_STRING));
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%.12f",mSpectrum->m_RxFreq);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%g",mSpectrum->m_frequencyStep);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",LMLL_RxLPFGetLpfBw());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",LMLL_RxFEGetRFB_TIA_RXFE());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",LMLL_RxVGA2GetVga2G_u());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",LMLL_RxFEGetG_LNA_RXFE());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",mSpectrum->chkAverage->GetValue());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",mSpectrum->spinAvgCount->GetValue());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",mSpectrum->spinFFTsamples->GetValue());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",mSpectrum->spinSamplingFreq->GetValue());
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_NumbFFTFiles);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_FFTFileType);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_FFT_TimeStandard);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_FFTframeSkip);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_FFTframesOut);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_NumbPWRFiles);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_PWRFileType);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_PWRTimeStandard);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_PwrRecordRate);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_PwrSpanSec);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSprintf(outbuf,"%d",g_FFTDataSource);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+ /*           m_CFG_FileClassPtr->Write(g_FFTfileName);
+            m_CFG_FileClassPtr->Write(newline); */
+
+            m_CFG_FileClassPtr->Flush();
+            m_CFG_FileClassPtr->Close();
+            m_CFG_FileClassPtr = NULL;
+
+            cout << "Configuration Saved" << endl;
+    }
+    return(true);
+}
+
+void FFTviewerFrame::OnMenuItemSaveConfigSelected(wxCommandEvent& event)
+{
+    SaveConfiguration();
+}
+
+void FFTviewerFrame::OnDispTimeSelected(wxCommandEvent& event)
+{
+    DispTime->Enable(false); // Prevents multiple uses
+    PopTimeSpan dialog(this);
+    dialog.ShowModal();
+}
+
+void FFTviewerFrame::OnSetupFFTOutSelected(wxCommandEvent& event)
+{
+    SetupFFTout dialog(this);
+    dialog.ShowModal();
+    if(g_FFTfileSetup) {
+            if(mSpectrum) {
+ //                   cout << "Before Stop Capturing\n" << endl;
+                    if(mSpectrum->m_capturingData) mSpectrum->StopCapturing();
+ //                   cout << "After Stop Capturing\n" << endl;
+  //                  while(mSpectrum->m_capturingData); //Wait ofr stop
+                    mSpectrum->OpenFFTfile();
+                    cout<<"SetupFFTout Dialog Completed OK"<<endl;
+                    cout << g_FFTfileName << " Selected" << endl;
+                    cout << "FFT File Type = " << g_FFTFileType << endl;
+                    cout << "Number of FFT Files = " << g_NumbFFTFiles << endl;
+                    cout << "Time Standard = " << g_FFT_TimeStandard << endl;
+                    cout << "Source = " << g_FFTDataSource << endl;
+                    mSpectrum->EnableFFTRecord(true); }
+            g_FFTfileSetup = false; }
+}
+
+void FFTviewerFrame::OnSetupPWROutSelected(wxCommandEvent& event)
+{
+    SetupPWROut dialog(this);
+    dialog.ShowModal();
+
+cout << "OnSetupPWROutSelected" << endl;
+
+ //   bool iscapturing = false;
+    if(g_PWRfileSetup) {
+            if(mSpectrum) {
+ //                   cout << "Before Stop Capturing\n" << endl;
+                    if(mSpectrum->m_capturingData)  mSpectrum->StopCapturing();
+ //                   cout << "After Stop Capturing\n" << endl;
+  //                  while(mSpectrum->m_capturingData); //Wait ofr stop
+                    mSpectrum->OpenPWRfile();
+//                    if(iscapturing) mSpectrum->StartCapturing();
+ //                   g_PWRfileSetup = true;
+                    cout<<"SetupPWRout Dialog Completed OK"<<endl;
+                    cout << g_PWRfileName << " Selected" << endl;
+                    cout << "PWR File Type = " << g_PWRFileType << endl;
+                    cout << "Number of PWR Files = " << g_NumbPWRFiles << endl;
+                    cout << "Time Standard = " << g_PWRTimeStandard << endl;
+                    mSpectrum->EnablePWRRecord(true);
+                    }
+                g_PWRfileSetup = false;
+        }
+}
+
+void FFTviewerFrame::OnSetupPulsePeriodOutSelected(wxCommandEvent& event)
+{
+    SeupPulsePeriod dialog(this);
+    dialog.ShowModal();
+}
+
+/*void FFTviewerFrame::OnSetupPulseTimeDomainOutSelected(wxCommandEvent& event)
+{
+    SetupPulseTimeDomain dialog(this);
+    dialog.ShowModal();
+}
+
+
+void FFTviewerFrame::OnMenuItem12Selected(wxCommandEvent& event)
+{
+    SetupDMOut dialog(this);
+    dialog.ShowModal();
+}*/
+
+void FFTviewerFrame::OnSetupDMOutSelected(wxCommandEvent& event)
+{
+    SetupDMOut dialog(this);
+    dialog.ShowModal();
+}
+
+void FFTviewerFrame::OnSetup_SimSelected(wxCommandEvent& event)
+{
+    Setup_Simulator dialog(this);
+    dialog.ShowModal();
+    /*
+    cout << "Sim DM = " << g_Sim_DM;
+    cout << " Sim Period = " << g_Sim_Period;
+    cout << " Sim Duty = " << g_Sim_Duty;
+    cout << " % Sim Factor = " << g_Sim_Factor << endl;
+    */
 }

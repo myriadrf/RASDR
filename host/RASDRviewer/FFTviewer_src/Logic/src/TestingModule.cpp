@@ -7,6 +7,7 @@
 // -----------------------------------------------------------------------------
 
 #include "TestingModule.h"
+#include "..\globals.h"
 #ifdef WIN32
 
 
@@ -28,6 +29,7 @@
 #include "CallbackCodes.h"
 #include <stdio.h>
 #include <pthread.h>
+//#include "globals.h"
 
 pthread_t readThreadID;
 pthread_t calculateThreadID;
@@ -58,6 +60,9 @@ using namespace std;
 /**
 	@brief Allocates memory needed for I,Q channel samples and FFT data
  */
+
+ extern int g_frame_delay; //Global variable
+
 TestingModule::TestingModule(Main_Module *pMainModule)
 {
     m_swapIQ = false;
@@ -207,8 +212,10 @@ void TestingModule::StopSdramRead()
     {
         readingData = false;
         void *status;
+//        printf("Before Join Thread"); //Test 4/17/14 This Prints
         if( pthread_join(readThreadID, &status) )
             printf("joining thread encountered error\n");
+//        printf("After Join Thread"); //Test 4/17/14 This does not print
     }
     //need to unblock fifo in case other thread was waiting for data
     m_SamplesFIFO->unblock();
@@ -325,6 +332,8 @@ void TestingModule::ReadData()
                 tempInt |= (m_Buffers[i][pos + 1] >> 4);
                 tempInt = tempInt << 20;
                 splitPkt.Qdata[currentSample] = tempInt >> 20;
+
+
                 //advance to next sample
                 pos += 3;
                 ++currentSample;
@@ -337,7 +346,10 @@ void TestingModule::ReadData()
         contexts[i] = device->BeginDataReading(m_Buffers[i], len);
 
 		t2_info = GetTickCount();
-		if (t2_info - t1_info > 1000) // each second display info and update data rate
+//		if (t2_info - t1_info > 10000)
+		if ((t2_info - t1_info) > g_frame_delay) // each delay period display info and update data rate
+		//This uses a global variable that changes with the frame delay pop-up on the menu
+		//g_frame_delay is in mS of delay between frames
 		{
 			t1_info = t2_info;
 			deltaT = (t2 - t1);
@@ -352,7 +364,6 @@ void TestingModule::ReadData()
 			m_bytesPerSecond = (m_BytesXferred/1024) / (deltaT/1000.0); // / 1000;
 			m_BytesXferred = 0;
 
-
 			cout << "Rate: " << m_bytesPerSecond << "  KB/s  " << endl;
 			cout << "Failures: " << m_ulFailures << endl;
 
@@ -362,12 +373,16 @@ void TestingModule::ReadData()
 			cout << " samples FIFO len: " << m_SamplesFIFO->length() << endl;
 			cout << " FFT FIFO len: " << m_fftFIFO->length() << endl << endl;
 
+			cout << " Frame Power: " << g_framepwr << endl;
+
 			packetReceived = 0;
 			countFFT = 0;
 		}
 		i = (i + 1) & iQueueSizeMask;
 		countBuffers++;
 	}
+	device->AbortReading(); // aborts all pending operations
+
 	// Wait for all the queued requests to be canceled
 	for(int j=0; j<QueueSize; j++)
 	{
@@ -574,9 +589,10 @@ void TestingModule::ReadData_DigiRed()
 			m_bytesPerSecond = (m_BytesXferred/1024) / (deltaT/1000.0); // / 1000;
 			m_BytesXferred = 0;
 
-
 			cout << "Rate: " << m_bytesPerSecond << "  KB/s  " << endl;
 			cout << "Failures: " << m_ulFailures << endl;
+
+//			cout << "Frame Power: " << g_framepwr << " mW @ ADC" << endl << endl;
 
 			cout << " streaming packets received: " << packetReceived << endl;
 			cout << " ffts calculated: " << countFFT << endl << endl;
@@ -593,6 +609,7 @@ void TestingModule::ReadData_DigiRed()
 			countFFT = 0;
 		}
 	}
+    device->AbortReading(); // aborts all pending operations
 
 	// Wait for all the queued requests to be canceled
 	for(int j=0; j<QueueSize; ++j)
@@ -618,7 +635,7 @@ bool TestingModule::externalCalculateFFT()
 
     int maxPacketSize = 0;
     device->GetCustomParameter("MaxPacketSize", &maxPacketSize);
-
+//cout << "Max Packet Size = " << maxPacketSize << endl;
 	if(m_hwDigiRed && maxPacketSize == 512)
     {
         splitPkt = new SplitPacket(DIGIRED_SPLIT_PACKET_SIZE/2);
@@ -640,6 +657,10 @@ bool TestingModule::externalCalculateFFT()
 	float sumQ = 0;
     float avgI = 0;
 	float avgQ = 0;
+	double SumVsq = 0;
+	//double scalefactor = 2.145767; //nW Qstep * Qstep / Impedance at ADC
+//	double scalefactor = 1.3732910156e-4; //nW Qstep * Qstep / Impedance at ADC (mW)
+    double scalefactor = 4*6.70552E-05; // Imperical microwatts
 
 	unsigned int samplesUsed = splitPkt->size; //number of samples used from packet
 	unsigned int samplesReceived = 0; //number of samples received
@@ -665,6 +686,8 @@ bool TestingModule::externalCalculateFFT()
             {
                 sumI += (m_fftCalcIn[samplesReceived][0] = splitPkt->Qdata[samplesUsed]);
                 sumQ += (m_fftCalcIn[samplesReceived][1] = splitPkt->Idata[samplesUsed]);
+                SumVsq += (splitPkt->Idata[samplesUsed] * splitPkt-> Idata[samplesUsed]) +
+                           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
                 ++samplesReceived;
                 ++samplesUsed;
             }
@@ -675,6 +698,8 @@ bool TestingModule::externalCalculateFFT()
             {
                 sumI += (m_fftCalcIn[samplesReceived][0] = splitPkt->Idata[samplesUsed]);
                 sumQ += (m_fftCalcIn[samplesReceived][1] = splitPkt->Qdata[samplesUsed]);
+                SumVsq += (splitPkt->Idata[samplesUsed] * splitPkt-> Idata[samplesUsed]) +
+                           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
                 ++samplesReceived;
                 ++samplesUsed;
             }
@@ -688,8 +713,10 @@ bool TestingModule::externalCalculateFFT()
 
 			avgI = sumI / FFTsamples;
 			avgQ = sumQ / FFTsamples;
+			g_framepwr = (double)SumVsq * scalefactor / (double)FFTsamples ;
 			sumI = 0;
 			sumQ = 0;
+			SumVsq = 0;
 			//do DC correction
 			if (m_DCcorrectionOnOff)
 				for (int i = 0; i < FFTsamples; ++i)
@@ -698,7 +725,12 @@ bool TestingModule::externalCalculateFFT()
 					m_fftCalcIn[i][1] -= avgQ;
 				}
 			//calculate FFT
+
+//			cout << "Start FFT Calc Ticks : " <<GetTickCount();
+
 			fftwf_execute(m_fftCalcPlan);
+
+//			cout << " After FFT Calc Tcks : " << GetTickCount() << endl;
 
 			// normalize FFT results
 			for (int i = 0; i < FFTsamples; ++i)

@@ -1,4 +1,34 @@
 // -----------------------------------------------------------------------------
+// FILE:        "OpenGLGraph.cpp"
+// DESCRIPTION: "Source Code File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // FILE: 		OpenGLGraph.cpp
 // DESCRIPTION:	OpenGL based basic chart drawing
 // DATE:		2013-05-06
@@ -87,10 +117,11 @@ void OpenGLGraph::Initialize(int width, int height)
 {
     char tempc[256];
 	GLenum err = glewInit();
+//	cout << "OpenGLGraph Initialize" << endl;
 	if (GLEW_OK != err)
 	{
 		sprintf(tempc, "GLEW ERROR %s", glewGetErrorString(err));
-		cout << tempc << endl;
+//		cout << tempc << endl;
 	}
     glEnable( GL_TEXTURE_2D );
 	glAlphaFunc(GL_GEQUAL, 0.3);
@@ -138,6 +169,7 @@ void OpenGLGraph::Resize(int w, int h)
 */
 void OpenGLGraph::AddSeries()
 {
+//    cout << "OpenGl Add Series" << endl;
 	cDataSerie *data = new cDataSerie();
 	series.push_back(data);
 }
@@ -161,6 +193,7 @@ void OpenGLGraph::RemoveSeries(unsigned int i)
 */
 void OpenGLGraph::SetInitialDisplayArea(float minx, float maxx, float miny, float maxy)
 {
+ //   cout << "OpenGL Set Initial Display area" << endl;
 	initialDisplayArea.set(minx, maxx, miny, maxy);
 	SetDisplayArea( minx, maxx, miny, maxy);
 }
@@ -174,6 +207,7 @@ void OpenGLGraph::SetInitialDisplayArea(float minx, float maxx, float miny, floa
 */
 void OpenGLGraph::SetDisplayArea(float minx, float maxx, float miny, float maxy)
 {
+ //   cout << "OPenGL SetDisplayArea" << endl;
 	settings.visibleArea.set(minx, maxx, miny, maxy);
 	SettingsChanged();
 #ifdef OGL_REDRAW_ENABLED
@@ -292,6 +326,7 @@ void OpenGLGraph::SetDrawingMode( eDrawingMode mode )
 */
 void OpenGLGraph::DrawStaticElements()
 {
+//    cout << "OpenGl Draw Static" << endl;
 	switchToWindowView();
 
 	//draw data view background
@@ -419,6 +454,7 @@ void OpenGLGraph::DrawStaticElements()
 */
 void OpenGLGraph::CalculateGrid()
 {
+ //   cout << "OpenGL CalculateGrid" << endl;
 	// find the widest number of x axis values
 	float widerNumber = settings.gridXstart < settings.gridXstart+settings.gridXlines*settings.gridXspacing ?
 						 settings.gridXstart+settings.gridXlines*settings.gridXspacing :

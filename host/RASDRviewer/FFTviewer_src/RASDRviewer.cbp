@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="FFTviewer" />
+		<Option title="RASDRviewer" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -30,7 +30,7 @@
 				</Linker>
 			</Target>
 			<Target title="GUIDebug WIN32">
-				<Option output="DebugWin32/FFTviewer_d" prefix_auto="1" extension_auto="1" />
+				<Option output="DebugWin32/RASDRviewer_d_W" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="DebugWin32" />
 				<Option object_output="obj/Debug" />
 				<Option type="1" />
@@ -109,7 +109,7 @@
 				</Linker>
 			</Target>
 			<Target title="GUIRelease WIN32">
-				<Option output="ReleaseWin32/FFTviewer" prefix_auto="1" extension_auto="1" />
+				<Option output="ReleaseWin32/RASDRviewer_W" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="ReleaseWin32" />
 				<Option object_output="obj/Release" />
 				<Option type="0" />
@@ -193,6 +193,16 @@
 		<Linker>
 			<Add directory="C:/Libraries/wxWidgets-2.9.5/lib/gcc_lib" />
 		</Linker>
+		<ExtraCommands>
+			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\fftw-3.3.3\libfftw3f-3.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
+			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\pthreads-w32-2-9-1-release\Pre-built.2\dll\x86\pthreadGCE2.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
+			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\MinGW\libgcc_s_dw2-1.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
+			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\MinGW\libstdc++-6.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
+		</ExtraCommands>
+		<Unit filename="FFToutSetup.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
 		<Unit filename="FFTviewerApp.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -379,10 +389,6 @@
 			<Option target="GUIRelease WIN32" />
 		</Unit>
 		<Unit filename="GUI/pnlRxVGA2.h">
-			<Option target="GUIDebug WIN32" />
-			<Option target="GUIRelease WIN32" />
-		</Unit>
-		<Unit filename="GUI/pnlSamplesGenerator.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
@@ -653,6 +659,77 @@
 			<Option target="LogicDebug WIN32" />
 			<Option target="LogicRelease WIN32" />
 		</Unit>
+		<Unit filename="PopDialog.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="PopDialog.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="PopList.cpp" />
+		<Unit filename="PopList.h" />
+		<Unit filename="PopTimeSpan.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="PopTimeSpan.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="PulsarPnl.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="PulsarPnl.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SetSimulation.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SetSimulation.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SetupDMOut.cpp" />
+		<Unit filename="SetupDMOut.h" />
+		<Unit filename="SetupFFTout.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SetupFFTout.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SetupPWROut.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SetupPWROut.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="Setup_Simulator.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="Setup_Simulator.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SeupPulsePeriod.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="SeupPulsePeriod.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="globals.cpp" />
+		<Unit filename="globals.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 			<Option target="GUIDebug WIN32" />
@@ -662,7 +739,37 @@
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
+		<Unit filename="wxsmith/FFToutSetup.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
 		<Unit filename="wxsmith/FFTviewerframe.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/PopList.wxs" />
+		<Unit filename="wxsmith/PopTimeSpan.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/PulsarPnl.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/SetupDMOut.wxs" />
+		<Unit filename="wxsmith/SetupFFTout.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/SetupPWROut.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/Setup_Simulator.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/SeupPulsePeriod.wxs">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
@@ -726,10 +833,6 @@
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
-		<Unit filename="wxsmith/pnlSamplesGenerator.wxs">
-			<Option target="GUIDebug WIN32" />
-			<Option target="GUIRelease WIN32" />
-		</Unit>
 		<Unit filename="wxsmith/pnlSpectrum.wxs">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -755,7 +858,7 @@
 			<envvars />
 			<debugger />
 			<wxsmith version="1">
-				<gui name="wxWidgets" src="FFTviewerApp.cpp" main="FFTviewerFrame" init_handlers="necessary" language="CPP" />
+				<gui name="wxWidgets" src="FFTviewerApp.cpp" main="FFTviewerFrame" init_handlers="never" language="CPP" />
 				<resources>
 					<wxFrame wxs="wxsmith/FFTviewerframe.wxs" src="FFTviewerMain.cpp" hdr="FFTviewerMain.h" fwddecl="0" i18n="1" name="FFTviewerFrame" language="CPP" />
 					<wxPanel wxs="wxsmith/pnlSpectrum.wxs" src="GUI/pnlSpectrum.cpp" hdr="GUI/pnlSpectrum.h" fwddecl="1" i18n="1" name="pnlSpectrum" language="CPP" />
@@ -779,6 +882,16 @@
 					<wxDialog wxs="wxsmith/dlgFreqVsCap.wxs" src="GUI/dlgFreqVsCap.cpp" hdr="GUI/dlgFreqVsCap.h" fwddecl="1" i18n="1" name="dlgFreqVsCap" language="CPP" />
 					<wxPanel wxs="wxsmith/pnlSamplesGenerator.wxs" src="GUI/pnlSamplesGenerator.cpp" hdr="GUI/pnlSamplesGenerator.h" fwddecl="1" i18n="1" name="pnlSamplesGenerator" language="CPP" />
 					<wxPanel wxs="wxsmith/pnlADF.wxs" src="GUI/pnlADF.cpp" hdr="GUI/pnlADF.h" fwddecl="1" i18n="1" name="pnlADF" language="CPP" />
+					<wxDialog wxs="wxsmith/PopList.wxs" src="PopList.cpp" hdr="PopList.h" fwddecl="0" i18n="1" name="PopList" language="CPP" />
+					<wxPanel wxs="wxsmith/PopDialog.wxs" src="PopDialog.cpp" hdr="PopDialog.h" fwddecl="0" i18n="1" name="PopDialog" language="CPP" />
+					<wxDialog wxs="wxsmith/PopTimeSpan.wxs" src="PopTimeSpan.cpp" hdr="PopTimeSpan.h" fwddecl="0" i18n="1" name="PopTimeSpan" language="CPP" />
+					<wxDialog wxs="wxsmith/SetupFFTout.wxs" src="SetupFFTout.cpp" hdr="SetupFFTout.h" fwddecl="0" i18n="1" name="SetupFFTout" language="CPP" />
+					<wxPanel wxs="wxsmith/FFToutSetup.wxs" src="FFToutSetup.cpp" hdr="FFToutSetup.h" fwddecl="0" i18n="1" name="FFToutSetup" language="CPP" />
+					<wxPanel wxs="wxsmith/PulsarPnl.wxs" src="PulsarPnl.cpp" hdr="PulsarPnl.h" fwddecl="0" i18n="0" name="PulsarPnl" language="CPP" />
+					<wxDialog wxs="wxsmith/SetupPWROut.wxs" src="SetupPWROut.cpp" hdr="SetupPWROut.h" fwddecl="0" i18n="0" name="SetupPWROut" language="CPP" />
+					<wxDialog wxs="wxsmith/SeupPulsePeriod.wxs" src="SeupPulsePeriod.cpp" hdr="SeupPulsePeriod.h" fwddecl="0" i18n="0" name="SeupPulsePeriod" language="CPP" />
+					<wxDialog wxs="wxsmith/SetupDMOut.wxs" src="SetupDMOut.cpp" hdr="SetupDMOut.h" fwddecl="0" i18n="0" name="SetupDMOut" language="CPP" />
+					<wxDialog wxs="wxsmith/Setup_Simulator.wxs" src="Setup_Simulator.cpp" hdr="Setup_Simulator.h" fwddecl="0" i18n="0" name="Setup_Simulator" language="CPP" />
 				</resources>
 			</wxsmith>
 			<DoxyBlocks>
@@ -792,7 +905,7 @@
 			</DoxyBlocks>
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
-				<Settings autoincrement="1" date_declarations="1" update_manifest="0" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Settings autoincrement="1" date_declarations="1" update_manifest="0" do_auto_increment="0" ask_to_increment="1" language="C++" svn="0" svn_directory="" header_path="version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
 			</AutoVersioning>

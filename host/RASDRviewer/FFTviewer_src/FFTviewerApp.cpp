@@ -1,3 +1,33 @@
+// -----------------------------------------------------------------------------
+// FILE:        "FFTviewerApp.cpp"
+// DESCRIPTION: "Source Code File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
 /***************************************************************
  * Name:      FFTviewerApp.cpp
  * Purpose:   Code for Application Class
@@ -15,7 +45,18 @@
 #include <wx/image.h>
 //*)
 
+//DEFINE_EVENT_TYPE(wxEVT_COMMAND_EXIT_CALL)
+//IMPLEMENT_DYNAMIC_CLASS(wxExitEvent,wxNotifyEvent)
+
+
+
 IMPLEMENT_APP(FFTviewerApp);
+/*
+BEGIN_EVENT_TABLE(FFTviewerApp, wxApp)
+EventTable(FFTviewerApp)
+wxEVT_COMMAND_EXIT_CALL   (wxID_ANY, FFTviewerApp::CloseApp)
+END_EVENT_TABLE()
+*/
 
 #ifdef WIN32
  wxBitmap* GetBitmapFromMemory(const char* t_data, const DWORD t_size)
@@ -73,7 +114,7 @@ bool FFTviewerApp::OnInit()
           wxSPLASH_CENTRE_ON_SCREEN|wxSPLASH_TIMEOUT,
           6000, NULL, -1, wxDefaultPosition, wxDefaultSize,
           wxSIMPLE_BORDER|wxSTAY_ON_TOP);
-
+//cout << "After Splash started" << endl;
     wxYield();
     #endif
     //(*AppInitialize
@@ -86,6 +127,33 @@ bool FFTviewerApp::OnInit()
     	SetTopWindow(Frame);
     }
     //*)
+ //   this->Connect(wxID_EXIT,wxEVT_COMMAND_MENU_SELECTED,
+ //                 wxCommandEventHandler(FFTviewerApp::CloseApp));
     return wxsOK;
 
 }
+
+//Connect(wxID_ANY,wxEVT_EXIT_CALL,(wxObjectEventFunction)&FFTviewerApp::CloseApp);
+/*
+void FFTviewerApp::CloseApp(wxCommandEvent& event)
+{
+    Exit();
+} */
+
+/*
+class wxExitEvent : public wxNotifyEvent
+{
+    public:
+    wxExitEvent(wxEventType commandType = wxEVT_NULL,
+                int id =0 ) : wxNotifyEvent(commandType,id)
+                {}
+    wxExitEvent(const wxExitEvent& event) : wxNotifyEvent(event)
+            {}
+            virtual wxEvent *Clone() const
+            {  return new wxExitEvent(*this); }
+DECLARE_DYNAMIC_CLASS(wxExitEvent);
+};
+
+typedef void (wxEvtHandler :: *wxExitEventFunction)
+    (wxExitEvent&);
+*/

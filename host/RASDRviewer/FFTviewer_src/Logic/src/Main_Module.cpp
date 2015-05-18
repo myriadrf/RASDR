@@ -315,9 +315,9 @@ void Main_Module::FileNewExecute()
 	m_RxPLLModule->SetDefaults();
 	m_ADDCModule->SetDefaults();
 	//m_BoardModule->SetDefaults();
-	
+
 	LoadAdditionalSettings();
-	
+
 	slLogMesg(PROJECT_FILE_CREATED);
 }
 
@@ -520,7 +520,7 @@ void Main_Module::initialize()
 
 	dRegTest = new RegisterTest();
 	m_testModule = new TestingModule(this);
-	m_transmitter = new Transmitter(this);
+//test 12/7	m_transmitter = new Transmitter(this);
 	StartMessagePump();
 	autoDownload = true;
 	// Clear Messages log

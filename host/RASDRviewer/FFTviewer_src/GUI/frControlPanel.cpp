@@ -1,3 +1,33 @@
+// -----------------------------------------------------------------------------
+// FILE:        "frControlPanel.cpp"
+// DESCRIPTION: "Source Code File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
 #include "frControlPanel.h"
 #include "ctr_6002dr2_LogicDLL.h"
 #include "CallbackCodes.h"
@@ -45,8 +75,6 @@ const long frControlPanel::ID_MENUITEM2 = wxNewId();
 const long frControlPanel::ID_MENUITEM3 = wxNewId();
 const long frControlPanel::ID_MENUITEM4 = wxNewId();
 const long frControlPanel::ID_MENUITEM9 = wxNewId();
-const long frControlPanel::ID_MENUITEM12 = wxNewId();
-const long frControlPanel::ID_MENUITEM11 = wxNewId();
 const long frControlPanel::ID_MENUITEM10 = wxNewId();
 const long frControlPanel::ID_MENUITEM5 = wxNewId();
 const long frControlPanel::ID_MENUITEM6 = wxNewId();
@@ -140,12 +168,8 @@ void frControlPanel::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& 
 	mnuSaveAs = new wxMenuItem(Menu1, ID_MENUITEM4, _("Save as"), wxEmptyString, wxITEM_NORMAL);
 	Menu1->Append(mnuSaveAs);
 	Menu1->AppendSeparator();
-	mnuReadRVF_rfif = new wxMenuItem(Menu1, ID_MENUITEM9, _("Save registers (rfif)"), wxEmptyString, wxITEM_NORMAL);
+	mnuReadRVF_rfif = new wxMenuItem(Menu1, ID_MENUITEM9, _("Save under RFIF"), wxEmptyString, wxITEM_NORMAL);
 	Menu1->Append(mnuReadRVF_rfif);
-	mnuReadRVF_hex = new wxMenuItem(Menu1, ID_MENUITEM12, _("Save registers (rv-hex)"), wxEmptyString, wxITEM_NORMAL);
-	Menu1->Append(mnuReadRVF_hex);
-	mnuSaveRegisters = new wxMenuItem(Menu1, ID_MENUITEM11, _("Save registers (rmv)"), wxEmptyString, wxITEM_NORMAL);
-	Menu1->Append(mnuSaveRegisters);
 	Menu1->AppendSeparator();
 	mnuChipToGUI = new wxMenuItem(Menu1, ID_MENUITEM10, _("Chip --> GUI"), wxEmptyString, wxITEM_NORMAL);
 	Menu1->Append(mnuChipToGUI);
@@ -187,8 +211,6 @@ void frControlPanel::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& 
 	Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuSaveSelected);
 	Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuSaveAsSelected);
 	Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuReadRVF_rfifSelected);
-	Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuReadRVF_hexSelected);
-	Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuSaveRegistersSelected);
 	Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuChipToGUISelected);
 	Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuAutoDwnldSelected1);
 	Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&frControlPanel::OnmnuRefClkSelected1);
@@ -276,9 +298,12 @@ void frControlPanel::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& 
 
 frControlPanel::~frControlPanel()
 {
+
 	//(*Destroy(frControlPanel)
 	//*)
+
 }
+
 
 
 void frControlPanel::OnmnuNewSelected(wxCommandEvent& event)
@@ -896,6 +921,7 @@ void frControlPanel::OnmnuChipToGUISelected(wxCommandEvent& event)
 void frControlPanel::OnClose(wxCloseEvent& event)
 {
     this->Show(false);
+//    Destroy();
 }
 
 void frControlPanel::OnmnuReadRVFSelected(wxCommandEvent& event)
@@ -937,4 +963,8 @@ void frControlPanel::OnmnuSaveRegistersSelected(wxCommandEvent& event)
         return;
 
     LMAL_MainSaveRegisters(saveFileDialog.GetPath().ToStdString().c_str());
+}
+
+void frControlPanel::Onm_CustomerPaint(wxPaintEvent& event)
+{
 }

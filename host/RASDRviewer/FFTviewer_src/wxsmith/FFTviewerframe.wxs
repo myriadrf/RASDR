@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="FFTviewerFrame">
-		<title>FFT viewer</title>
+		<title>RASDRviewer</title>
 		<size>900,700</size>
 		<minsize>900,700</minsize>
 		<id_arg>0</id_arg>
+		<style>wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX</style>
 		<handler function="OnClose" entry="EVT_CLOSE" />
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
 			<cols>1</cols>
@@ -16,12 +17,17 @@
 					<size>800,600</size>
 					<minsize>900,500</minsize>
 					<object class="notebookpage">
-						<object class="wxPanel" name="ID_PANEL1" subclass="pnlSpectrum" variable="mSpectrum" member="yes" />
+						<object class="wxPanel" name="ID_PANEL1" subclass="pnlSpectrum" variable="mSpectrum" member="yes">
+							<style>0</style>
+							<handler function="OnmSpectrumPaint" entry="EVT_PAINT" />
+						</object>
 						<label>Spectrum</label>
 					</object>
 					<object class="notebookpage">
-						<object class="wxPanel" name="ID_PANEL2" subclass="pnlSamplesGenerator" variable="mTransmitter" member="yes" />
-						<label>Transmitter</label>
+						<object class="wxPanel" name="ID_PANEL2" subclass="PulsarPnl" variable="mPulsar" member="yes">
+							<style>0</style>
+						</object>
+						<label>Pulsar</label>
 					</object>
 				</object>
 				<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -46,13 +52,9 @@
 					<label>Stop capturing samples</label>
 					<handler function="OnMenuStopCaptureSelected" entry="EVT_MENU" />
 				</object>
-				<object class="wxMenuItem" name="ID_MENUITEM4" variable="MenuItem5" member="yes">
-					<label>Read settings</label>
-					<handler function="OnMenuReadSettingsSelected" entry="EVT_MENU" />
-				</object>
 				<object class="wxMenuItem" name="ID_MENUITEM5" variable="MenuItem6" member="yes">
-					<label>Send settings</label>
-					<handler function="OnMenuSendSettingsSelected" entry="EVT_MENU" />
+					<label>Save Configuration</label>
+					<handler function="OnMenuItemSaveConfigSelected" entry="EVT_MENU" />
 				</object>
 			</object>
 			<object class="wxMenu" variable="Menu3" member="yes">
@@ -60,6 +62,46 @@
 				<object class="wxMenuItem" name="ID_MENUITEM6" variable="MenuItem7" member="yes">
 					<label>Control Panel</label>
 					<handler function="OnMenuItem7Selected" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu4" member="yes">
+				<label>Performance Parameters</label>
+				<object class="wxMenuItem" name="idFrameDelay" variable="MenuItem8" member="yes">
+					<label>Frame Delay</label>
+					<handler function="OnFrameDelaySelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="idDsplayTime" variable="DispTime" member="yes">
+					<label>Display Time</label>
+					<handler function="OnDispTimeSelected" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu5" member="yes">
+				<label>Define Output</label>
+				<object class="wxMenuItem" name="ID_MENUITEM4" variable="MenuItem5" member="yes">
+					<label>Setup FFT  Output</label>
+					<handler function="OnSetupFFTOutSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM7" variable="MenuItem9" member="yes">
+					<label>Setup Powerr Output</label>
+					<handler function="OnSetupPWROutSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenu" name="ID_MENUITEM8" variable="MenuItem10" member="yes">
+					<label>Setup Pulse Output</label>
+					<object class="wxMenuItem" name="ID_MENUITEM10" variable="SetupDMOutMenu" member="yes">
+						<label>Setup DM Data Output</label>
+						<handler function="OnSetupDMOutSelected" entry="EVT_MENU" />
+					</object>
+					<object class="wxMenuItem" name="ID_MENUITEM9" variable="MenuItem11" member="yes">
+						<label>Setup Pulse Data Output</label>
+						<handler function="OnSetupPulsePeriodOutSelected" entry="EVT_MENU" />
+					</object>
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu6" member="yes">
+				<label>Simulation</label>
+				<object class="wxMenuItem" name="ID_MENUITEM11" variable="Setup_Sim" member="yes">
+					<label>Setup Simulation</label>
+					<handler function="OnSetup_SimSelected" entry="EVT_MENU" />
 				</object>
 			</object>
 			<object class="wxMenu" variable="Menu2" member="no">

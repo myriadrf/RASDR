@@ -1,16 +1,38 @@
+// -----------------------------------------------------------------------------
+// FILE:        "pnlSamplesGenerator.h"
+// DESCRIPTION: "Header File"
+// DATE:        "05/09/2015 06:44 AM "
+// AUTHOR(s):   Lime Microsystems, Paul L. Oxley
+// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+//
+// Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
+// and distributed under the Apache License 2.0 at:
+// https://github.com/myriadrf/myriadrf-utils
+//
+// The RASDRviewer version has been specifically modified for Radio Astronomy
+// by Paul L. Oxley for the Society of Amateur Radio Astronomers.  These
+// modifications are provided to you under the Gnu Public License version 2.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// REVISIONS:   as appropriate
+// -----------------------------------------------------------------------------
 #ifndef PNLSAMPLESGENERATOR_H
 #define PNLSAMPLESGENERATOR_H
 
 //(*Headers(pnlSamplesGenerator)
 #include <wx/panel.h>
-class wxSpinEvent;
-class wxTextCtrl;
-class wxRadioBox;
-class wxGLCanvas;
-class wxStaticText;
-class wxFlexGridSizer;
-class wxSpinCtrl;
-class wxButton;
 //*)
 #include "OpenGLGraph.h"
 
@@ -22,43 +44,11 @@ class pnlSamplesGenerator: public wxPanel
 		virtual ~pnlSamplesGenerator();
 
 		//(*Declarations(pnlSamplesGenerator)
-		wxStaticText* StaticText2;
-		wxSpinCtrl* spinSamplingRate;
-		wxTextCtrl* txtFreq;
-		wxPanel* Panel1;
-		wxButton* btnStopGenerating;
-		wxStaticText* StaticText1;
-		wxStaticText* StaticText3;
-		wxButton* btnStartGenerating;
-		wxRadioBox* rgrDataSource;
-		wxStaticText* StaticText5;
-		wxSpinCtrl* spinAmplitude;
-		OpenGLGraph* glSignalGraph;
-		wxPanel* Panel2;
-		wxStaticText* StaticText4;
-		wxTextCtrl* txtHexInput;
-		wxButton* btnOpenFile;
 		//*)
 
 	protected:
 
 		//(*Identifiers(pnlSamplesGenerator)
-		static const long ID_RADIOBOX1;
-		static const long ID_BUTTON1;
-		static const long ID_BUTTON2;
-		static const long ID_BUTTON3;
-		static const long ID_STATICTEXT1;
-		static const long ID_TEXTCTRL1;
-		static const long ID_STATICTEXT2;
-		static const long ID_SPINCTRL1;
-		static const long ID_STATICTEXT3;
-		static const long ID_SPINCTRL2;
-		static const long ID_PANEL1;
-		static const long ID_GLCANVAS1;
-		static const long ID_PANEL2;
-		static const long ID_STATICTEXT4;
-		static const long ID_STATICTEXT5;
-		static const long ID_TEXTCTRL2;
 		//*)
 
 	private:
@@ -70,6 +60,8 @@ class pnlSamplesGenerator: public wxPanel
 		void OnbtnStartGeneratingClick(wxCommandEvent& event);
 		void OnbtnStopGeneratingClick(wxCommandEvent& event);
 		void OnbtnOpenFileClick(wxCommandEvent& event);
+		void OnPanel3Paint(wxPaintEvent& event);
+		void OnPaint(wxPaintEvent& event);
 		//*)
 
 	protected:

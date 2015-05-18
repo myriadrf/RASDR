@@ -2,7 +2,7 @@
 // FILE: 		USBPortConnection.cpp
 // DESCRIPTION:	implements data transfer through USB port
 // DATE:		2013-05-06
-// AUTHOR(s):	Lime Microsystems
+// AUTHOR(s):	Lime Microsystems - SARA Derivitive
 // REVISIONS:
 // -----------------------------------------------------------------------------
 #include "USBPortConnection.h"
@@ -130,21 +130,42 @@ int USBPortConnection::Open(unsigned index)
 
 			vID = USBDevicePrimary->VendorID;
 			pID = USBDevicePrimary->ProductID;
+			switch (vID) {
+            case 0X1D50: //SARA VID
+                if(pID != 0X6099) { //SARA Rx PID
+                        cout << "Invalid Driver" << endl;
+                        return(0);}
+                else cout << "SARA Driver VID = 0X1D50 PID = 0X6099" << endl;
+                break;
+            case 1204: // Cypress VID
+                if(pID != 241 && pID != 34323){
+                 cout << "Invlid PID for Cypress VID 1204" << endl;
+                 return(0); }
+                 if(pID == 241) cout<< "Cpress Driver VID = 1204 PID = 241" <<endl;
+                 if(pID == 34323) cout << "Cypress Driver VID = 1204 PID = 34323" << endl;
+                 break;
 
+            default: {
+                cout << "Invalid Driver" << endl;
+                return(0); }
+			}
+/*
 			//check if vendor and product ID matches
-			if( vID != 1204 )
+//			if( vID != 1204 )
+			if( vID != 0X1D50 && vID != 1204 ) //Modified for RASDR VID Option
             {
                 return 0;
             }
             else
             {
-                if( pID != 241 && pID != 34323 )
+  //              if( pID != 241 && pID != 34323 )          {
+                if( pID != 0X1D501 && pID != 0X6099 )// Modified for RASDR VID/PID
                 {
                     return 0;
                 }
             }
 
-
+*/
             m_hardwareDesc = USBDevicePrimary->Product;
 
             int pos;
@@ -265,7 +286,8 @@ int USBPortConnection::Open(unsigned index)
     if(usbDeviceCount > 0)
     {
         //open by pid and vid
-		dev_handle = libusb_open_device_with_vid_pid(ctx, 1204, 34323);
+//		dev_handle = libusb_open_device_with_vid_pid(ctx, 1204, 34323);
+		dev_handle = libusb_open_device_with_vid_pid(ctx, 0X1D50, 0X6099);
 //		dev_handle = libusb_open_device_with_vid_pid(ctx, 1204, 241);
 		if(dev_handle == 0)
             return false;
