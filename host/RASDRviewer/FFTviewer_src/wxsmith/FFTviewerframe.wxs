@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxFrame" name="FFTviewerFrame">
+		<title>FFT viewer</title>
+		<size>900,700</size>
+		<minsize>900,700</minsize>
+		<id_arg>0</id_arg>
+		<handler function="OnClose" entry="EVT_CLOSE" />
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>1</rows>
+			<growablecols>0</growablecols>
+			<growablerows>0</growablerows>
+			<object class="sizeritem">
+				<object class="wxNotebook" name="ID_NOTEBOOK1" variable="Notebook1" member="yes">
+					<size>800,600</size>
+					<minsize>900,500</minsize>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL1" subclass="pnlSpectrum" variable="mSpectrum" member="yes" />
+						<label>Spectrum</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL2" subclass="pnlSamplesGenerator" variable="mTransmitter" member="yes" />
+						<label>Transmitter</label>
+					</object>
+				</object>
+				<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+		<object class="wxMenuBar" variable="MenuBar1" member="no">
+			<object class="wxMenu" variable="Menu1" member="no">
+				<label>&amp;File</label>
+				<object class="wxMenuItem" name="ID_MENUITEM1" variable="MenuItem1" member="no">
+					<label>Close</label>
+					<accel>Alt-F4</accel>
+					<help>Quit the application</help>
+					<handler function="OnQuit" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM2" variable="MenuItem3" member="yes">
+					<label>Start capturing samples</label>
+					<handler function="OnMenuStartCaptureSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM3" variable="MenuItem4" member="yes">
+					<label>Stop capturing samples</label>
+					<handler function="OnMenuStopCaptureSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM4" variable="MenuItem5" member="yes">
+					<label>Read settings</label>
+					<handler function="OnMenuReadSettingsSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM5" variable="MenuItem6" member="yes">
+					<label>Send settings</label>
+					<handler function="OnMenuSendSettingsSelected" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu3" member="yes">
+				<label>Tools</label>
+				<object class="wxMenuItem" name="ID_MENUITEM6" variable="MenuItem7" member="yes">
+					<label>Control Panel</label>
+					<handler function="OnMenuItem7Selected" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu2" member="no">
+				<label>Help</label>
+				<object class="wxMenuItem" name="idMenuAbout" variable="MenuItem2" member="no">
+					<label>About</label>
+					<accel>F1</accel>
+					<help>Show info about this application</help>
+					<handler function="OnAbout" entry="EVT_MENU" />
+				</object>
+			</object>
+		</object>
+		<object class="wxStatusBar" name="ID_STATUSBAR1" variable="mStatusBar" member="yes">
+			<fields>3</fields>
+			<widths>10,-128,-550</widths>
+			<styles>wxSB_NORMAL,wxSB_NORMAL,wxSB_NORMAL</styles>
+		</object>
+	</object>
+</wxsmith>

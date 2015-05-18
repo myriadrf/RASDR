@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxDialog" name="dlgSerPort">
+		<title>Connection settings</title>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>2</rows>
+			<object class="sizeritem">
+				<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rgrPortSelection" member="yes">
+					<label>Port selection</label>
+					<content>
+						<item>COM</item>
+						<item>USB</item>
+					</content>
+					<dimension>2</dimension>
+					<size>133,44</size>
+					<style>wxRA_SPECIFY_COLS</style>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+			</object>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
+					<cols>2</cols>
+					<rows>3</rows>
+					<vgap>10</vgap>
+					<hgap>10</hgap>
+					<object class="sizeritem">
+						<object class="wxComboBox" name="ID_COMBOBOX1" variable="cmbComPorts" member="yes">
+							<size>152,21</size>
+						</object>
+						<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
+					</object>
+					<object class="sizeritem">
+						<object class="wxComboBox" name="ID_COMBOBOX2" variable="cmbUSBDevices" member="yes">
+							<size>152,21</size>
+						</object>
+						<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
+					</object>
+					<object class="sizeritem">
+						<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rgrBaud" member="yes">
+							<label>SPI Clock Frequency</label>
+							<content>
+								<item>4 Mhz</item>
+								<item>2 Mhz</item>
+								<item>1 Mhz</item>
+								<item>0.5 Mhz</item>
+								<item>0.25 Mhz</item>
+								<item>0.125 Mhz</item>
+							</content>
+							<dimension>2</dimension>
+							<style>wxRA_SPECIFY_COLS</style>
+						</object>
+						<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
+					</object>
+					<object class="sizeritem">
+						<object class="wxStaticLine" name="ID_STATICLINE1" variable="StaticLine1" member="yes">
+							<size>10,-1</size>
+							<hidden>1</hidden>
+						</object>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON1" variable="btnClose" member="yes">
+							<label>OK</label>
+							<handler function="OnbtnCloseClick" entry="EVT_BUTTON" />
+						</object>
+						<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+					</object>
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON2" variable="btnCancel" member="yes">
+							<label>Cancel</label>
+							<handler function="OnbtnCancelClick" entry="EVT_BUTTON" />
+						</object>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+					</object>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+	</object>
+</wxsmith>

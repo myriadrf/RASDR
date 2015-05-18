@@ -1,0 +1,3 @@
+aaaa ICON "fftico.ico"
+splashImage	RCDATA "myriadIMG.png"
+#include "wx/msw/wx.rc"

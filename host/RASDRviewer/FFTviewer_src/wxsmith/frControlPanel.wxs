@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxFrame" name="frControlPanel">
+		<title>Control panel</title>
+		<size>900,650</size>
+		<minsize>900,680</minsize>
+		<id_arg>0</id_arg>
+		<style>wxDEFAULT_FRAME_STYLE|wxSTATIC_BORDER</style>
+		<handler function="OnClose" entry="EVT_CLOSE" />
+		<handler function="OnEraseBackground" entry="EVT_ERASE_BACKGROUND" />
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>2</rows>
+			<growablecols>0</growablecols>
+			<growablerows>0</growablerows>
+			<object class="sizeritem">
+				<object class="wxNotebook" name="ID_NOTEBOOK1" variable="pcSPIS" member="yes">
+					<size>900,450</size>
+					<style>wxNO_FULL_REPAINT_ON_RESIZE</style>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL2" subclass="pnlCustomer" variable="m_Customer" member="yes">
+							<size>792,527</size>
+						</object>
+						<label>System</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL3" subclass="pnlTop" variable="m_top" member="yes" />
+						<label>Top</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL4" subclass="pnlTxPLL" variable="m_TxPLL" member="yes" />
+						<label>Tx PLL + DSM</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL5" subclass="pnlRxPLL" variable="m_RxPLL" member="yes" />
+						<label>Rx PLL + DSM</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL6" subclass="pnlTxLPF" variable="m_TxLPF" member="yes" />
+						<label>Tx LPF</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL7" subclass="pnlTxRF" variable="m_TxRF" member="yes" />
+						<label>Tx RF</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL8" subclass="pnlRxLPF" variable="m_RxLPF" member="yes" />
+						<label>Rx LPF</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL9" subclass="pnlRxVGA2" variable="m_RxVGA2" member="yes" />
+						<label>Rx VGA2</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL10" subclass="pnlRxFE" variable="m_RxFE" member="yes" />
+						<label>Rx FE</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL11" subclass="pnlADDC" variable="m_ADDC" member="yes" />
+						<label>ADC / DAC</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL13" subclass="pnlBoard" variable="m_Board" member="yes" />
+						<label>Board</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL1" subclass="pnlADF" variable="m_ADF" member="yes" />
+						<label>ADF4002</label>
+					</object>
+				</object>
+				<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxRichTextCtrl" name="ID_RICHTEXTCTRL1" variable="lbMsgs" member="yes">
+					<value>Text</value>
+					<minsize>-1,100</minsize>
+				</object>
+				<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+		<object class="wxMenuBar" variable="MenuBar1" member="yes">
+			<object class="wxMenu" variable="Menu1" member="yes">
+				<label>File</label>
+				<object class="wxMenuItem" name="ID_MENUITEM1" variable="mnuNew" member="yes">
+					<label>New project</label>
+					<handler function="OnmnuNewSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM2" variable="mnuOpen" member="yes">
+					<label>Open project</label>
+					<handler function="OnmnuOpenSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM3" variable="mnuSave" member="yes">
+					<label>Save</label>
+					<handler function="OnmnuSaveSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM4" variable="mnuSaveAs" member="yes">
+					<label>Save as</label>
+					<handler function="OnmnuSaveAsSelected" entry="EVT_MENU" />
+				</object>
+				<object class="separator" />
+				<object class="wxMenuItem" name="ID_MENUITEM9" variable="mnuReadRVF_rfif" member="yes">
+					<label>Save under RFIF</label>
+					<handler function="OnmnuReadRVF_rfifSelected" entry="EVT_MENU" />
+				</object>
+				<object class="separator" />
+				<object class="wxMenuItem" name="ID_MENUITEM10" variable="mnuChipToGUI" member="yes">
+					<label>Chip --&gt; GUI</label>
+					<handler function="OnmnuChipToGUISelected" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu2" member="yes">
+				<label>Options</label>
+				<object class="wxMenuItem" name="ID_MENUITEM5" variable="mnuAutoDwnld" member="yes">
+					<label>Auto Download</label>
+					<checked>1</checked>
+					<handler function="OnmnuAutoDwnldSelected1" entry="EVT_MENU" />
+					<checkable>1</checkable>
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM6" variable="mnuRefClk" member="yes">
+					<label>Reference Clock</label>
+					<handler function="OnmnuRefClkSelected1" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM7" variable="CommunicationSettings1" member="yes">
+					<label>Communication Settings</label>
+					<handler function="OnCommunicationSettings1Selected1" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu3" member="yes">
+				<label>Tools</label>
+				<object class="wxMenuItem" name="ID_MENUITEM8" variable="RegisterTest1" member="yes">
+					<label>Registers test</label>
+					<handler function="OnRegisterTest1Selected" entry="EVT_MENU" />
+				</object>
+			</object>
+		</object>
+		<object class="wxToolBar" name="ID_TOOLBAR1" variable="ToolBar1" member="yes">
+			<style>wxTB_HORIZONTAL|wxTB_HORZ_TEXT|wxNO_BORDER</style>
+			<object class="tool" name="ID_TOOLBARITEM1" variable="ToolBarItem1" member="yes">
+				<label>New</label>
+				<bitmap stock_id="wxART_NEW" stock_client="wxART_TOOLBAR" />
+				<handler function="OnmnuNewSelected" entry="EVT_TOOL" />
+			</object>
+			<object class="tool" name="ID_TOOLBARITEM2" variable="ToolBarItem2" member="yes">
+				<label>Open</label>
+				<bitmap stock_id="wxART_FILE_OPEN" stock_client="wxART_TOOLBAR" />
+				<handler function="OnmnuOpenSelected" entry="EVT_TOOL" />
+			</object>
+			<object class="tool" name="ID_TOOLBARITEM3" variable="ToolBarItem3" member="yes">
+				<label>Save</label>
+				<bitmap stock_id="wxART_FILE_SAVE" stock_client="wxART_TOOLBAR" />
+				<handler function="OnmnuSaveSelected" entry="EVT_TOOL" />
+			</object>
+			<object class="separator" />
+			<object class="tool" name="ID_TOOLBARITEM4" variable="tbtnDownload" member="yes">
+				<label>Send configuration</label>
+				<bitmap stock_id="wxART_FLOPPY" stock_client="wxART_TOOLBAR" />
+				<tooltip>Send all configuration</tooltip>
+				<handler function="OntbtnDownloadClicked" entry="EVT_TOOL" />
+			</object>
+		</object>
+		<object class="wxFileDialog" variable="dlgOpen" member="yes">
+			<message>Select file</message>
+		</object>
+		<object class="wxStatusBar" name="ID_STATUSBAR1" variable="sbMain" member="yes">
+			<fields>3</fields>
+			<widths>10,-10,-10</widths>
+			<styles>wxSB_NORMAL,wxSB_NORMAL,wxSB_NORMAL</styles>
+		</object>
+	</object>
+</wxsmith>

@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="FFTviewer" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="LogicDebug WIN32">
+				<Option output="Logic/lib/ctr_6002dr2_d" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Debug/logic" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-static" />
+					<Add option="-DWIN32" />
+					<Add directory="Logic/include" />
+					<Add directory="Logic/dependencies/CyAPI" />
+					<Add directory="Logic/dependencies/fftw-3.3.3" />
+					<Add directory="Logic/dependencies/pthreads-w32-2-9-1-release/Pre-built.2/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-static" />
+					<Add library="Logic\dependencies\fftw-3.3.3\libfftw3f-3.lib" />
+					<Add directory="Logic/dependencies/CyAPI" />
+					<Add directory="Logic/dependencies/fftw-3.3.3" />
+				</Linker>
+			</Target>
+			<Target title="GUIDebug WIN32">
+				<Option output="DebugWin32/FFTviewer_d" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="DebugWin32" />
+				<Option object_output="obj/Debug" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-static" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DwxDEBUG_LEVEL=0" />
+					<Add option="-DDEBUG_FLAG=1" />
+					<Add option="-DWIN32" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-D__WXMSW__" />
+					<Add option="-DUNICODE" />
+					<Add option="-DGLEW_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-static" />
+					<Add library="libctr_6002dr2_d.a" />
+					<Add library="libwxmsw29u_richtext.a" />
+					<Add library="libwxmsw29u_gl.a" />
+					<Add library="libwxbase29u_xml.a" />
+					<Add library="libwxmsw29u_adv.a" />
+					<Add library="libwxmsw29u_html.a" />
+					<Add library="libwxmsw29u_core.a" />
+					<Add library="libwxbase29u.a" />
+					<Add library="libwxpng.a" />
+					<Add library="libwxjpeg.a" />
+					<Add library="libwxmsw29u_xrc.a" />
+					<Add library="libwxtiff.a" />
+					<Add library="libwxzlib.a" />
+					<Add library="libkernel32.a" />
+					<Add library="libuser32.a" />
+					<Add library="libgdi32.a" />
+					<Add library="libwinspool.a" />
+					<Add library="libcomdlg32.a" />
+					<Add library="libadvapi32.a" />
+					<Add library="libshell32.a" />
+					<Add library="libole32.a" />
+					<Add library="liboleaut32.a" />
+					<Add library="libuuid.a" />
+					<Add library="libcomctl32.a" />
+					<Add library="libwsock32.a" />
+					<Add library="libodbc32.a" />
+					<Add library="glu32" />
+					<Add library="openGL32" />
+					<Add library="Logic\dependencies\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGCE2.a" />
+					<Add library="libwxexpat.a" />
+					<Add library="Logic\dependencies\fftw-3.3.3\libfftw3f-3.lib" />
+					<Add library="Setupapi" />
+					<Add directory="Logic/lib" />
+					<Add directory="Logic/dependencies/CyAPI" />
+				</Linker>
+			</Target>
+			<Target title="LogicRelease WIN32">
+				<Option output="Logic/lib/ctr_6002dr2" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Release/logic" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-static" />
+					<Add option="-DWIN32" />
+					<Add directory="Logic/include" />
+					<Add directory="Logic/dependencies/CyAPI" />
+					<Add directory="Logic/dependencies/fftw-3.3.3" />
+				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc -static-libstdc++ -static" />
+					<Add library="libCyAPI_fx3_GCC.a" />
+					<Add library="libfftw3f-3.lib" />
+					<Add directory="Logic/dependencies/CyAPI" />
+					<Add directory="Logic/dependencies/fftw-3.3.3" />
+				</Linker>
+			</Target>
+			<Target title="GUIRelease WIN32">
+				<Option output="ReleaseWin32/FFTviewer" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="ReleaseWin32" />
+				<Option object_output="obj/Release" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-static" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DwxDEBUG_LEVEL=0" />
+					<Add option="-DDEBUG_FLAG=1" />
+					<Add option="-DWIN32" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-D__WXMSW__" />
+					<Add option="-DGLEW_STATIC" />
+					<Add option="-DUNICODE" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-static" />
+					<Add library="libctr_6002dr2.a" />
+					<Add library="libwxmsw29u_richtext.a" />
+					<Add library="libwxmsw29u_gl.a" />
+					<Add library="libwxbase29u_xml.a" />
+					<Add library="libwxmsw29u_adv.a" />
+					<Add library="libwxmsw29u_html.a" />
+					<Add library="libwxmsw29u_core.a" />
+					<Add library="libwxbase29u.a" />
+					<Add library="libwxpng.a" />
+					<Add library="libwxjpeg.a" />
+					<Add library="libwxmsw29u_xrc.a" />
+					<Add library="libwxtiff.a" />
+					<Add library="libwxzlib.a" />
+					<Add library="libkernel32.a" />
+					<Add library="libuser32.a" />
+					<Add library="libgdi32.a" />
+					<Add library="libwinspool.a" />
+					<Add library="libcomdlg32.a" />
+					<Add library="libadvapi32.a" />
+					<Add library="libshell32.a" />
+					<Add library="libole32.a" />
+					<Add library="liboleaut32.a" />
+					<Add library="libuuid.a" />
+					<Add library="libcomctl32.a" />
+					<Add library="libwsock32.a" />
+					<Add library="libodbc32.a" />
+					<Add library="glu32" />
+					<Add library="openGL32" />
+					<Add library="Logic\dependencies\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGCE2.a" />
+					<Add library="libwxexpat.a" />
+					<Add library="Logic\dependencies\CyAPI\libCyAPI_fx3_GCC.a" />
+					<Add library="Setupapi" />
+					<Add library="Logic\dependencies\fftw-3.3.3\libfftw3f-3.lib" />
+					<Add directory="Logic/lib" />
+					<Add directory="Logic/dependencies/CyAPI" />
+					<Add directory="Logic/dependencies/fftw-3.3.3" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="Debug Win32" targets="LogicDebug WIN32;GUIDebug WIN32;" />
+			<Add alias="Release Win32" targets="LogicRelease WIN32;GUIRelease WIN32;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option='[[if (PLATFORM == PLATFORM_MSW &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) print(_T(&quot;-Wno-attributes&quot;));]]' />
+			<Add option="-DWINVER=0x0500" />
+			<Add option="-D_WIN32_WINNT=0x0500" />
+			<Add directory="C:/Libraries/wxWidgets-2.9.5/include" />
+			<Add directory="C:/Libraries/wxWidgets-2.9.5/contrib/include" />
+			<Add directory="C:/Libraries/wxWidgets-2.9.5/lib/gcc_lib/mswu" />
+			<Add directory="Logic/include" />
+			<Add directory="Logic" />
+			<Add directory="GUI" />
+			<Add directory="GUI/glew" />
+			<Add directory="Logic/dependencies/pthreads-w32-2-9-1-release/Pre-built.2/include" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="C:/Libraries/wxWidgets-2.9.5/include" />
+			<Add directory="C:/Libraries/wxWidgets-2.9.5/lib/gcc_lib/mswu" />
+		</ResourceCompiler>
+		<Linker>
+			<Add directory="C:/Libraries/wxWidgets-2.9.5/lib/gcc_lib" />
+		</Linker>
+		<Unit filename="FFTviewerApp.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="FFTviewerApp.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="FFTviewerMain.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="FFTviewerMain.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/CommonFile.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/CommonFile.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/GLFont.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/GLFont.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/GUIUtils.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/GUIUtils.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/OpenGLGraph.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/OpenGLGraph.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/StaticFontHeader.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgFreqVsCap.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgFreqVsCap.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgRefClk.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgRefClk.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgRegTest.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgRegTest.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgSerPort.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgSerPort.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgVcoCapLog.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgVcoCapLog.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgVcoGrph.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/dlgVcoGrph.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/frControlPanel.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/frControlPanel.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/glew/GL/glew.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/glew/GL/glxew.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/glew/GL/wglew.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/glew/glew.c">
+			<Option compilerVar="CC" />
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlADDC.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlADDC.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlADF.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlADF.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlBoard.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlBoard.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlCustomer.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlCustomer.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxFE.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxFE.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxLPF.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxLPF.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxPLL.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxPLL.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxVGA2.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlRxVGA2.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlSamplesGenerator.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlSamplesGenerator.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlSpectrum.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlSpectrum.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTop.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTop.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTxLPF.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTxLPF.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTxPLL.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTxPLL.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTxRF.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/pnlTxRF.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/ctr_6002dr2_LogicDLL.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/ctr_6002dr2_LogicDLL.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/dependencies/CyAPI/CyAPI.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/dependencies/CyAPI/CyAPI.h" />
+		<Unit filename="Logic/dependencies/CyAPI/CyUSB30_def.h" />
+		<Unit filename="Logic/dependencies/CyAPI/UsbdStatus.h" />
+		<Unit filename="Logic/dependencies/CyAPI/VersionNo.h" />
+		<Unit filename="Logic/dependencies/CyAPI/cyioctl.h" />
+		<Unit filename="Logic/dependencies/CyAPI/usb100.h" />
+		<Unit filename="Logic/dependencies/CyAPI/usb200.h" />
+		<Unit filename="Logic/include/ADDC_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/ADF_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/Board2_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/CallbackCodes.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/ComPortConnection.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/ConnectionManager.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/FIFO.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/IConnection.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/Main_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/Packets.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/RegisterTest.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/RxFe_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/RxVGA2_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/TestingModule.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/TextLog.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/TimeCounter.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/Top_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/Transmitter.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/TxLpf_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/TxPLL_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/TxRf_Module.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/USBPortConnection.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/clUARFCN.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/common.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/data_FreqVsCap.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/devioctl.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/iniParser.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/include/register_map.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/main.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/ADDC_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/ADF_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/Board2_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/ComPortConnection.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/ConnectionManager.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/Main_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/RegisterTest.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/RxFe_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/RxVGA2_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/TestingModule.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/TextLog.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/TimeCounter.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/Top_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/Transmitter.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/TxLPF_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/TxPLL_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/TxRf_Module.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/USBPortConnection.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/clUARFCN.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/common.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/data_FreqVsCap.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/src/register_map.cpp">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="version.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/FFTviewerframe.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/dlgFreqVsCap.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/dlgRefClk.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/dlgRegTest.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/dlgSerPort.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/dlgVcoCapLog.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/dlgVcoGrph.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/frControlPanel.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlADDC.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlADF.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlBoard.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlCustomer.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlRxFE.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlRxLPF.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlRxPLL.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlRxVGA2.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlSamplesGenerator.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlSpectrum.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlTop.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlTxLPF.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlTxPLL.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="wxsmith/pnlTxRF.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="FFTviewerApp.cpp" main="FFTviewerFrame" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxFrame wxs="wxsmith/FFTviewerframe.wxs" src="FFTviewerMain.cpp" hdr="FFTviewerMain.h" fwddecl="0" i18n="1" name="FFTviewerFrame" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlSpectrum.wxs" src="GUI/pnlSpectrum.cpp" hdr="GUI/pnlSpectrum.h" fwddecl="1" i18n="1" name="pnlSpectrum" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlTop.wxs" src="GUI/pnlTop.cpp" hdr="GUI/pnlTop.h" fwddecl="1" i18n="1" name="pnlTop" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlTxPLL.wxs" src="GUI/pnlTxPLL.cpp" hdr="GUI/pnlTxPLL.h" fwddecl="1" i18n="1" name="pnlTxPLL" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlTxLPF.wxs" src="GUI/pnlTxLPF.cpp" hdr="GUI/pnlTxLPF.h" fwddecl="1" i18n="1" name="pnlTxLPF" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlRxLPF.wxs" src="GUI/pnlRxLPF.cpp" hdr="GUI/pnlRxLPF.h" fwddecl="1" i18n="1" name="pnlRxLPF" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlTxRF.wxs" src="GUI/pnlTxRF.cpp" hdr="GUI/pnlTxRF.h" fwddecl="1" i18n="1" name="pnlTxRF" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlRxVGA2.wxs" src="GUI/pnlRxVGA2.cpp" hdr="GUI/pnlRxVGA2.h" fwddecl="1" i18n="1" name="pnlRxVGA2" language="CPP" />
+					<wxFrame wxs="wxsmith/frControlPanel.wxs" src="GUI/frControlPanel.cpp" hdr="GUI/frControlPanel.h" fwddecl="1" i18n="1" name="frControlPanel" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlADDC.wxs" src="GUI/pnlADDC.cpp" hdr="GUI/pnlADDC.h" fwddecl="1" i18n="1" name="pnlADDC" language="CPP" />
+					<wxDialog wxs="wxsmith/dlgSerPort.wxs" src="GUI/dlgSerPort.cpp" hdr="GUI/dlgSerPort.h" fwddecl="1" i18n="1" name="dlgSerPort" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlBoard.wxs" src="GUI/pnlBoard.cpp" hdr="GUI/pnlBoard.h" fwddecl="1" i18n="1" name="pnlBoard" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlRxFE.wxs" src="GUI/pnlRxFE.cpp" hdr="GUI/pnlRxFE.h" fwddecl="1" i18n="1" name="pnlRxFE" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlRxPLL.wxs" src="GUI/pnlRxPLL.cpp" hdr="GUI/pnlRxPLL.h" fwddecl="1" i18n="1" name="pnlRxPLL" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlCustomer.wxs" src="GUI/pnlCustomer.cpp" hdr="GUI/pnlCustomer.h" fwddecl="1" i18n="1" name="pnlCustomer" language="CPP" />
+					<wxDialog wxs="wxsmith/dlgRegTest.wxs" src="GUI/dlgRegTest.cpp" hdr="GUI/dlgRegTest.h" fwddecl="1" i18n="1" name="dlgRegTest" language="CPP" />
+					<wxDialog wxs="wxsmith/dlgRefClk.wxs" src="GUI/dlgRefClk.cpp" hdr="GUI/dlgRefClk.h" fwddecl="1" i18n="1" name="dlgRefClk" language="CPP" />
+					<wxDialog wxs="wxsmith/dlgVcoCapLog.wxs" src="GUI/dlgVcoCapLog.cpp" hdr="GUI/dlgVcoCapLog.h" fwddecl="1" i18n="1" name="dlgVcoCapLog" language="CPP" />
+					<wxDialog wxs="wxsmith/dlgVcoGrph.wxs" src="GUI/dlgVcoGrph.cpp" hdr="GUI/dlgVcoGrph.h" fwddecl="1" i18n="1" name="dlgVcoGrph" language="CPP" />
+					<wxDialog wxs="wxsmith/dlgFreqVsCap.wxs" src="GUI/dlgFreqVsCap.cpp" hdr="GUI/dlgFreqVsCap.h" fwddecl="1" i18n="1" name="dlgFreqVsCap" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlSamplesGenerator.wxs" src="GUI/pnlSamplesGenerator.cpp" hdr="GUI/pnlSamplesGenerator.h" fwddecl="1" i18n="1" name="pnlSamplesGenerator" language="CPP" />
+					<wxPanel wxs="wxsmith/pnlADF.wxs" src="GUI/pnlADF.cpp" hdr="GUI/pnlADF.h" fwddecl="1" i18n="1" name="pnlADF" language="CPP" />
+				</resources>
+			</wxsmith>
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" update_manifest="0" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

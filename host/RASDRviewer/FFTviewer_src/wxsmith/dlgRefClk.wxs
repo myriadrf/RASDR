@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxDialog" name="dlgRefClk">
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>4</rows>
+			<object class="sizeritem">
+				<object class="wxBoxSizer" variable="BoxSizer1" member="no">
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON1" variable="btnS01" member="yes">
+							<label>Set to 40 MHz</label>
+							<handler function="OnbtnS01Click" entry="EVT_BUTTON" />
+						</object>
+						<flag>wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+					</object>
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON2" variable="btnS02" member="yes">
+							<label>Set to 32.72 MHz</label>
+							<handler function="OnbtnS02Click" entry="EVT_BUTTON" />
+						</object>
+						<flag>wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+					</object>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+					<label>Reference Frequency (MHz):</label>
+				</object>
+				<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+			</object>
+			<object class="sizeritem">
+				<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="txtRefClk" member="yes">
+					<value>0</value>
+					<size>184,21</size>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+			</object>
+			<object class="sizeritem">
+				<object class="wxBoxSizer" variable="BoxSizer2" member="no">
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON3" variable="btnOK" member="yes">
+							<label>OK</label>
+							<handler function="OnbtnOKClick" entry="EVT_BUTTON" />
+						</object>
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+					</object>
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON4" variable="btnCancel" member="yes">
+							<label>Cancel</label>
+							<handler function="OnbtnCancelClick" entry="EVT_BUTTON" />
+						</object>
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+					</object>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+	</object>
+</wxsmith>

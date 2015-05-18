@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxDialog" name="dlgVcoCapLog">
+		<size>427,256</size>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<object class="wxRichTextCtrl" name="ID_RICHTEXTCTRL1" variable="memLogText" member="yes">
+			<value>Text</value>
+			<size>424,256</size>
+		</object>
+	</object>
+</wxsmith>

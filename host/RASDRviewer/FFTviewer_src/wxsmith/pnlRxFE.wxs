@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxPanel" name="pnlRxFE">
+		<size>880,526</size>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
+			<cols>1</cols>
+			<rows>2</rows>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
+					<cols>4</cols>
+					<rows>1</rows>
+					<object class="sizeritem">
+						<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
+							<cols>1</cols>
+							<rows>2</rows>
+							<growablerows>1</growablerows>
+							<object class="sizeritem">
+								<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rgrDecode" member="yes">
+									<label>Decoding</label>
+									<content>
+										<item>Decode Signals</item>
+										<item>Direct Signals</item>
+									</content>
+									<pos>16,8</pos>
+									<size>144,63</size>
+									<style>wxRA_SPECIFY_COLS</style>
+									<handler function="rgrDecodeClick" entry="EVT_RADIOBOX" />
+								</object>
+								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxStaticBoxSizer" variable="StaticBoxSizer1" member="no">
+									<label>Power Control</label>
+									<orient>wxVERTICAL</orient>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX1" variable="chbPwrRxFeMods" member="yes">
+											<label>RxFE Modules Enable</label>
+											<handler function="chbPwrRxFeModsClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX2" variable="chkPD_TIA_RXFE" member="yes">
+											<label>TIA Enable</label>
+											<handler function="chkPD_TIA_RXFEClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX3" variable="chkPD_MXLOB_RXFE" member="yes">
+											<label>MXLOB Enable</label>
+											<handler function="chkPD_MXLOB_RXFEClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX4" variable="chkPD_MIX_RXFE" member="yes">
+											<label>MIX Enable</label>
+											<handler function="chkPD_MIX_RXFEClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX5" variable="chkPD_LNA_RXFE" member="yes">
+											<label>LNA Modules Enable</label>
+											<handler function="chkPD_LNA_RXFEClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX6" variable="chkRINEN_MIX_RXFE" member="yes">
+											<label>MIX Term Resistor Enable</label>
+											<handler function="chkRINEN_MIX_RXFEClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxStaticBoxSizer" variable="StaticBoxSizer2" member="no">
+							<label>LNA Control</label>
+							<object class="sizeritem">
+								<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+									<cols>2</cols>
+									<rows>8</rows>
+									<growablerows>0,1,2,3,4,5,6,7</growablerows>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX7" variable="chkINLOAD_LNA_RXFE" member="yes">
+											<label>Internal LNA Load</label>
+											<handler function="chkINLOAD_LNA_RXFEClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+											<label>Capacitance to BE:</label>
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX8" variable="chkXLOAD_LNA_RXFE" member="yes">
+											<label>External LNA Load</label>
+											<handler function="chkXLOAD_LNA_RXFEClick" entry="EVT_CHECKBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX1" variable="cmbCBE_LNA_RXFE" member="yes">
+											<handler function="cmbCBE_LNA_RXFEChange" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
+											<label>LNA Gain Mode:</label>
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
+											<label>LNA3 Fine Gain:</label>
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX2" variable="cmbG_LNA_RXFE" member="yes">
+											<handler function="cmbG_LNA_RXFEChange" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX3" variable="cmbG_FINE_LNA3_RXFE" member="yes">
+											<handler function="cmbG_FINE_LNA3_RXFEChange" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
+											<label>Active LNA:</label>
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
+											<label>LNA Bias Current:</label>
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX4" variable="cmbLNASEL_RXFE" member="yes">
+											<handler function="cmbLNASEL_RXFEChange" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX5" variable="cmbICT_LNA_RXFE" member="yes">
+											<handler function="cmbICT_LNA_RXFEChange" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
+											<label>LNA Load Resistor,&#x0A; External Load (Gain):</label>
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT7" variable="StaticText7" member="yes">
+											<label>LNA Load Resistor,&#x0A; Internal Load(Gain):</label>
+										</object>
+										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX6" variable="cmbRDLEXT_LNA_RXFE" member="yes">
+											<handler function="cmbRDLEXT_LNA_RXFEChange" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX7" variable="cmbRDLINT_LNA_RXFE" member="yes">
+											<handler function="cmbRDLINT_LNA_RXFEChange" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxStaticBoxSizer" variable="StaticBoxSizer3" member="no">
+							<label>MIX Control</label>
+							<orient>wxVERTICAL</orient>
+							<object class="sizeritem">
+								<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText8" member="yes">
+									<label>MIX Bias Current:</label>
+								</object>
+								<flag>wxTOP|wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxComboBox" name="ID_COMBOBOX8" variable="cmbICT_MIX_RXFE" member="yes">
+									<size>80,21</size>
+									<handler function="cmbICT_MIX_RXFEChange" entry="EVT_COMBOBOX" />
+								</object>
+								<flag>wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxStaticText" name="ID_STATICTEXT9" variable="StaticText9" member="yes">
+									<label>MIX Input:</label>
+								</object>
+								<flag>wxTOP|wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxComboBox" name="ID_COMBOBOX9" variable="cmbIN1SEL_MIX_RXFE" member="yes">
+									<size>80,21</size>
+									<handler function="cmbIN1SEL_MIX_RXFEChange" entry="EVT_COMBOBOX" />
+								</object>
+								<flag>wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxStaticText" name="ID_STATICTEXT10" variable="StaticText10" member="yes">
+									<label>MXLOB Bias Current:</label>
+								</object>
+								<flag>wxTOP|wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxComboBox" name="ID_COMBOBOX10" variable="cmbICT_MXLOB_RXFE" member="yes">
+									<size>80,21</size>
+									<handler function="cmbICT_MXLOB_RXFEChange" entry="EVT_COMBOBOX" />
+								</object>
+								<flag>wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxStaticText" name="ID_STATICTEXT11" variable="StaticText11" member="yes">
+									<label>LO Bias Of The Mix:</label>
+								</object>
+								<flag>wxTOP|wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxComboBox" name="ID_COMBOBOX11" variable="cmbLOBN_MIX_RXFE" member="yes">
+									<size>80,21</size>
+									<handler function="cmbLOBN_MIX_RXFEChange" entry="EVT_COMBOBOX" />
+								</object>
+								<flag>wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
+							<cols>1</cols>
+							<rows>2</rows>
+							<object class="sizeritem">
+								<object class="wxStaticBoxSizer" variable="StaticBoxSizer4" member="no">
+									<label>IP2 Cancellation</label>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
+											<cols>2</cols>
+											<rows>2</rows>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT12" variable="StaticText12" member="yes">
+													<label>Channel I:</label>
+												</object>
+												<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT13" variable="StaticText13" member="yes">
+													<label>Channel Q:</label>
+												</object>
+												<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxComboBox" name="ID_COMBOBOX12" variable="cmbIP2TRIM_I_RXFE" member="yes">
+													<handler function="cmbIP2TRIM_I_RXFEChange" entry="EVT_COMBOBOX" />
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxComboBox" name="ID_COMBOBOX13" variable="cmbIP2TRIM_Q_RXFE" member="yes">
+													<handler function="cmbIP2TRIM_Q_RXFEChange" entry="EVT_COMBOBOX" />
+												</object>
+												<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxStaticBoxSizer" variable="StaticBoxSizer5" member="no">
+									<label>DC Offset Cancellation</label>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
+											<cols>2</cols>
+											<rows>2</rows>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT14" variable="StaticText14" member="yes">
+													<label>Channel I:</label>
+												</object>
+												<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT15" variable="StaticText15" member="yes">
+													<label>Channel Q:</label>
+												</object>
+												<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxComboBox" name="ID_COMBOBOX14" variable="cmbDCOFF_I_RXFE" member="yes">
+													<handler function="cmbDCOFF_I_RXFEChange" entry="EVT_COMBOBOX" />
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxComboBox" name="ID_COMBOBOX15" variable="cmbDCOFF_Q_RXFE" member="yes">
+													<handler function="cmbDCOFF_Q_RXFEChange" entry="EVT_COMBOBOX" />
+												</object>
+												<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxStaticBoxSizer" variable="StaticBoxSizer6" member="no">
+					<label>VGA1 Control</label>
+					<object class="sizeritem">
+						<object class="wxFlexGridSizer" variable="FlexGridSizer4" member="no">
+							<cols>3</cols>
+							<rows>2</rows>
+							<object class="sizeritem">
+								<object class="wxStaticText" name="ID_STATICTEXT16" variable="StaticText16" member="yes">
+									<label>Feedback Resistor (Gain):</label>
+								</object>
+								<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxStaticText" name="ID_STATICTEXT17" variable="StaticText17" member="yes">
+									<label>Feedback Capacitor (BW):</label>
+								</object>
+								<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxStaticText" name="ID_STATICTEXT18" variable="StaticText18" member="yes">
+									<label>Bias Current:</label>
+								</object>
+								<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxComboBox" name="ID_COMBOBOX16" variable="cmbRFB_TIA_RXFE" member="yes">
+									<handler function="cmbRFB_TIA_RXFEChange" entry="EVT_COMBOBOX" />
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxComboBox" name="ID_COMBOBOX17" variable="cmbCFB_TIA_RXFE" member="yes">
+									<handler function="cmbCFB_TIA_RXFEChange" entry="EVT_COMBOBOX" />
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxComboBox" name="ID_COMBOBOX18" variable="cmbICT_TIA_RXFE" member="yes">
+									<handler function="cmbICT_TIA_RXFEChange" entry="EVT_COMBOBOX" />
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+	</object>
+</wxsmith>

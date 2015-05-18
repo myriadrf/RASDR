@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxPanel" name="pnlTop">
+		<size>782,524</size>
+		<id_arg>0</id_arg>
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>2</cols>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
+					<cols>1</cols>
+					<rows>2</rows>
+					<object class="sizeritem">
+						<object class="wxStaticBoxSizer" variable="StaticBoxSizer1" member="no">
+							<label>DC Calibration</label>
+							<orient>wxVERTICAL</orient>
+							<object class="sizeritem">
+								<object class="wxFlexGridSizer" variable="FlexGridSizer4" member="no">
+									<cols>2</cols>
+									<rows>1</rows>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
+											<cols>3</cols>
+											<rows>3</rows>
+											<object class="sizeritem">
+												<object class="wxButton" name="ID_BUTTON1" variable="btnDCRstClbr" member="yes">
+													<label>Reset Calibration</label>
+													<pos>8,8</pos>
+													<handler function="btnDCRstClbrClick" entry="EVT_BUTTON" />
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxButton" name="ID_BUTTON2" variable="btnDCLoadVal" member="yes">
+													<label>Load Cnt Value</label>
+													<pos>136,8</pos>
+													<handler function="btnDCLoadValClick" entry="EVT_BUTTON" />
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxButton" name="ID_BUTTON4" variable="btnDCStartClbr" member="yes">
+													<label>Start Calibration</label>
+													<pos>256,8</pos>
+													<handler function="btnDCStartClbrClick" entry="EVT_BUTTON" />
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+													<label>CAL ModuleAddress:</label>
+													<pos>8,40</pos>
+												</object>
+												<flag>wxTOP|wxLEFT|wxRIGHT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
+													<label>Calibration Value:</label>
+													<pos>136,40</pos>
+												</object>
+												<flag>wxTOP|wxLEFT|wxRIGHT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticLine" name="ID_STATICLINE1" variable="StaticLine1" member="yes">
+													<size>10,-1</size>
+													<hidden>1</hidden>
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxComboBox" name="ID_COMBOBOX1" variable="cmbDCCalAddr" member="yes">
+													<pos>8,56</pos>
+													<size>120,24</size>
+													<handler function="cmbDCCalAddrChange" entry="EVT_COMBOBOX" />
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxComboBox" name="ID_COMBOBOX2" variable="cmbCalVal" member="yes">
+													<pos>136,56</pos>
+													<size>104,24</size>
+													<handler function="cmbCalValChange" entry="EVT_COMBOBOX" />
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxButton" name="ID_BUTTON5" variable="btnDCReadVal" member="yes">
+													<label>Read Values</label>
+													<size>96,24</size>
+													<handler function="btnDCReadValClick" entry="EVT_BUTTON" />
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
+											<cols>2</cols>
+											<rows>4</rows>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
+													<label>Calibration Value:</label>
+												</object>
+												<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>2</border>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT7" variable="lbDC_REGVAL" member="yes">
+													<label>???</label>
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>2</border>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
+													<label>Lock Pattern:</label>
+												</object>
+												<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>2</border>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT8" variable="lblDC_LOCK" member="yes">
+													<label>???</label>
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
+													<label>Calibration Status:</label>
+												</object>
+												<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>2</border>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT9" variable="lblDC_CLBR_DONE" member="yes">
+													<label>???</label>
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
+													<label>Comparator Value:</label>
+												</object>
+												<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>2</border>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT10" variable="lblDC_UD" member="yes">
+													<label>???</label>
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											</object>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
+							<cols>2</cols>
+							<object class="sizeritem">
+								<object class="wxFlexGridSizer" variable="FlexGridSizer11" member="no">
+									<cols>1</cols>
+									<rows>2</rows>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
+											<cols>2</cols>
+											<rows>2</rows>
+											<object class="sizeritem">
+												<object class="wxRadioBox" name="ID_RADIOBOX3" variable="rgrRFLB" member="yes">
+													<label>RF Loopback Control</label>
+													<content>
+														<item>Disabled</item>
+														<item>TxMIX to LNA1 Path</item>
+														<item>TxMIX to LNA2 Path</item>
+														<item>TxMIX to LNA3 (GSM) Path</item>
+													</content>
+													<default>-1</default>
+													<pos>8,120</pos>
+													<style>wxRA_SPECIFY_COLS</style>
+													<handler function="rgrRFLBClick" entry="EVT_RADIOBOX" />
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxRadioBox" name="ID_RADIOBOX4" variable="rgrBBLB" member="yes">
+													<label>BB Loopback</label>
+													<content>
+														<item>Disabled</item>
+														<item>loopb to LPF input</item>
+														<item>loopb to VGA2 input</item>
+														<item>loopb to Rx Out Pins</item>
+													</content>
+													<default>-1</default>
+													<style>wxRA_SPECIFY_COLS</style>
+													<handler function="rgrBBLBClick" entry="EVT_RADIOBOX" />
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticBoxSizer" variable="StaticBoxSizer2" member="no">
+													<label>Power Control</label>
+													<object class="sizeritem">
+														<object class="wxBoxSizer" variable="BoxSizer1" member="no">
+															<orient>wxVERTICAL</orient>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX1" variable="chbPwrTopMods" member="yes">
+																	<label>Top Modules Enable</label>
+																	<checked>1</checked>
+																	<handler function="chbPwrTopModsClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX2" variable="chbPwrSoftTx" member="yes">
+																	<label>Soft Tx Enable</label>
+																	<handler function="chbPwrSoftTxClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX3" variable="chbPwrSoftRx" member="yes">
+																	<label>Soft Rx Enable</label>
+																	<handler function="chbPwrSoftRxClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX4" variable="chbPwrLpfCal" member="yes">
+																	<label>DCOREG LPFCAL Enable</label>
+																	<handler function="chbPwrLpfCalClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX5" variable="chbPwrRfLbsw" member="yes">
+																	<label>RF LBSW Enable</label>
+																	<handler function="chbPwrRfLbswClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+														</object>
+														<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxBoxSizer" variable="BoxSizer3" member="no">
+													<orient>wxVERTICAL</orient>
+													<object class="sizeritem">
+														<object class="wxRadioBox" name="ID_RADIOBOX5" variable="rgrRXOUTSW" member="yes">
+															<label>RX Out/ADC In Switch</label>
+															<content>
+																<item>Open (off)</item>
+																<item>Closed (on)</item>
+															</content>
+															<default>1</default>
+															<dimension>2</dimension>
+															<pos>208,248</pos>
+															<style>wxRA_SPECIFY_COLS</style>
+															<handler function="rgrRXOUTSWClick" entry="EVT_RADIOBOX" />
+														</object>
+														<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxRadioBox" name="ID_RADIOBOX6" variable="rgrTDDMOD" member="yes">
+															<label>TDD Mode Selection</label>
+															<content>
+																<item>Transmit</item>
+																<item>Receive</item>
+															</content>
+															<default>1</default>
+															<dimension>2</dimension>
+															<pos>208,296</pos>
+															<style>wxRA_SPECIFY_COLS</style>
+															<handler function="rgrTDDMODClick" entry="EVT_RADIOBOX" />
+														</object>
+														<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxRadioBox" name="ID_RADIOBOX7" variable="rgrFDDTDD" member="yes">
+															<label>FDD/TDD Selection</label>
+															<content>
+																<item>FDD</item>
+																<item>TDD</item>
+															</content>
+															<default>1</default>
+															<dimension>2</dimension>
+															<pos>208,344</pos>
+															<style>wxRA_SPECIFY_COLS</style>
+															<handler function="rgrFDDTDDClick" entry="EVT_RADIOBOX" />
+														</object>
+														<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticBoxSizer" variable="StaticBoxSizer3" member="no">
+											<label>XCO Buffer</label>
+											<object class="sizeritem">
+												<object class="wxBoxSizer" variable="BoxSizer2" member="no">
+													<object class="sizeritem">
+														<object class="wxCheckBox" name="ID_CHECKBOX6" variable="chbPDXCOBUF" member="yes">
+															<label>Power Down</label>
+															<handler function="chbPDXCOBUFClick" entry="EVT_CHECKBOX" />
+														</object>
+														<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxCheckBox" name="ID_CHECKBOX7" variable="chbSLFBXCOBUF" member="yes">
+															<label>Self Biasing</label>
+															<checked>1</checked>
+															<handler function="chbSLFBXCOBUFClick" entry="EVT_CHECKBOX" />
+														</object>
+														<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxCheckBox" name="ID_CHECKBOX8" variable="chbBYPXCOBUF" member="yes">
+															<label>Bypass</label>
+															<handler function="chbBYPXCOBUFClick" entry="EVT_CHECKBOX" />
+														</object>
+														<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxLEFT|wxRIGHT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
+									<cols>1</cols>
+									<rows>2</rows>
+									<object class="sizeritem">
+										<object class="wxStaticBoxSizer" variable="StaticBoxSizer6" member="no">
+											<label>Clock Buffers</label>
+											<object class="sizeritem">
+												<object class="wxCheckListBox" name="ID_CHECKLISTBOX1" variable="chbSpiClkBuf" member="yes">
+													<content>
+														<item>Tx DSM SPI</item>
+														<item>Tx LPF</item>
+														<item>Rx DSM SPI</item>
+														<item>Rx LPF</item>
+														<item>Rx VGA2</item>
+														<item>LPF CALCORE</item>
+														<item>PLLCLKOUT</item>
+													</content>
+													<size>293,79</size>
+													<handler function="chbSpiClkBufClick" entry="EVT_CHECKLISTBOX" />
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											</object>
+										</object>
+										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticBoxSizer" variable="StaticBoxSizer4" member="no">
+											<label>TRX LPF Calibration</label>
+											<object class="sizeritem">
+												<object class="wxPanel" name="ID_PANEL7" variable="Panel7" member="yes">
+													<object class="wxRadioBox" name="ID_RADIOBOX8" variable="rgrCLKSEL_LPFCAL" member="yes">
+														<label>LPF Tuning Clock</label>
+														<content>
+															<item>From TxPLL</item>
+															<item>PLL Reference</item>
+														</content>
+														<default>1</default>
+														<dimension>2</dimension>
+														<pos>0,140</pos>
+														<size>296,42</size>
+														<style>wxRA_SPECIFY_COLS</style>
+														<handler function="rgrCLKSEL_LPFCALClick" entry="EVT_RADIOBOX" />
+													</object>
+													<object class="wxCheckBox" name="ID_CHECKBOX10" variable="chbPD_CLKLPFCAL" member="yes">
+														<label>DIV8 for LPD Tuning CLock PD</label>
+														<pos>0,0</pos>
+														<handler function="chbPD_CLKLPFCALClick" entry="EVT_CHECKBOX" />
+													</object>
+													<object class="wxCheckBox" name="ID_CHECKBOX11" variable="chkLpfCalEnEnf" member="yes">
+														<label>Enalbe Enforce Mode</label>
+														<pos>0,16</pos>
+														<handler function="chkLpfCalEnEnfClick" entry="EVT_CHECKBOX" />
+													</object>
+													<object class="wxCheckBox" name="ID_CHECKBOX12" variable="chkLpfCalEn" member="yes">
+														<label>Enalbe LPFCAL</label>
+														<pos>0,32</pos>
+														<handler function="chkLpfCalEnClick" entry="EVT_CHECKBOX" />
+													</object>
+													<object class="wxCheckBox" name="ID_CHECKBOX13" variable="chkLpfCalRst" member="yes">
+														<label>Reset LPFCAL</label>
+														<pos>184,16</pos>
+														<size>112,24</size>
+														<handler function="chkLpfCalRstClick" entry="EVT_CHECKBOX" />
+													</object>
+													<object class="wxStaticBox" name="ID_STATICBOX2" variable="StaticBox2" member="yes">
+														<label>RCCAL LPFCAL Value</label>
+														<pos>0,56</pos>
+														<size>144,80</size>
+													</object>
+													<object class="wxStaticText" name="ID_STATICTEXT11" variable="StaticText7" member="yes">
+														<label>RCCAL__LPFCAL:</label>
+														<pos>8,80</pos>
+													</object>
+													<object class="wxButton" name="ID_BUTTON3" variable="btnReadRCCALVal" member="yes">
+														<label>Read Value</label>
+														<pos>8,104</pos>
+														<size>128,28</size>
+														<handler function="btnReadRCCALValClick" entry="EVT_BUTTON" />
+													</object>
+													<object class="wxStaticText" name="ID_STATICTEXT12" variable="lblRCCAL_LPFCAL" member="yes">
+														<label>????</label>
+														<pos>104,80</pos>
+													</object>
+													<object class="wxStaticText" name="ID_STATICTEXT13" variable="StaticText8" member="yes">
+														<label>LPFCAL Code:</label>
+														<pos>160,40</pos>
+													</object>
+													<object class="wxComboBox" name="ID_COMBOBOX3" variable="cmbLpfCalCode" member="yes">
+														<content>
+															<item>000</item>
+															<item>001</item>
+															<item>010</item>
+															<item>011</item>
+															<item>100</item>
+															<item>101</item>
+															<item>110</item>
+															<item>111</item>
+														</content>
+														<pos>152,56</pos>
+														<size>144,27</size>
+														<handler function="cmbLpfCalCodeChange" entry="EVT_COMBOBOX" />
+													</object>
+													<object class="wxComboBox" name="ID_COMBOBOX4" variable="cmbLpfCalBw" member="yes">
+														<selection>0</selection>
+														<pos>152,104</pos>
+														<size>144,27</size>
+														<handler function="cmbLpfCalBwChange" entry="EVT_COMBOBOX" />
+													</object>
+													<object class="wxStaticText" name="ID_STATICTEXT14" variable="StaticText9" member="yes">
+														<label>LPF Bandwidth:</label>
+														<pos>160,88</pos>
+													</object>
+												</object>
+												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
+					<cols>1</cols>
+					<rows>5</rows>
+					<object class="sizeritem">
+						<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rgrDecode" member="yes">
+							<label>Decoding</label>
+							<content>
+								<item>Decode Signals</item>
+								<item>Direct Signals</item>
+							</content>
+							<default>-1</default>
+							<pos>720,8</pos>
+							<size>136,69</size>
+							<style>wxRA_SPECIFY_COLS</style>
+							<handler function="rgrDecodeClick" entry="EVT_RADIOBOX" />
+						</object>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rgrSpiMode" member="yes">
+							<label>SPI Port Mode</label>
+							<content>
+								<item>3 Wire</item>
+								<item>4 Wire</item>
+							</content>
+							<default>1</default>
+							<pos>720,80</pos>
+							<size>136,69</size>
+							<style>wxRA_SPECIFY_COLS</style>
+							<handler function="rgrSpiModeClick" entry="EVT_RADIOBOX" />
+						</object>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxStaticBoxSizer" variable="StaticBoxSizer5" member="no">
+							<label>Rx Bypass Mode</label>
+							<object class="sizeritem">
+								<object class="wxCheckBox" name="ID_CHECKBOX9" variable="chbRxTestModeEn" member="yes">
+									<label>TIA Shorted&#x0A;To Output Pins</label>
+									<size>129,32</size>
+									<handler function="chbRxTestModeEnClick" entry="EVT_CHECKBOX" />
+								</object>
+								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxRadioBox" name="ID_RADIOBOX9" variable="rgrDsmRst" member="yes">
+							<label>DSM Soft Reset</label>
+							<content>
+								<item>Reset State</item>
+								<item>Inactive</item>
+							</content>
+							<default>1</default>
+							<pos>720,224</pos>
+							<size>140,69</size>
+							<style>wxRA_SPECIFY_COLS</style>
+							<handler function="rgrDsmRstClick" entry="EVT_RADIOBOX" />
+						</object>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxStaticBoxSizer" variable="StaticBoxSizer7" member="no">
+							<label>Global Reset</label>
+							<object class="sizeritem">
+								<object class="wxToggleButton" name="ID_TOGGLEBUTTON1" variable="swReset" member="yes">
+									<label>Reset is OFF</label>
+									<pos>16,16</pos>
+									<size>112,104</size>
+									<handler function="swResetClick" entry="EVT_TOGGLEBUTTON" />
+								</object>
+								<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+	</object>
+</wxsmith>

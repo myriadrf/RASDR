@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxDialog" name="dlgRegTest">
+		<title>Registers test</title>
+		<size>409,436</size>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>2</rows>
+			<object class="sizeritem">
+				<object class="wxRichTextCtrl" name="ID_RICHTEXTCTRL1" variable="reInfo" member="yes">
+					<size>392,384</size>
+				</object>
+				<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+				<border>5</border>
+			</object>
+			<object class="sizeritem">
+				<object class="wxButton" name="ID_BUTTON1" variable="btnClose" member="yes">
+					<label>Close</label>
+					<handler function="OnbtnCloseClick" entry="EVT_BUTTON" />
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+			</object>
+		</object>
+	</object>
+</wxsmith>
