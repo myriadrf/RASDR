@@ -88,6 +88,8 @@ NOTES on EXECUTION
 
 The first time you run RASDRviewer from one of the above builds, it my complain that it cannot open 'RASDR.cfg'.  That is OK, it will generate this file with internal defaults.  The binary release of RASDRviewer comes with an initial 'RASDR.cfg' that satisfies the program and is used subsequently for changes in parameters made by the user.
 
+NOTE: as of RASDRviewer 1.2.2.1, the RASDR.cfg is not created until two things occur:  1) some parameter is changed from Default.  2) the RASDRviewer program exits.
+
 
 APPENDIX
 ========
