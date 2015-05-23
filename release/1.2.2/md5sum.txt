@@ -1,9 +1,9 @@
 [Path] / filename                              MD5 sum
 -------------------------------------------------------------------------------
-rasdr-distribution-1.2.2.zip                   892a66fce45df908328639aff3743066
+rasdr-distribution-1.2.2.zip                   ad3f3e4b6577ea5b35e596161784c607
 CyControl.zip                                  8026b718e41e21dbc203629cb05ffd55
 driver.zip                                     d194bacd270f8a9c22ca5a2ddb0f1820
 firmware.zip                                   57896a93f20366c390d54f93e592edf7
-plotcsv.zip                                    e1a58e17095187d622ba57a8049105d4
-RASDR-Users-manual-draft-v1.7.pdf              cff04647249a6f52374502d399203d00
+plotcsv.zip                                    e7c14e5147b3a7b452e8b5d5531cf253
+RASDR-Users-manual-v1.7.1.pdf                  e02af3eab61e9bd5779cd5e74f0c0571
 RASDRviewer1_2_2_1W.zip                        193e86d46765ce6619be631b62c52597
