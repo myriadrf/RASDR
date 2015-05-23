@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.2.0-dev'     # x.y.z.* to match RASDRviewer version
+DEF_VERSION = '1.2.2.1-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -49,7 +49,7 @@ def open_spectrum_file(filename,opts):
 
         f=open(filename,'r')
         key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
-        d=key[4].replace('"','') if len(key) > 4 else '00/00/00'
+        ds=key[4].replace('"','') if len(key) > 4 else '00/00/00'
         tz=key[6].replace('"','') if len(key) > 7 else 'UTC'
         # translate strange labels from RASDRviewer_W_1_0_5
         tz=translate_tz(tz)
@@ -74,6 +74,7 @@ def open_spectrum_file(filename,opts):
                 elif tag.startswith('ghz'):
                     fscale = 1000.0
         ## second/third/fourth line: frequency bin information
+        dumplines = dumplines + 1
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
         ## third/fourth/fifth line-to-end: extract first *column* as text
@@ -87,7 +88,7 @@ def open_spectrum_file(filename,opts):
                 a = t[i]
                 b = '0'
             ts=a+'.'+b
-            time.append(datetime.datetime.strptime(d+'T'+ts, '%m/%d/%yT%H:%M:%S.%f'))
+            time.append(datetime.datetime.strptime(ds+'T'+ts, '%m/%d/%yT%H:%M:%S.%f'))
         f.seek(0)
         for i in range(dumplines):  # dump lines so we are at beginning of data collected
             f.readline()
@@ -121,7 +122,7 @@ def open_spectrum_file(filename,opts):
         key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str',comments='\\')
         if len(np.atleast_1d(key)) < 2:
             raise Exception('unable to parse %s -- check first line'%filename)
-        d=key[4].replace('"','') if len(key) > 4 else '00/00/00'
+        ds=key[4].replace('"','') if len(key) > 4 else '00/00/00'
         tz=key[6].replace('"','') if len(key) > 7 else 'UTC'
         # translate strange labels from RASDRviewer_W_1_0_5
         tz,tzo=translate_tz(tz)
@@ -146,6 +147,7 @@ def open_spectrum_file(filename,opts):
                 elif tag.startswith('ghz'):
                     fscale = 1000.0
         ## second/third/fourth line: frequency bin information
+        dumplines = dumplines + 1
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
         ## third/fourth/fifth line-to-end: extract first *column* as text
@@ -156,7 +158,7 @@ def open_spectrum_file(filename,opts):
             if a.find('T')>0:
                 time.append(parser.parse(a+'.'+b+tzo))
             else:
-                time.append(parser.parse(d+'T'+a+'.'+b+tzo))
+                time.append(parser.parse(ds+'T'+a+'.'+b+tzo))
         f.seek(0)
         for i in range(dumplines):  # dump lines so we are at beginning of data collected
             f.readline()
@@ -169,7 +171,7 @@ def open_spectrum_file(filename,opts):
     if opts.verbose:
         log = logging.getLogger(__name__)
         x,y,name = f.name.replace('\\','/').rpartition('/')
-        log.info('%s.date=%s (%s)'%(name,d+' '+tz,str(obj['time'][0])))
+        log.info('%s.date=%s (%s)'%(name,ds+' '+str(tz),str(obj['time'][0])))
         log.info('%s.time=%d'%(name,len(obj['time'])))
         log.info('%s.freq=%s (scale=%f)'%(name,str(obj['freq'].shape),fscale))
     return obj
