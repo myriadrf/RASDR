@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.2.2-dev'     # x.y.z.* to match RASDRviewer version
+DEF_VERSION = '1.2.2.3-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -49,6 +49,8 @@ def open_spectrum_file(filename,opts):
 
         f=open(filename,'r')
         key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+        if len(np.atleast_1d(key)) < 2:
+            raise Exception('unable to parse %s -- check first line'%filename)
         ds=key[4].replace('"','') if len(key) > 4 else '00/00/00'
         tz=key[6].replace('"','') if len(key) > 7 else 'UTC'
         # translate strange labels from RASDRviewer_W_1_0_5
@@ -76,11 +78,15 @@ def open_spectrum_file(filename,opts):
         ## second/third/fourth line: frequency bin information
         dumplines = dumplines + 1
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
+        if len(np.atleast_1d(freq)) < 2:
+            raise Exception('unable to parse %s -- check frequency plan'%filename)
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
         ## third/fourth/fifth line-to-end: extract first *column* as text
         t=np.genfromtxt(f,delimiter=opts.delimiter,usecols=[0],dtype='str')
+        if len(np.atleast_1d(t)) < 2:                                                      # BUG: I need at least two data records
+            raise Exception('unable to parse %s -- check data after frequency plan'%filename)
         time = []
-        for i in range(1,t.shape[0]):
+        for i in range(1,len(np.atleast_1d(t))):
             # translate HH:MM:SS:ms into HH:MM:SS.ms
             if t[i].count(':') > 2:
                 a,x,b = t[i].rpartition(':')
@@ -149,11 +155,15 @@ def open_spectrum_file(filename,opts):
         ## second/third/fourth line: frequency bin information
         dumplines = dumplines + 1
         freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
+        if len(np.atleast_1d(freq)) < 2:
+            raise Exception('unable to parse %s -- check frequency plan'%filename)
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
         ## third/fourth/fifth line-to-end: extract first *column* as text
         t=np.genfromtxt(f,delimiter=opts.delimiter,usecols=[0],dtype='str')                # 1st column are *almost* ISO-8601 datetime strings
+        if len(np.atleast_1d(t)) < 2:                                                      # BUG: I need at least two data records
+            raise Exception('unable to parse %s -- check data after frequency plan'%filename)
         time = []
-        for i in range(1,t.shape[0]):
+        for i in range(1,len(np.atleast_1d(t))):
             a,x,b = t[i].rpartition(':')  # deal with Paul's 'YYYY-MM-DDTHH:MM:SS:sssZ' format in RASDRviewer_W_1_0_5
             if a.find('T')>0:
                 time.append(parser.parse(a+'.'+b+tzo))

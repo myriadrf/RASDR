@@ -86,3 +86,13 @@
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --atype=linear --ptype=log
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --atype=linear --ptype=linear
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --atype=log --ptype=linear
+@REM Test option to also show background waveform in alternate color (red)
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --bplot
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --bplot --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --bplot --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --bplot --atype=log --ptype=linear
+@REM Test a degenerate condition of using the same file as its background
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv --smooth=5 -g
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv --smooth=5 -g --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv--smooth=5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv --smooth=5 -g --atype=log --ptype=linear
