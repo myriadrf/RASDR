@@ -314,7 +314,7 @@ def generate_spectrum_plots(filename,opts):
                 if std < s.mean()/100.0:
                     log.warning('-> signal stdev<1%% mean; applying offset of %g to scale linear plot on screen',s.mean())
                     s = s - s.mean()
-                    offsets_applied += ',-%g signal'%s.mean()
+                    offsets_applied += ',%+g signal'%-s.mean()
                 min = s.mean() - std*4
                 max = s.mean() + std*4
                 log.debug('-> plot mean=%f, stdev=%g, min=%f max=%f',s.mean(),std,min,max)
