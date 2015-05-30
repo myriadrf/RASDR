@@ -94,5 +94,5 @@
 @REM Test a degenerate condition of using the same file as its background
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv --smooth=5 -g
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv --smooth=5 -g --atype=linear --ptype=log
-%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv--smooth=5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv --smooth=5 -g --atype=linear --ptype=linear
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-universaltime.csv --smooth=5 -g --atype=log --ptype=linear
