@@ -15,13 +15,13 @@ Options:
                         file.
   -c, --cancel-dc       Cancel out component at frequency bin for 0Hz
   -d DELIMITER, --delimiter=DELIMITER
-                        Specify the delimiter character to use; default=,
+                        Specify the delimiter character to use; default=","
   -e, --excel, --localtime
                         Indicate that .csv file has timestamps in
                         RASDRviewer's "LocalTime" format
   -k CALIBRATION, --calibration=CALIBRATION
                         Specify the calibration constant for the system;
-                        0.0=uncal, default=0.000000
+                        0.0=uncal, default=0.0
   -l, --line            Perform line-by-line processing instead of loading
                         entire file(s); NOTE: much slower but tolerates low
                         memory better.
@@ -32,9 +32,15 @@ Options:
   -s SMOOTH, --smooth=SMOOTH
                         Smooth final plot using a sliding window of N points
   --fcenter=FC          Define the offset for the center frequency in Hz;
-                        default=0.000000
+                        default=0.0
   --hold                Perform a maximum value HOLD during averaging and plot
                         it as a second line
+  --bplot               If using background file, choose whether to plot the
+                        background reference in a difffert color;
+                        default=False
+  --ptype=PTYPE         Control plot vertical scale (linear or log);
+                        default=log
+  --atype=ATYPE         Control averaging method (linear or log); default=log
   --format=FORMAT       Specify the RASDRviewer .csv output format to
                         interpret; default=1.2.2
 
@@ -114,4 +120,4 @@ BUGS:
 
 1) the cancel DC option isnt effective as it seems the highest energy is 2 bins away from actual Frequency 0
 2) The file formats need to be described
-3) The 'append' feature in RASDRviewer that adds a new frequency header to the same file is not supported correctly
+3) The 'append' feature in RASDRviewer that adds a new frequency header to the same file is not supported correctlyUsage: plotcsv.py <filename.csv> [options]

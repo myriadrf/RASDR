@@ -15,13 +15,13 @@
 @REM                         file.
 @REM   -c, --cancel-dc       Cancel out component at frequency bin for 0Hz
 @REM   -d DELIMITER, --delimiter=DELIMITER
-@REM                         Specify the delimiter character to use; default=,
+@REM                         Specify the delimiter character to use; default=","
 @REM   -e, --excel, --localtime
 @REM                         Indicate that .csv file has timestamps in
 @REM                         RASDRviewer's "LocalTime" format
 @REM   -k CALIBRATION, --calibration=CALIBRATION
 @REM                         Specify the calibration constant for the system;
-@REM                         0.0=uncal, default=0.000000
+@REM                         0.0=uncal, default=0.0
 @REM   -l, --line            Perform line-by-line processing instead of loading
 @REM                         entire file(s); NOTE: much slower but tolerates low
 @REM                         memory better.
@@ -32,9 +32,15 @@
 @REM   -s SMOOTH, --smooth=SMOOTH
 @REM                         Smooth final plot using a sliding window of N points
 @REM   --fcenter=FC          Define the offset for the center frequency in Hz;
-@REM                         default=0.000000
+@REM                         default=0.0
 @REM   --hold                Perform a maximum value HOLD during averaging and plot
 @REM                         it as a second line
+@REM   --bplot               If using background file, choose whether to plot the
+@REM                         background reference in a difffert color;
+@REM                         default=False
+@REM   --ptype=PTYPE         Control plot vertical scale (linear or log);
+@REM                         default=log
+@REM   --atype=ATYPE         Control averaging method (linear or log); default=log
 @REM   --format=FORMAT       Specify the RASDRviewer .csv output format to
 @REM                         interpret; default=1.2.2
 
@@ -44,17 +50,39 @@
 @REM Original Formats since RASDRviewer 1.0.4
 %PLOTCSV% FFTOut-format-1.0.4-localtime.csv --localtime --format=1.0.4 -a 5 --info
 %PLOTCSV% FFTOut-format-1.0.4-localtime.csv --localtime --format=1.0.4 -a 5 -g
+%PLOTCSV% FFTOut-format-1.0.4-localtime.csv --localtime --format=1.0.4 -a 5 -g --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.0.4-localtime.csv --localtime --format=1.0.4 -a 5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.0.4-localtime.csv --localtime --format=1.0.4 -a 5 -g --atype=log --ptype=linear
 %PLOTCSV% FFTOut-format-1.0.4-universaltime.csv --format=1.0.4 -a 5 --info
 %PLOTCSV% FFTOut-format-1.0.4-universaltime.csv --format=1.0.4 -a 5 --background=automatic --smooth=5 -g
+%PLOTCSV% FFTOut-format-1.0.4-universaltime.csv --format=1.0.4 -a 5 --background=automatic --smooth=5 -g --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.0.4-universaltime.csv --format=1.0.4 -a 5 --background=automatic --smooth=5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.0.4-universaltime.csv --format=1.0.4 -a 5 --background=automatic --smooth=5 -g --atype=log --ptype=linear
 
 @REM Format change in RASDRviewer 1.1.1
 %PLOTCSV% FFTOut-format-1.1.1-localtime.csv --localtime --format=1.1.1 -a 5 --info
 %PLOTCSV% FFTOut-format-1.1.1-localtime.csv --localtime --format=1.1.1 -a 5 -g
+%PLOTCSV% FFTOut-format-1.1.1-localtime.csv --localtime --format=1.1.1 -a 5 -g  --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.1.1-localtime.csv --localtime --format=1.1.1 -a 5 -g  --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.1.1-localtime.csv --localtime --format=1.1.1 -a 5 -g  --atype=log --ptype=linear
 %PLOTCSV% FFTOut-format-1.1.1-universaltime.csv --format=1.1.1 -a 5 --info
 %PLOTCSV% FFTOut-format-1.1.1-universaltime.csv --format=1.1.1 -a 5 --background=automatic --smooth=5 -g
+%PLOTCSV% FFTOut-format-1.1.1-universaltime.csv --format=1.1.1 -a 5 --background=automatic --smooth=5 -g --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.1.1-universaltime.csv --format=1.1.1 -a 5 --background=automatic --smooth=5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.1.1-universaltime.csv --format=1.1.1 -a 5 --background=automatic --smooth=5 -g --atype=log --ptype=linear
 
 @REM Format change in RASDRviewer 1.2.2
 %PLOTCSV% FFTOut-format-1.2.2-localtime.csv --localtime --format=1.2.2 -a 5 --info
 %PLOTCSV% FFTOut-format-1.2.2-localtime.csv --localtime --format=1.2.2 -a 5 -g
+%PLOTCSV% FFTOut-format-1.2.2-localtime.csv --localtime --format=1.2.2 -a 5 -g --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.2.2-localtime.csv --localtime --format=1.2.2 -a 5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.2.2-localtime.csv --localtime --format=1.2.2 -a 5 -g --atype=log --ptype=linear
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --info
 %PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=automatic --smooth=5 -g
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=automatic --smooth=5 -g --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=automatic --smooth=5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=automatic --smooth=5 -g --atype=log --ptype=linear
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --atype=linear --ptype=log
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --atype=linear --ptype=linear
+%PLOTCSV% FFTOut-format-1.2.2-universaltime.csv --format=1.2.2 -a 5 --background=FFTOut-format-1.2.2-background.csv --smooth=5 -g --atype=log --ptype=linear

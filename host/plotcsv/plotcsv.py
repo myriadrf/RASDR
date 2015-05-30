@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.2.1-dev'     # x.y.z.* to match RASDRviewer version
+DEF_VERSION = '1.2.2.2-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -217,9 +217,15 @@ def generate_spectrum_plots(filename,opts):
             if opts.line:
                 s = read_spectrum_line(bg)
                 log.debug('bg %d/%d mean=%f dB'%(fr,len(bg['time']),s.mean()))
-                acc += s
+                if opts.atype.lower().startswith('linear'):
+                    acc += np.power(10,s/10)
+                else:
+                    acc += s
             else:
-                acc += s[fr]
+                if opts.atype.lower().startswith('linear'):
+                    acc += np.power(10,s[fr]/10)
+                else:
+                    acc += s[fr]
         bkg += acc / float(n)
         log.info('background %d samples=[%f,%f] mean=%f',n,bkg.min(),bkg.max(),bkg.mean())
         if opts.background.lower() == 'automatic':
@@ -246,6 +252,8 @@ def generate_spectrum_plots(filename,opts):
     bw   = (fMHz.max() - fMHz.min())*1e6/nbin
     if opts.calibration > 0.0:
         dbm = 10.0 * np.log10( opts.calibration * bw * 0.001 )  # power referenced to 1mW
+        if opts.atype.lower().startswith('linear'):
+            dbm = np.power(10,dbm/10)
     else:
         dbm = 0.0
 
@@ -274,6 +282,8 @@ def generate_spectrum_plots(filename,opts):
             s = read_spectrum_line(fg)
         else:
             s = s_a[fr]
+        if opts.atype.lower().startswith('linear'):
+            s = np.power(10,s/10)
         s = s - bkg
         if opts.canceldc:
             log.debug('Cancel DC: frq %s',str(fMHz[zidx-4:zidx+5]))
@@ -292,29 +302,113 @@ def generate_spectrum_plots(filename,opts):
         if n >= opts.average or fr == lastrow:
             s   = acc / float(n)    # vector/scalar
             s   = s - dbm           # vector-scalar
-            #s   = s - bkg           # vector-vector
-            min = np.floor(s.min())-1.0
-            max = np.ceil(s.max())+1.0
-            log.debug('-> plot min=%f max=%f',min,max)
-            if opts.hold:
-                hmin = np.floor(hold.min())-1.0
-                hmax = np.ceil(hold.max())+1.0
-                log.debug('-> hold min=%f max=%f',hmin,hmax)
-                min = hmin if hmin < min else min
-                min = hmax if hmax > max else max
+
+            ###
+            ### Scaling and determination of min/max range
+            ###
+            offsets_applied = ''
+            if opts.ptype.lower().startswith('linear'):
+                if opts.atype.lower().startswith('log'):
+                    s = np.power(10,s/10)
+                std = np.std(s)
+                if std < s.mean()/100.0:
+                    log.warning('-> signal stdev<1%% mean; applying offset of %g to scale linear plot on screen',s.mean())
+                    s = s - s.mean()
+                    offsets_applied += ',-%g signal'%s.mean()
+                min = s.mean() - std*4
+                max = s.mean() + std*4
+                log.debug('-> plot mean=%f, stdev=%g, min=%f max=%f',s.mean(),std,min,max)
+                if opts.hold:
+                    std = np.std(hold)
+                    if std < hold.mean()/100.0:
+                        log.warning('-> hold stdev<1%% mean; applying offset of %g to scale linear plot on screen',hold.mean())
+                        hold = hold - hold.mean()
+                        offsets_applied += ',-%g hold'%hold.mean()
+                    hmin = hold.mean() - std*4
+                    hmax = hold.mean() + std*4
+                    log.debug('-> hold mean=%f, stdev=%g, min=%f max=%f',hold.mean(),std,hmin,hmax)
+                    min = hmin if hmin < min else min
+                    max = hmax if hmax > max else max
+            else:
+                if opts.atype.lower().startswith('linear'):
+                    delta = 0.0
+                    if s.min() <= 0.0:
+                        delta = 0.0 - s.min()
+                        log.warning('-> applying fixed offset of %g to prevent logarithm underflow',delta)
+                        s += delta
+                        offsets_applied += ',%+g signal'%delta
+                    s = 10 * np.log10(s)
+                    if delta > 0.0:
+                        # it is possible that we generated some -inf values, so raise them (see np.select())
+                        # NB: -323dB was empirically determined to be the limit before -inf
+                        DB_LIMIT = -323.0
+                        condlist = [s<DB_LIMIT,s>=DB_LIMIT]
+                        choicelist = [np.ones(len(s))*DB_LIMIT,s]
+                        s = np.select(condlist,choicelist)
+                        offsets_applied += ',%.0f dB limit'%DB_LIMIT
+                    log.debug('-> s[] median=%f, mean=%f, stdev=%g, min=%f max=%f',s[s.argsort()[len(s)/2]],s.mean(),np.std(s),s.min(),s.max())
+                std = np.std(s)
+                if std == 0.0:
+                    log.warning('-> signal stdev is 0dB; did you subtract the signal from itself?')
+                    median = s[s.argsort()[len(s)/2]]
+                    min = median - 1.0
+                    max = median + 1.0
+                elif std < 1.0:
+                    log.warning('-> signal stdev<1.0 dB; scaling signal plot about the mean value (%g)',s.mean())
+                    min = s.mean() - std*4
+                    max = s.mean() + std*4
+                else:
+                    min = np.floor(s.min())-1.0
+                    max = np.ceil(s.max())+1.0
+                log.debug('-> plot mean=%f, stdev=%g, min=%f max=%f',s.mean(),std,min,max)
+                if opts.hold:
+                    std = np.std(hold)
+                    if std == 0.0:
+                        log.warning('-> hold stdev is 0dB; did you subtract the signal from itself?')
+                        median = hold[hold.argsort()[len(hold)/2]]
+                        hmin = median - 1.0
+                        hmax = median + 1.0
+                    elif std < 1.0:
+                        log.warning('-> hold stdev<1.0 dB; scaling hold plot about the mean value (%g)',hold.mean())
+                        hmin = hold.mean() - std*4
+                        hmax = hold.mean() + std*4
+                    else:
+                        hmin = np.floor(hold.min())-1.0
+                        hmax = np.ceil(hold.max())+1.0
+                    log.debug('-> hold mean=%f, stdev=%g, min=%f max=%f',hold.mean(),std,hmin,hmax)
+                    min = hmin if hmin < min else min
+                    max = hmax if hmax > max else max
+            log.debug('-> plot scale min=%g max=%g',min,max)
+
+            ###
+            ### Determination of Graph Title and Annotations
+            ###
             tstop = dt.strftime('%Y-%m-%dT%H:%M:%S%z')
             if n > 1:
-                title = 'Collected between %s and %s\nAveraged over %d frames'%(tstart,tstop,n)
+                title = 'Collected between %s and %s\n'%(tstart,tstop)
+                if opts.atype.lower().startswith('linear'):
+                    title += 'Linear averaged'
+                else:
+                    title += 'Logarithm averaged'
+                title += ' over %d frames'%n
             else:
                 title = 'Collected at %s'%tstart
             if len(opts.background) > 0:
                 title = title + ', with background subtraction'
             if opts.background.lower() == 'automatic':
-                title = title + ' (automatic, %.2f dB)'%bkg.mean()
+                m = bkg.mean()
+                if opts.atype.lower().startswith('linear'):
+                    if m <= 0.0:
+                        title = title + ' (automatic, zero mean)'
+                    else:
+                        m = 10 * np.log10(m)
+                        title = title + ' (automatic, %.2f dB)'%m
+                else:
+                    title = title + ' (automatic, %.2f dB)'%m
             else:
                 title = title + ' (file)'
-##            if opts.calibration:
-##                title = title + ', cal=%.1f'%opts.calibration
+            if opts.calibration:
+                title = title + ', cal=%.1f'%opts.calibration
             if opts.smooth > 0:
                 title = title + ' and %d point smoothing'%opts.smooth
                 ll = len(s)
@@ -349,13 +443,24 @@ def generate_spectrum_plots(filename,opts):
             axis([fMHz[0],fMHz[nbin-1],min,max])
             ax.xaxis.set_major_formatter(FormatStrFormatter('%4.1f'))
             xlabel('frequency (MHz)')
-##            if opts.dbm != 0.0:
-##                ylabel('spectral power (dBm/Hz)')
-            if len(opts.background) > 0:
-                ylabel('spectral power (dB relative to background)')
-                #plot(fMHz,bkg,color='r',hold=True,label='background')
+            txt = 'spectral power'
+            if dbm != 0.0:
+                if opts.ptype.lower().startswith('linear'):
+                    txt += ' (amplitude relative to 1dBm/Hz)'
+                else:
+                    txt += ' (dBm/Hz)'
+            elif len(opts.background) > 0:
+                if opts.ptype.lower().startswith('linear'):
+                    txt += ' (amplitude relative to background)'
+                else:
+                    txt += ' (dB relative to background)'
+                if opts.bplot and not opts.background.lower() == 'automatic':
+                    # when doing an 'automatic', we used a mean value, so there isnt any point in plotting a straight line
+                    plot(fMHz,bkg,color='r',hold=True,label='background')
             else:
-                ylabel('spectral power (arbitrary unit)')
+                txt += ' (arbitrary unit)'
+            txt += offsets_applied
+            ylabel(txt)
             _title(title)
 
             name = 'spectrum-%s.png'%dt.strftime('%Y_%b_%d_%H_%M_%S')
@@ -436,7 +541,7 @@ if __name__ == '__main__':
     # call matplotlib.use() only once
     p.set_defaults(matplotlib_use = False)
     p.add_option('-a', '--average', dest='average', type='int', default=DEF_AVERAGE,
-        help='Specify the number of spectra to average for each plot; default=%d'%DEF_AVERAGE)
+        help='Specify the number of spectra to average for each plot; default=%default')
     p.add_option('-b', '--background', dest='background', type='str', default='',
         help='Specify how to perform background subtraction;'+
              'if the word automatic is used, then the background will be taken'+
@@ -445,11 +550,11 @@ if __name__ == '__main__':
     p.add_option('-c', '--cancel-dc', dest='canceldc', action='store_true', default=False,
         help='Cancel out component at frequency bin for 0Hz')
     p.add_option('-d', '--delimiter', dest='delimiter', type='str', default=DEF_DELIM,
-        help='Specify the delimiter character to use; default=%s'%DEF_DELIM)
+        help='Specify the delimiter character to use; default="%default"')
     p.add_option('-e', '--excel', '--localtime', dest='localtime', action='store_true', default=False,
         help='Indicate that .csv file has timestamps in RASDRviewer\'s "LocalTime" format')
     p.add_option('-k', '--calibration', dest='calibration', type='float', default=DEF_CALIB,
-        help='Specify the calibration constant for the system; 0.0=uncal, default=%f'%DEF_CALIB)
+        help='Specify the calibration constant for the system; 0.0=uncal, default=%default')    #default=%f'%DEF_CALIB)
     p.add_option('-l', '--line', dest='line', action='store_true', default=False,
         help='Perform line-by-line processing instead of loading entire file(s); NOTE: much slower but tolerates low memory better.')
 ##    p.add_option('-m', '--milliwatt', dest='dbm', action='store_true', default=False,
@@ -465,9 +570,16 @@ if __name__ == '__main__':
     p.add_option('-s', '--smooth', dest='smooth', type='int', default=0,
         help='Smooth final plot using a sliding window of N points')
     p.add_option('--fcenter', dest='fc', type='float', default=0.0,
-        help='Define the offset for the center frequency in Hz; default=%f'%0.0)
+        help='Define the offset for the center frequency in Hz; default=%default')  #default=%f'%0.0)
     p.add_option('--hold', dest='hold', action='store_true', default=False,
         help='Perform a maximum value HOLD during averaging and plot it as a second line')
+    p.add_option('--bplot', dest='bplot', action='store_true', default=False,
+        help='If using background file, choose whether to plot the background reference in a difffert color; default=%default')
+    p.add_option('--ptype', dest='ptype', type='str', default='log',
+        help='Control plot vertical scale (linear or log); default=%default')
+    p.add_option('--atype', dest='atype', type='str', default='log',
+        help='Control averaging method (linear or log); default=%default')
+        # http://www.dtic.mil/dtic/tr/fulltext/u2/657404.pdf
     ## for handling RASDRviewer versions
     v = DEF_VERSION.split('.')
     ver = v[0]+'.'+v[1]+'.'+v[2]
