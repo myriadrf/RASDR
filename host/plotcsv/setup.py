@@ -37,6 +37,14 @@ packages = ['matplotlib', 'pytz']
 # http://sourceforge.net/p/py2exe/bugs/108/
 #
 # the above problem affected the rasdr-distribution-1.2.1
+#
+# ISSUE: when executing, you get a debug output of the form:
+# HH:MM:SS: Debug: src/helpers.cpp(140): 'CreateActCtx' failed with error 0x0000007b
+# See:
+# http://stackoverflow.com/questions/4321893/error-after-creating-exe-with-py2exe
+# https://groups.google.com/d/msg/wxpython-users/MyY7JbQf6Lo/bb_GMDrJ4WQJ
+#
+# It appears to be benign and possibly related to .dll issues in MS dependencies
 
 dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgdk_pixbuf-2.0-0.dll',
                 'libgobject-2.0-0.dll', 'tcl85.dll',
