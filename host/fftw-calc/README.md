@@ -27,9 +27,11 @@ Using a shell or command prompt window, create a directory and launch CMake.  It
 
 Linux/CentOS 6, FFTW 3.3.3, GCC 4.4.7
   - NB: this just worked as above
+
 MacOS 10.8.5, MACPORTS, FFTW 2.1.5, GCC 4.7.3
   - NB: used $ CC=gcc-mp-4.7 CXX=g++-mp-4.7 cmake ../src
   - NB: used $ make
+
 Win7  32-bit, FFTW 3.3.3, MSVC++ Express 2013
 Win7  32-bit, FFTW 3.3.3, MSVC++ Express 2010
 WinXP 32-bit, FFTW 3.3.3, MSVS 8 2005
@@ -37,9 +39,11 @@ WinXP 32-bit, FFTW 3.3.3, MSVS 8 2005
   - NB: used cmd> cmake ../src
   - NB: used cmd> msbuild fftwcalc.sln /P:Configuration=Release
   - NB: beware, after I installed MSVC++ Express 2013, the commandline for 2010 broke but I could still build in the GUI -- cmake finds registry entries?
+
 Win7 32-bit, FFTW 3.3.3, MinGW 3.20
   - NB: used cmd> cmake -G "MinGW Makefiles" ../src
   - NB: used cmd> mingw32-make
+
 Win7 32-bit, FFTW 3.3.3, Code::Blocks 12.11/MinGW 3.20
   - NB: used cmd> cmake -G "CodeBlocks - MinGW Makefiles" ../src
   - NB: used cmd> c:\codeblocks\codeblocks.exe --rebuild --target=fftw-calc --no-batch-window-close fftwcalc.cbp
