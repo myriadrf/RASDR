@@ -11,7 +11,7 @@ ENDMACRO( FIND_PATH_REQUIRED )
 
 PROJECT( fftwcalc )
 SET( fftwcalc_SRCS fftw-calc.c cpuid.c )
-FIND_PATH_REQUIRED( FFTW_INC fftw3.h PATHS "${CMAKE_SOURCE_DIR}/../../RASDRviewer/FFTviewer_src/Logic/dependencies/fftw-3.3.3" PATH_SUFFIXES include )
+FIND_PATH_REQUIRED( FFTW_INC fftw3.h PATHS "${CMAKE_SOURCE_DIR}/../dependencies/fftw" PATH_SUFFIXES include )
 INCLUDE_DIRECTORIES( ${FFTW_INC} )
 IF(WIN32)
     MESSAGE( STATUS "Win32: using libfftw3-3.lib for linkage" )

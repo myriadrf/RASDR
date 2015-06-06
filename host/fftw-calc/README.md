@@ -33,7 +33,7 @@ MacOS 10.8.5, MACPORTS, FFTW 2.1.5, GCC 4.7.3
 Win7  32-bit, FFTW 3.3.3, MSVC++ Express 2013
 Win7  32-bit, FFTW 3.3.3, MSVC++ Express 2010
 WinXP 32-bit, FFTW 3.3.3, MSVS 8 2005
-  - NB: ran 'lib /def:libfftw3-3.def' in the ../RASDRviewer/FFTviewer_src/Logic/dependencies/fftw-3.3.3
+  - NB: ran 'lib /def:libfftw3-3.def' in the ../dependencies/fftw
   - NB: used cmd> cmake ../src
   - NB: used cmd> msbuild fftwcalc.sln /P:Configuration=Release
   - NB: beware, after I installed MSVC++ Express 2013, the commandline for 2010 broke but I could still build in the GUI -- cmake finds registry entries?
