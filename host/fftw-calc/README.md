@@ -47,6 +47,11 @@ Win7 32-bit, FFTW 3.3.3, Code::Blocks 12.11/MinGW 3.20
   -     cmd> cmake -G "CodeBlocks - MinGW Makefiles" -DCMAKE_C_COMPILER=c:/codeblocks/MinGW/bin/gcc.exe -DCMAKE_CXX_COMPILER=c:/codeblocks/MinGW/bin/g++.exe -DCMAKE_MAKE_PROGRAM=c:/codeblocks/MinGW/bin/mingw32-make.exe ../src
   -     with 'c:\codeblocks\' being where I installed Code::Blocks 12:11
   -     in this case, the compiler had OpenMP disabled (it wouldnt recognize it)
+
+### TODO
+
+- Explore use of [mingw-w64](http://mingw-w64.org/doku.php)
+
 ### References
 
 - Matteo Frigo and Steven G. Johnson. [FFTW](http://www.fftw.org/fftw3_doc/Using-Plans.html#Using-Plans)
