@@ -5,11 +5,16 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.2.3-dev'     # x.y.z.* to match RASDRviewer version
+DEF_VERSION = '1.2.2.4-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
 DEF_DT_VAR  = 0.1           # percentage of avg frame time to trap 'SKIPPED' frames
+
+# support for statistics gathering/output
+DEF_STATS_FORMAT=['%.6f','%.3f','%.4f','%.4f','%.4f','%.6f','%.6f',]
+DEF_STATS_DELIM=','
+DEF_STATS_HEADER='timestamp,deltaT (sec),minimum,maximum,average,standard-deviation,variance'
 
 def excel2dt(et):
     # http://stackoverflow.com/questions/1703505/excel-date-to-unix-timestamp
@@ -520,11 +525,28 @@ def dump_spectrum_info(filename,opts):
         deltaT = 0.0
 
     log.info('Analyzing records...  acceptable inter-frame time is [%f,%f] sec',deltaT-(deltaT*DEF_DT_VAR),deltaT+(deltaT*DEF_DT_VAR))
+    if opts.statistics:
+        sts = np.zeros((len(ts_a),7)).astype(np.float)
+        if not opts.line:
+            s_a = read_spectrum_array(fg)
     dt  = np.zeros(len(ts_a)).astype(np.float)
     d0  = ts_a[0]
     dX  = 0.0
     for fr in range(len(ts_a)):
         if fr == 0:
+            if opts.statistics:
+                if opts.line:
+                    s = read_spectrum_line(fg)
+                else:
+                    s = s_a[fr]
+                # http://stackoverflow.com/questions/796008/cant-subtract-offset-naive-and-offset-aware-datetimes
+                sts[fr,0] = dt2excel(ts_a[fr].replace(tzinfo=None))
+                sts[fr,1] = 0.0
+                sts[fr,2] = s.min()
+                sts[fr,3] = s.max()
+                sts[fr,4] = s.mean()
+                sts[fr,5] = s.std()
+                sts[fr,6] = s.var()
             dt[fr] = deltaT
             continue
         log.debug('  d0=%s ts_a[%d]=%s',str(d0),fr,str(ts_a[fr]))
@@ -539,6 +561,18 @@ def dump_spectrum_info(filename,opts):
             log.info('*** SKIP: frame %d -> %d delta %f sec, expected %f+/-%f (@%s)',fr-1,fr,dt[fr],deltaT,(deltaT*DEF_DT_VAR),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
             dX = dX + (dt[fr] - deltaT)
         d0 = ts_a[fr]
+        if opts.statistics:
+            if opts.line:
+                s = read_spectrum_line(fg)
+            else:
+                s = s_a[fr]
+            sts[fr,0] = dt2excel(ts_a[fr].replace(tzinfo=None))
+            sts[fr,1] = dt[fr]
+            sts[fr,2] = s.min()
+            sts[fr,3] = s.max()
+            sts[fr,4] = s.mean()
+            sts[fr,5] = s.std()
+            sts[fr,6] = s.var()
     if dX > 0.0:
         d0 = ts_a[0]
         dN = ts_a[-1]
@@ -551,6 +585,8 @@ def dump_spectrum_info(filename,opts):
         else:
             log.info('*** %f sec unaccounted for but total capture length appears to be 0.0',dX)
     log.info('*** inter-frame min=%.3f,max=%.3f,mean=%.3f (sec)'%(dt.min(),dt.max(),dt.mean()))
+    if opts.statistics:
+        np.savetxt(opts.statistics,sts,fmt=DEF_STATS_FORMAT,delimiter=DEF_STATS_DELIM,header=DEF_STATS_HEADER,comments='')
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -560,20 +596,20 @@ if __name__ == '__main__':
     p.set_description(__doc__)
     # call matplotlib.use() only once
     p.set_defaults(matplotlib_use = False)
-    p.add_option('-a', '--average', dest='average', type='int', default=DEF_AVERAGE,
+    p.add_option('-a', '--average', dest='average', type='int', metavar='N', default=DEF_AVERAGE,
         help='Specify the number of spectra to average for each plot; default=%default')
-    p.add_option('-b', '--background', dest='background', type='str', default='',
+    p.add_option('-b', '--background', dest='background', type='str', metavar='PATH', default='',
         help='Specify how to perform background subtraction;'+
              'if the word automatic is used, then the background will be taken'+
              'from the average of all lines in the file.  Otherwise, it is taken'+
              'as a file to process.  The file must have the same frequency plan as the foreground file.')
     p.add_option('-c', '--cancel-dc', dest='canceldc', action='store_true', default=False,
         help='Cancel out component at frequency bin for 0Hz')
-    p.add_option('-d', '--delimiter', dest='delimiter', type='str', default=DEF_DELIM,
+    p.add_option('-d', '--delimiter', dest='delimiter', type='str', metavar='CHAR', default=DEF_DELIM,
         help='Specify the delimiter character to use; default="%default"')
     p.add_option('-e', '--excel', '--localtime', dest='localtime', action='store_true', default=False,
         help='Indicate that .csv file has timestamps in RASDRviewer\'s "LocalTime" format')
-    p.add_option('-k', '--calibration', dest='calibration', type='float', default=DEF_CALIB,
+    p.add_option('-k', '--calibration', dest='calibration', type='float', metavar='CONST', default=DEF_CALIB,
         help='Specify the calibration constant for the system; 0.0=uncal, default=%default')    #default=%f'%DEF_CALIB)
     p.add_option('-l', '--line', dest='line', action='store_true', default=False,
         help='Perform line-by-line processing instead of loading entire file(s); NOTE: much slower but tolerates low memory better.')
@@ -583,11 +619,13 @@ if __name__ == '__main__':
 ##        help='Indicate that timestamps in the .csv file are in Excel\'s datetime format')
     p.add_option('-i', '--info', dest='info', action='store_true', default=False,
         help='Produce information about a file only; do not generate any plots')
+    p.add_option('--statistics', dest='statistics', type='str', metavar='PATH', default=None,
+        help='Dump statistical information to a file in comma-separated-values format, default=%default')
     p.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
         help='Verbose')
     p.add_option('-g', '--gui', dest='gui', action='store_true', default=False,
         help='Create interactive PLOTS')
-    p.add_option('-s', '--smooth', dest='smooth', type='int', default=0,
+    p.add_option('-s', '--smooth', dest='smooth', type='int', metavar='N', default=0,
         help='Smooth final plot using a sliding window of N points')
     p.add_option('--fcenter', dest='fc', type='float', default=0.0,
         help='Define the offset for the center frequency in Hz; default=%default')  #default=%f'%0.0)
@@ -595,15 +633,15 @@ if __name__ == '__main__':
         help='Perform a maximum value HOLD during averaging and plot it as a second line')
     p.add_option('--bplot', dest='bplot', action='store_true', default=False,
         help='If using background file, choose whether to plot the background reference in a difffert color; default=%default')
-    p.add_option('--ptype', dest='ptype', type='str', default='log',
+    p.add_option('--ptype', dest='ptype', type='str', metavar='TYPE', default='log',
         help='Control plot vertical scale (linear or log); default=%default')
-    p.add_option('--atype', dest='atype', type='str', default='log',
+    p.add_option('--atype', dest='atype', type='str', metavar='TYPE', default='log',
         help='Control averaging method (linear or log); default=%default')
         # http://www.dtic.mil/dtic/tr/fulltext/u2/657404.pdf
     ## for handling RASDRviewer versions
     v = DEF_VERSION.split('.')
     ver = v[0]+'.'+v[1]+'.'+v[2]
-    p.add_option('--format', dest='format', type='str', default=ver,
+    p.add_option('--format', dest='format', type='str', metavar='X.Y.Z', default=ver,
         help='Specify the RASDRviewer .csv output format to interpret; default=%s'%ver)
     opts, args = p.parse_args(sys.argv[1:])
 
