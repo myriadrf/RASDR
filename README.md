@@ -1,17 +1,19 @@
 # Radio Astronomy Software Defined Radio (RASDR)
 
+![RASDR](https://github.com/myriadrf/RASDR/raw/master/docs/rasdr2-case-montage-cropped.jpg )
+
 This project provides access to the hardware designs, firmware, host system drivers and applications for the RASDR project.  RASDR is an Open Hardware project undertaken by members of the Society of Amateur Radio Astronomers (SARA) to develop a low cost, high performance software defined receiver for use by SARA members.  The goal of RASDR is to provide a low cost hardware that enables radio astronomers and educational institutions to perform high quality astronomical measurements.
 
 At the core of this capability is the Lime Microsystems, Ltd. LMS6002D Field Programmable Radio Frequency device.  The device supports tunable RF reception over a wide range (400MHz to 3.8GHz) and high bandwidth (28Mhz).  Through the use of a Host Interface Module, the LMS6002D is connected to a personal computer (PC) over a standard USB link.  Both USB3 and USB2 are supported to enable the widest possible field of use, although full bandwidth of the LMS6002D is only achieved when using USB3.
 
-![RASDR](https://github.com/myriadrf/RASDR/raw/master/design/rasdr2-with-usb3.jpg )
-*RASDR2 hardware package consisting of DigiRED and MyriadRF modules*
+![RASDR-COMPONENTS](https://github.com/myriadrf/RASDR/raw/master/design/rasdr2-with-usb3.jpg )
+*RASDR2 hardware components consisting of DigiRED and MyriadRF modules*
 
 ## Device Specifications ##
 
 Radio Astronomy research is dominated by sensitive front-end radio detection and amplification equipment, a wide-bandwidth analog to digital conversion stage, and finally, a digital processing system to extract and present information.  RASDR hardware is designed to provide all these functions in a low size, weight, and power form-factor.
 
-![RASDR-DIAGRAM](https://github.com/myriadrf/RASDR/raw/master/design/myriadrf-base.png )
+![RASDR-DIAGRAM](https://github.com/myriadrf/RASDR/raw/master/design/rasdr-base.png )
 *RASDR2 block diagram showing basic use case and components*
 
 One RF transceiver chip provides receive functionality.  The transmit section is calibrated to produce a continuous wave (CW) tone that is useful for up/down conversion of signals into the tuning band of the receive section.  Wideband SMA connectors are available to enable reception in the region between 400 MHz to 3.8 GHz with up to 28 MHz of bandwidth at 12 bit I/Q sampling.  The RASDR designs and driver source code are freely available at the RASDR Open Source project, please visit MyriadRF.org for details.
