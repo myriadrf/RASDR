@@ -9,6 +9,7 @@ DEF_VERSION = '1.2.2.3-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
+DEF_DT_VAR  = 0.1           # percentage of avg frame time to trap 'SKIPPED' frames
 
 def excel2dt(et):
     # http://stackoverflow.com/questions/1703505/excel-date-to-unix-timestamp
@@ -277,7 +278,11 @@ def generate_spectrum_plots(filename,opts):
         log.info('end  =%s',str(ts_a[lastrow]))
         s = (float(delta.seconds)+(float(delta.microseconds)/1e6))
         if s > 0.0:
-            log.info('inter-frame period=%f sec (%.0f fr/s)',s,1.0/s)
+            if s < 10.0:
+                log.info('inter-frame period=%.3f sec (%.0f fr/s)',s,1.0/float(s))
+            else:
+                log.info('inter-frame period=%.3f sec (%.3f fr/s)',s,1.0/float(s))
+
     log.info('averaging=%s',str(opts.average))
 
     if not opts.line:
@@ -514,33 +519,38 @@ def dump_spectrum_info(filename,opts):
         title  = 'Collected at %s'%tstart
         deltaT = 0.0
 
-    log.info('Analyzing records...  acceptable inter-frame time is [%f,%f] sec',deltaT-(deltaT*0.5),deltaT+(deltaT*0.5))
+    log.info('Analyzing records...  acceptable inter-frame time is [%f,%f] sec',deltaT-(deltaT*DEF_DT_VAR),deltaT+(deltaT*DEF_DT_VAR))
+    dt  = np.zeros(len(ts_a)).astype(np.float)
     d0  = ts_a[0]
     dX  = 0.0
     for fr in range(len(ts_a)):
         if fr == 0:
+            dt[fr] = deltaT
             continue
         log.debug('  d0=%s ts_a[%d]=%s',str(d0),fr,str(ts_a[fr]))
-        dt = ts_a[fr] - d0
-        dt = float(dt.seconds)+(float(dt.microseconds)/1e6)
-        log.debug('    dt=%.6f abs(dt - deltaT)=%.6f',dt,abs(dt - deltaT))
-        if dt < 1e-6:
-            log.info('*** DUPLICATE: frame %d -> %d delta %f sec, expected %f+/-%f (@%s)',fr-1,fr,dt,deltaT,(deltaT*0.5),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
+        _dt0 = ts_a[fr] - d0
+        dt[fr] = float(_dt0.seconds)+(float(_dt0.microseconds)/1e6)
+        log.debug('    dt=%.6f abs(dt - deltaT)=%.6f',dt[fr],abs(dt[fr] - deltaT))
+        if dt[fr] < 1e-6:
+            log.info('*** DUPLICATE: frame %d -> %d delta %f sec, expected %f+/-%f (@%s)',fr-1,fr,dt[fr],deltaT,(deltaT*DEF_DT_VAR),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
         elif ts_a[fr] < d0:
             log.info('*** REGRESSION: frame %d -> %d has earlier timestamp (%s) than (@%s)',fr-1,fr,ts_a[fr].strftime('%Y-%m-%dT%H:%M:%S.%f'),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
-        elif abs(dt - deltaT) > (deltaT*0.5):
-            log.info('*** SKIP: frame %d -> %d delta %f sec, expected %f+/-%f (@%s)',fr-1,fr,dt,deltaT,(deltaT*0.5),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
-            dX = dX + (dt - deltaT)
+        elif abs(dt[fr] - deltaT) > (deltaT*DEF_DT_VAR):
+            log.info('*** SKIP: frame %d -> %d delta %f sec, expected %f+/-%f (@%s)',fr-1,fr,dt[fr],deltaT,(deltaT*DEF_DT_VAR),d0.strftime('%Y-%m-%dT%H:%M:%S.%f'))
+            dX = dX + (dt[fr] - deltaT)
         d0 = ts_a[fr]
     if dX > 0.0:
         d0 = ts_a[0]
         dN = ts_a[-1]
-        dt = dN - d0
-        dt = float(dt.seconds)+(float(dt.microseconds)/1e6)
-        if dt > 0.0:
-            log.info('*** %f sec unaccounted for in %f sec capture (%.3f%%)',dX,dt,(dX*100.0/dt))
+        _dt0 = dN - d0
+        capture_length = float(_dt0.seconds)+(float(_dt0.microseconds)/1e6)
+        if capture_length > 0.0:
+            log.info('*** %f sec unaccounted for in %f sec capture (%.3f%%)',dX,capture_length,(dX*100.0/capture_length))
+        elif capture_length < 0.0:
+            log.info('*** %f sec unaccounted for but total capture length appears to be less than 0.0 (%.3f sec)',dX,capture_length)
         else:
             log.info('*** %f sec unaccounted for but total capture length appears to be 0.0',dX)
+    log.info('*** inter-frame min=%.3f,max=%.3f,mean=%.3f (sec)'%(dt.min(),dt.max(),dt.mean()))
 
 if __name__ == '__main__':
     from optparse import OptionParser
