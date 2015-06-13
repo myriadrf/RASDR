@@ -24,13 +24,13 @@ One RF transceiver chip provides receive functionality.  The transmit section is
 - Lime Microsystems, Ltd. FPRF transceiver programmable between 300 MHz to 3.8GHz with 12 bit I/Q sampling and 9 built-in RF Paths.
 - Maximum Data Transfer of 160MB/s
 - External reference clock input, enabling synchronous operation with test equipment and facility timing signals
-- External general purpose I/O (GPIO) port providing 8 3.3V GPIOs and +5V power (1.25W maximum)
+- External general purpose I/O (GPIO) port providing 4 3.3V GPIOs and +5V power (1.25W maximum)
 - Pulse Per Second (PPS) input on GPIO synchronously sampled and available in the receive data stream
 - Power: +5V USB @ 0.75A (3.75W maximum required power)
 
 ### Electrical Interface ###
 
-- SuperSpeed USB3 or **dual** USB2 data and power.  Max data rates: 160MB/s or 35MB/s respectively.
+- SuperSpeed USB3 or USB2 data and power.  Max data rates: 160MB/s or 35MB/s respectively.
 - SMA receive input, 50ohm, 300MHz to 3.8GHz
 - SMA reference input, 50ohm, 10MHz
 - SMA transmit output, 50ohm, 300MHz to 3.8GHz
