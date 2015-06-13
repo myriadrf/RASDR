@@ -1,4 +1,4 @@
-# Radio Astronomy Software Defined Radio (RASDR)
+# Radio Astronomy Software Defined Receiver (RASDR)
 
 ![RASDR](https://github.com/myriadrf/RASDR/raw/master/docs/rasdr2-case-montage-cropped.jpg )
 
