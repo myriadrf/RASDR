@@ -16,12 +16,12 @@ Radio Astronomy research is dominated by sensitive front-end radio detection and
 ![RASDR-DIAGRAM](https://github.com/myriadrf/RASDR/raw/master/design/rasdr-base.png )
 *RASDR2 block diagram showing basic use case and components*
 
-One RF transceiver chip provides receive functionality.  The transmit section is calibrated to produce a continuous wave (CW) tone that is useful for up/down conversion of signals into the tuning band of the receive section.  Wideband SMA connectors are available to enable reception in the region between 400 MHz to 3.8 GHz with up to 28 MHz of bandwidth at 12 bit I/Q sampling.  The RASDR designs and driver source code are freely available at the RASDR Open Source project, please visit MyriadRF.org for details.
+One RF transceiver chip provides receive functionality.  The transmit section is calibrated to produce a continuous wave (CW) tone that is useful for up/down conversion of signals into the tuning band of the receive section.  Wideband SMA connectors are available to enable reception in the region between 300 MHz to 3.8 GHz with up to 28 MHz of bandwidth at 12 bit I/Q sampling.  The RASDR designs and driver source code are freely available at the RASDR Open Source project, please visit [MyriadRF.org](https://myriadrf.org/) for details.
 
 ### Features ###
 
 - Two channel simultaneous receive at max. 28 MHz bandwidth (transmit functions disabled in factory firmware and logic)
-- Lime Microsystems, Ltd. FPRF transceiver programmable between 400 MHz to 3.8GHz with 12 bit I/Q sampling and 9 built-in RF Paths.
+- Lime Microsystems, Ltd. FPRF transceiver programmable between 300 MHz to 3.8GHz with 12 bit I/Q sampling and 9 built-in RF Paths.
 - Maximum Data Transfer of 160MB/s
 - External reference clock input, enabling synchronous operation with test equipment and facility timing signals
 - External general purpose I/O (GPIO) port providing 8 3.3V GPIOs and +5V power (1.25W maximum)
@@ -31,14 +31,14 @@ One RF transceiver chip provides receive functionality.  The transmit section is
 ### Electrical Interface ###
 
 - SuperSpeed USB3 or **dual** USB2 data and power.  Max data rates: 160MB/s or 35MB/s respectively.
-- SMA receive input, 50ohm, 400MHz to 3.8GHz
+- SMA receive input, 50ohm, 300MHz to 3.8GHz
 - SMA reference input, 50ohm, 10MHz
-- SMA transmit output, 50ohm, 400MHz to 3.8GHz
+- SMA transmit output, 50ohm, 300MHz to 3.8GHz
 
 ### Physical Specifications ###
 
-- Size:  70mm x 70mm x 32mm (2.75" x 2.75" x 1.25")
-- Weight: approx. 48 gram (1.5 oz.)
+- Size:  165mm x 70mm x 32mm (6.5" x 2.75" x 1.25")
+- Weight: approx. 653 gram (1lb 7oz.)
 
 ## Directory Description ##
 
