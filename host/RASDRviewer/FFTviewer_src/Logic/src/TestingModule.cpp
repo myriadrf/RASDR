@@ -709,11 +709,12 @@ bool TestingModule::externalCalculateFFT()
 		//enough samples received for FFT, start calculating
 		if (samplesReceived >= FFTsamples)
 		{
+			float oneOverN = 1.0/(float)FFTsamples;
 			samplesReceived = 0;
 
-			avgI = sumI / FFTsamples;
-			avgQ = sumQ / FFTsamples;
-			g_framepwr = (double)SumVsq * scalefactor / (double)FFTsamples ;
+			avgI = sumI * oneOverN;
+			avgQ = sumQ * oneOverN;
+			g_framepwr = (double)SumVsq * scalefactor * oneOverN ;
 			sumI = 0;
 			sumQ = 0;
 			SumVsq = 0;
@@ -735,8 +736,8 @@ bool TestingModule::externalCalculateFFT()
 			// normalize FFT results
 			for (int i = 0; i < FFTsamples; ++i)
 			{
-				m_fftCalcOut[i][0] /= FFTsamples;
-				m_fftCalcOut[i][1] /= FFTsamples;
+				m_fftCalcOut[i][0] *= oneOverN;
+				m_fftCalcOut[i][1] *= oneOverN;
 			}
 
 			// negative frequencies
@@ -750,7 +751,7 @@ bool TestingModule::externalCalculateFFT()
 					m_fftCalcOut[itmp][1] * m_fftCalcOut[itmp][1]));
 			}
 
-			// possitive frequencies
+			// positive frequencies
 			lim = FFTsamples / 2;
 			for (int f = 0; f < lim; f++)
 			{

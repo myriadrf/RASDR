@@ -1599,7 +1599,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
                             if(g_FFTDataSource == 0) {
                                 if(!m_MaxHold) sprintf(outbuf,"%.4f,\0",m_FFTamplitudes[i]);
-                                else sprintf(outbuf,"%.rf,\0",m_FFTMaxAmplitudes[i]);
+                                else sprintf(outbuf,"%.4f,\0",m_FFTMaxAmplitudes[i]);
                                 m_FFTFileClassPtr->Write(outbuf); }
                             if(g_FFTDataSource == 1
                             &&(m_fftxaxisValues[i]  >= m_FFTChartCenter- (m_FFTChartSpan/2))
