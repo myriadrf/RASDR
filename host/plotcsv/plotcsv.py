@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.2.4-dev'     # x.y.z.* to match RASDRviewer version
+DEF_VERSION = '1.2.2.5-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -170,11 +170,14 @@ def open_spectrum_file(filename,opts):
             raise Exception('unable to parse %s -- check data after frequency plan'%filename)
         time = []
         for i in range(1,len(np.atleast_1d(t))):
-            a,x,b = t[i].rpartition(':')  # deal with Paul's 'YYYY-MM-DDTHH:MM:SS:sssZ' format in RASDRviewer_W_1_0_5
-            if a.find('T')>0:
-                time.append(parser.parse(a+'.'+b+tzo))
-            else:
-                time.append(parser.parse(ds+'T'+a+'.'+b+tzo))
+            try:
+                time.append(parser.parse(t[i]))
+            except ValueError:
+                a,x,b = t[i].rpartition(':')  # deal with Paul's 'YYYY-MM-DDTHH:MM:SS:sssZ' format in RASDRviewer_W_1_0_5
+                if a.find('T')>0:
+                    time.append(parser.parse(a+'.'+b+tzo))
+                else:
+                    time.append(parser.parse(ds+'T'+a+'.'+b+tzo))
         f.seek(0)
         for i in range(dumplines):  # dump lines so we are at beginning of data collected
             f.readline()
