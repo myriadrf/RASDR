@@ -9,6 +9,9 @@ board size                  : 48.0 mm x 46.0 mm
 board thickness             : 1.6 mm +/- 10 %
 board material              : FR4
 number of layers            : 6
+Gerber file format          : RS-274-X 
+Solder Mask                 : black TAIYO, both sides, halogen free.
+Silkscreen                  : white epoxy ink, halogen free, both sides.
  
 
 Top layer copper foil thickness: 17.5 um
@@ -20,7 +23,6 @@ minimum finished hole size  :  200 um
 minimum spacing             :  100 um
 minimum track width         :  100 um
 
-Gerber file format          : RS-274-X 
 
 drill diameters             : finished hole
 
@@ -36,10 +38,6 @@ DRCs must be run on Gerber files before building boards.
 
 All through hole vias may be plated shut.
 
-Solder mask : black TAIYO, both sides, halogen free.
-
-Silkscreen : white epoxy ink, halogen free, both sides.
-
 Electrical test : 100 % netlist.
 
 Boards are to be individually bagged.
@@ -47,7 +45,6 @@ Boards are to be individually bagged.
 Basic grid increment is 5 um.
 
 Design software used:  KiCad
-
 
 The BOM contains several NOFIT parts.  These have been carefully identified and do not need to be placed.  
 

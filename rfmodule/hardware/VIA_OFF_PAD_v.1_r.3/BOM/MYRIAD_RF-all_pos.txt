@@ -1,5 +1,5 @@
-### Module positions - created on 03/03/2014 21:13:03 ###
-### Printed by Pcbnew version pcbnew (2013-05-31 BZR 4019)-stable
+### Module positions - created on 1/27/2015 9:37:06 PM ###
+### Printed by Pcbnew version pcbnew (2013-10-29 BZR 4389)-product
 ## Unit = mm, Angle = deg.
 ## Side : All
 # Ref    Val                  Package         PosX       PosY        Rot     Side
@@ -188,9 +188,9 @@ C224     100nF            C_SM0402          154.8105  -102.0293      90.0    Bac
 DA2      LP2985IM5-1.8    SOT23-5           138.8974  -112.3391      90.0    Back
 DA4      CDCV304PW        TSSOP-8           132.8191   -90.3402      90.0    Back
 DA7      LP2985IM5-1.8    SOT23-5           138.7881  -117.3480     180.0    Back
-Fiducial VAL**            Fiducial          166.5700   -78.7700      -0.0    Back
-Fiducial VAL**            Fiducial          161.9000  -124.4800      -0.0    Back
-Fiducial VAL**            Fiducial          123.2800   -79.6100      -0.0    Back
+Fiducial VAL**            Fiducial          166.5700   -78.7700       0.0    Back
+Fiducial VAL**            Fiducial          161.9000  -124.4800       0.0    Back
+Fiducial VAL**            Fiducial          123.2800   -79.6100       0.0    Back
 R1       0                R_SM0805          133.0706  -114.4600     270.0    Back
 R2       1M               R_SM0402          152.3009   -89.7001     270.0    Back
 R3       1M               R_SM0402          151.3992   -89.7001     270.0    Back
