@@ -8,6 +8,7 @@ The directory structure for the firmware design is as follows:
 
       firmware/bin/
           error-codes.txt        - description of blink codes for device firmware error TRAPs
+          vendor-commands.txt    - description of vendor commands that the firmware processes
           license.txt            - Cypress Semiconductor License Agreement
           readme.txt             - Usage and Installation Information
           usb_rx.img             - Current firmware downloadable binary

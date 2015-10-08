@@ -1,7 +1,8 @@
-RASDR - DigiRED+MyriadRF Receive Port Firmware - Release 1.1 - Jul 22, 2015
+RASDR - DigiRED+MyriadRF Receive Port Firmware - Release 1.2 - Oct 07, 2015
 ===========================================================================
 
 error-codes.txt		- Blink codes for firmware error reporting
+vendor-commands.txt     - Description of the vendor command set processed by the firmware
 license.txt		- Cypress Semiconductor License Agreement
 readme.txt		- This file
 usb_rx.img		- Firmware binary to be loaded to DigiRED board

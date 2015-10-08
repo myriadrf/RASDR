@@ -1,4 +1,4 @@
-Blink Error Codes for 'usb_rx.img' Sep 2, 2013
+Blink Error Codes for 'usb_rx.img' Sep 26, 2015
 
 Upon an error condition, the firmware will emit an error code sequence on LED D6 of the digiRED board.  The code describes a two-digit code by blinking the most-significant, pause, then the least significant digit.  This is followed by a long pause and the code repeats.  The codes are defined as follows:
 
@@ -20,7 +20,7 @@ Upon an error condition, the firmware will emit an error code sequence on LED D6
 16	USB Set Descriptor failure (FS CONFIG)
 17	USB String Descriptor failure (0)
 18	USB String Descriptor failure (1)
-19	USB String Descriptor failure (0)
+19	USB String Descriptor failure (2)
 20	USB Start Failure
 21	USB SS Start Failure
 30	DMA channel commit buffer failure (UtoP)
@@ -37,4 +37,5 @@ Upon an error condition, the firmware will emit an error code sequence on LED D6
 58  Invalid Sequence (2nd read before previous LMS Write completed)
 59  Invalid Sequence (2nd read before previous ADF Write completed)
 60  Invalid Sequence (command to read the TX buffer w/o previous command to fill it)
+61	USB String Descriptor failure (3)
 99	TEST CODE
