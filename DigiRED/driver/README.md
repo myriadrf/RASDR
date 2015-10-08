@@ -5,6 +5,11 @@ The RASDR project gratefully acknowledges Cypress Semiconductor Corporation for 
 The directory structure for the driver files is as follows:
 
       license.txt                - Cypress Semiconductor License Agreement
+      signing/                   - Notes and scripts for signing the drivers
+      digired-windows.zip        - The driver package
+
+When unzipped, the 'digired-windows.zip' produces the following files:
+
       docs/                      - screenshots and installation aids
       vista/                     - Windows Vista driver files
       win7/                      - Windows 7 (32-bit and 64-bit) driver files
