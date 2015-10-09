@@ -2,7 +2,7 @@
 
 This is a distribution of the current software and information available for operating the RASDR software defined receiver for radio astronomy under the Windows operating system.  The following are contained in this distribution:
 
-RASDR-Users-manual-v1.7.3b       - A work-in-progress draft of the user guide
+RASDR-Users-manual-v1.7.4.pdf    - The current revision of the user manual
 README.md                        - this file (enables webserver display)
 ..\1.2.1\CyControl.zip           - Utilities used to reprogram the firmware on the RASDR device over USB
 driver.zip                       - The Windows device driver for Win 8/Win 7/Vista/XP
