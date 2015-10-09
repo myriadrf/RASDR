@@ -1,4 +1,4 @@
-@REM Usage: plotcsv.py <filename.csv> [options]
+@REM Usage: plotcsv.exe <filename.csv> [options]
 @REM 
 @REM Options:
 @REM   --version             show program's version number and exit
@@ -14,12 +14,12 @@
 @REM                         must have the same frequency plan as the foreground
 @REM                         file.
 @REM   -c, --cancel-dc       Cancel out component at frequency bin for 0Hz
-@REM   -d DELIMITER, --delimiter=DELIMITER
+@REM   -d CHAR, --delimiter=CHAR
 @REM                         Specify the delimiter character to use; default=","
 @REM   -e, --excel, --localtime
 @REM                         Indicate that .csv file has timestamps in
 @REM                         RASDRviewer's "LocalTime" format
-@REM   -k CALIBRATION, --calibration=CALIBRATION
+@REM   -k CONST, --calibration=CONST
 @REM                         Specify the calibration constant for the system;
 @REM                         0.0=uncal, default=0.0
 @REM   -l, --line            Perform line-by-line processing instead of loading
@@ -27,6 +27,8 @@
 @REM                         memory better.
 @REM   -i, --info            Produce information about a file only; do not generate
 @REM                         any plots
+@REM   --statistics=PATH     Dump statistical information to a file in comma-
+@REM                         separated-values format, default=none
 @REM   -v, --verbose         Verbose
 @REM   -g, --gui             Create interactive PLOTS
 @REM   -s SMOOTH, --smooth=SMOOTH
