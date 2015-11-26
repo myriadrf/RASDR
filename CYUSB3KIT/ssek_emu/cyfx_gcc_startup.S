@@ -13,6 +13,26 @@
 #  where <install> is the Cypress software
 #  installation root directory path.
 #
+#  Published with permission, Case #2427983098, Cypress Semiconductor Corp.
+#
+#  This source code is derived from the Cypress SS Explorer Kit Example:
+#  'USBBulkSourceSinkLED'.  As per clause 1.1 of the above license,
+#  it is a derivative work of The Society of Amateur Radio Astronomers,
+#  who retain copyright, all rights reserved.  The modifications to the
+#  example that are made by the Society of Amateur Radio Astronomers, are
+#  in turn made available to you under the GNU Public License, Version 2.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this source code; see the file COPYING.  If not, write to
+#  the Free Software Foundation, Inc., 51 Franklin Street,
+#  Boston, MA 02110-1301, USA.
+#
+#  This entire code is distributed in the hope that it will be useful but
+#  WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+#  DISCLAIMED. This includes but is not limited to warranties of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# ===========================
 
 # Cypress FX3 Firmware Startup code
 

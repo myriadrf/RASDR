@@ -17,6 +17,25 @@
  ##  where <install> is the Cypress software
  ##  installation root directory path.
  ##
+ ##  Published with permission, Case #2427983098, Cypress Semiconductor Corp.
+ ##
+ ##  This source code is derived from the Cypress SS Explorer Kit Example:
+ ##  'USBBulkSourceSinkLED'.  As per clause 1.1 of the above license,
+ ##  it is a derivative work of The Society of Amateur Radio Astronomers,
+ ##  who retain copyright, all rights reserved.  The modifications to the
+ ##  example that are made by the Society of Amateur Radio Astronomers, are
+ ##  in turn made available to you under the GNU Public License, Version 2.
+ ##
+ ##  You should have received a copy of the GNU General Public License
+ ##  along with this source code; see the file COPYING.  If not, write to
+ ##  the Free Software Foundation, Inc., 51 Franklin Street,
+ ##  Boston, MA 02110-1301, USA.
+ ##
+ ##  This entire code is distributed in the hope that it will be useful but
+ ##  WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+ ##  DISCLAIMED. This includes but is not limited to warranties of
+ ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ ##
  ## ===========================
 */
 
@@ -29,16 +48,16 @@
 #include "cyu3usbconst.h"
 #include "cyu3externcstart.h"
 
+// TODO: remove the _BULKSRCSINK_ from the name
+#define CY_FX_BULKSRCSINK_GPIF_16_32BIT_CONF_SELECT (0)
 #define CY_FX_BULKSRCSINK_DMA_TX_SIZE        (0)                       /* DMA transfer size is set to infinite */
 #define CY_FX_BULKSRCSINK_THREAD_STACK       (0x1000)                  /* Bulk loop application thread stack size */
 #define CY_FX_BULKSRCSINK_THREAD_PRIORITY    (8)                       /* Bulk loop application thread priority */
-
-/* TODO: User can change the data pattern bleow that is sent by FX3 to the host */
 #define CY_FX_BULKSRCSINK_PATTERN            (0xAA)                    /* 8-bit pattern to be loaded to the source buffers. */
 
 /* Endpoint and socket definitions for the bulk source sink application */
 
-/* To change the producer and consumer EP enter the appropriate EP numbers for the #defines.
+/* To change the Producer and Consumer EP enter the appropriate EP numbers for the #defines.
  * In the case of IN endpoints enter EP number along with the direction bit.
  * For eg. EP 6 IN endpoint is 0x86
  *     and EP 6 OUT endpoint is 0x06.
@@ -53,39 +72,29 @@
 #define CY_FX_EP_PRODUCER_SOCKET        CY_U3P_UIB_SOCKET_PROD_1    /* Socket 1 is producer */
 #define CY_FX_EP_CONSUMER_SOCKET        CY_U3P_UIB_SOCKET_CONS_1    /* Socket 1 is consumer */
 
+/* Used with FX3 Silicon. */
+#define CY_FX_PRODUCER_PPORT_SOCKET    CY_U3P_PIB_SOCKET_0    /* P-port Socket 0 is producer */
+#define CY_FX_CONSUMER_PPORT_SOCKET    CY_U3P_PIB_SOCKET_3    /* P-port Socket 3 is consumer */
+
 /* Burst mode definitions: Only for super speed operation. The maximum burst mode 
  * supported is limited by the USB hosts available. The maximum value for this is 16
  * and the minimum (no-burst) is 1. */
 
 
 /* Burst length in 1 KB packets. Only applicable to USB 3.0. */
-#ifndef CY_FX_EP_BURST_LENGTH
-
-/* TODO: Modify the burst length from 1 to 16. Setting less bandwidth will give less
-  USB throughput. Changing the burst length will also change the buffer size */
-#define CY_FX_EP_BURST_LENGTH           (16)
-#endif
-
-/*TODO: Modify the DMA multiplier to change the buffer size: Set the value from 1 to 3 */
-#define CY_FX_DMA_MULTIPLIER			(2)
+#define CY_FX_EP_BURST_LENGTH           (4)                       /* 1 to 16.  More is faster, but uses more buffer memory */
+#define CY_FX_DMA_MULTIPLIER			(2)                       /* 1 to 3 */
 
 /* Size of each DMA buffer. This should ideally be set to 2X the EP burst size. */
-#ifndef CY_FX_BULKSRCSINK_DMA_BUF_SIZE
 #define CY_FX_BULKSRCSINK_DMA_BUF_SIZE  (CY_FX_DMA_MULTIPLIER * CY_FX_EP_BURST_LENGTH * 1024)
-#endif
-
 /* Number of DMA buffers used for the DMA channel. */
-#ifndef CY_FX_BULKSRCSINK_DMA_BUF_COUNT
 #define CY_FX_BULKSRCSINK_DMA_BUF_COUNT (2)
-#endif
 
-#define LED_GPIO						(54)				/* Configure GPIO54 for LED blinking */
-#define LED_BLINK_RATE_CHANGE			(0xAA)				/* Vendor command for changing the ON-time and OFF-time
-															 *of LED in terms of 100ms */
+#define FULLSPEED_BLINK_RATE			(400)				/* in ms units */
+#define HIGHSPEED_BLINK_RATE			(250)				/* in ms units */
+#define SUPERSPEED_BLINK_RATE			(100)				/* in ms units */
 
-#define SUPERSPEED_BLINK_RATE			(50)				/*Sets the blink rate of LED in terms of milliseconds
-															 *when connected to 3.0 port*/
-
+/* General Base Sizes for the different endpoints */
 #define CY_FX_FULL_SPEED_EP_SIZE		(64)				/* Sets the end-point size to 64 bytes for full speed */
 #define CY_FX_HIGH_SPEED_EP_SIZE		(512)				/* Sets the end-point size to 512 bytes for high speed */
 #define CY_FX_SUPER_SPEED_EP_SIZE		(1024)				/* Sets the end-point size to 512 bytes for SuperSpeed */
@@ -102,7 +111,8 @@ extern const uint8_t CyFxUSBSSConfigDscr[];
 extern const uint8_t CyFxUSBStringLangIDDscr[];
 extern const uint8_t CyFxUSBManufactureDscr[];
 extern const uint8_t CyFxUSBProductDscr[];
-extern const uint8_t CyFxUsbOSDscr[];
+extern const uint8_t CyFxUSBSerialDscr[];
+extern const uint8_t CyFxUSBOSDscr[];
 
 #include <cyu3externcend.h>
 

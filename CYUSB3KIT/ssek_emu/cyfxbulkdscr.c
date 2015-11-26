@@ -17,6 +17,25 @@
  ##  where <install> is the Cypress software
  ##  installation root directory path.
  ##
+ ##  Published with permission, Case #2427983098, Cypress Semiconductor Corp.
+ ##
+ ##  This source code is derived from the Cypress SS Explorer Kit Example:
+ ##  'USBBulkSourceSinkLED'.  As per clause 1.1 of the above license,
+ ##  it is a derivative work of The Society of Amateur Radio Astronomers,
+ ##  who retain copyright, all rights reserved.  The modifications to the
+ ##  example that are made by the Society of Amateur Radio Astronomers, are
+ ##  in turn made available to you under the GNU Public License, Version 2.
+ ##
+ ##  You should have received a copy of the GNU General Public License
+ ##  along with this source code; see the file COPYING.  If not, write to
+ ##  the Free Software Foundation, Inc., 51 Franklin Street,
+ ##  Boston, MA 02110-1301, USA.
+ ##
+ ##  This entire code is distributed in the hope that it will be useful but
+ ##  WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+ ##  DISCLAIMED. This includes but is not limited to warranties of
+ ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ ##
  ## ===========================
 */
 
@@ -44,12 +63,12 @@ const uint8_t CyFxUSB30DeviceDscr[] __attribute__ ((aligned (32))) =
     0x00,                           /* Device sub-class */
     0x00,                           /* Device protocol */
     0x09,                           /* Maxpacket size for EP0 : 2^9 */
-    0xB4,0x04,                      /* Vendor ID */
-    0xF1,0x00,                      /* Product ID */
-    0x00,0x00,                      /* Device release number */
+    0x50,0x1D,                      /* Vendor ID */
+    0x99,0x60,                      /* Product ID */
+    0x02,0x00,                      /* Device release number */
     0x01,                           /* Manufacture string index */
     0x02,                           /* Product string index */
-    0x00,                           /* Serial number string index */
+    0x03,                           /* Serial number string index */
     0x01                            /* Number of configurations */
 };
 
@@ -63,12 +82,12 @@ const uint8_t CyFxUSB20DeviceDscr[] __attribute__ ((aligned (32))) =
     0x00,                           /* Device sub-class */
     0x00,                           /* Device protocol */
     0x40,                           /* Maxpacket size for EP0 : 64 bytes */
-    0xB4,0x04,                      /* Vendor ID */
-    0xF1,0x00,                      /* Product ID */
-    0x00,0x00,                      /* Device release number */
+    0x50,0x1D,                      /* Vendor ID */
+    0x99,0x60,                      /* Product ID */
+    0x02,0x00,                      /* Device release number */
     0x01,                           /* Manufacture string index */
     0x02,                           /* Product string index */
-    0x00,                           /* Serial number string index */
+    0x03,                           /* Serial number string index */
     0x01                            /* Number of configurations */
 };
 
@@ -122,7 +141,7 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__ ((aligned (32))) =
     0x01,                           /* Configuration number */
     0x00,                           /* COnfiguration string index */
     0x80,                           /* Config characteristics - Bus powered */
-    0x32,                           /* Max power consumption of device (in 8mA unit) : 400mA */
+    0x5D,                           /* Max power consumption of device (in 8mA unit) : 750mA */
 
     /* Interface descriptor */
     0x09,                           /* Descriptor size */
@@ -177,7 +196,7 @@ const uint8_t CyFxUSBHSConfigDscr[] __attribute__ ((aligned (32))) =
     0x01,                           /* Configuration number */
     0x00,                           /* COnfiguration string index */
     0x80,                           /* Config characteristics - bus powered */
-    0x32,                           /* Max power consumption of device (in 2mA unit) : 100mA */
+    0xAF,                           /* Max power consumption of device (in 2mA unit) : 350mA */
 
     /* Interface descriptor */
     0x09,                           /* Descriptor size */
@@ -216,9 +235,9 @@ const uint8_t CyFxUSBFSConfigDscr[] __attribute__ ((aligned (32))) =
     0x20,0x00,                      /* Length of this descriptor and all sub descriptors */
     0x01,                           /* Number of interfaces */
     0x01,                           /* Configuration number */
-    0x00,                           /* COnfiguration string index */
+    0x00,                           /* Configuration string index */
     0x80,                           /* Config characteristics - bus powered */
-    0x32,                           /* Max power consumption of device (in 2mA unit) : 100mA */
+    0xAF,                           /* Max power consumption of device (in 2mA unit) : 350mA */
 
     /* Interface descriptor */
     0x09,                           /* Descriptor size */
@@ -259,29 +278,49 @@ const uint8_t CyFxUSBStringLangIDDscr[] __attribute__ ((aligned (32))) =
 /* Standard manufacturer string descriptor */
 const uint8_t CyFxUSBManufactureDscr[] __attribute__ ((aligned (32))) =
 {
-    0x10,                           /* Descriptor size */
+    0x0A,                           /* Descriptor size */
     CY_U3P_USB_STRING_DESCR,        /* Device descriptor type */
-    'C',0x00,
-    'y',0x00,
-    'p',0x00,
-    'r',0x00,
-    'e',0x00,
-    's',0x00,
-    's',0x00
+    'S',0x00,
+    'A',0x00,
+    'R',0x00,
+    'A',0x00 
 };
 
 /* Standard product string descriptor */
 const uint8_t CyFxUSBProductDscr[] __attribute__ ((aligned (32))) =
 {
-    0x08,                           /* Descriptor size */
+    0x18,                           /* Descriptor size */
     CY_U3P_USB_STRING_DESCR,        /* Device descriptor type */
-    'F',0x00,
-    'X',0x00,
-    '3',0x00
+    'D',0x00,
+    'i',0x00,
+    'g',0x00,
+    'i',0x00,
+    'R',0x00,
+    'e',0x00,
+    'd',0x00,
+    '_',0x00,
+    'E',0x00,
+    'M',0x00,
+    'U',0x00
+};
+
+/* Standard serial number string descriptor */
+const uint8_t CyFxUSBSerialDscr[] __attribute__ ((aligned (32))) =
+{
+    0x12,                           /* Descriptor size */
+    CY_U3P_USB_STRING_DESCR,        /* Device descriptor type */
+    '0',0x00,
+    '0',0x00,
+    '0',0x00,
+    '-',0x00,
+    '0',0x00,
+    '0',0x00,
+    '0',0x00,
+    '0',0x00
 };
 
 /* Microsoft OS Descriptor. */
-const uint8_t CyFxUsbOSDscr[] __attribute__ ((aligned (32))) =
+const uint8_t CyFxUSBOSDscr[] __attribute__ ((aligned (32))) =
 {
     0x0E,
     CY_U3P_USB_STRING_DESCR,

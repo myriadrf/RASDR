@@ -6,11 +6,8 @@ USB BULK SOURCE SINK LED EXAMPLE
 -------------------------------
 
   This example illustrates on how to configure the GPIO as an output and drive the LED.
-  The LED will blink at 50ms rate if the FX3 DVK is connected to a SuperSpeed USB port. The LED
-  will always turn ON if connected to a HighSpeed USB port and will be OFF of connected to a
-  FullSpeed USB port. The user can also change the LED on-time and off-time by using the vendor
-  command (0xAA). Refer to the FX3 DVK User-Guide on how to change the blinking rate of the LED
-  using the vendor request. 
+  The LED will blink at different rates if the FX3 DVK is connected to a SuperSpeed USB port. The LED
+  be mostly on for SS, 50%on for HISPEED, mostly off for LOWSPEED.
    
   This example illustrates the use of the FX3 firmware APIs to implement
   a data source and data sink over a pair of USB Bulk endpoints.
