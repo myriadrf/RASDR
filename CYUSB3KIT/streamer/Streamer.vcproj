@@ -46,13 +46,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\library\cpp\inc\"
+				AdditionalIncludeDirectories="$(FX3_INSTALL_PATH)library\cpp\inc\"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\x86\Debug\$(TargetName).pch"
+				PrecompiledHeaderFile=".\x86\Debug\$(ProjectName).pch"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -67,12 +67,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\library\cpp\lib\x86\cyapi.lib setupapi.lib"
+				AdditionalDependencies="$(FX3_INSTALL_PATH)library\cpp\lib\x86\cyapi.lib setupapi.lib"
 				OutputFile=".\x86\Debug\$(ProjectName).exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
-				ProgramDatabaseFile=".\x86\Debug\$(TargetName).pdb"
+				ProgramDatabaseFile=".\x86\Debug\$(ProjectName).pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				FixedBaseAddress="0"
@@ -129,13 +129,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\library\cpp\inc\"
+				AdditionalIncludeDirectories="$(FX3_INSTALL_PATH)library\cpp\inc\"
 				PreprocessorDefinitions="_WIN64;_DEBUG"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\x64\Debug\$(TargetName).pch"
+				PrecompiledHeaderFile=".\x64\Debug\$(ProjectName).pch"
 				ObjectFile=".\x64\Debug\"
 				ProgramDataBaseFileName=".\x64\Debug\vc90.pdb"
 				XMLDocumentationFileName=".\x64\Debug\"
@@ -153,13 +153,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\library\cpp\lib\x64\cyapi.lib setupapi.lib"
+				AdditionalDependencies="$(FX3_INSTALL_PATH)library\cpp\lib\x64\cyapi.lib setupapi.lib"
 				OutputFile=".\x64\Debug\$(ProjectName).exe"
 				LinkIncremental="2"
-				ManifestFile="$(IntDir)\$(TargetFileName).intermediate.manifest"
+				ManifestFile="$(IntDir)\$(ProjectName).intermediate.manifest"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
-				ProgramDatabaseFile=".\x64\Debug\$(TargetName).pdb"
+				ProgramDatabaseFile=".\x64\Debug\$(ProjectName).pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -213,12 +213,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\library\cpp\inc\"
+				AdditionalIncludeDirectories="$(FX3_INSTALL_PATH)library\cpp\inc\"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\x86\Release\$(TargetName).pch"
+				PrecompiledHeaderFile=".\x86\Release\$(ProjectName).pch"
 				ObjectFile=".\x86\Release\"
 				ProgramDataBaseFileName=".\x86\Release\vc90.pdb"
 				XMLDocumentationFileName=".\x86\Release\"
@@ -236,12 +236,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\library\cpp\lib\x86\cyapi.lib setupapi.lib"
+				AdditionalDependencies="$(FX3_INSTALL_PATH)library\cpp\lib\x86\cyapi.lib setupapi.lib"
 				OutputFile=".\x86\Release\$(ProjectName).exe"
 				LinkIncremental="1"
-				ManifestFile=".\x86\Release\$(TargetFileName).intermediate.manifest"
+				ManifestFile=".\x86\Release\$(ProjectName).intermediate.manifest"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\x86\Release\$(TargetName).pdb"
+				ProgramDatabaseFile=".\x86\Release\$(ProjectName).pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -295,12 +295,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\library\cpp\inc\"
+				AdditionalIncludeDirectories="$(FX3_INSTALL_PATH)library\cpp\inc\"
 				PreprocessorDefinitions="_WIN64;NDEBUG"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\x64\Release\$(TargetName).pch"
+				PrecompiledHeaderFile=".\x64\Release\$(ProjectName).pch"
 				ObjectFile=".\x64\Release\"
 				ProgramDataBaseFileName=".\x64\Release\vc90.pdb"
 				XMLDocumentationFileName=".\x64\Release\"
@@ -318,7 +318,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\library\cpp\lib\x64\cyapi.lib setupapi.lib"
+				AdditionalDependencies="$(FX3_INSTALL_PATH)library\cpp\lib\x64\cyapi.lib setupapi.lib"
 				OutputFile=".\x64\Release\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

@@ -234,7 +234,7 @@ namespace Streams
             // QueueLenBox
             // 
             this->QueueLenBox->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
-            System::Object* __mcTemp__2[] = new System::Object*[7];
+            System::Object* __mcTemp__2[] = new System::Object*[10];
             __mcTemp__2[0] = S"1";
             __mcTemp__2[1] = S"2";
             __mcTemp__2[2] = S"4";
@@ -242,6 +242,9 @@ namespace Streams
             __mcTemp__2[4] = S"16";
             __mcTemp__2[5] = S"32";
             __mcTemp__2[6] = S"64";
+			__mcTemp__2[7] = S"128";
+			__mcTemp__2[8] = S"256";
+			__mcTemp__2[9] = S"512";
             this->QueueLenBox->Items->AddRange(__mcTemp__2);
             this->QueueLenBox->Location = System::Drawing::Point(136, 118);
             this->QueueLenBox->Name = S"QueueLenBox";
@@ -342,7 +345,7 @@ namespace Streams
 
         CCyUSBDevice				*USBDevice;
 
-        static const int				MAX_QUEUE_SZ = 64;
+        static const int				MAX_QUEUE_SZ = 512;
         static const int				VENDOR_ID	= 0x04B4;
         static const int				PRODUCT_ID	= 0x00F1; 
 
