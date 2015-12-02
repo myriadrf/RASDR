@@ -213,26 +213,26 @@ CyFxAppErrorHandler (
 
     	// digit1:
     	for(cc=0;cc<digit1;cc++) {
-    		CyU3PGpioSetValue(GPIO_LED1, CyTrue);
+    		CyU3PGpioSetValue(GPIO_LED1, CyFalse);	// ON
     		CyU3PThreadSleep(ERR_DIGIT_ON);
-    		CyU3PGpioSetValue(GPIO_LED1, CyFalse);
+    		CyU3PGpioSetValue(GPIO_LED1, CyTrue);	// OFF
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
-    	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
+    	//for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
 
     	// space between digit1 and digit0:
     	CyU3PThreadSleep(ERR_DIGIT_SPACE);
 
     	// digit0:
     	for(cc=0;cc<digit0;cc++) {
-    		CyU3PGpioSetValue(GPIO_LED1, CyTrue);
+    		CyU3PGpioSetValue(GPIO_LED1, CyFalse);	// ON
     		CyU3PThreadSleep(ERR_DIGIT_ON);
-    		CyU3PGpioSetValue(GPIO_LED1, CyFalse);
+    		CyU3PGpioSetValue(GPIO_LED1, CyTrue);	// OFF
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
-    	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
+    	//for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
 
-    	// space between digit0 and digit1:
+    	// space after digit0:
     	CyU3PThreadSleep(ERR_DIGIT_END);
     }
 }
@@ -367,20 +367,20 @@ CyFxBulkSrcSinkApplnStart (
     {
     case CY_U3P_FULL_SPEED:
         size = CY_FX_FULL_SPEED_EP_SIZE;							/* If connected to full speed, the endpoint size should be 64 bytes */
-        on_time  = 500-FULLSPEED_BLINK_RATE;
-        off_time = FULLSPEED_BLINK_RATE;
+        on_time  = FULLSPEED_BLINK_ON_TIME;
+        off_time = XSPEED_BLINK_PERIOD-FULLSPEED_BLINK_ON_TIME;
         break;
 
     case CY_U3P_HIGH_SPEED:
         size = CY_FX_HIGH_SPEED_EP_SIZE;							/* If connected to high speed, the endpoint size should be 512 bytes */
-        on_time  = 400-HIGHSPEED_BLINK_RATE;
-        off_time = HIGHSPEED_BLINK_RATE;
+        on_time  = HIGHSPEED_BLINK_ON_TIME;
+        off_time = XSPEED_BLINK_PERIOD-HIGHSPEED_BLINK_ON_TIME;
         break;
 
     case  CY_U3P_SUPER_SPEED:
         size = CY_FX_SUPER_SPEED_EP_SIZE;						/* If connected to Super-speed, the endpoint size should be 1024 bytes */
-        on_time  = 200-SUPERSPEED_BLINK_RATE;
-        off_time = SUPERSPEED_BLINK_RATE;
+        on_time  = SUPERSPEED_BLINK_ON_TIME;
+        off_time = XSPEED_BLINK_PERIOD-SUPERSPEED_BLINK_ON_TIME;
         break;
 
     default:
@@ -538,29 +538,26 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
         uint32_t setupdat1  /* SETUP Data 1 */
     )
 {
-    uint8_t  bRequest, bReqType;
-    uint8_t  bType, bTarget;
-    uint16_t wValue, wIndex, wLength;
+    uint8_t  bRequest;  //, bReqType;
+//    uint8_t  bType, bTarget;
+//    uint16_t wValue, wIndex, wLength;
     CyBool_t isHandled = CyFalse;
-    CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
-
-    /* Decode the fields from the setup request. */
-    bReqType = (setupdat0 & CY_U3P_USB_REQUEST_TYPE_MASK);
-    bType    = (bReqType & CY_U3P_USB_TYPE_MASK);
-    bTarget  = (bReqType & CY_U3P_USB_TARGET_MASK);
-    bRequest = ((setupdat0 & CY_U3P_USB_REQUEST_MASK) >> CY_U3P_USB_REQUEST_POS);
-    wValue   = ((setupdat0 & CY_U3P_USB_VALUE_MASK)   >> CY_U3P_USB_VALUE_POS);
-    wIndex   = ((setupdat1 & CY_U3P_USB_INDEX_MASK)   >> CY_U3P_USB_INDEX_POS);
-    wLength  = ((setupdat1 & CY_U3P_USB_LENGTH_MASK)  >> CY_U3P_USB_LENGTH_POS);
-
-    // TODO: could it be that by handling the Vendor request immediately,
-    // we are creating a EP0 stall if the command does not complete quickly enough?
+//    CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
 //    uint8_t   I2C_Addr;
 //    CyU3PI2cPreamble_t preamble;
     uint8_t   gpio_num;
     uint8_t  *serial_num;
     CyBool_t  tx_id;
     uint16_t  i;
+
+    /* Decode the fields from the setup request. */
+//    bReqType = (setupdat0 & CY_U3P_USB_REQUEST_TYPE_MASK);
+//    bType    = (bReqType & CY_U3P_USB_TYPE_MASK);
+//    bTarget  = (bReqType & CY_U3P_USB_TARGET_MASK);
+    bRequest = ((setupdat0 & CY_U3P_USB_REQUEST_MASK) >> CY_U3P_USB_REQUEST_POS);
+//    wValue   = ((setupdat0 & CY_U3P_USB_VALUE_MASK)   >> CY_U3P_USB_VALUE_POS);
+//    wIndex   = ((setupdat1 & CY_U3P_USB_INDEX_MASK)   >> CY_U3P_USB_INDEX_POS);
+//    wLength  = ((setupdat1 & CY_U3P_USB_LENGTH_MASK)  >> CY_U3P_USB_LENGTH_POS);
 
     isHandled = CyTrue;
     switch (bRequest)
@@ -628,6 +625,7 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
     		  	glEp0Buffer_Tx_Expected = 50;
 
 #if 0
+/*
     		  	I2C_Addr = glEp0Buffer_Rx[1];
     			for(i=0; i<glEp0Buffer_Rx[2]; i++)
     			{
@@ -647,6 +645,7 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
                     // NOTE: Emulation does not talk to I2C
     		        //CyU3PI2cReceiveBytes (&preamble, &glEp0Buffer_Tx[i], 1, 0);
     			};
+*/
 #endif
 
     		break;
@@ -665,6 +664,7 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
     		    glEp0Buffer_Tx_Expected = 54;
 
 #if 0
+/*
     		  	I2C_Addr = glEp0Buffer_Rx[1];
     			for(i=0; i<glEp0Buffer_Rx[2]; i++)
     			{
@@ -677,6 +677,7 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
                     // NOTE: Emulation does not talk to I2C
         	        //CyU3PI2cTransmitBytes (&preamble, &glEp0Buffer_Rx[5+i*2], 1, 0);
     			};
+*/
 #endif
 
     		break;
@@ -795,12 +796,11 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
 
 	          glEp0Buffer_Tx_Expected = 52;
 
-    		  CyU3PGpifGetSMState(&glEp0Buffer_Tx[1]);
     		  serial_num = (uint8_t *)CyFxUSBSerialDscr;
 
     		  CyU3PGpioGetValue (GPIO_TX_ID, &tx_id);
     		  glEp0Buffer_Tx[0] = tx_id;
-    		  //CyU3PGpifGetSMState(), above.
+    		  //CyU3PGpifGetSMState(&glEp0Buffer_Tx[1]);
     		  for(i=0,serial_num = (uint8_t *)CyFxUSBSerialDscr;i<8;i++)
     		  {
     			  glEp0Buffer_Tx[i+2] = serial_num[(i*2)+2];
@@ -852,7 +852,7 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
                 else break;
                 {
                     CyU3PGpioSimpleConfig_t gpioConfig;
-                    CyU3PReturnStatus_t status;
+                    //CyU3PReturnStatus_t status;
                     CyBool_t pin;
 
                     gpioConfig.outValue = CyFalse;
@@ -860,8 +860,8 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
                     gpioConfig.driveLowEn = CyFalse;
                     gpioConfig.driveHighEn = CyFalse;
                     gpioConfig.intrMode = CY_U3P_GPIO_NO_INTR;
-                    status = CyU3PDeviceGpioOverride (gpio_num, CyTrue);
-                    status = CyU3PGpioSetSimpleConfig(gpio_num, &gpioConfig);
+                    (void)CyU3PDeviceGpioOverride (gpio_num, CyTrue);
+                    (void)CyU3PGpioSetSimpleConfig(gpio_num, &gpioConfig);
      		        CyU3PGpioGetValue(gpio_num, &pin);
                     if(pin) glEp0Buffer_Tx[0] = 1;
                     else    glEp0Buffer_Tx[0] = 0;
@@ -889,7 +889,7 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
                 else break;
                 {
                     CyU3PGpioSimpleConfig_t gpioConfig;
-                    CyU3PReturnStatus_t status;
+                    //CyU3PReturnStatus_t status;
                     CyBool_t pin = glEp0Buffer_Rx[4] ? CyTrue : CyFalse;
 
                     gpioConfig.outValue = pin;
@@ -897,8 +897,8 @@ CyFxBulkSrcSinkApplnUSBVendorCB (
                     gpioConfig.driveLowEn = CyTrue;
                     gpioConfig.driveHighEn = CyTrue;
                     gpioConfig.intrMode = CY_U3P_GPIO_NO_INTR;
-                    status = CyU3PDeviceGpioOverride (gpio_num, CyTrue);
-                    status = CyU3PGpioSetSimpleConfig(gpio_num, &gpioConfig);
+                    (void)CyU3PDeviceGpioOverride (gpio_num, CyTrue);
+                    (void)CyU3PGpioSetSimpleConfig(gpio_num, &gpioConfig);
      		        CyU3PGpioSetValue(gpio_num, pin);
                     if(pin) glEp0Buffer_Tx[0] = 1;
                     else    glEp0Buffer_Tx[0] = 0;
@@ -932,9 +932,9 @@ CyFxBulkSrcSinkApplnUSBSetupCB (
 
     uint8_t  bRequest, bReqType;
     uint8_t  bType, bTarget;
-    uint16_t wValue, wIndex, wLength;
+    uint16_t wValue, wIndex;  //, wLength;
     CyBool_t isHandled = CyFalse;
-    CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
+//    CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
 
     /* Decode the fields from the setup request. */
     bReqType = (setupdat0 & CY_U3P_USB_REQUEST_TYPE_MASK);
@@ -943,7 +943,7 @@ CyFxBulkSrcSinkApplnUSBSetupCB (
     bRequest = ((setupdat0 & CY_U3P_USB_REQUEST_MASK) >> CY_U3P_USB_REQUEST_POS);
     wValue   = ((setupdat0 & CY_U3P_USB_VALUE_MASK)   >> CY_U3P_USB_VALUE_POS);
     wIndex   = ((setupdat1 & CY_U3P_USB_INDEX_MASK)   >> CY_U3P_USB_INDEX_POS);
-    wLength  = ((setupdat1 & CY_U3P_USB_LENGTH_MASK)  >> CY_U3P_USB_LENGTH_POS);
+//    wLength  = ((setupdat1 & CY_U3P_USB_LENGTH_MASK)  >> CY_U3P_USB_LENGTH_POS);
 
     if (bType == CY_U3P_USB_STANDARD_RQT)
     {
@@ -1019,20 +1019,7 @@ CyFxBulkSrcSinkApplnUSBSetupCB (
     /* Handle supported vendor requests. */
     if ((bType == CY_U3P_USB_VENDOR_RQT) && (bTarget == CY_U3P_USB_TARGET_DEVICE))
     {
-
         isHandled = CyFxBulkSrcSinkApplnUSBVendorCB( setupdat0, setupdat1 );
-
-// TODO: the example deferred the handling to the application
-// as below.  But the RASDR firmware processed it immediately here.
-// Need to determine the impact of this and which way it should go.
-#if 0
-        /* We set an event here and let the application thread below handle these requests.
-         * isHandled needs to be set to True, so that the driver does not stall EP0. */
-        isHandled = CyTrue;
-        gl_setupdat0 = setupdat0;
-        gl_setupdat1 = setupdat1;
-        CyU3PEventSet (&glBulkLpEvent, CYFX_USB_CTRL_TASK, CYU3P_EVENT_OR);
-#endif
     }
 
     return isHandled;
@@ -1209,7 +1196,7 @@ CyFxBulkSrcSinkApplnInit (void)
     /* Set the USB Enumeration descriptors */
 
     /* Super speed device descriptor. */
-    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_DEVICE_DESCR, NULL, (uint8_t *)CyFxUSB30DeviceDscr);
+    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_DEVICE_DESCR, 0, (uint8_t *)CyFxUSB30DeviceDscr);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB set device descriptor failed, Error code = %d\n", apiRetStatus);
@@ -1217,7 +1204,7 @@ CyFxBulkSrcSinkApplnInit (void)
     }
 
     /* High speed device descriptor. */
-    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_DEVICE_DESCR, NULL, (uint8_t *)CyFxUSB20DeviceDscr);
+    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_DEVICE_DESCR, 0, (uint8_t *)CyFxUSB20DeviceDscr);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB set device descriptor failed, Error code = %d\n", apiRetStatus);
@@ -1225,7 +1212,7 @@ CyFxBulkSrcSinkApplnInit (void)
     }
 
     /* BOS descriptor */
-    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_BOS_DESCR, NULL, (uint8_t *)CyFxUSBBOSDscr);
+    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_BOS_DESCR, 0, (uint8_t *)CyFxUSBBOSDscr);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB set configuration descriptor failed, Error code = %d\n", apiRetStatus);
@@ -1233,7 +1220,7 @@ CyFxBulkSrcSinkApplnInit (void)
     }
 
     /* Device qualifier descriptor */
-    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_DEVQUAL_DESCR, NULL, (uint8_t *)CyFxUSBDeviceQualDscr);
+    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_DEVQUAL_DESCR, 0, (uint8_t *)CyFxUSBDeviceQualDscr);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB set device qualifier descriptor failed, Error code = %d\n", apiRetStatus);
@@ -1241,7 +1228,7 @@ CyFxBulkSrcSinkApplnInit (void)
     }
 
     /* Super speed configuration descriptor */
-    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_CONFIG_DESCR, NULL, (uint8_t *)CyFxUSBSSConfigDscr);
+    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBSSConfigDscr);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB set configuration descriptor failed, Error code = %d\n", apiRetStatus);
@@ -1249,7 +1236,7 @@ CyFxBulkSrcSinkApplnInit (void)
     }
 
     /* High speed configuration descriptor */
-    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_CONFIG_DESCR, NULL, (uint8_t *)CyFxUSBHSConfigDscr);
+    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBHSConfigDscr);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB Set Other Speed Descriptor failed, Error Code = %d\n", apiRetStatus);
@@ -1257,7 +1244,7 @@ CyFxBulkSrcSinkApplnInit (void)
     }
 
     /* Full speed configuration descriptor */
-    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_FS_CONFIG_DESCR, NULL, (uint8_t *)CyFxUSBFSConfigDscr);
+    apiRetStatus = CyU3PUsbSetDesc(CY_U3P_USB_SET_FS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBFSConfigDscr);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB Set Configuration Descriptor failed, Error Code = %d\n", apiRetStatus);
@@ -1332,7 +1319,6 @@ BulkSrcSinkAppThread_Entry (
     CyU3PReturnStatus_t stat;
     uint32_t eventMask = CYFX_USB_CTRL_TASK | CYFX_USB_HOSTWAKE_TASK;   /* Mask representing events that we are interested in. */
     uint32_t eventStat;                                                 /* Variable to hold current status of the events. */
-    uint16_t on_time_cnt = 0, off_time_cnt = 0;
     uint16_t prevUsbLogIndex = 0, tmp1, tmp2;
     CyU3PUsbLinkPowerMode curState;
 
@@ -1346,34 +1332,9 @@ BulkSrcSinkAppThread_Entry (
     /* Initialize the application */
     CyFxBulkSrcSinkApplnInit();
 
-    /* Start the LED toggling */
-    on_time_cnt  = on_time;
-    off_time_cnt = 0;
-    CyU3PGpioSetValue (GPIO_LED1, CyFalse);
-
     for (;;)
     {
     	/* LED toggling function start */
-#if 0
-    	if(on_time_cnt != 0)
-    	{
-    	    on_time_cnt--;
-            if( on_time_cnt == 0 )
-            {
-                CyU3PGpioSetValue (GPIO_LED1, CyTrue);
-                off_time_cnt = off_time;
-            }
-        }
-        if(off_time_cnt != 0)
-        {
-            off_time_cnt--;
-            if( off_time_cnt == 0 )
-            {
-                CyU3PGpioSetValue (GPIO_LED1, CyFalse);
-                on_time_cnt = on_time;
-            }
-        }
-#else
     	if(on_time != 0)
     	{
 			CyU3PGpioSetValue (GPIO_LED1, CyFalse);			/* Turn LED-ON	*/
@@ -1385,7 +1346,6 @@ BulkSrcSinkAppThread_Entry (
 			CyU3PGpioSetValue (GPIO_LED1, CyTrue);			/* Turn LED-OFF */
 			CyU3PThreadSleep(off_time);						/* OFF-time	*/
     	}
-#endif
     	/* LED toggling function end  */
 
         /* The following call will block until at least one of the events enabled in eventMask is received.
@@ -1411,36 +1371,6 @@ BulkSrcSinkAppThread_Entry (
                 if (stat != CY_U3P_SUCCESS)
                     //CyU3PDebugPrint (2, "Remote wake attempt failed with code: %d\r\n", stat);
                     CyFxAppErrorHandler(stat,65);
-            }
-
-            /* If there is a pending control request, handle it here. */
-            if (eventStat & CYFX_USB_CTRL_TASK)
-            {
-                uint8_t  bRequest, bReqType;
-                uint16_t wLength, temp;
-                uint16_t wValue, wIndex;
-
-                /* Decode the fields from the setup request. */
-                bReqType = (gl_setupdat0 & CY_U3P_USB_REQUEST_TYPE_MASK);
-                bRequest = ((gl_setupdat0 & CY_U3P_USB_REQUEST_MASK) >> CY_U3P_USB_REQUEST_POS);
-                wLength  = ((gl_setupdat1 & CY_U3P_USB_LENGTH_MASK)  >> CY_U3P_USB_LENGTH_POS);
-                wValue   = ((gl_setupdat0 & CY_U3P_USB_VALUE_MASK) >> CY_U3P_USB_VALUE_POS);
-                wIndex   = ((gl_setupdat1 & CY_U3P_USB_INDEX_MASK) >> CY_U3P_USB_INDEX_POS);
-
-                if ((bReqType & CY_U3P_USB_TYPE_MASK) == CY_U3P_USB_VENDOR_RQT)
-                {
-                    /* Unexpected vendor request */
-                    CyFxAppErrorHandler(stat,66);
-#if 0
-                    /* TODO: if using deferred-vendor command processing here */
-                    isHandled = CyFxBulkSrcSinkApplnUSBVendorCB( gl_setupdat0, gl_setupdat1 );
-#endif
-                }
-                else
-                {
-                    /* Only vendor requests are to be handled here. */
-                    CyU3PUsbStall (0, CyTrue, CyFalse);
-                }
             }
         }
 
