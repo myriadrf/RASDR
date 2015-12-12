@@ -41,11 +41,11 @@ all:compile
 
 include $(FX3FWROOT)/common/fx3_build_config.mak
 
-MODULE = cyfxbulksrcsink
+MODULE = cyfx_app
 
 
 SOURCE += $(MODULE).c
-SOURCE += cyfxbulkdscr.c
+SOURCE += cyfx_dscr.c
 
 C_OBJECT=$(SOURCE:%.c=./%.o)
 A_OBJECT=$(SOURCE_ASM:%.S=./%.o)
@@ -55,7 +55,7 @@ EXES = $(MODULE).$(EXEEXT)
 $(MODULE).$(EXEEXT): $(A_OBJECT) $(C_OBJECT)
 	$(LINK)
 
-$(C_OBJECT) : %.o : %.c cyfxbulksrcsink.h
+$(C_OBJECT) : %.o : %.c cyfx_app.h
 	$(COMPILE)
 
 $(A_OBJECT) : %.o : %.S
