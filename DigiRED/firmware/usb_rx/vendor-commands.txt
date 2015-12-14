@@ -1,0 +1,225 @@
+Vendor Control Codes for 'usb_rx.img' Sep 26, 2015
+
+To control various aspects of the DigiRED board, the following VENDOR command codes are defined using the following protocol:
+
+1) the payload for all packets are fixed at 64 bytes in length
+2) every request payload contains a 4 byte header followed by a data block starting at byte 4 (64 total bytes)
+3) every response payload contains a 64 byte data block
+4) the first byte of the header is a command code to the DigiRED control program on the FX3, the remaining three bytes are defined according to the command code or ignored as appropriate
+5) A sequence of REQUEST OUT (VENDOR 0xC1) must always be followed by a RESPONSE IN (VENDOR 0xC0)
+6) A RESPONSE IN shall never be sent before a REQUEST OUT
+
+These are the commands that are supported by the firmware:
+
+CMD_FX2 (0x40) - no operation
+
+CMD_CFG_I2C_RD (0x15) - read I2C bus
+//Command format:
+// src[0] : 0x15
+// src[1] : I2C address
+// src[2] : Data blocks in buffer
+// src[3] : reserved
+//Data block:
+// src[4] : register address
+// ...
+
+Performs an I2C transaction with the base address given by src[1].  src[2] describes the number of transactions (n) to perform, while src[4] ... src[4+n-1] are the register to read.  Upon completion, the command will fill the transmit buffer with n values read.  A subsequent VENDOR 0xC0 command will collect the transmit buffer.
+
+See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/Board2_Module.cpp) for specific details on use of this command.
+
+CMD_CFG_I2C_WR (0x14) - write I2C bus
+//Command format:
+// src[0] : 0x14
+// src[1] : I2C address
+// src[2] : Data blocks in buffer
+// src[3] : reserved
+//Data block:
+// src[4] : register address
+// src[5] : data to write
+// ...
+
+Performs an I2C transaction with the base address given by src[1].  src[2] describes the number of transactions (n) to perform, while src[4],src[5] ... src[2+2n],src[3+2n] are the (register,value) pairs to write.  The command does not modify the transmit buffer, but the protocol demands that a dummy VENDOR 0xC0 command must be issued.
+
+See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/Board2_Module.cpp) for specific details on use of this command.
+
+CMD_SET_LNA (0x30) - select input
+//Command format:
+// src[0] : 0x30
+// src[1] : reserved
+// src[2] : 1
+// src[3] : reserved
+//Data block:
+// src[4] : new LNA code
+
+Sets signals on the MyriadRF board to select which LNA input on the LMS6002D is activated and connected to the RX SMA connector.  The value provided in src[4] encodes the bits as follows:
+
+Bit 0 - 0=LNA0 OFF, 1=LNA0 ON
+Bit 1 - 0=LNA1 OFF, 1=LNA1 ON
+
+These bits control the Peregrine Semiconductor PE42440 RF Switch under the following table:
+
+LNA0	LNA1	Code	Function
+OFF	OFF	0x0	Broadband, LNA3, 0.3-3.0GHz, 10dB NF
+ON	OFF	0x1	Band XI, LNA2, 1.5-3.8GHz, 5.5dB NF
+OFF	ON	0x2	50ohm termination
+ON	ON	0x3	Band V, LNA1, 0.3-2.8Ghz, 3.5dB NF
+
+The command does not modify the transmit buffer, but the protocol demands that a dummy VENDOR 0xC0 command must be issued.  See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/ConnectionManager.cpp) for specific details on use of this command.
+
+CMD_SET_PA (0x31) - enable power amplifier (enable TX)
+//Command format:
+// src[0] : 0x31
+// src[1] : reserved
+// src[2] : 1
+// src[3] : reserved
+//Data block:
+// src[4] : new PA code
+
+Sets signals on the MyriadRF board to select which LNA input on the LMS6002D is activated and connected to the RX SMA connector.  The value provided in src[4] encodes the bits as follows:
+
+Bit 0 - 0=PA0 OFF, 1=PA0 ON
+
+These bits control the Peregrine Semiconductor PE42422 RF Switch under the following table:
+
+PA0	Code	Function
+OFF	0x0	Band I, TXOUT1
+ON	0x1	Broadband, TXOUT2
+
+The command does not modify the transmit buffer, but the protocol demands that a dummy VENDOR 0xC0 command must be issued.  See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/ConnectionManager.cpp) for specific details on use of this command.
+
+CMD_LMS_RESET (0x10) - reset transceiver
+//Command format:
+// src[0] : 0x10
+// src[1] : reserved - FPGA Configuration I2C address
+// src[2] : Data blocks in buffer
+// src[3] : reserved
+//Data block:
+// src[4] : new reset pin level: 0 - low, 1 - high
+// ...
+
+Drives the RESET pin on the MyriadRF board to reset the LMS6002D.  Multiple bytes can be used extend the reset pulse length.  The command does not modify the transmit buffer, but the protocol demands that a dummy VENDOR 0xC0 command must be issued.  See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/ConnectionManager.cpp) for specific details on use of this command.
+
+CMD_LMS_RD (0x17) - read transceiver register
+//Command format:
+// src[0] : Op code i.e. read from the LMS6002D Configuration via I2C/SPI
+// src[1] : reserved
+// src[2] : Data blocks in buffer
+// src[3] : reserved
+//Data block:
+// src[4] : SPI Instruction (W/R + module addr + register address )
+// ...
+
+Reads LMS6002D registers. src[2] describes the number of transactions (n) to perform, while src[4] ... src[4+n-1] are the the registers to read.  Upon completion, the command will fill the transmit buffer with n values read.  A subsequent VENDOR 0xC0 command will collect the transmit buffer.
+
+See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/Board2_Module.cpp) for specific details on use of this command.
+
+CMD_LMS_WR (0x16) - write transceiver register
+//Command format:
+// src[0] : Op code i.e. read from the LMS6002D Configuration via I2C/SPI
+// src[1] : reserved
+// src[2] : Data blocks in buffer
+// src[3] : reserved
+//Data block:
+// src[4] : SPI Instruction (W/R + module addr + register address )
+// src[5] : SPI Data
+// ...
+
+Writes LMS6002D registers.  src[2] describes the number of transactions (n) to perform, while src[4],src[5] ... src[2+2n],src[3+2n] are the (register,value) pairs to write.  The command does not modify the transmit buffer, but the protocol demands that a dummy VENDOR 0xC0 command must be issued.
+
+See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/Board2_Module.cpp) for specific details on use of this command.
+
+CMD_GET_INFO (0x50) - query information about the FX3 controller firmware
+//Command format:
+// src[0] : 0x50
+// src[1] : reserved
+// src[2] : reserved
+// src[3] : reserved
+//Data block:
+// src[4] : not used
+// ...
+// src[63]: not used
+
+Obtains information on the firmware.  Upon execution, fills the transmit buffer with 10 bytes of data:
+
+Byte 0 is '0x0' if the device is the Receiver and '0x1' if the device is the Transmitter (not used in RASDR)
+Byte 1 contains the value returned by CyU3PGpifGetSMState(), see the Cypress documentation for details.
+Byte 2-9 contain the ASCII code for the board serial number in 'nnn-nnnn' format.
+
+A subsequent VENDOR 0xC0 command will collect the transmit buffer.
+
+See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/USBPortConnection.cpp) for specific details on use of this command.
+
+CMD_ADF_WR (0xAD) - change frequency synthesizer parameters of ADF4002
+//Command format:
+// src[0] : 0xAD
+// src[1] : reserved
+// src[2] : Data blocks in buffer
+// src[3] : reserved
+//Data block:
+// src[4] : data_h
+// src[5] : data
+// src[6] : data_l
+// ...
+
+Writes ADF4002 registers.  src[2] defines the number of bytes to send to the ADF, which must be formatted according to the protocol defined by the ADF4002 for register changes.  Does not modify the contents of the return buffer, but the 0xC0 (RESPONSE IN) must be made, and the contents are to be ignored.
+
+See [FFTviewer source](https://github.com/myriadrf/RASDR/blob/master/host/RASDRviewer/FFTviewer_src/Logic/src/ConnectionManager.cpp) for specific details on use of this command.
+
+CMD_GPIO_RD (0x19) - change GPIO pins to input and read state
+//Command format:
+// src[0] : 0x19
+// src[1] : GPIO pin number to read
+// src[2] : reserved
+// src[3] : reserved
+//Data block:
+// src[4] : not used
+// ...
+// src[63]: not used
+
+Turns the GPIO pin on the DigiRED expansion header into an input and reads its value.  src[1] represents the GPIO pin to use which are described by the following table:
+
+GPIO pin/Case PIN	DigiRED Connector.Pin
+1			X3.3
+2			X3.5
+3			X3.7
+4			X3.9
+
+NOTE: the GPIO number and the Prototype Case connector pin are the same.
+
+One word is written to the transmit buffer, representing the status of the command, as follows:
+
+0x0  = The pin is LOW
+0x1  = The pin is HIGH
+0xFF = The gpio pin number was invalid, no operation performed
+
+The 0xC0 (RESPONSE IN) VENDOR command must be issued to collect the transmit buffer.
+
+CMD_GPIO_WR (0x20) - change GPIO pins to output and set value
+//Command format:
+// src[0] : 0x20
+// src[1] : GPIO pin number to write
+// src[2] : reserved
+// src[3] : reserved
+//Data block:
+// src[4] : value to set.  0=off, 1=on
+// src[5] : not used
+// ...
+// src[63]: not used
+
+Turns the GPIO pin on the DigiRED expansion header into an output and sets its value.  src[1] represents the GPIO pin to use which are described by the following table:
+
+GPIO pin/Case PIN	DigiRED Connector.Pin
+1			X3.3
+2			X3.5
+3			X3.7
+4			X3.9
+
+NOTE: the GPIO number and the Prototype Case connector pin are the same.
+
+One word is written to the transmit buffer, representing the status of the command, as follows:
+
+0x0  = The pin was set LOW
+0x1  = The pin was set HIGH
+0xFF = The gpio pin number was invalid, no operation performed
+
+The 0xC0 (RESPONSE IN) VENDOR command must be issued to collect the transmit buffer.

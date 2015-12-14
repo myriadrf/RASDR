@@ -1,0 +1,41 @@
+Blink Error Codes for 'usb_rx.img' Sep 26, 2015
+
+Upon an error condition, the firmware will emit an error code sequence on LED D6 of the digiRED board.  The code describes a two-digit code by blinking the most-significant, pause, then the least significant digit.  This is followed by a long pause and the code repeats.  The codes are defined as follows:
+
+01	Invalid USB Speed
+02	Producer EP configuration failed at INITIALIZATION
+03	Consumer EP configuration failed at INITIALIZATION
+04	DMA channel creation failed
+05	Producer EP configuration failed at RESET/DISCONNECT
+06	Consumer EP configuration failed at RESET/DISCONNECT
+07	P-PORT initialization failed
+08	GPIF load failed
+09	GPIF state machine start failed
+10	USB Set Descriptor failure (SS)
+11	USB Set Descriptor failure (HS)
+12	USB Set Descriptor failure (SS BOS)
+13	USB Set Descriptor failure (DEV Qualifier)
+14	USB Set Descriptor failure (SS CONFIG)
+15	USB Set Descriptor failure (HS CONFIG)
+16	USB Set Descriptor failure (FS CONFIG)
+17	USB String Descriptor failure (0)
+18	USB String Descriptor failure (1)
+19	USB String Descriptor failure (2)
+20	USB Start Failure
+21	USB SS Start Failure
+30	DMA channel commit buffer failure (UtoP)
+31	DMA channel commit buffer failure (PtoU)
+40	Application Thread start failure
+50	Invalid Sequence (2nd read before previous I2C Read completed)
+51	Invalid Sequence (2nd read before previous LMS Read completed)
+52	Invalid Sequence (2nd read before previous INFO Read completed)
+53	Invalid Sequence (2nd read before previous FX2 command completed)
+54	Invalid Sequence (2nd read before previous I2C Write completed)
+55	Invalid Sequence (2nd read before previous LNA Write completed)
+56	Invalid Sequence (2nd read before previous PA Write completed)
+57	Invalid Sequence (2nd read before previous LMS Reset completed)
+58	Invalid Sequence (2nd read before previous LMS Write completed)
+59	Invalid Sequence (2nd read before previous ADF Write completed)
+60	Invalid Sequence (command to read the TX buffer w/o previous command to fill it)
+61	USB String Descriptor failure (3)
+99	TEST CODE
