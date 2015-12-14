@@ -63,7 +63,7 @@
    This leads to a constant source mechanism.
 
    The DMA buffer size is defined based on the USB speed. 64 for full speed, 512 for high speed
-   and 1024 for super speed. CY_FX_BULKSRCSINK_DMA_BUF_COUNT in the header file defines the
+   and 1024 for super speed. CY_FX_APP_DMA_BUF_COUNT in the header file defines the
    number of DMA buffers.
    
    For performance optimizations refer the readme.txt
@@ -420,8 +420,8 @@ CyFxBulkSrcSinkApplnStart (
     CyU3PMemSet ((uint8_t *)&dmaCfg, 0, sizeof (dmaCfg));
 
     /* Set the DMA buffer size and count based on constants defined in the header file. */
-    dmaCfg.size  = CY_FX_BULKSRCSINK_DMA_BUF_SIZE;
-    dmaCfg.count = CY_FX_BULKSRCSINK_DMA_BUF_COUNT;
+    dmaCfg.size  = CY_FX_APP_DMA_BUF_SIZE;
+    dmaCfg.count = CY_FX_APP_DMA_BUF_COUNT;
     dmaCfg.prodSckId = CY_FX_EP_PRODUCER_SOCKET;
     dmaCfg.consSckId = CY_U3P_CPU_SOCKET_CONS;
     dmaCfg.dmaMode = CY_U3P_DMA_MODE_BYTE;
@@ -453,14 +453,14 @@ CyFxBulkSrcSinkApplnStart (
     }
 
     /* Set DMA Channel transfer size */
-    apiRetStatus = CyU3PDmaChannelSetXfer (&glChHandleBulkSink, CY_FX_BULKSRCSINK_DMA_TX_SIZE);
+    apiRetStatus = CyU3PDmaChannelSetXfer (&glChHandleBulkSink, CY_FX_APP_DMA_TX_SIZE);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaChannelSetXfer failed, Error code = %d\n", apiRetStatus);
         CyFxAppErrorHandler(apiRetStatus,4);
     }
 
-    apiRetStatus = CyU3PDmaChannelSetXfer (&glChHandleBulkSrc, CY_FX_BULKSRCSINK_DMA_TX_SIZE);
+    apiRetStatus = CyU3PDmaChannelSetXfer (&glChHandleBulkSrc, CY_FX_APP_DMA_TX_SIZE);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaChannelSetXfer failed, Error code = %d\n", apiRetStatus);
@@ -468,7 +468,7 @@ CyFxBulkSrcSinkApplnStart (
     }
 
     /* Now preload all buffers in the MANUAL_OUT pipe with the required data. */
-    for (index = 0; index < CY_FX_BULKSRCSINK_DMA_BUF_COUNT; index++)
+    for (index = 0; index < CY_FX_APP_DMA_BUF_COUNT; index++)
     {
         apiRetStatus = CyU3PDmaChannelGetBuffer (&glChHandleBulkSrc, &buf_p, CYU3P_NO_WAIT);
         if (apiRetStatus != CY_U3P_SUCCESS)
@@ -476,7 +476,7 @@ CyFxBulkSrcSinkApplnStart (
             //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaChannelGetBuffer failed, Error code = %d\n", apiRetStatus);
             CyFxAppErrorHandler(apiRetStatus,4);
         }
-        CyU3PMemSet (buf_p.buffer, CY_FX_BULKSRCSINK_PATTERN, buf_p.size);
+        CyU3PMemSet (buf_p.buffer, CY_FX_APP_PATTERN, buf_p.size);
         apiRetStatus = CyU3PDmaChannelCommitBuffer (&glChHandleBulkSrc, buf_p.size, 0);
         if (apiRetStatus != CY_U3P_SUCCESS)
         {
@@ -996,7 +996,7 @@ CyFxBulkSrcSinkApplnUSBSetupCB (
                     CyU3PDmaChannelReset (&glChHandleBulkSink);
                     CyU3PUsbFlushEp(CY_FX_EP_PRODUCER);
                     CyU3PUsbResetEp (CY_FX_EP_PRODUCER);
-                    CyU3PDmaChannelSetXfer (&glChHandleBulkSink, CY_FX_BULKSRCSINK_DMA_TX_SIZE);
+                    CyU3PDmaChannelSetXfer (&glChHandleBulkSink, CY_FX_APP_DMA_TX_SIZE);
                     CyU3PUsbStall (wIndex, CyFalse, CyTrue);
                     isHandled = CyTrue;
                     CyU3PUsbAckSetup ();
@@ -1007,7 +1007,7 @@ CyFxBulkSrcSinkApplnUSBSetupCB (
                     CyU3PDmaChannelReset (&glChHandleBulkSrc);
                     CyU3PUsbFlushEp(CY_FX_EP_CONSUMER);
                     CyU3PUsbResetEp (CY_FX_EP_CONSUMER);
-                    CyU3PDmaChannelSetXfer (&glChHandleBulkSrc, CY_FX_BULKSRCSINK_DMA_TX_SIZE);
+                    CyU3PDmaChannelSetXfer (&glChHandleBulkSrc, CY_FX_APP_DMA_TX_SIZE);
                     CyU3PUsbStall (wIndex, CyFalse, CyTrue);
                     isHandled = CyTrue;
                     CyU3PUsbAckSetup ();
@@ -1468,7 +1468,7 @@ CyFxApplicationDefine (
     }
 
     /* Allocate the memory for the threads */
-    ptr = CyU3PMemAlloc (CY_FX_BULKSRCSINK_THREAD_STACK);
+    ptr = CyU3PMemAlloc (CY_FX_APP_THREAD_STACK);
 
     /* Create the thread for the application */
     ret = CyU3PThreadCreate (&bulkSrcSinkAppThread,                /* App thread structure */
@@ -1476,9 +1476,9 @@ CyFxApplicationDefine (
                           BulkSrcSinkAppThread_Entry,              /* App thread entry function */
                           0,                                       /* No input parameter to thread */
                           ptr,                                     /* Pointer to the allocated thread stack */
-                          CY_FX_BULKSRCSINK_THREAD_STACK,          /* App thread stack size */
-                          CY_FX_BULKSRCSINK_THREAD_PRIORITY,       /* App thread priority */
-                          CY_FX_BULKSRCSINK_THREAD_PRIORITY,       /* App thread priority */
+                          CY_FX_APP_THREAD_STACK,                  /* App thread stack size */
+                          CY_FX_APP_THREAD_PRIORITY,               /* App thread priority */
+                          CY_FX_APP_THREAD_PRIORITY,               /* App thread priority */
                           CYU3P_NO_TIME_SLICE,                     /* No time slice for the application thread */
                           CYU3P_AUTO_START                         /* Start the thread immediately */
                           );
