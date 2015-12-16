@@ -53,7 +53,7 @@
 
 /* The last 32 KB of RAM is reserved for 2-stage boot operation. This value can be changed to
    0x40040000 if 2-stage boot is not used by the application. */
-#define CY_U3P_SYS_MEM_TOP           (0x40040000)
+#define CY_U3P_SYS_MEM_TOP           (0x40038000)
 
 /*
    The buffer heap is used to obtain data buffers for DMA transfers in or out of

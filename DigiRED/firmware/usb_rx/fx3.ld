@@ -47,7 +47,8 @@
    Code area       Base: 0x40003000 Size: 100KB
    Data area       Base: 0x4001C000 Size: 8KB
    Driver heap     Base: 0x4001F000 Size: 32KB  (Update cyfxtx.c to change this.)
-   Buffer area     Base: 0x40027000 Size: 100KB (Update cyfxtx.c to change this.)
+   Buffer area     Base: 0x40027000 Size: 68KB  (Update cyfxtx.c to change this.)
+   2-stage boot    Base: 0x40038000 Size: 32KB  (Update cyfxtx.c to change this.)
 
    Interrupt handlers to be placed in I-TCM (16KB).
    The first 256 bytes of ITCM are reserved for Exception Vectors.
@@ -80,47 +81,54 @@ SECTIONS
 	.vectors :
 	{
 		*(CYU3P_ITCM_SECTION);
+                tx_thread_irq_nesting*(.text)
+                tx_thread_context*(.text)
+                tx_thread_vectored*(.text)
+		. = ALIGN(4);
 	} >I-TCM
 
 	. = 0x40003000;
 	.text :
 	{
-		*(.text)
+		*(.text*)
 		*(.rodata*)
 		*(.constdata)
 		*(.emb_text)
 		*(CYU3P_EXCEPTION_VECTORS);
-		 _etext = .;
+		_etext = .;
+		. = ALIGN(4);
 	} > SYS_MEM
 
 	. = 0x4001C000;
 	.data :
 	{
 		_data = .;
-		*(.data)
+		*(.data*)
 		* (+RW, +ZI)
 		_edata = .;
+		. = ALIGN(4);
 	} > DATA
 
 	.bss :
 	{
 		_bss_start = .;
-		*(.bss)
+		*(.bss*)
+		. = ALIGN(4);
 	} >DATA 
-	. = ALIGN(4);
 	_bss_end = . ;
 
 	.ARM.extab :
 	{
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
+		. = ALIGN(4);
 	} > DATA
 
 	__exidx_start = .;
 	.ARM.exidx :
 	{
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
+		. = ALIGN(4);
 	} > DATA
 	__exidx_end = .;
-
 }
 

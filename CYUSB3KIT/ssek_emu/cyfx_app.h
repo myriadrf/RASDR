@@ -50,11 +50,11 @@
 
 #define CY_FX_APP_GPIF_16_32BIT_CONF_SELECT (0)
 #define CY_FX_APP_DMA_TX_SIZE        (0)                       /* DMA transfer size is set to infinite */
-#define CY_FX_APP_THREAD_STACK       (0x1000)                  /* Bulk loop application thread stack size */
-#define CY_FX_APP_THREAD_PRIORITY    (8)                       /* Bulk loop application thread priority */
+#define CY_FX_APP_THREAD_STACK       (0x1000)                  /* Application thread stack size */
+#define CY_FX_APP_THREAD_PRIORITY    (8)                       /* Application thread priority */
 #define CY_FX_APP_PATTERN            (0xAA)                    /* 8-bit pattern to be loaded to the source buffers. */
 
-/* Endpoint and socket definitions for the bulk source sink application */
+/* Endpoint and socket definitions for the application */
 
 /* To change the Producer and Consumer EP enter the appropriate EP numbers for the #defines.
  * In the case of IN endpoints enter EP number along with the direction bit.
@@ -85,9 +85,9 @@
 #define CY_FX_DMA_MULTIPLIER			(2)                       /* 1 to 3 */
 
 /* Size of each DMA buffer. This should ideally be set to 2X the EP burst size. */
-#define CY_FX_APP_DMA_BUF_SIZE  (CY_FX_DMA_MULTIPLIER * CY_FX_EP_BURST_LENGTH * 1024)
+#define CY_FX_APP_DMA_BUF_SIZE			(CY_FX_DMA_MULTIPLIER * CY_FX_EP_BURST_LENGTH * 1024)
 /* Number of DMA buffers used for the DMA channel. */
-#define CY_FX_APP_DMA_BUF_COUNT (2)
+#define CY_FX_APP_DMA_BUF_COUNT			(2)
 
 #define XSPEED_BLINK_PERIOD             (1000)				/* in ms units */
 #define FULLSPEED_BLINK_ON_TIME         (100)				/* in ms units */
