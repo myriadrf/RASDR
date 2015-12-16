@@ -113,6 +113,9 @@
 #define GPIO_LED2		xx
 #define GPIO_LED3		xx
 
+#define LED_ON          CyFalse     // depends on HW circuit design
+#define LED_OFF         CyTrue      // depends on HW circuit design
+
 //X3 Connector Pins
 #define GPIO_X33		25  // X3.3
 #define GPIO_X35		26  // X3.5
@@ -213,9 +216,9 @@ CyFxAppErrorHandler(
 
     	// digit1:
     	for(cc=0;cc<digit1;cc++) {
-    		CyU3PGpioSetValue(GPIO_LED1, CyFalse);	// ON
+    		CyU3PGpioSetValue(GPIO_LED1, LED_ON);
     		CyU3PThreadSleep(ERR_DIGIT_ON);
-    		CyU3PGpioSetValue(GPIO_LED1, CyTrue);	// OFF
+    		CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
     	//for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
@@ -225,9 +228,9 @@ CyFxAppErrorHandler(
 
     	// digit0:
     	for(cc=0;cc<digit0;cc++) {
-    		CyU3PGpioSetValue(GPIO_LED1, CyFalse);	// ON
+    		CyU3PGpioSetValue(GPIO_LED1, LED_ON);
     		CyU3PThreadSleep(ERR_DIGIT_ON);
-    		CyU3PGpioSetValue(GPIO_LED1, CyTrue);	// OFF
+    		CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
     	//for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
@@ -572,7 +575,7 @@ CyFxApplnUSBVendorCB (
 	    }
 	    glEp0Buffer_Tx_Expected = 0;
 
-    	//CyU3PGpioSetValue(GPIO_LED3, CyTrue);
+    	//CyU3PGpioSetValue(GPIO_LED1, LED_ON);
     	//config_led = 1;
     	CyU3PUsbSendEP0Data (64, glEp0Buffer_Tx);
 
@@ -580,7 +583,7 @@ CyFxApplnUSBVendorCB (
 
     case 0xC1: //write
 
-    	//CyU3PGpioSetValue(GPIO_LED3, CyTrue);
+    	//CyU3PGpioSetValue(GPIO_LED1, LED_ON);
     	//config_led = 2;
     	CyU3PUsbGetEP0Data (64, glEp0Buffer_Rx, NULL);
 
@@ -1324,19 +1327,18 @@ AppThread_Entry (
 
     for (;;)
     {
-    	/* LED toggling function start */
-    	if(on_time != 0)
-    	{
-			CyU3PGpioSetValue(GPIO_LED1, CyFalse);			/* Turn LED-ON	*/
-			CyU3PThreadSleep(on_time);						/* ON-time	*/
-    	}
-
-    	if (off_time != 0)
-    	{
-			CyU3PGpioSetValue(GPIO_LED1, CyTrue);			/* Turn LED-OFF */
-			CyU3PThreadSleep(off_time);						/* OFF-time	*/
-    	}
-    	/* LED toggling function end  */
+        /* LED toggling function start */
+        if(on_time != 0)
+        {
+            CyU3PGpioSetValue(GPIO_LED1, LED_ON);
+            CyU3PThreadSleep(on_time);
+        }
+        if (off_time != 0)
+        {
+            CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
+            CyU3PThreadSleep(off_time);
+        }
+        /* LED toggling function end  */
 
         /* The following call will block until at least one of the events enabled in eventMask is received.
            The eventStat variable will hold the events that were active at the time of returning from this API.

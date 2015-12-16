@@ -90,9 +90,9 @@
 #define CY_FX_APP_DMA_BUF_COUNT			(2)
 
 #define XSPEED_BLINK_PERIOD             (1000)				/* in ms units */
-#define FULLSPEED_BLINK_ON_TIME         (100)				/* in ms units */
-#define HIGHSPEED_BLINK_ON_TIME         (900)				/* in ms units */
-#define SUPERSPEED_BLINK_ON_TIME        (500)				/* in ms units */
+#define FULLSPEED_BLINK_ON_TIME         (900)				/* in ms units */
+#define HIGHSPEED_BLINK_ON_TIME         (500)				/* in ms units */
+#define SUPERSPEED_BLINK_ON_TIME        (100)				/* in ms units */
 
 /* General Base Sizes for the different endpoints */
 #define CY_FX_FULL_SPEED_EP_SIZE		(64)				/* Sets the end-point size to 64 bytes for full speed */

@@ -119,6 +119,9 @@
 #define GPIO_LED2		47
 #define GPIO_LED3		48
 
+#define LED_ON          CyTrue      // depends on HW circuit design
+#define LED_OFF         CyFalse     // depends on HW circuit design
+
 //X3 Connector Pins
 #define GPIO_X33		25  // X3.3
 #define GPIO_X35		26  // X3.5
@@ -171,7 +174,8 @@ uint8_t glEp0Buffer_Rx[64] __attribute__ ((aligned (32)));
 uint8_t glEp0Buffer_Tx[64] __attribute__ ((aligned (32)));
 int glEp0Buffer_Tx_Expected = 0;
 
-uint8_t config_led=0;
+uint8_t  config_led = 0;
+uint16_t on_time = 0, off_time = 0;
 CyBool_t tx_id;
 
 extern CyU3PReturnStatus_t CyU3PUsbSetTxSwing(uint32_t swing);
@@ -183,7 +187,7 @@ CyFxUvcApplnDmaCallback(
         CyU3PDmaCBInput_t    *input
         )
 {
-	CyU3PGpioSetValue(GPIO_LED3, CyTrue);
+	CyU3PGpioSetValue(GPIO_LED3, LED_ON);
 }
 
 #define ERR_DIGIT_ON	100
@@ -213,9 +217,9 @@ CyFxAppErrorHandler(
 
     	// digit1:
     	for(cc=0;cc<digit1;cc++) {
-    		CyU3PGpioSetValue(GPIO_LED3, CyTrue);	// ON
+    		CyU3PGpioSetValue(GPIO_LED3, LED_ON);
     		CyU3PThreadSleep(ERR_DIGIT_ON);
-    		CyU3PGpioSetValue(GPIO_LED3, CyFalse);	// OFF
+    		CyU3PGpioSetValue(GPIO_LED3, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
     	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
@@ -225,9 +229,9 @@ CyFxAppErrorHandler(
 
     	// digit0:
     	for(cc=0;cc<digit0;cc++) {
-    		CyU3PGpioSetValue(GPIO_LED3, CyTrue);	// ON
+    		CyU3PGpioSetValue(GPIO_LED3, LED_ON);
     		CyU3PThreadSleep(ERR_DIGIT_ON);
-    		CyU3PGpioSetValue(GPIO_LED3, CyFalse);	// OFF
+    		CyU3PGpioSetValue(GPIO_LED3, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
     	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
@@ -372,15 +376,21 @@ CyFxApplnStart(void)
     switch (usbSpeed)
     {
     case CY_U3P_FULL_SPEED:
-        size = CY_FX_FULL_SPEED_EP_SIZE;
+        size = CY_FX_FULL_SPEED_EP_SIZE;							/* If connected to full speed, the endpoint size should be 64 bytes */
+        on_time  = FULLSPEED_BLINK_ON_TIME;
+        off_time = XSPEED_BLINK_PERIOD-FULLSPEED_BLINK_ON_TIME;
         break;
 
     case CY_U3P_HIGH_SPEED:
-        size = CY_FX_HIGH_SPEED_EP_SIZE;
+        size = CY_FX_HIGH_SPEED_EP_SIZE;							/* If connected to high speed, the endpoint size should be 512 bytes */
+        on_time  = HIGHSPEED_BLINK_ON_TIME;
+        off_time = XSPEED_BLINK_PERIOD-HIGHSPEED_BLINK_ON_TIME;
         break;
 
     case  CY_U3P_SUPER_SPEED:
-        size = CY_FX_SUPER_SPEED_EP_SIZE;
+        size = CY_FX_SUPER_SPEED_EP_SIZE;						/* If connected to Super-speed, the endpoint size should be 1024 bytes */
+        on_time  = SUPERSPEED_BLINK_ON_TIME;
+        off_time = XSPEED_BLINK_PERIOD-SUPERSPEED_BLINK_ON_TIME;
         break;
 
     default:
@@ -520,7 +530,7 @@ CyFxApplnUSBVendorCB (
 	    }
 	    glEp0Buffer_Tx_Expected = 0;
 
-    	CyU3PGpioSetValue(GPIO_LED3, CyTrue);
+    	CyU3PGpioSetValue(GPIO_LED3, LED_ON);
     	config_led = 1;
     	CyU3PUsbSendEP0Data (64, glEp0Buffer_Tx);
 
@@ -528,7 +538,7 @@ CyFxApplnUSBVendorCB (
 
     case 0xC1: //write
 
-    	CyU3PGpioSetValue(GPIO_LED3, CyTrue);
+    	CyU3PGpioSetValue(GPIO_LED3, LED_ON);
     	config_led = 2;
     	CyU3PUsbGetEP0Data (64, glEp0Buffer_Rx, NULL);
 
@@ -1161,28 +1171,36 @@ AppThread_Entry (
 
     for (;;)
     {
-        CyU3PThreadSleep(250);
-        CyU3PGpioSetValue(GPIO_LED1, CyFalse);
-    	CyU3PThreadSleep(250);
-    	CyU3PGpioSetValue(GPIO_LED1, CyTrue);
+        /* LED toggling function start */
+        if(on_time != 0)
+        {
+            CyU3PGpioSetValue(GPIO_LED1, LED_ON);
+            CyU3PThreadSleep(on_time);
+        }
+        if (off_time != 0)
+        {
+            CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
+            CyU3PThreadSleep(off_time);
+        }
+        /* LED toggling function end  */
 
     	count_old = prodXferCount;
     	sckIndex = 0;
         CyU3PDmaMultiChannelGetStatus(&glChHandleUVCStream, &state, &prodXferCount, &consXferCount, sckIndex);
         count_new = prodXferCount;
 
-        if (count_new != count_old) CyU3PGpioSetValue(GPIO_LED2, CyTrue);
-        else CyU3PGpioSetValue(GPIO_LED2, CyFalse);
+        if (count_new != count_old) CyU3PGpioSetValue(GPIO_LED2, LED_ON);
+        else CyU3PGpioSetValue(GPIO_LED2, LED_OFF);
 
         // TEST ERROR HANDLER
         //CyFxAppErrorHandler(0,99);
 
         if(config_led==1)
         {
-            CyU3PGpioSetValue(GPIO_LED3, CyTrue);
+            CyU3PGpioSetValue(GPIO_LED3, LED_ON);
             config_led--;
         }
-        else CyU3PGpioSetValue(GPIO_LED3, CyFalse);
+        else CyU3PGpioSetValue(GPIO_LED3, LED_OFF);
 
 #if 0
         if (glIsApplnActive)
