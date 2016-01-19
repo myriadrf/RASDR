@@ -14,7 +14,7 @@
 @rem    http://stackoverflow.com/questions/329059/what-is-gxx-personality-v0-for
 @rem    http://stackoverflow.com/questions/307610/how-do-exceptions-work-behind-the-scenes-in-c
 @rem
-@rem At some point in the future, perhaps we may be able to resolve this for the RASDRviewer source.
+@rem At some point in the future, perhaps we may be able to resolve this for the RASDRproc source.
 
 @rem Select the build target.  Choices are 'Release Win32' and 'Debug Win32'
 set BUILD_TARGET=Release Win32
