@@ -263,7 +263,7 @@
 												<object class="wxSpinCtrl" name="ID_SPINCTRL4" variable="spinAvgCount" member="yes">
 													<value>4</value>
 													<min>1</min>
-													<max>128</max>
+													<max>1000000</max>
 													<size>63,21</size>
 													<handler function="OnspinAvgCountChange" entry="EVT_SPINCTRL" />
 												</object>

@@ -145,7 +145,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Menu5 = new wxMenu();
     MenuItem5 = new wxMenuItem(Menu5, ID_MENUITEM4, _("Setup FFT  Output"), wxEmptyString, wxITEM_NORMAL);
     Menu5->Append(MenuItem5);
-    MenuItem9 = new wxMenuItem(Menu5, ID_MENUITEM7, _("Setup Powerr Output"), wxEmptyString, wxITEM_NORMAL);
+    MenuItem9 = new wxMenuItem(Menu5, ID_MENUITEM7, _("Setup Power Output"), wxEmptyString, wxITEM_NORMAL);
     Menu5->Append(MenuItem9);
     MenuItem10 = new wxMenu();
     SetupDMOutMenu = new wxMenuItem(MenuItem10, ID_MENUITEM10, _("Setup DM Data Output"), wxEmptyString, wxITEM_NORMAL);
@@ -644,10 +644,13 @@ bool FFTviewerFrame::SaveConfiguration()
             wxSnprintf(outbuf,_N,"%.12f // Integration Gain",g_integrationGain);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSnprintf(outbuf,_N,"%.12f // DC Offset for I samples",(g_DcOffsetI == 0.0?g_avgI:g_DcOffsetI));
+            wxSnprintf(outbuf,_N,"%14.10f // DC Offset for I samples",(g_DcOffsetI == 0.0?g_avgI:g_DcOffsetI));
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSnprintf(outbuf,_N,"%.12f // DC Offset for Q samples",(g_DcOffsetQ == 0.0?g_avgQ:g_DcOffsetQ));
+            wxSnprintf(outbuf,_N,"%14.10f // DC Offset for Q samples",(g_DcOffsetQ == 0.0?g_avgQ:g_DcOffsetQ));
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%-14d // Unlimited Averaging (0=no, 1=yes)", g_UnlimitedAveraging);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
 #endif // defined
@@ -680,18 +683,22 @@ void FFTviewerFrame::OnSetupFFTOutSelected(wxCommandEvent& event)
     if(g_FFTfileSetup) {
             if(mSpectrum) {
  //                   cout << "Before Stop Capturing\n" << endl;
-                    if(mSpectrum->m_capturingData) mSpectrum->StopCapturing();
+ //                   if(mSpectrum->m_capturingData) mSpectrum->StopCapturing();
  //                   cout << "After Stop Capturing\n" << endl;
   //                  while(mSpectrum->m_capturingData); //Wait ofr stop
-                    mSpectrum->OpenFFTfile();
-                    cout<<"SetupFFTout Dialog Completed OK"<<endl;
+ //                   mSpectrum->OpenFFTfile();
+                    cout << "SetupFFTout Dialog Completed OK"<<endl;
+                    if(g_NumbFFTFiles == 2) mSpectrum->SuffixFFTFileName(); // sanitize the name
                     cout << g_FFTfileName << " Selected" << endl;
                     cout << "FFT File Type = " << g_FFTFileType << endl;
                     cout << "Number of FFT Files = " << g_NumbFFTFiles << endl;
                     cout << "Time Standard = " << g_FFT_TimeStandard << endl;
                     cout << "Source = " << g_FFTDataSource << endl;
-                    mSpectrum->EnableFFTRecord(true); }
-            g_FFTfileSetup = false; }
+                    g_FFTfileIsDefined = true;
+                    mSpectrum->EnableFFTRecord(true);
+            }
+            g_FFTfileSetup = false;
+    }
 }
 
 void FFTviewerFrame::OnSetupPWROutSelected(wxCommandEvent& event)
@@ -705,17 +712,19 @@ cout << "OnSetupPWROutSelected" << endl;
     if(g_PWRfileSetup) {
             if(mSpectrum) {
  //                   cout << "Before Stop Capturing\n" << endl;
-                    if(mSpectrum->m_capturingData)  mSpectrum->StopCapturing();
+ //                   if(mSpectrum->m_capturingData)  mSpectrum->StopCapturing();
  //                   cout << "After Stop Capturing\n" << endl;
   //                  while(mSpectrum->m_capturingData); //Wait ofr stop
-                    mSpectrum->OpenPWRfile();
+//                    mSpectrum->OpenPWRfile();
 //                    if(iscapturing) mSpectrum->StartCapturing();
  //                   g_PWRfileSetup = true;
                     cout<<"SetupPWRout Dialog Completed OK"<<endl;
+                    if(g_NumbPWRFiles == 2) mSpectrum->SuffixPWRFileName(); // sanitize the name
                     cout << g_PWRfileName << " Selected" << endl;
                     cout << "PWR File Type = " << g_PWRFileType << endl;
                     cout << "Number of PWR Files = " << g_NumbPWRFiles << endl;
                     cout << "Time Standard = " << g_PWRTimeStandard << endl;
+                    g_PWRfileIsDefined = true;
                     mSpectrum->EnablePWRRecord(true);
                     }
                 g_PWRfileSetup = false;

@@ -101,7 +101,7 @@ SetupPWROut::SetupPWROut(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	FlexGridSizer1->Add(StaticBox1, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 // BUG: this prevented the user's entry from persisting in a session
 //	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, _T("PowerOut.csv"), wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
-	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_PWRfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
+	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_PWRfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	wxFont OutputFileFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
 	OutputFile->SetFont(OutputFileFont);
 	FlexGridSizer1->Add(OutputFile, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -186,7 +186,10 @@ void SetupPWROut::OnOKClick(wxCommandEvent& event)
     g_NumbPWRFiles = NumbFiles -> GetSelection() + 1;
     g_PWRFileType = FileType -> GetSelection();
     g_PWRTimeStandard = TimeStd->GetSelection();
-    if(g_capturingData) g_PendingRestartCapture = true;
+// dubious:    if(g_capturingData) g_PendingRestartCapture = true;
+// NOTE: wierd.  the 'g_PWRfileSetup' appears to be used to prevent
+//       the pnlSpectrum::UpdateGraphs() from making an update if set...
+//       the boolean is cleared when we return from the modal dialog.
     g_PWRfileSetup = true;
     int rate = RecordRate->GetSelection();
     if(rate == 0) g_PwrRecordRate = 1;

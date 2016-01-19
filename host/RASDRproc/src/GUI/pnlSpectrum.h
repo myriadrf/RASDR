@@ -80,7 +80,7 @@ class pnlSpectrum: public wxPanel
 
         void StartCapturing();
         void StopCapturing();
-        void OpenFFTfile();
+        bool OpenFFTfile();
         wxFile *FFTfilePtr;
         wxFile *m_FFTFileClassPtr;
 // NB: use of the define would require include of ..\globals.h
@@ -88,7 +88,7 @@ class pnlSpectrum: public wxPanel
         wxFile *m_CSVFileClassPtr;
 //#endif
         bool m_MaxHold;
-        void OpenPWRfile();
+        bool OpenPWRfile();
         wxFile *m_PWRFileClassPtr;
         double m_RxFreq;
         float m_frequencyStep;  //value for incrementing or decrementing frequency
@@ -109,6 +109,8 @@ class pnlSpectrum: public wxPanel
 	    void shutdown();
 	    void EnableFFTRecord(bool enabled);
 	    void EnablePWRRecord(bool enabled);
+        void SuffixFFTFileName();
+        void SuffixPWRFileName();
 //	    void OnFFTfileOKbtnClick(wxCommandEvent& event);
         void OnFFTfileYESbtnClick(wxCommandEvent& event);
         int m_PwrIntTime;
@@ -247,8 +249,8 @@ class pnlSpectrum: public wxPanel
         void initializeInterfaceValues();
 		void allocateMemory(unsigned int samples);
         void freeMemory();
-        void SuffixFFTFileName();
-        void SuffixPWRFileName();
+//        void SuffixFFTFileName();
+//        void SuffixPWRFileName();
         void RecordPwrLine(int index,double value);
         int twotoN(int N);
         void SetPwrRange();

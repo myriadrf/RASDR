@@ -47,8 +47,9 @@ extern float g_DcOffsetI;
 extern float g_DcOffsetQ;
 extern float g_avgI;
 extern float g_avgQ;
+extern int g_UnlimitedAveraging;
 
-#define CSV_DEBUG   "RASDRproc.csv"         // filename to produce .csv output
+#define CSV_DEBUG   "RASDRproc-%s.csv"      // filename template to produce .csv output
 #define PROPER_ISO_TIMESTAMPS       true    // produce properly formatted ISO timestamps
 
 ////include <wx/string.h>
@@ -69,12 +70,12 @@ extern int g_FFTfileAction;
 extern bool g_FFTfileSetup;
 extern bool g_FFTfileRecording;
 extern bool g_OverwriteFFTfile;
-extern bool g_FFTfileIsOpen;
+extern bool g_FFTfileIsDefined;
 extern int g_PWRfileAction;
 extern bool g_PWRfileSetup;
 extern bool g_PWRfileRecording;
 extern bool g_OverwritePWRfile;
-extern bool g_PWRfileIsOpen;
+extern bool g_PWRfileIsDefined;
 extern int g_FFTframeSkip;
 extern int g_FFTframesOut;
 extern int g_FFTFileType;

@@ -341,7 +341,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	chkAverage = new wxCheckBox(Panel9, ID_CHECKBOX1, _("Ave Ovr Frames:"), wxDefaultPosition, wxSize(133,24), 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	chkAverage->SetValue(false);
 	FlexGridSizer12->Add(chkAverage, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	spinAvgCount = new wxSpinCtrl(Panel9, ID_SPINCTRL4, _T("4"), wxDefaultPosition, wxSize(63,21), 0, 1, 128, 4, _T("ID_SPINCTRL4"));
+	spinAvgCount = new wxSpinCtrl(Panel9, ID_SPINCTRL4, _T("4"), wxDefaultPosition, wxSize(63,21), 0, 1, 1000000, 4, _T("ID_SPINCTRL4"));
 	spinAvgCount->SetValue(_T("4"));
 	FlexGridSizer12->Add(spinAvgCount, 1, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer8->Add(FlexGridSizer12, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
@@ -494,6 +494,7 @@ pnlSpectrum::~pnlSpectrum()
     if(m_CSVFileClassPtr != NULL) {
         m_CSVFileClassPtr->Close();
         delete m_CSVFileClassPtr;
+        m_CSVFileClassPtr = NULL;
     }
 #endif
     if(m_FFTFileClassPtr != NULL) {
@@ -972,6 +973,7 @@ void pnlSpectrum::GetConfiguration()
                 if(line == 23) g_integrationGain = atof(inbuf);
                 if(line == 24) g_DcOffsetI = atof(inbuf);
                 if(line == 25) g_DcOffsetQ = atof(inbuf);
+                if(line == 26) g_UnlimitedAveraging = atoi(inbuf);
 #endif
             }
             m_CFG_File->Close();
@@ -1010,6 +1012,10 @@ void pnlSpectrum::GetConfiguration()
             cout << g_FFTDataSource << endl;    // if(line == 21)
 #if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
             cout << g_backgroundDebugCfg << endl;// if(line == 22)
+            cout << g_integrationGain << endl;// if(line == 23)
+            cout << g_DcOffsetI << endl;// if(line == 24)
+            cout << g_DcOffsetQ << endl;// if(line == 25)
+            cout << g_UnlimitedAveraging << endl;// if(line == 26)
 #endif
         }
         delete m_CFG_File;
@@ -1509,8 +1515,8 @@ void pnlSpectrum::StartCapturing()
     LMLL_Testing_StartSdramRead();
     g_capturingData = true;
     PwrSpan->Enable(false);
-    if(g_FFTfileIsOpen) EnableFFTRecord(true);
-    if(g_PWRfileIsOpen) EnablePWRRecord(true);
+    if(g_FFTfileIsDefined) EnableFFTRecord(true);
+    if(g_PWRfileIsDefined) EnablePWRRecord(true);
 
     if(spinAvgCount->GetValue() < m_buffersCount)
         m_buffersCountMask = spinAvgCount->GetValue();
@@ -1559,9 +1565,8 @@ void pnlSpectrum::StopCapturing()
 	spinFFTsamples->Enable(true);
 	spinSamplingFreq->Enable(true);
 	g_capturingData = false;
-    if(g_FFTfileIsOpen) {
-            EnableFFTRecord(false);
-    }
+    EnableFFTRecord(false);
+    EnablePWRRecord(false);
     PwrSpan->Enable(true);
     if(g_PWRfileRecording) g_PWRfileRecording = false;
 }
@@ -1661,12 +1666,12 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
             if(calculated)
             {
                 //not averaging, take only one result
-                LMLL_Testing_GetFFTData(m_IchannelData,
+                LMLL_Testing_GetFFTData(  m_IchannelData,
                                           m_QchannelData,
                                           m_IQdataSize,
                                           m_FFTamplitudes,
                                           m_FFTdataSize,
-                                          fftsLeft);
+                                          fftsLeft );
 
 #if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
                 if( m_PwrRefIsSet && not m_backgroundSubtract) {
@@ -1695,7 +1700,6 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     // computing statistics on background spectrogram
                     for(int i=0; i<m_FFTdataSize; i++) {
                         m_FFTMaxAmplitudes[i] = -370.0;
-                        m_FFTbackgroundDb[i]  = 10 * log10( m_FFTbackgroundAvg[i] );
                         if( m_FFTbackgroundAvg[i] < min ) min = m_FFTbackgroundAvg[i];
                         if( m_FFTbackgroundAvg[i] > max ) max = m_FFTbackgroundAvg[i];
                                                          sum += m_FFTbackgroundAvg[i];
@@ -1731,6 +1735,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                             for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = g_Statistics_g_FFTbackgroundReferenceLevel;
                         }
                     }
+                    for(int i=0; i<m_FFTdataSize; i++) m_FFTbackgroundDb[i] = 10 * log10( m_FFTbackground[i] );
 #ifdef _DEBUG
                     // convert statistics to dB for logging
                     min = (min <= 0.0) ? -370.0 : 10 * log10( min );
@@ -1897,7 +1902,6 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     // computing statistics on background spectrogram
                     for(int i=0; i<m_FFTdataSize; i++) {
                         m_FFTMaxAmplitudes[i] = -370.0;
-                        m_FFTbackgroundDb[i]  = 10 * log10( m_FFTbackgroundAvg[i] );
                         if( m_FFTbackgroundAvg[i] < min ) min = m_FFTbackgroundAvg[i];
                         if( m_FFTbackgroundAvg[i] > max ) max = m_FFTbackgroundAvg[i];
                                                          sum += m_FFTbackgroundAvg[i];
@@ -1933,6 +1937,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                             for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = g_Statistics_g_FFTbackgroundReferenceLevel;
                         }
                     }
+                    for(int i=0; i<m_FFTdataSize; i++) m_FFTbackgroundDb[i] = 10 * log10( m_FFTbackground[i] );
 #ifdef _DEBUG
                     // convert statistics do dB for logging
                     min = (min <= 0.0) ? -370.0 : 10 * log10( min );
@@ -2114,31 +2119,34 @@ void pnlSpectrum::UpdatePwrGraph()
 
         if(once)
         {
+            wxString timecode = ts.Format("%Y-%m-%dT%H%M");
             if(m_CSVFileClassPtr == NULL) m_CSVFileClassPtr = new wxFile();
-            m_CSVFileClassPtr->Create(CSV_DEBUG,TRUE,wxS_DEFAULT);
-
+            wxSprintf(outbuf,CSV_DEBUG,timecode.c_str());  // create unique filenames
+            cout << "Using " << outbuf << " as log file..." << endl;
+            m_CSVFileClassPtr->Create(outbuf,FALSE,wxS_DEFAULT);
             wxSprintf(outbuf,"Timestamp,Rate (KB/s),UpdateCode,Failures,Packets,FFTs,Samples FIFO Level,FFT FIFO Level,Polarity,I/Q Shift,ReferenceLevel,avgI,avgQ,Pwr (mW),Avg Pwr (mW)\r\n");
+            once = false;
+        } else {
+            wxSprintf(outbuf,"%s.%03dZ,%u,%ld,%d,%ld,%ld,%d,%d,%s,%s,%f,%f,%f,%f,%f\r\n",
+                ts.ToUTC().FormatISOCombined().c_str(), ts.GetMillisecond(),
+                g_Statistics_m_bytesPerSecond,
+                updateCount,
+                g_Statistics_ulFailures,
+                g_Statistics_packetReceived,
+                g_Statistics_countFFT,
+                g_Statistics_m_SamplesFIFOLength,
+                g_Statistics_m_fftFIFOLength,
+                (g_Statistics_m_frameStart ? "QI" : "IQ"),
+                (g_Statistics_needToAlignData ? "true" : "false"),
+                g_Statistics_g_FFTbackgroundReferenceLevel,
+                g_avgI, g_avgQ,
+                g_framepwr,
+                m_PwrAve );
+        }
+        if( m_CSVFileClassPtr && m_CSVFileClassPtr->IsOpened()) {
             m_CSVFileClassPtr->Write(outbuf);
             cout << outbuf;
-            once = false;
         }
-        wxSprintf(outbuf,"%s.%03dZ,%u,%ld,%d,%ld,%ld,%d,%d,%s,%s,%f,%f,%f,%f,%f\r\n",
-            ts.ToUTC().FormatISOCombined().c_str(), ts.GetMillisecond(),
-            g_Statistics_m_bytesPerSecond,
-            updateCount,
-            g_Statistics_ulFailures,
-            g_Statistics_packetReceived,
-            g_Statistics_countFFT,
-            g_Statistics_m_SamplesFIFOLength,
-            g_Statistics_m_fftFIFOLength,
-            (g_Statistics_m_frameStart ? "QI" : "IQ"),
-            (g_Statistics_needToAlignData ? "true" : "false"),
-            g_Statistics_g_FFTbackgroundReferenceLevel,
-            g_avgI, g_avgQ,
-            g_framepwr,
-            m_PwrAve );
-        m_CSVFileClassPtr->Write(outbuf);
-        cout << outbuf;
     }
 #elif defined(_DEBUG)
         cout << "Pwr = " << g_framepwr;
@@ -2227,8 +2235,7 @@ void pnlSpectrum::RecordPwrLine(int index, double value)
     char outbuf[80];
 	wxDateTime dt;
 
-    if(!m_PWRFileClassPtr) return; // File not Opened
-
+    if(!m_PWRFileClassPtr || !m_PWRFileClassPtr->IsOpened()) return; // File not Opened
 
         int ms = dt.UNow().GetMillisecond();
         wxSprintf(outbuf,":%d",ms); // FIXME: should be a '.' instead of ':'
@@ -2269,12 +2276,16 @@ bool pnlSpectrum::IsCapturingData()
 
 void pnlSpectrum::OnspinAvgCountChange(wxSpinEvent& event)
 {
-    if(spinAvgCount->GetValue() < m_buffersCount)
-        m_buffersCountMask = spinAvgCount->GetValue();
-    else
+    if( g_UnlimitedAveraging )
     {
-        spinAvgCount->SetValue(m_buffersCount);
-        m_buffersCountMask = m_buffersCount;
+        m_buffersCountMask = 1;
+    } else {
+        m_buffersCountMask = spinAvgCount->GetValue();
+        if(m_buffersCountMask > m_buffersCount)
+        {
+            m_buffersCountMask = m_buffersCount;
+            spinAvgCount->SetValue(m_buffersCount);
+        }
     }
 }
 
@@ -2352,15 +2363,17 @@ void pnlSpectrum::OnButton2Click(wxCommandEvent& event)
 
 void pnlSpectrum::OnRecordFFTClick(wxCommandEvent& event)
 {
-    char outbuf[80];
+    FFTRec_btn->Enable(false); // Avoid Key Bounce
     if(!g_FFTfileRecording) {
-        g_FFTfileRecording = true;
+      bool success = OpenFFTfile();
+      if( success ) {
+        char outbuf[80];
         FFTRec_btn->SetLabel("Stop FFT Rec");
         cout << "FFT File recording" << endl;
         m_FFTsRecorded = 0; //Reset
         sprintf(outbuf,"%d",m_FFTsRecorded);
         FFTsREC->SetValue(outbuf);
-        sprintf(outbuf,"***BEGIN DATA COLLECTION***\r\nKHz\r\n\0"); //bOGFSN'D SEPARATOR
+        sprintf(outbuf,"***BEGIN DATA COLLECTION***\r\nKHz\r\n\0");
         m_FFTFileClassPtr->Write(outbuf);
                 // Write Frequencies to File
         for(int f = 0; f < m_FFTsamplesCount-1; f++){
@@ -2377,25 +2390,29 @@ void pnlSpectrum::OnRecordFFTClick(wxCommandEvent& event)
             }
         sprintf(outbuf,"\r\n\0");
         m_FFTFileClassPtr->Write(outbuf);
-    }
-    else {
-
+        g_FFTfileRecording = true;  // only *AFTER* the header has been written...
+      }
+    } else {
         g_FFTfileRecording = false;
         FFTRec_btn->SetLabel("FFT Record");
-    if(g_NumbFFTFiles == 2) { // Multiple Files
+        if(g_NumbFFTFiles == 2) { // Multiple Files
             wxCommandEvent dummy;
             m_FFTFileClassPtr->Flush();
             m_FFTFileClassPtr->Close();
-            g_FFTfileIsOpen = false;
-            SuffixFFTFileName();
-            cout << g_FFTfileName << endl;
-            if(g_capturingData) {
-                    g_PendingRestartCapture = true;
-                    OnbtnStopCaptureClick(dummy);
-            }
-            OpenFFTfile();
+            SuffixFFTFileName();    // rotates the filename for next time
+            //if(g_capturingData) {
+            //        g_PendingRestartCapture = true;
+            //        OnbtnStopCaptureClick(dummy);
+            //}
+            //OpenFFTfile();
+            // file remains closed
+        } else {
+            m_FFTFileClassPtr->Flush();
+            m_FFTFileClassPtr->Close();
+            // file remains closed
         }
     }
+    FFTRec_btn->Enable(true); // Restore operation from Key Bounce
 }
 
 
@@ -2424,6 +2441,64 @@ void pnlSpectrum::OnStopFFTRecClick(wxCommandEvent& event)
     if(g_FFTfileIsOpen && g_capturingData )FFTRec_btn->Enable(true);
         */
 }
+
+// TODO: make the default .csv extension a para
+static wxString _append_hash_before_ext( wxString s, wxString e = wxT(".csv") )
+{
+    int p1 = s.Find('#',true);
+    int p2 = s.Find('.',true);
+    wxString t;
+    long v;
+
+    if( p1 == wxNOT_FOUND )     // no # character
+    {
+        if( p2 == wxNOT_FOUND ) return s+"#1"+e;// s="Example", return="Example#1.csv"
+        if( p2 == 0) return "#1"+s;             // s=".csv", return="#1.csv"
+        return s.Mid(0,p2)+"#1"+s.Mid(p2);      // s="Example.csv", return="Example#1.csv"
+    }
+    if( p2 == wxNOT_FOUND )     // no extension
+    {
+        if( s.Mid(p1+1).ToLong(&v) )
+        {
+            t.Printf(wxT("%ld"), v+1);
+            if( p1 == 0 ) return "#"+t+e;       // s="#1", return="#2.csv"
+            return s.Mid(0,p1+1)+t+e;           // s="Example#1", return="Example#2.csv"
+        }
+        if( p1 == 0 ) return "#1"+e;            // s="#", return="#1.csv"
+        return s.Mid(0,p1)+"#1"+e;              // s="Example#garbage", return="Example#1.csv"
+    }
+    if( p2 == 0 ) return "#1"+s;                // s=".csv", return="#1.csv"
+    if( p2 == p1+1 )
+    {
+        if( p1 == 0 ) return "#1"+e;            // s="#.csv", return="#1.csv"
+        return s.Mid(0,p1)+"1"+s.Mid(p2);       // s="Example#.csv", return="Example#1.csv"
+    }
+    if( s.Mid(p1+1,p2-p1-1).ToLong(&v) )
+    {
+        t.Printf(wxT("%ld"), v+1);
+        return s.Mid(0,p1+1)+t+s.Mid(p2);       // s="Example#1.csv", return="Example#2.csv"
+    }
+    return s.Mid(0,p1)+"#1"+s.Mid(p2);          // s="Example#garbage.csv", return="Example#1.csv"
+}
+
+// add #N in front of .xxx
+
+void pnlSpectrum:: SuffixFFTFileName() {
+    wxString s = _append_hash_before_ext( wxString(g_FFTfileName) );
+    cout << "SuffixFFTFileName()=" << s << endl;
+    wxSnprintf(g_FFTfileName,sizeof(g_FFTfileName)-1,"%s",s);
+    g_FFTfileName[sizeof(g_FFTfileName)-1] = 0;
+}
+void pnlSpectrum:: SuffixPWRFileName() {
+    wxString s = _append_hash_before_ext( wxString(g_PWRfileName) );
+    cout << "SuffixPWRFileName()=" << s << endl;
+    wxSnprintf(g_PWRfileName,sizeof(g_PWRfileName)-1,"%s",s);
+    g_PWRfileName[sizeof(g_PWRfileName)-1] = 0;
+}
+
+/* NOTE: these didnt work right if you had . and other things in the string
+   and this led to invalid filenames that wouldnt open and silently fail...  :(
+
 void pnlSpectrum:: SuffixFFTFileName() {
 
     char fileName[1024];
@@ -2434,6 +2509,7 @@ void pnlSpectrum:: SuffixFFTFileName() {
     bool foundnum = false;
     int j = 0;
     int l = 0;
+
     wxStrncpy(fileName,g_FFTfileName,1023);
     for(int i = 0; i < 1024 ; i++) {
         if(fileName[i] == '#' && !foundnum) {
@@ -2546,6 +2622,7 @@ void pnlSpectrum:: SuffixPWRFileName() {
     cout << "New File = " << g_PWRfileName << endl;
 
 }
+*/
 
 void pnlSpectrum::EnableFFTRecord(bool Enabled)
 {
@@ -2564,14 +2641,14 @@ void pnlSpectrum::OnFFTfileYESbtnClick(wxCommandEvent& event)
     cout<<"FFTfileOKbtnClick"<<endl;
 }
 */
-void pnlSpectrum::OpenFFTfile()
+bool pnlSpectrum::OpenFFTfile()
 {
     char outbuf[80];
     wxDateTime dt;
     wxCommandEvent dummy;
-    if(!g_FFTfileIsOpen) {
-        if(g_capturingData) OnbtnStopCaptureClick(dummy);
-        if(!g_FFTfileIsOpen) {
+    if(g_FFTfileIsDefined) {
+        //if(g_capturingData) OnbtnStopCaptureClick(dummy);
+        //if(!g_FFTfileIsOpen) {
             cout << "Before new file" << endl;
             if(m_FFTFileClassPtr == NULL) m_FFTFileClassPtr = new wxFile();
             m_FFTFileClassPtr->Create(g_FFTfileName,g_OverwriteFFTfile,wxS_DEFAULT);
@@ -2580,7 +2657,6 @@ void pnlSpectrum::OpenFFTfile()
                 cout << "File Opened Success" << endl;
                 sprintf(outbuf,"To Record %d Frames Every %th Frame\0",g_FFTframesOut, g_FFTframeSkip);
                 cout << outbuf << endl;
-                g_FFTfileIsOpen = true;
                 if(g_FFTFileType == 0 && m_FFTsamplesCount > 128){ //Set Max Samps/FRame for Excel
                     int fftsamples = 128;
                     txtFFTsamples->SetValue( wxString::Format("%i", fftsamples));
@@ -2593,11 +2669,11 @@ void pnlSpectrum::OpenFFTfile()
                         allocateMemory(m_FFTsamplesCount);
                     }
                 }
-                if(g_PendingRestartCapture) { //Toggle to Place in effect
-                        btnStartCapture->Enable(true);
-                        OnbtnStartCaptureClick(dummy);
-                        g_PendingRestartCapture = false;
-                        }
+                //if(g_PendingRestartCapture) { //Toggle to Place in effect
+                //        btnStartCapture->Enable(true);
+                //        OnbtnStartCaptureClick(dummy);
+                //        g_PendingRestartCapture = false;
+                //        }
                 m_FFTFileClassPtr->Write(g_FFTfileName ,wxStrlen((g_FFTfileName)));
                 m_FFTFileClassPtr->Write(",,,Created,");
                 if(g_FFT_TimeStandard == 0) m_FFTFileClassPtr->Write(dt.Now().FormatDate().c_str()); //Local Time
@@ -2608,40 +2684,33 @@ void pnlSpectrum::OpenFFTfile()
                 else wxSprintf(outbuf,"Time Zn,UT");
                 m_FFTFileClassPtr->Write(outbuf);
                 m_FFTFileClassPtr->Write(",\r\n");
-                }
-            else {
+                return true;
+            } else {
                 cout << "FFT file open Failed" << endl;
-                g_FFTfileIsOpen = false;
-                if(m_FFTFileClassPtr != NULL) {
-                   m_FFTFileClassPtr->Close();
-                   m_FFTFileClassPtr = NULL; }
-
             }
-        }
     }
-    else cout << "File is already Open" << endl;
+    else cout << "FFT filename is not defined" << endl;
+    return false;
 }
 
-void pnlSpectrum::OpenPWRfile()
+bool pnlSpectrum::OpenPWRfile()
 {
     char outbuf[80];
     wxDateTime dt;
     wxCommandEvent dummy;
-    if(!g_PWRfileIsOpen) {
-        if(g_capturingData) OnbtnStopCaptureClick(dummy);
-        if(!g_PWRfileIsOpen) {
+    if(g_PWRfileIsDefined) {
+        //if(g_capturingData) OnbtnStopCaptureClick(dummy);
+        //if(!g_PWRfileIsOpen) {
             cout << "Before new file" << endl;
-            if(m_PWRFileClassPtr == NULL) m_PWRFileClassPtr = new wxFile();
+            if(m_PWRFileClassPtr == NULL) m_PWRFileClassPtr = new wxFile(); // NB: only done once...
             m_PWRFileClassPtr->Create(g_PWRfileName,g_OverwritePWRfile,wxS_DEFAULT);
             cout << "After Create File" << endl;
             if(m_PWRFileClassPtr->IsOpened()) {
-                g_PWRfileIsOpen = true;
-                }
-                if(g_PendingRestartCapture) { //Toggle to Place in effect
-                        btnStartCapture->Enable(true);
-                        OnbtnStartCaptureClick(dummy);
-                        g_PendingRestartCapture = false;
-                        }
+                //if(g_PendingRestartCapture) { //Toggle to Place in effect
+                //        btnStartCapture->Enable(true);
+                //        OnbtnStartCaptureClick(dummy);
+                //        g_PendingRestartCapture = false;
+                //        }
                 m_PWRFileClassPtr->Write(g_FFTfileName ,wxStrlen((g_FFTfileName)));
                 m_PWRFileClassPtr->Write(",,,Created,");
                 if(g_PWRTimeStandard == 0) m_PWRFileClassPtr->Write(dt.Now().FormatDate().c_str()); //Local Time
@@ -2654,18 +2723,14 @@ void pnlSpectrum::OpenPWRfile()
                 m_PWRFileClassPtr->Write(",\r\n");
                 // Insert Column header line.
                 m_PWRFileClassPtr->Write("TIME,ADC PWR,(MicroWatts),\r\n");
-                }
-            else {
+                return true;
+            } else {
                 cout << "PWR file open Failed" << endl;
-                g_PWRfileIsOpen = false;
-                if(m_PWRFileClassPtr != NULL) {
-                   m_PWRFileClassPtr->Close();
-                   m_PWRFileClassPtr = NULL; }
-
             }
         }
  //   }
-    else cout << "File is already Open" << endl;
+    else cout << "PWR filename is not defined" << endl;
+    return false;
 }
 void pnlSpectrum::OnchkUpdateGraphsClick(wxCommandEvent& event)
 {
@@ -2707,12 +2772,19 @@ void pnlSpectrum::OnPwrSpanChange(wxSpinEvent& event)
 
 }
 
+// NOTE: the "quirky" handling of g_PendingRestartCapture
+//       and the need to keep the file open after recording
+//       has been setup appears to have to do with the desire
+//       to not 'glitch' the recording when pressing 'start' recording
+//       I think it is misguided.  It would be a heck of a lot simpler
+//       to just open the file when you press start and close it when
+//       you stop or the recording ends.
 void pnlSpectrum::OnPwrRecordClick(wxCommandEvent& event)
 {
     RecordPWR->Enable(false); // Avoid Key Bounce
     if(!g_PWRfileRecording) {
-        g_PWRfileRecording = true;
-        RecordPWR->SetLabel("StopPwrRec");
+        g_PWRfileRecording = OpenPWRfile();
+        if(g_PWRfileRecording) RecordPWR->SetLabel("StopPwrRec");
     }
     else {
         g_PWRfileRecording = false;
@@ -2721,13 +2793,17 @@ void pnlSpectrum::OnPwrRecordClick(wxCommandEvent& event)
             wxCommandEvent dummy;
             m_PWRFileClassPtr->Flush();
             m_PWRFileClassPtr->Close();
-            g_PWRfileIsOpen = false;
-            SuffixPWRFileName();
-            if(g_capturingData) {
-                g_PendingRestartCapture = true;
-                OnbtnStopCaptureClick(dummy);
-            }
-            OpenPWRfile();
+            SuffixPWRFileName();    // rotates the filename for next time
+            //if(g_capturingData) {
+            //    g_PendingRestartCapture = true; // needed by OpenPWRfile() to restart
+            //    // OpenPWRfile() does this: OnbtnStopCaptureClick(dummy);
+            //}
+            //OpenPWRfile();
+            // file remains closed
+        } else {
+            m_PWRFileClassPtr->Flush();
+            m_PWRFileClassPtr->Close();
+            // file remains closed
         }
     }
     RecordPWR->Enable(true); // Restore operation from Key Bounce

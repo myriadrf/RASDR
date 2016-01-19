@@ -82,7 +82,7 @@
 					<handler function="OnSetupFFTOutSelected" entry="EVT_MENU" />
 				</object>
 				<object class="wxMenuItem" name="ID_MENUITEM7" variable="MenuItem9" member="yes">
-					<label>Setup Powerr Output</label>
+					<label>Setup Power Output</label>
 					<handler function="OnSetupPWROutSelected" entry="EVT_MENU" />
 				</object>
 				<object class="wxMenu" name="ID_MENUITEM8" variable="MenuItem10" member="yes">

@@ -54,12 +54,12 @@ int g_FFTfileAction = 0;
 bool g_FFTfileSetup = false;
 bool g_FFTfileRecording = false;
 bool g_OverwriteFFTfile = false;
-bool g_FFTfileIsOpen = false;
+bool g_FFTfileIsDefined = false;
 int g_PWRfileAction = 0;
 bool g_PWRfileSetup = false;
 bool g_PWRfileRecording = false;
 bool g_OverwritePWRfile = false;
-bool g_PWRfileIsOpen = false;
+bool g_PWRfileIsDefined = false;
 int g_FFTframeSkip = 5;
 int g_FFTframesOut = 64;
 int g_FFTFileType = 1; // 0 = .csv for excel 1 = General
@@ -95,6 +95,7 @@ float g_DcOffsetI = 0.0;
 float g_DcOffsetQ = 0.0;
 float g_avgI = 0.0;
 float g_avgQ = 0.0;
+int g_UnlimitedAveraging = 0;
 
 // statistics gathering/reporting
 volatile long g_Statistics_updateCount = 0;
