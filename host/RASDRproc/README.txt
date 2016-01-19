@@ -9,9 +9,11 @@ Revision History: May 8, 2015 Bogdan Vacaliuc
                   May 9, 2015 Bogdan Vacaliuc
                      Added instructions using 'make.bat'
                      Tested with RASDRviewer 1.2.2 Source
+                  Jan 18, 2016 Bogdan Vacaliuc
+                     Adjusted to apply to RASDRproc source
 
 
-Compile instructions RASDRviewer on Windows
+Compile instructions RASDRproc on Windows
 ===========================================
 
 PREPARATIONS BEFORE COMPILING
@@ -55,15 +57,15 @@ wxWidgets-2.9.5.zip
         c:\libraries\wxWidgets-2.9.5\samples\minimal\gcc_mswu\minimal.exe
     GUI should appear.
 
-8) RASDRViewer
+8) RASDRproc
 
 OPTION #1 - compile within the IDE Environment
 ----------------------------------------------
 
-    a. Unzip files from RASDRviewer_Source_X_Y_Z_W.zip in any folder
-    b. Using the command prompt you started above (administrator/mingwvars.bat), or equivalent, cd to the folder that contains the RASDRviewer.cbp file
+    a. Obtain source from github, [https://github.com/myriadrf/RASDR/tree/master/host/RASDRproc RASDRproc]
+    b. Using the command prompt you started above (administrator/mingwvars.bat), or equivalent, cd to the folder that contains the RASDRproc.cbp file
     c. Start c:\codeblocks\codeblocks.exe from this folder
-    d. Choose 'open existing project' and open the RASDRViewer.cbp project file within code::blocks
+    d. Choose 'open existing project' and open the RASDRproc.cbp project file within code::blocks
     e. Set the Build target: Release Win32  -or- Debug Win32
     f. choose Build->Rebuild
 
@@ -75,10 +77,13 @@ OPTION #2 - automatic build
 
 Use the 'make.bat' script to build either the Release or Debug build (Release is default as distributed).
 See 'make.bat' for instructions on switching between one and the other.
-The Debug build causes RASDRviewer to open a companion console with additional diagnostic information output during program execution.
+The Debug build causes RASDRproc to open a companion console with additional diagnostic information output during program execution.  All builds produce a RASDRproc.csv file during execution that summarizes the program behavior.
 
 *** IMPORTANT ***
 For some users, compiling in their user account may not succeed.  If this is your case, then please right-click the batch file and choose 'Run as administrator' to compile.  This is similar to step #4 above.  See 'make.bat' for additional details and also the Appendix section below.
+
+*** NOTICE ***
+If you run the 'make.bat' in the same command console too many times, it will fail during the 'mingwvars.bat' step.  Sorry about that.  Please just start a new console when this happens.
 
 The executable program will be created in .\ReleaseWin32\ or .\DebugWin32\ respectively.
 You can double-click the program to start it.
@@ -86,15 +91,13 @@ You can double-click the program to start it.
 NOTES on EXECUTION
 ------------------
 
-The first time you run RASDRviewer from one of the above builds, it my complain that it cannot open 'RASDR.cfg'.  That is OK, it will generate this file with internal defaults.  The binary release of RASDRviewer comes with an initial 'RASDR.cfg' that satisfies the program and is used subsequently for changes in parameters made by the user.
-
-NOTE: as of RASDRviewer 1.2.2.1, the RASDR.cfg is not created until two things occur:  1) some parameter is changed from Default.  2) the RASDRviewer program exits.
+The first time you run RASDRproc from one of the above builds, it my complain that it cannot open 'RASDR.cfg'.  That is OK, it will generate this file with internal defaults.
 
 
 APPENDIX
 ========
 
-Before RASDRviewer_W.exe can execute, certain .dll files must exist in the folder that RASDRviewer_W.exe was created.   The 'RASDRviewer.cbp' file has defined Post-Build steps to perform these copies from the .\Logic\dependencies folder so that you may execute the programs from within the Code::Blocks IDE or from the file explorer or shortcut.  The steps are (continuing from the list in step #8 above):
+Before RASDRproc.exe can execute, certain .dll files must exist in the folder that RASDRproc.exe was created.   The 'RASDRproc.cbp' file has defined Post-Build steps to perform these copies from the .\Logic\dependencies folder so that you may execute the programs from within the Code::Blocks IDE or from the file explorer or shortcut.  The steps are (continuing from the list in step #8 above):
 
     g. copy .\Logic\dependencies\fftw-3.3.3\libfftw3f-3.dll to .\ReleaseWin32
     h. copy .\Logic\dependencies\pthreads-w32-2-9-1-release\Pre-built.2\dll\x86\pthreadGCE2.dll to .\ReleaseWin32
@@ -127,7 +130,7 @@ http://forums.codeblocks.org/index.php?topic=2651.0;prev_next=prev
 
 More thoughts:
 
-in .\Logic\dependencies\CyAPI\, there is a file 'libCyAPI_fx3_GCC.a' which is a dependency of RASDRviewer source build.  It is *likely* that this library introduces a ABI-incompatibility.  A little research on the '__gxx_personality_v0' error turned up the following links:
+in .\Logic\dependencies\CyAPI\, there is a file 'libCyAPI_fx3_GCC.a' which is a dependency of RASDRproc source build.  It is *likely* that this library introduces a ABI-incompatibility.  A little research on the '__gxx_personality_v0' error turned up the following links:
 
 http://stackoverflow.com/questions/18668003/the-procedure-entry-point-gxx-personality-v0-could-not-be-located-in-the-dnyam
 http://stackoverflow.com/questions/17410718/the-procedure-entry-point-gxx-personality-v0-could-not-be-located-in-the-dynami
@@ -141,7 +144,7 @@ Discussions on the exception model here are informative:
 http://www.rioki.org/2013/10/16/mingw-w64.html
 http://stackoverflow.com/questions/15670169/what-is-difference-between-sjlj-vs-dwarf-vs-seh
 
-From what I've gathered, the exception handling is *built-in* to the compiler when it is, well, compiled.  Choosing the compiler and configuring it is something that Rioki posted very well.  It may be prudent for the RASDRviewer project to consider using a mingw-w64 compiler (which can handle windows 32-bit and 64-bit compiles, despite the suggestive project name), and *not* the compiler that is packaged with Code::Blocks.  Care must be taken with the static library 'libCyAPI_fx3_GCC.a'.  The fact is, that the '.\Logic\dependencies\CyAPI\CyAPI.cpp' is the source code for the 'libCyAPI_fx3_GCC.a' library, so there really is not need to have a static library for this, when it could be added as a library like the Logic or GUI libraries are.
+From what I've gathered, the exception handling is *built-in* to the compiler when it is, well, compiled.  Choosing the compiler and configuring it is something that Rioki posted very well.  It may be prudent for the RASDRproc project to consider using a mingw-w64 compiler (which can handle windows 32-bit and 64-bit compiles, despite the suggestive project name), and *not* the compiler that is packaged with Code::Blocks.  Care must be taken with the static library 'libCyAPI_fx3_GCC.a'.  The fact is, that the '.\Logic\dependencies\CyAPI\CyAPI.cpp' is the source code for the 'libCyAPI_fx3_GCC.a' library, so there really is not need to have a static library for this, when it could be added as a library like the Logic or GUI libraries are.
  
 In anycase, for now, I've added Post-build steps to perform the copy of the existing dependences and added two dependencies from the compiler to a .\Logic\dependencies\MinGW\ folder, so that the post-build steps will do the right thing as part of the compile process.   This is documented in:
 http://www.codeblocks.org/docs/main_codeblocks_en3.html#x3-80001.6
