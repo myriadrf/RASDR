@@ -22,8 +22,8 @@ set BUILD_TARGET=Release Win32
 @rem Set Various variables to make it easy(-er) to accomodate different developers' environments
 @rem NOTE: codeblocks must be installed in c:\codeblocks at the moment because the project file requires this location
 set CODEBLOCKS_ROOT=c:\CodeBlocks
-set FOLDER=FFTviewer_src
-set PROJECT=RASDRviewer.cbp
+set FOLDER=src
+set PROJECT=RASDRproc.cbp
 set _DP0=%~dp0
 
 @rem Must clear the path of any non-default entries to prevent 'poisoning' of the environment

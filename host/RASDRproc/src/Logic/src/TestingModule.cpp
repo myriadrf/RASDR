@@ -589,6 +589,19 @@ void TestingModule::ReadData_DigiRed()
 			m_bytesPerSecond = (m_BytesXferred/1024) / (deltaT/1000.0); // / 1000;
 			m_BytesXferred = 0;
 
+#if defined(CSV_DEBUG)
+            // NB: reporting/file management is performed in GUI\pnlSpectrum.cpp ::UpdatePwrGraph()
+            InterlockedIncrement(&g_Statistics_updateCount);    // odd values indicate statistics update in progress
+            g_Statistics_m_bytesPerSecond = m_bytesPerSecond;
+            g_Statistics_ulFailures = m_ulFailures;
+            g_Statistics_packetReceived = packetReceived;
+            g_Statistics_countFFT = countFFT;
+            g_Statistics_m_SamplesFIFOLength = m_SamplesFIFO->length();
+            g_Statistics_m_fftFIFOLength = m_fftFIFO->length();
+            g_Statistics_m_frameStart = m_frameStart;
+            g_Statistics_needToAlignData = needToAlignData;
+            InterlockedIncrement(&g_Statistics_updateCount);    // non-zero even values indicate no torn data...
+#elif defined(_DEBUG)
 			cout << "Rate: " << m_bytesPerSecond << "  KB/s  " << endl;
 			cout << "Failures: " << m_ulFailures << endl;
 
@@ -602,6 +615,7 @@ void TestingModule::ReadData_DigiRed()
 
 			cout << "frame start : " << !m_frameStart << endl;
 			cout << "need to shift : " << (needToAlignData ? "true" : "false") << endl;
+#endif // defined
 			iq_select_errors = 0;
 			iq_select_errors_secondary = 0;
 
@@ -714,7 +728,7 @@ bool TestingModule::externalCalculateFFT()
 
 			avgI = sumI * oneOverN;
 			avgQ = sumQ * oneOverN;
-			g_framepwr = (double)SumVsq * scalefactor * oneOverN ;
+			g_framepwr = SumVsq * scalefactor * oneOverN ;
 			sumI = 0;
 			sumQ = 0;
 			SumVsq = 0;

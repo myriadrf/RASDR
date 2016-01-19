@@ -129,7 +129,17 @@ BEGIN_EVENT_TABLE(pnlSpectrum,wxPanel)
 	//*)
 END_EVENT_TABLE()
 
-pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size, int style, wxString str) : m_buffersCount(1024)
+pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size, int style, wxString str) :
+    m_buffersCount(1024),
+    m_IchannelData(NULL), m_QchannelData(NULL), m_FFTfrequencies(NULL), m_FFTamplitudes(NULL), m_FFTbackground(NULL),
+    m_FFTMaxAmplitudes(NULL), m_PWRvalues(NULL), m_FFTamplitudesBuffer(NULL),
+    m_FFTFileClassPtr(NULL), m_PWRFileClassPtr(NULL), m_CFG_File(NULL)
+//#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+    , m_FFTbackgroundAvg(NULL), m_FFTbackgroundDb(NULL)
+//#endif BACKGROUND_DEBUG
+//#if defined(CSV_DEBUG)
+    , m_CSVFileClassPtr(NULL)
+//#endif CSV_DEBUG
 
 //pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size, int style, wxString str) : m_buffersCount(64)
 {
@@ -182,8 +192,9 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_updateTimer = new wxTimer(this, GRAPH_UPDATE_MESSAGE_ID);
     m_firststart = true;
     m_MinCurPwrIndex = 0;
-    strncpy(g_FFTfileName,"FFTOut.csv",10) ;
-    strncpy(g_PWRfileName,"PowerOut.csv",12) ;
+// BUG: makes unterminated strings.  Globals shall be initialized in globals.cpp
+//    strncpy(g_FFTfileName,"FFTOut.csv",10) ;
+//    strncpy(g_PWRfileName,"PowerOut.csv",12) ;
     m_FFTFileClassPtr = NULL;
     m_FFTCounter = 0;
     m_FFTsRecorded = 0;
@@ -478,16 +489,34 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 
 pnlSpectrum::~pnlSpectrum()
 {
-
     if(CLOSE_DEBUG) cout << "Entering ~pnlSpectrum()" << endl;
-    //(*Destroy(pnlSpectrum)
-	//*)
-
+#ifdef CSV_DEBUG
+    if(m_CSVFileClassPtr != NULL) {
+        m_CSVFileClassPtr->Close();
+        delete m_CSVFileClassPtr;
+    }
+#endif
+    if(m_FFTFileClassPtr != NULL) {
+        m_FFTFileClassPtr->Close();
+        delete m_FFTFileClassPtr;
+        m_FFTFileClassPtr = NULL;
+    }
+    if(m_PWRFileClassPtr != NULL) {
+        m_PWRFileClassPtr->Close();
+        delete m_PWRFileClassPtr;
+        m_PWRFileClassPtr = NULL;
+    }
+    if(m_CFG_File != NULL ) {
+        m_CFG_File->Close();
+        delete m_CFG_File;
+        m_CFG_File = NULL;
+    }
+    if(CLOSE_DEBUG) cout << "Exiting ~pnlSpectrum()" << endl;
 }
 
 void pnlSpectrum::shutdown()
 {
-    if(CLOSE_DEBUG) cout << "Entering pnlSpectrum::shutdown()" <<endl;
+    if(CLOSE_DEBUG) cout << "Entering pnlSpectrum::shutdown()" << endl << flush;
     m_updating = false; // Added 1/7/14
     Disconnect(GRAPH_UPDATE_MESSAGE_ID,wxEVT_TIMER,(wxObjectEventFunction)&pnlSpectrum::UpdateGraphs);
 
@@ -542,31 +571,30 @@ void pnlSpectrum::shutdown()
 if(ogl_FFTline != NULL) {
     ogl_FFTline -> Destroy();
     ogl_FFTline = NULL;
-}
 
     if(CLOSE_DEBUG) {
             Sleep(g_closedelay);
             cout << "After FFT deleted" << endl;}
-
+}
 if(ogl_IQline != NULL) {
     ogl_IQline -> Destroy();
     ogl_IQline = NULL;
-}
+
 
     if(CLOSE_DEBUG) {
             cout << "After IQ Line deleted" << endl;
             Sleep(g_closedelay);}
-
+}
 if(ogl_IQscatter != NULL) {
     ogl_IQscatter -> Destroy();
     ogl_IQscatter = NULL;
-}
 
     if(CLOSE_DEBUG) {
             cout << "After IQ Scatter deleted" << endl;
             Sleep(g_closedelay); }
+}
 
-
+/*
 if(Panel1 != NULL) {
     Panel1->Destroy();
     Panel1 = NULL;
@@ -606,6 +634,7 @@ if(Panel7 != NULL) {
         cout << "Panel7 destroyed" << endl;
         Sleep(g_closedelay); }
 }
+*/
 /*
 if(lblDataRate !=NULL) {
     lblDataRate->Destroy();
@@ -633,7 +662,7 @@ if(Panel5 != NULL) {
     Panel5 = NULL;
     cout << "Panel5 destroyed" << endl;
     Sleep(g_closedelay);
-} */
+}
 if(Panel2 != NULL) {
     if(CLOSE_DEBUG) cout << "Before Panel2 Destroy" <<endl;
     Panel2->Destroy();
@@ -642,6 +671,7 @@ if(Panel2 != NULL) {
         cout << "Panel2 destroyed" << endl;
         Sleep(g_closedelay); }
 }
+*/
 /*
 if(SplitterWindow2 != NULL) {
     SplitterWindow2->Destroy();
@@ -666,6 +696,8 @@ if(SplitterWindow1 != NULL) {
 
 
 //	Destroy();
+
+    if(CLOSE_DEBUG) cout << "Exiting pnlSpectrum::shutdown()" << endl << flush;
 	return;
 }
 int pnlSpectrum::twotoN(int N)
@@ -728,12 +760,13 @@ void pnlSpectrum::initializeGraphs()
         oglPWRChart->settings.yUnits = " uW";
   //      oglPWRChart->ZoomX(g_DisplayFrames/2,g_DisplayFrames); //Initial Span
     }
-
-
     if(ogl_FFTline)
     {
         ogl_FFTline->settings.useVBO = true;
         ogl_FFTline->AddSeries();
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+        ogl_FFTline->AddSeries();   // for background
+#endif
         ogl_FFTline->SetDrawingMode(GLG_LINE);
         ogl_FFTline->settings.gridXlines = 4;
         ogl_FFTline->SetInitialDisplayArea(-16.0, 16.0, -70, 70);
@@ -772,6 +805,23 @@ void pnlSpectrum::allocateMemory(unsigned int samples)
 	if(m_FFTamplitudes)
 		delete []m_FFTamplitudes;
 	m_FFTamplitudes = new float[samples];
+
+	if(m_FFTbackground)
+		delete []m_FFTbackground;
+	m_FFTbackground = new float[samples];
+	for(int i;i<samples;i++) m_FFTbackground[i] = 0.0;
+
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+	if(m_FFTbackgroundAvg)
+		delete []m_FFTbackgroundAvg;
+	m_FFTbackgroundAvg = new float[samples];
+	for(int i;i<samples;i++) m_FFTbackgroundAvg[i] = 0.0;
+
+	if(m_FFTbackgroundDb)
+		delete []m_FFTbackgroundDb;
+	m_FFTbackgroundDb = new float[samples];
+	for(int i;i<samples;i++) m_FFTbackgroundDb[i] = -370.0;
+#endif  // BACKGROUDND_DEBUG
 
 	if(m_FFTMaxAmplitudes)
 		delete []m_FFTMaxAmplitudes;
@@ -834,6 +884,20 @@ void pnlSpectrum::freeMemory()
 		delete []m_FFTamplitudes;
     m_FFTamplitudes = NULL;
 
+	if(m_FFTbackground)
+		delete []m_FFTbackground;
+	m_FFTbackground = NULL;
+
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+	if(m_FFTbackgroundAvg)
+		delete []m_FFTbackgroundAvg;
+	m_FFTbackgroundAvg = NULL;
+
+	if(m_FFTbackgroundDb)
+		delete []m_FFTbackgroundDb;
+	m_FFTbackgroundDb = NULL;
+#endif
+
 	if(m_FFTMaxAmplitudes)
 		delete []m_FFTMaxAmplitudes;
     m_FFTMaxAmplitudes = NULL;
@@ -846,8 +910,9 @@ void pnlSpectrum::freeMemory()
     {
         for(int i=0; i<m_buffersCount; ++i)
             delete []m_FFTamplitudesBuffer[i];
-        delete []m_FFTamplitudes;
-        delete []m_FFTMaxAmplitudes;
+// BUG: already deleted aove
+//        delete []m_FFTamplitudes;
+//        delete []m_FFTMaxAmplitudes;
     }
     m_FFTamplitudesBuffer = NULL;
 }
@@ -857,13 +922,12 @@ void pnlSpectrum::freeMemory()
 */
 void pnlSpectrum::GetConfiguration()
 {
-
     int line = 0;
     char inbuf[80];
     if(m_CFG_File == NULL)
     {
         m_CFG_File = new wxTextFile();
-        if(m_CFG_File->Open("\RASDR.cfg"))
+        if(m_CFG_File->Open(g_CfgFileName))
         {
             cout << m_CFG_File->GetFirstLine() << " Config file First Line" << endl;
             while(!m_CFG_File->Eof())
@@ -881,10 +945,9 @@ void pnlSpectrum::GetConfiguration()
                 if(line == 7) chkAverage->SetValue(atoi(inbuf));
                 if(line == 8) spinAvgCount->SetValue(atoi(inbuf));
                 if(line == 9) {
-                                m_FFTsamplesCount = twotoN(atoi(inbuf));
-                                spinFFTsamples->SetValue(atoi(inbuf));
-            txtFFTsamples->SetValue(wxString::Format("%i",m_FFTsamplesCount));}
-
+                    m_FFTsamplesCount = twotoN(atoi(inbuf));
+                    spinFFTsamples->SetValue(atoi(inbuf));
+                    txtFFTsamples->SetValue(wxString::Format("%i",m_FFTsamplesCount));}
                 if(line == 10) {spinSamplingFreq->SetValue(atoi(inbuf));
                                 changeSamplingFrequency(atoi(inbuf)); }
  //                               m_samplingFrequency = atoi(inbuf);
@@ -902,12 +965,51 @@ void pnlSpectrum::GetConfiguration()
                 if(line == 19) g_PwrRecordRate = atoi(inbuf);
                 if(line == 20) g_PwrSpanSec = atoi(inbuf);
                 if(line == 21) g_FFTDataSource = atoi(inbuf);
- //               if(line == 16) strncpy(g_FFTfileName,inbuf,1023);
+ //               if(line == 22) strncpy(g_FFTfileName,inbuf,1023);
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+                if(line == 22) g_backgroundDebugCfg = atoi(inbuf);
+#endif
             }
-//        m_CFG_File->Flush();
-        m_CFG_File->Close();
-        m_CFG_File = NULL;
+            m_CFG_File->Close();
+        } else {
+            // BUG: a non-existent configuration file would crash RASDRviewer 1.2.2.1
+            cout << " Configuration File doesn't Exist; using internal defaults..." << endl;
+            cout << m_RxFreq << endl;           // if(line == 1)
+            cout << m_frequencyStep << endl;    // if(line == 2)
+            cout << 15 << endl;                 // if(line == 3)
+                cmbRxFilter->SetSelection( 15 );
+            cout << m_RxVGA1Sel << endl;        // if(line == 4)
+            cout << m_RxVGA2Sel << endl;        // if(line == 5)
+            cout << 2 << endl;                  // if(line == 6)
+                cmbLNAGainMode->SetSelection( 2 );
+            cout << 1 << endl;                  // if(line == 7)
+                chkAverage->SetValue( 1 );
+            cout << 1 << endl;                  // if(line == 8)
+                spinAvgCount->SetValue( 1 );
+            cout << 11 << endl;                 // if(line == 9)
+                m_FFTsamplesCount = twotoN(11);
+                spinFFTsamples->SetValue( 11 );
+                txtFFTsamples->SetValue(wxString::Format("%i",m_FFTsamplesCount));
+            cout << 2 << endl;                  // if(line == 10)
+                spinSamplingFreq->SetValue( 2 );
+                changeSamplingFrequency(2);
+            cout << g_NumbFFTFiles << endl;     // if(line == 11)
+            cout << g_FFTFileType << endl;      // if(line == 12)
+            cout << g_FFT_TimeStandard << endl; // if(line == 13)
+            cout << g_FFTframeSkip << endl;     // if(line == 14)
+            cout << g_FFTframesOut << endl;     // if(line == 15)
+            cout << g_NumbPWRFiles << endl;     // if(line == 16)
+            cout << g_PWRFileType << endl;      // if(line == 17)
+            cout << g_PWRTimeStandard << endl;  // if(line == 18)
+            cout << g_PwrRecordRate << endl;    // if(line == 19)
+            cout << g_PwrSpanSec << endl;       // if(line == 20)
+            cout << g_FFTDataSource << endl;    // if(line == 21)
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+            cout << g_backgroundDebugCfg << endl;// if(line == 22)
+#endif
         }
+        delete m_CFG_File;
+        m_CFG_File = NULL;
     }
 //cout<<"Exiting Get Configuration()" << endl;
 }
@@ -1561,10 +1663,90 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                                           m_FFTamplitudes,
                                           m_FFTdataSize,
                                           fftsLeft);
-                // Wrtite Time Stampe to file
+
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+                if( m_PwrRefIsSet && not m_backgroundSubtract) {
+                    float min = 1.0 * (1<<12);  // 12-bit ADC max value
+                    float max = 0.0;
+                    float sum = 0.0;
+                    float ref = -370.0;         // reference level selected in dB
+                    const char *tag = "NONE";
+
+                    // not subtracting, but set power reference just set
+                    m_backgroundSubtract = true;
+                    // smoothing background spectrogram
+                    memcpy(m_FFTbackgroundAvg,m_FFTamplitudes,m_FFTdataSize*sizeof(float));
+                    for(int i=3; i<m_FFTdataSize-3;i++)
+                        // apply 7pt smoothing function on background
+                        // TODO: make parametric
+                        m_FFTbackgroundAvg[i] = (
+                                                 m_FFTbackgroundAvg[i-3] +
+                                                 m_FFTbackgroundAvg[i-2] +
+                                                 m_FFTbackgroundAvg[i-1] +
+                                                 m_FFTbackgroundAvg[i]   +
+                                                 m_FFTbackgroundAvg[i+1] +
+                                                 m_FFTbackgroundAvg[i+2] +
+                                                 m_FFTbackgroundAvg[i+3] +
+                                                 0.0) / 7.0;
+                    // computing statistics on background spectrogram
+                    for(int i=0; i<m_FFTdataSize; i++) {
+                        m_FFTMaxAmplitudes[i] = -370.0;
+                        m_FFTbackgroundDb[i]  = 10 * log10( m_FFTbackgroundAvg[i] );
+                        if( m_FFTbackgroundAvg[i] < min ) min = m_FFTbackgroundAvg[i];
+                        if( m_FFTbackgroundAvg[i] > max ) max = m_FFTbackgroundAvg[i];
+                                                         sum += m_FFTbackgroundAvg[i];
+                    }
+                    if( g_backgroundDebugCfg & BACKGROUND_REFERENCE_MEDIAN )
+                    {
+                        float scratch[m_FFTdataSize];
+                        extern float quick_select(float arr[], int n);
+                        memcpy(scratch,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+                        g_Statistics_g_FFTbackgroundReferenceLevel = quick_select(scratch, m_FFTdataSize);
+                        tag = "MEDIAN";
+                    }
+                    else if( g_backgroundDebugCfg & BACKGROUND_REFERENCE_HISTO )
+                    {
+                        extern float histogram_select(float arr[], int n);
+                        ref = histogram_select(m_FFTbackgroundDb,m_FFTdataSize);
+                        g_Statistics_g_FFTbackgroundReferenceLevel = pow(10.0,ref/10.0);
+                        tag = "HISTOGRAM";
+                    }
+                    else if( g_backgroundDebugCfg & BACKGROUND_REFERENCE_MEAN )
+                    {
+                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
+                        tag = "MEAN";
+                    }
+                    else
+                        g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+                    if( g_backgroundDebugCfg & BACKGROUND_SUBTRACT)
+                        memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+#ifdef _DEBUG
+                    // convert statistics to dB for logging
+                    min = (min <= 0.0) ? -370.0 : 10 * log10( min );
+                    max = (max <= 0.0) ? -370.0 : 10 * log10( max );
+                    sum = sum / (float)m_FFTdataSize;
+                    sum = (sum <= 0.0) ? -370.0 : 10 * log10( sum );
+                    ref = g_Statistics_g_FFTbackgroundReferenceLevel;
+                    ref = (ref <= 0.0) ? -370.0 : 10 * log10( ref );
+                    wxSprintf(outbuf,"%s (Reference %s%s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
+                        g_backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Enabled" : "Display Reference Only",
+                        tag,
+                        g_backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE ? " Applied" : " Calculated Only",
+                        ref, min, max, sum);
+                    cout << "Background Subtraction " << outbuf << endl;
+#endif  // _DEBUG
+                } else if( not m_PwrRefIsSet && m_backgroundSubtract) {
+                    // subtracting, but set power reference just cleared
+                    m_backgroundSubtract = false;
+                    g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+                    for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
+                    cout << "Background Subtraction Disabled" << endl;
+                }
+#endif  // BACKGROUND_DEBUG
+                // Write Time Stamp to file
                 if(g_FFTfileRecording && m_FFTCounter == 0) {
                     int ms = dt.UNow().GetMillisecond();
-                    wxSprintf(outbuf,":%d",ms);
+                    wxSprintf(outbuf,":%d",ms); // FIXME: should be a '.' instead of ':'
                     if(g_FFTFileType == 0) {
                             if(g_FFT_TimeStandard == 0) {
                                     m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
@@ -1572,6 +1754,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                             else {
  // Bug fix 5/24                                   m_FileClassPtr->Write(dt.Now().ToUTC().FormatTime().c_str());
                                     m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
+#if defined(PROPER_ISO_TIMESTAMPS)
+                                    wxSprintf(outbuf,".%d",ms);
+#endif  // PROPER_ISO_TIMESTAMPS
                                     m_FFTFileClassPtr->Write(outbuf);
                                     m_FFTFileClassPtr->Write("Z");
                                     }
@@ -1579,9 +1764,15 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     else {
                             if(g_FFT_TimeStandard == 0){
                                 m_FFTFileClassPtr->Write(dt.Now().FormatISOCombined().c_str());
+#if defined(PROPER_ISO_TIMESTAMPS)
+                                wxSprintf(outbuf,".%d",ms);
+#endif  // PROPER_ISO_TIMESTAMPS
                                 m_FFTFileClassPtr->Write(outbuf);}
                             else{
                                 m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
+#if defined(PROPER_ISO_TIMESTAMPS)
+                                wxSprintf(outbuf,".%d",ms);
+#endif  // PROPER_ISO_TIMESTAMPS
                                 m_FFTFileClassPtr->Write(outbuf);
                                 m_FFTFileClassPtr->Write("Z"); }
                             }
@@ -1590,36 +1781,48 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                 //convert FFT results to dB
                 for(int i=0; i<m_FFTdataSize; i++)
                 {
-                    if( m_FFTamplitudes[i] <= 0)
-                        m_FFTamplitudes[i] = -370;
-                    else {
+                    float value;
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+                    m_FFTamplitudes[i] -= m_FFTbackground[i];
+                    if( g_backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE )
+                    {
+                        if( m_FFTamplitudes[i] <= g_Statistics_g_FFTbackgroundReferenceLevel )  // NB: may be 0.0
+                            // render the difference between the reference level and the subtracted signal
+                            m_FFTamplitudes[i] = (2.0 * g_Statistics_g_FFTbackgroundReferenceLevel) - m_FFTamplitudes[i];
+                        else if( g_backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE )
+                            // render the difference above the reference level
+                            m_FFTamplitudes[i] += g_Statistics_g_FFTbackgroundReferenceLevel;
+                    }
+                    // otherwise, just render pure background subtracted
+#endif  // BACKGROUND_DEBUG
+                    if( m_FFTamplitudes[i] <= 0.0) {
+                        m_FFTamplitudes[i] = -370.0;
+                    } else {
                         m_FFTamplitudes[i] = 10 * log10( m_FFTamplitudes[i] );
-                        if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
-                            m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
-                        if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
-                            if(g_FFTDataSource == 0) {
-                                if(!m_MaxHold) sprintf(outbuf,"%.4f,\0",m_FFTamplitudes[i]);
-                                else sprintf(outbuf,"%.4f,\0",m_FFTMaxAmplitudes[i]);
-                                m_FFTFileClassPtr->Write(outbuf); }
-                            if(g_FFTDataSource == 1
-                            &&(m_fftxaxisValues[i]  >= m_FFTChartCenter- (m_FFTChartSpan/2))
-                            && (m_fftxaxisValues[i] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
-                                if(!m_MaxHold)sprintf(outbuf,"%.4f,\0",m_FFTamplitudes[i]);
-                                else sprintf(outbuf,"%.4f,\0",m_FFTMaxAmplitudes[i]);
-                                m_FFTFileClassPtr->Write(outbuf); }
-                        }
+                    }
+// BUG: RASDRviewer 1.2.2.1 would skip this point if the amplitude was too low
+                    if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
+                        m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
+                    value = m_MaxHold ? m_FFTMaxAmplitudes[i] : m_FFTamplitudes[i];
+                    if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
+                        if(g_FFTDataSource == 0) {
+                            sprintf(outbuf,"%.4f,\0",value);
+                            m_FFTFileClassPtr->Write(outbuf); }
+                        if(g_FFTDataSource == 1
+                        &&(m_fftxaxisValues[i] >= m_FFTChartCenter - (m_FFTChartSpan/2))
+                        &&(m_fftxaxisValues[i] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
+                            sprintf(outbuf,"%.4f,\0",value);
+                            m_FFTFileClassPtr->Write(outbuf); }
                     }
                 }
                 if(g_FFTfileRecording && m_FFTFileClassPtr != NULL && m_FFTCounter >= g_FFTframeSkip) {
-                        m_FFTFileClassPtr->Write("\r\n",2);
-                        m_FFTCounter = 0;
-                        m_FFTsRecorded++;
-                        sprintf(outbuf,"%d",m_FFTsRecorded);
-                        FFTsREC->SetValue(outbuf);
- //                       if(m_FFTsRecorded >= g_FFTframesOut) OnStopFFTRecClick(dummy);}
-
-                        if(m_FFTsRecorded >= g_FFTframesOut)
-                            OnRecordFFTClick(dummy);
+                    m_FFTFileClassPtr->Write("\r\n",2);
+                    m_FFTCounter = 0;
+                    m_FFTsRecorded++;
+                    sprintf(outbuf,"%d",m_FFTsRecorded);
+                    FFTsREC->SetValue(outbuf);
+                    if(m_FFTsRecorded >= g_FFTframesOut)
+                        OnRecordFFTClick(dummy);
                 }
                 else if(g_FFTfileRecording) m_FFTCounter++;
             }
@@ -1632,12 +1835,19 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
             calculated = LMLL_Testing_CalculateFFT();
             if(calculated)
             {
+                float oneOverBuffersCountMask = 1.0/(float)m_buffersCountMask;
+
                 //takes one FFT results and add it to averaging buffer
                 LMLL_Testing_GetFFTData(m_IchannelData, m_QchannelData, m_IQdataSize, m_FFTamplitudesBuffer[bufferPos], m_FFTdataSize, fftsLeft);
+
+                // update acquisition buffer position index
                 bufferPos = (bufferPos + 1) % m_buffersCountMask;
 
                 memset(m_FFTamplitudesBuffer[m_buffersCount], 0, sizeof(float)*m_FFTsamplesCount);
-                //calculate average
+
+#if 0   // new averaging method...
+#else
+                // calculate average by keeping a circular buffer and *re-calculating* at each iteration
                 for(int i=0; i<m_buffersCountMask; ++i)
                 {
                     for(int j=0; j<m_FFTsamplesCount; ++j)
@@ -1645,12 +1855,92 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     bufferPos = (bufferPos + 1) % m_buffersCountMask;
                 }
                 for(int j=0; j<m_FFTsamplesCount; ++j)
-                    m_FFTamplitudesBuffer[m_buffersCount][j] = m_FFTamplitudesBuffer[m_buffersCount][j]/m_buffersCountMask;
+                    m_FFTamplitudesBuffer[m_buffersCount][j] = m_FFTamplitudesBuffer[m_buffersCount][j] * oneOverBuffersCountMask;
+#endif // 0
 
-                // Wrtite Time Stamp to file
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+                if( m_PwrRefIsSet && not m_backgroundSubtract) {
+                    float min = 1.0 * (1<<12);  // 12-bit ADC max value
+                    float max = 0.0;
+                    float sum = 0.0;
+                    float ref = -370.0;         // reference level selected in dB
+                    const char *tag = "NONE";
+
+                    // not subtracting, but set power reference just set
+                    m_backgroundSubtract = true;
+                    // smoothing background spectrogram
+                    memcpy(m_FFTbackgroundAvg,m_FFTamplitudesBuffer[m_buffersCount],m_FFTdataSize*sizeof(float));
+                    for(int i=3; i<m_FFTdataSize-3;i++)
+                        // apply 7pt smoothing function on background
+                        // TODO: make parametric
+                        m_FFTbackgroundAvg[i] = (
+                                                 m_FFTbackgroundAvg[i-3] +
+                                                 m_FFTbackgroundAvg[i-2] +
+                                                 m_FFTbackgroundAvg[i-1] +
+                                                 m_FFTbackgroundAvg[i]   +
+                                                 m_FFTbackgroundAvg[i+1] +
+                                                 m_FFTbackgroundAvg[i+2] +
+                                                 m_FFTbackgroundAvg[i+3] +
+                                                 0.0) / 7.0;
+                    // computing statistics on background spectrogram
+                    for(int i=0; i<m_FFTdataSize; i++) {
+                        m_FFTMaxAmplitudes[i] = -370.0;
+                        m_FFTbackgroundDb[i]  = 10 * log10( m_FFTbackgroundAvg[i] );
+                        if( m_FFTbackgroundAvg[i] < min ) min = m_FFTbackgroundAvg[i];
+                        if( m_FFTbackgroundAvg[i] > max ) max = m_FFTbackgroundAvg[i];
+                                                         sum += m_FFTbackgroundAvg[i];
+                    }
+                    if( g_backgroundDebugCfg & BACKGROUND_REFERENCE_MEDIAN)
+                    {
+                        float scratch[m_FFTdataSize];
+                        extern float quick_select(float arr[], int n);
+                        memcpy(scratch,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+                        g_Statistics_g_FFTbackgroundReferenceLevel = quick_select(scratch, m_FFTdataSize);
+                        tag = "MEDIAN";
+                    }
+                    else if( g_backgroundDebugCfg & BACKGROUND_REFERENCE_HISTO )
+                    {
+                        extern float histogram_select(float arr[], int n);
+                        ref = histogram_select(m_FFTbackgroundDb,m_FFTdataSize);
+                        g_Statistics_g_FFTbackgroundReferenceLevel = pow(10.0,ref/10.0);
+                        tag = "HISTOGRAM";
+                    }
+                    else if( g_backgroundDebugCfg & BACKGROUND_REFERENCE_MEAN)
+                    {
+                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
+                        tag = "MEAN";
+                    }
+                    else
+                        g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+                    if( g_backgroundDebugCfg & BACKGROUND_SUBTRACT)
+                        memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+#ifdef _DEBUG
+                    // convert statistics do dB for logging
+                    min = (min <= 0.0) ? -370.0 : 10 * log10( min );
+                    max = (max <= 0.0) ? -370.0 : 10 * log10( max );
+                    sum = sum / (float)m_FFTdataSize;
+                    sum = (sum <= 0.0) ? -370.0 : 10 * log10( sum );
+                    ref = g_Statistics_g_FFTbackgroundReferenceLevel;
+                    ref = (ref <= 0.0) ? -370.0 : 10 * log10( ref );
+                    wxSprintf(outbuf,"%s (Frame Averaged, Reference %s%s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
+                        g_backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Enabled" : "Display Reference Only",
+                        tag,
+                        g_backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE ? " Applied" : " Calculated Only",
+                        ref, min, max, sum);
+                    cout << "Background Subtraction Enabled" << outbuf << endl;
+#endif  // _DEBUG
+                } else if( not m_PwrRefIsSet && m_backgroundSubtract) {
+                    // subtracting, but set power reference just cleared
+                    m_backgroundSubtract = false;
+                    g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+                    for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
+                    cout << "Background Subtraction Disabled" << endl;
+                }
+#endif  // BACKGROUND_DEBUG
+                // Write Time Stamp to file
                 if(g_FFTfileRecording && m_FFTCounter == 0) {
                     int ms = dt.UNow().GetMillisecond();
-                    wxSprintf(outbuf,":%d",ms);
+                    wxSprintf(outbuf,":%d",ms); // FIXME: should be a '.' instead of ':'
                     if(g_FFT_TimeStandard == 0 && g_FFTFileType == 0){
                         m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
                         m_FFTFileClassPtr->Write(outbuf); }
@@ -1659,11 +1949,16 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         m_FFTFileClassPtr->Write(outbuf);}
                     if(g_FFT_TimeStandard == 1 && g_FFTFileType == 0) {
                         m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
-//5/24Bug Fix                        m_FileClassPtr->Write(dt.Now().FormatISOCombined().c_str());
+#if defined(PROPER_ISO_TIMESTAMPS)
+                        wxSprintf(outbuf,".%d",ms);
+#endif  // PROPER_ISO_TIMESTAMPS
                         m_FFTFileClassPtr->Write(outbuf);
                         m_FFTFileClassPtr->Write("Z"); }
                     if(g_FFT_TimeStandard == 1 && g_FFTFileType == 1) {
                         m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
+#if defined(PROPER_ISO_TIMESTAMPS)
+                        wxSprintf(outbuf,".%d",ms);
+#endif  // PROPER_ISO_TIMESTAMPS
                         m_FFTFileClassPtr->Write(outbuf);
                         m_FFTFileClassPtr->Write("Z"); }
                     m_FFTFileClassPtr->Write(",");
@@ -1672,38 +1967,44 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                 for(int i=0; i<m_FFTdataSize; i++)
                 {
                     float value;
-                    if( m_FFTamplitudesBuffer[m_buffersCount][i] <= 0)
-                        m_FFTamplitudes[i] = -370;
-                    else {
-                        value = m_FFTamplitudes[i] = 10 * log10( m_FFTamplitudesBuffer[m_buffersCount][i] );
-                        if(m_MaxHold) {
-                            if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
-                                m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
-                            value = m_FFTMaxAmplitudes[i];
-                        }
-
-                        if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
-                            if(g_FFTDataSource == 0) {
-                                    sprintf(outbuf,"%.4f,\0",value);
-                                    m_FFTFileClassPtr->Write(outbuf);}
-                            if(g_FFTDataSource == 1
-                            &&(m_fftxaxisValues[i]  >= m_FFTChartCenter- (m_FFTChartSpan/2))
-                            && (m_fftxaxisValues[i] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
-                                if(!m_MaxHold) sprintf(outbuf,"%.4f,\0",m_FFTamplitudes[i]);
-                                else sprintf(outbuf,"%.4f,\0",m_FFTMaxAmplitudes[i]);
-                                m_FFTFileClassPtr->Write(outbuf); }
-                        }
+                    m_FFTamplitudes[i]  = m_FFTamplitudesBuffer[m_buffersCount][i];
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+                    m_FFTamplitudes[i] -= m_FFTbackground[i];
+                    if( g_backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE )
+                    {
+                        m_FFTamplitudes[i] += g_Statistics_g_FFTbackgroundReferenceLevel;
+                    }
+                    // otherwise, just render pure background subtracted
+#endif  // BACKGROUND_DEBUG
+                    if( m_FFTamplitudes[i] <= 0.0) {
+                        m_FFTamplitudes[i] = -370.0;
+                    } else {
+                        m_FFTamplitudes[i] = 10 * log10( m_FFTamplitudes[i] );
+                    }
+// BUG: RASDRviewer 1.2.2.1 would skip this point if the amplitude was too low
+                    if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
+                        m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
+                    value = m_MaxHold ? m_FFTMaxAmplitudes[i] : m_FFTamplitudes[i];
+                    if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
+                        if(g_FFTDataSource == 0) {
+                            sprintf(outbuf,"%.4f,\0",value);
+                            m_FFTFileClassPtr->Write(outbuf); }
+                        if(g_FFTDataSource == 1
+                        &&(m_fftxaxisValues[i] >= m_FFTChartCenter - (m_FFTChartSpan/2))
+                        &&(m_fftxaxisValues[i] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
+                            sprintf(outbuf,"%.4f,\0",value);
+                            m_FFTFileClassPtr->Write(outbuf); }
                     }
                 }
                 if(g_FFTfileRecording && m_FFTFileClassPtr != NULL && m_FFTCounter >= g_FFTframeSkip) {
-                        m_FFTFileClassPtr->Write("\r\n",2);
-                        m_FFTCounter = 0;
-                        m_FFTsRecorded++;
-                        sprintf(outbuf,"%d",m_FFTsRecorded);
-                        FFTsREC->SetValue(outbuf);
-                        if(m_FFTsRecorded >= g_FFTframesOut)
-                            OnRecordFFTClick(dummy);
-                        }
+                    m_FFTFileClassPtr->Write("\r\n",2);
+                    m_FFTCounter = 0;
+                    m_FFTsRecorded++;
+                    sprintf(outbuf,"%d",m_FFTsRecorded);
+                    FFTsREC->SetValue(outbuf);
+                    if(m_FFTsRecorded >= g_FFTframesOut)
+                        OnRecordFFTClick(dummy);
+                }
                 else if(g_FFTfileRecording) m_FFTCounter++;
             }
         }
@@ -1727,6 +2028,15 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
             ogl_FFTline->series[0]->AssignValues(m_fftxaxisValues, m_FFTamplitudes, m_FFTdataSize);
         else
             ogl_FFTline->series[0]->AssignValues(m_fftxaxisValues, m_FFTMaxAmplitudes, m_FFTdataSize);
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+        if(m_backgroundSubtract) {
+            ogl_FFTline->series[1]->color = 0x00FF0000; // green+no alpha
+            ogl_FFTline->series[1]->AssignValues(m_fftxaxisValues, m_FFTbackgroundDb, m_FFTdataSize);
+        } else {
+            ogl_FFTline->series[1]->color = 0xF0F0F0FF; // background
+            // keep existing series as is (which just changes their color)
+        }
+#endif  // BACKGROUND_SUBTRACE
 		ogl_FFTline->Refresh();
 		ogl_IQscatter->Refresh();
 		ogl_IQline->Refresh();
@@ -1770,10 +2080,49 @@ void pnlSpectrum::UpdatePwrGraph()
     if(!g_capturingData) return; // Break loop for close
     // Calculate the average power and clear accumulator
         m_PwrAccum = m_PwrAccum + g_framepwr;
-        cout << "Pwr = " << g_framepwr;
         m_PwrAveCount++;
         m_PwrAve = m_PwrAccum / m_PwrAveCount;
+#if defined(CSV_DEBUG)
+    // Coherent output with timestamp
+    {
+        static bool once = true;
+        wxDateTime dt;
+        wxDateTime ts = dt.UNow();
+        int ms = ts.GetMillisecond();
+        long updateCount = InterlockedExchange(&g_Statistics_updateCount,0);
+        char outbuf[1024];
+
+        if(once)
+        {
+            if(m_CSVFileClassPtr == NULL) m_CSVFileClassPtr = new wxFile();
+            m_CSVFileClassPtr->Create(CSV_DEBUG,TRUE,wxS_DEFAULT);
+
+            wxSprintf(outbuf,"Timestamp,Rate (KB/s),UpdateCode,Failures,Packets,FFTs,Samples FIFO Level,FFT FIFO Level,Polarity,I/Q Shift,ReferenceLevel,Pwr (mW),Avg Pwr (mW)\r\n");
+            m_CSVFileClassPtr->Write(outbuf);
+            cout << outbuf;
+            once = false;
+        }
+        wxSprintf(outbuf,"%s.%03dZ,%u,%ld,%d,%ld,%ld,%d,%d,%s,%s,%f,%f,%f\r\n",
+            ts.ToUTC().FormatISOCombined().c_str(), ts.GetMillisecond(),
+            g_Statistics_m_bytesPerSecond,
+            updateCount,
+            g_Statistics_ulFailures,
+            g_Statistics_packetReceived,
+            g_Statistics_countFFT,
+            g_Statistics_m_SamplesFIFOLength,
+            g_Statistics_m_fftFIFOLength,
+            (g_Statistics_m_frameStart ? "QI" : "IQ"),
+            (g_Statistics_needToAlignData ? "true" : "false"),
+            g_Statistics_g_FFTbackgroundReferenceLevel,
+            g_framepwr,
+            m_PwrAve );
+        m_CSVFileClassPtr->Write(outbuf);
+        cout << outbuf;
+    }
+#elif defined(_DEBUG)
+        cout << "Pwr = " << g_framepwr;
         cout << " Ave Pwr = " << m_PwrAve << endl;
+#endif // defined
         //Reset /accumulator and count
         m_PwrAccum = 0;
         m_PwrAveCount = 0;
@@ -1801,7 +2150,11 @@ void pnlSpectrum::UpdatePwrGraph()
 		if(m_Index == g_MaxPwrSpanSec) { //Prevent Memory Overflow
             cout << "MaxPwrSpanSec Exceeded" << endl;
             StopCapturing();
-            btnStartCapture->Enable(false);
+            // BUG: this is Paul's original code.  It freezes all data capturing at 86400 sec (about 24hrs).
+            //btnStartCapture->Enable(false);
+            // FIX: starting a new capture re-allocates buffers
+            // TODO: it may stop file data output so this needs to be checked
+            StartCapturing();
 		}
 
             if(m_Index == 1) {
@@ -1857,7 +2210,7 @@ void pnlSpectrum::RecordPwrLine(int index, double value)
 
 
         int ms = dt.UNow().GetMillisecond();
-        wxSprintf(outbuf,":%d",ms);
+        wxSprintf(outbuf,":%d",ms); // FIXME: should be a '.' instead of ':'
         if(g_PWRTimeStandard == 0 && g_PWRFileType == 0){
             m_PWRFileClassPtr->Write(dt.Now().FormatTime().c_str());
             m_PWRFileClassPtr->Write(outbuf); }
@@ -1866,10 +2219,16 @@ void pnlSpectrum::RecordPwrLine(int index, double value)
             m_PWRFileClassPtr->Write(outbuf);}
         if(g_PWRTimeStandard == 1 && g_PWRFileType == 0) {
             m_PWRFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
+#if defined(PROPER_ISO_TIMESTAMPS)
+            wxSprintf(outbuf,".%d",ms);
+#endif  // PROPER_ISO_TIMESTAMPS
             m_PWRFileClassPtr->Write(outbuf);
             m_PWRFileClassPtr->Write("Z"); }
         if(g_PWRTimeStandard == 1 && g_PWRFileType == 1) {
             m_PWRFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
+#if defined(PROPER_ISO_TIMESTAMPS)
+            wxSprintf(outbuf,".%d",ms);
+#endif  // PROPER_ISO_TIMESTAMPS
             m_PWRFileClassPtr->Write(outbuf);
             m_PWRFileClassPtr->Write("Z"); }
 
@@ -2029,7 +2388,8 @@ void pnlSpectrum::OnStopFFTRecClick(wxCommandEvent& event)
             wxCommandEvent dummy;
             m_FFTFileClassPtr->Flush();
             m_FFTFileClassPtr->Close();
- //           m_FileClassPtr->~wxFile(); // Desroy
+ //           wrong: m_FileClassPtr->~wxFile(); // Desroy
+ //           right: if(m_FileClassPtr != NULL) delete m_FileClassPtr;
  //           m_FileClassPtr = NULL;
             g_FFTfileIsOpen = false;
             SuffixFFTFileName();

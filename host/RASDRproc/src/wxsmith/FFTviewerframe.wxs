@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="FFTviewerFrame">
-		<title>RASDRviewer</title>
+		<title>RASDRproc</title>
 		<size>900,700</size>
 		<minsize>900,700</minsize>
 		<id_arg>0</id_arg>

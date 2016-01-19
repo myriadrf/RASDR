@@ -32,6 +32,20 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 #define CLOSE_DEBUG true
+
+#define BACKGROUND_SUBTRACT         0x01    // subtract background
+#define BACKGROUND_DISPLAY          0x02    // display background on overlay screen
+#define BACKGROUND_ABOVE_REFERENCE  0x04    // render signal above/below reference signal
+//      SPARE                       0x08    // spare
+#define BACKGROUND_REFERENCE_MEAN   0x10    // background reference is mean value
+#define BACKGROUND_REFERENCE_MEDIAN 0x20    // background reference is median value
+#define BACKGROUND_REFERENCE_HISTO  0x40    // background reference by peak histogram value
+#define BACKGROUND_DEBUG            0x47    // default value if no configuration file present (non-zero enables system)
+extern int g_backgroundDebugCfg;
+
+#define CSV_DEBUG   "RASDRproc.csv"         // filename to produce .csv output
+#define PROPER_ISO_TIMESTAMPS       true    // produce properly formatted ISO timestamps
+
 ////include <wx/string.h>
 extern int g_frame_delay;
 extern int g_closedelay;
@@ -83,4 +97,19 @@ extern float g_Sim_Period;
 extern float g_Sim_Duty;
 extern float g_Sim_Factor;
 //extern long ID_FFTOKBUTTON;
+//typedef struct statistics {
+    extern volatile long g_Statistics_updateCount;
+    extern volatile unsigned int g_Statistics_m_bytesPerSecond;
+    extern volatile int g_Statistics_ulFailures;
+    extern volatile long g_Statistics_packetReceived;
+    extern volatile long g_Statistics_countFFT;
+    extern volatile int g_Statistics_m_SamplesFIFOLength;
+    extern volatile int g_Statistics_m_fftFIFOLength;
+    extern volatile int g_Statistics_m_frameStart;
+    extern volatile bool g_Statistics_needToAlignData;
+    extern volatile float g_Statistics_g_FFTbackgroundReferenceLevel;
+    extern volatile float g_Statistics_g_framepwr;
+    extern volatile float g_Statistics_m_PwrAve;
+//} statistics_t;
+//extern statistics_t g_Statistics;
 #endif

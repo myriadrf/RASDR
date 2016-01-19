@@ -83,6 +83,10 @@ class pnlSpectrum: public wxPanel
         void OpenFFTfile();
         wxFile *FFTfilePtr;
         wxFile *m_FFTFileClassPtr;
+// NB: use of the define would require include of ..\globals.h
+//#ifdef CSV_DEBUG
+        wxFile *m_CSVFileClassPtr;
+//#endif
         bool m_MaxHold;
         void OpenPWRfile();
         wxFile *m_PWRFileClassPtr;
@@ -95,6 +99,7 @@ class pnlSpectrum: public wxPanel
         bool IsCapturingData();
         bool m_capturingData = false;
         bool m_PwrRefIsSet;
+        bool m_backgroundSubtract = false;
         double m_PwrRefOffset;
         double m_PwrAccum;
         double m_PwrAve;
@@ -255,6 +260,12 @@ class pnlSpectrum: public wxPanel
         float *m_QchannelData;
         float *m_FFTfrequencies;
         float *m_FFTamplitudes;
+        float *m_FFTbackground;
+// NB: use of the define would require include of ..\globals.h
+//#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+        float *m_FFTbackgroundAvg;
+        float *m_FFTbackgroundDb;
+//#endif
         float *m_FFTMaxAmplitudes;
         float *m_PWRvalues;
         float m_PwrMax;

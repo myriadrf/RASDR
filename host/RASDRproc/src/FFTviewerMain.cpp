@@ -90,7 +90,8 @@ END_EVENT_TABLE()
 
 FFTviewerFrame* frmFFTMainWindow = NULL;
 
-FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
+FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
+    m_CFG_FileClassPtr(NULL)
 {
     m_ControlPanel = NULL;
     mSpectrum = NULL;
@@ -106,7 +107,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
 
-    Create(parent, wxID_ANY, _("RASDRviewer"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX, _T("wxID_ANY"));
+    Create(parent, wxID_ANY, _("RASDRproc"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX, _T("wxID_ANY"));
     SetClientSize(wxSize(900,700));
     SetMinSize(wxSize(900,700));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -208,7 +209,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id)
 
 FFTviewerFrame::~FFTviewerFrame()
 {
-//    if(CLOSE_DEGUG) cout << "Entering ~FFTviewerFrame()" << endl;
+    if(CLOSE_DEBUG) cout << "Entering ~FFTviewerFrame()" << endl;
 /*
 cout << "Before Notebook1 Destroy " << endl;
     if(Notebook1 != NULL) {
@@ -235,21 +236,29 @@ cout << "Before Notebook1 Destroy " << endl;
 
     //(*Destroy(FFTviewerFrame)
     //*)
+    if( m_CFG_FileClassPtr != NULL) {
+        m_CFG_FileClassPtr->Close();
+        delete m_CFG_FileClassPtr;
+        m_CFG_FileClassPtr = NULL;
+    }
+    if(CLOSE_DEBUG) cout << "Exiting ~FFTviewerFrame()" << endl;
 }
 
 void FFTviewerFrame::OnQuit(wxCommandEvent& event)
 {
-    if(CLOSE_DEBUG) cout << "Entering OnQuit()" << endl;
+    if(CLOSE_DEBUG) cout << "Entering FFTviewerFrame::OnQuit()" << endl << flush;
     shutdown();
-    if(CLOSE_DEBUG) cout << "After shutdown()" << endl;
+    if(CLOSE_DEBUG) cout << "After FFTviewerFrame::shutdown()" << endl << flush;
     Destroy();
+    if(CLOSE_DEBUG) cout << "After FFTviewerFrame::Destroy()" << endl << flush;
+    if(CLOSE_DEBUG) cout << "Exiting FFTviewerFrame::OnQuit()" << endl << flush;
 }
 string DelayStr;
 
 void FFTviewerFrame::OnAbout(wxCommandEvent& event)
 {
     //wxString msg = wxbuildinfo(long_f);
-    wxString msg = "RASDR viewer v";
+    wxString msg = "RASDRproc v";
     msg.Append(AutoVersion::FULLVERSION_STRING);
     msg.Append("\nBuild date: ");
     msg.Append(AutoVersion::YEAR);
@@ -270,10 +279,12 @@ void FFTviewerFrame::term_error(int num)
 } */
 void FFTviewerFrame::OnClose(wxCloseEvent& event)
 {
-    if(CLOSE_DEBUG) cout << "Entering OnClose()" <<endl;
+    if(CLOSE_DEBUG) cout << "Entering FFTviewerFrame::OnClose()" << endl << flush;
     shutdown();
-    if(CLOSE_DEBUG) cout << "After shutdown()" << endl;
+    if(CLOSE_DEBUG) cout << "After FFTviewerFrame::shutdown()" << endl << flush;
     Destroy();
+    if(CLOSE_DEBUG) cout << "After FFTviewerFrame::Destroy()" << endl << flush;
+    if(CLOSE_DEBUG) cout << "Exiting FFTviewerFrame::OnClose()" << endl << flush;
 };
 void FFTviewerFrame :: shutdown()
 {
@@ -545,16 +556,17 @@ bool FFTviewerFrame::SaveConfiguration()
     if(g_CfgChanged) {
             g_CfgChanged = false; //Avoid repeated writes
             if(m_CFG_FileClassPtr == NULL) m_CFG_FileClassPtr = new wxFile();
-            m_CFG_FileClassPtr->Create("\RASDR.cfg",TRUE,wxS_DEFAULT);
+            m_CFG_FileClassPtr->Create(g_CfgFileName,TRUE,wxS_DEFAULT);
             if(!m_CFG_FileClassPtr->IsOpened()) {
                 cout << "CFG File Open Fail" << endl;
                 if(m_CFG_FileClassPtr != NULL) {
                     m_CFG_FileClassPtr->Close();
+                    delete m_CFG_FileClassPtr;
                     m_CFG_FileClassPtr = NULL;
                 }
                 return(false);
             }
-            m_CFG_FileClassPtr->Write("RASDRviewer Version ");
+            m_CFG_FileClassPtr->Write("RASDRproc Version ");
             m_CFG_FileClassPtr->Write(AutoVersion::FULLVERSION_STRING,wxStrlen(AutoVersion::FULLVERSION_STRING));
             m_CFG_FileClassPtr->Write(newline);
             wxSprintf(outbuf,"%.12f",mSpectrum->m_RxFreq);
@@ -622,9 +634,14 @@ bool FFTviewerFrame::SaveConfiguration()
             m_CFG_FileClassPtr->Write(newline);
  /*           m_CFG_FileClassPtr->Write(g_FFTfileName);
             m_CFG_FileClassPtr->Write(newline); */
-
+#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
+            wxSprintf(outbuf,"%d",g_backgroundDebugCfg);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+#endif // defined
             m_CFG_FileClassPtr->Flush();
             m_CFG_FileClassPtr->Close();
+            delete m_CFG_FileClassPtr;
             m_CFG_FileClassPtr = NULL;
 
             cout << "Configuration Saved" << endl;

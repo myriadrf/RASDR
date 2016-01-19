@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="RASDRviewer" />
+		<Option title="RASDRproc" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -17,6 +17,7 @@
 					<Add option="-g" />
 					<Add option="-static" />
 					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
 					<Add directory="Logic/include" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
@@ -30,7 +31,7 @@
 				</Linker>
 			</Target>
 			<Target title="GUIDebug WIN32">
-				<Option output="DebugWin32/RASDRviewer_d_W" prefix_auto="1" extension_auto="1" />
+				<Option output="DebugWin32/RASDRproc_d" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="DebugWin32" />
 				<Option object_output="obj/Debug" />
 				<Option type="1" />
@@ -39,7 +40,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-static" />
-					<Add option="-DNDEBUG" />
+					<Add option="-D_DEBUG" />
 					<Add option="-DwxDEBUG_LEVEL=0" />
 					<Add option="-DDEBUG_FLAG=1" />
 					<Add option="-DWIN32" />
@@ -96,6 +97,7 @@
 				<Compiler>
 					<Add option="-static" />
 					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
 					<Add directory="Logic/include" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
@@ -109,7 +111,7 @@
 				</Linker>
 			</Target>
 			<Target title="GUIRelease WIN32">
-				<Option output="ReleaseWin32/RASDRviewer_W" prefix_auto="1" extension_auto="1" />
+				<Option output="ReleaseWin32/RASDRproc" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="ReleaseWin32" />
 				<Option object_output="obj/Release" />
 				<Option type="0" />
@@ -328,6 +330,10 @@
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
+		<Unit filename="GUI/histogram_select.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
 		<Unit filename="GUI/pnlADDC.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -433,6 +439,10 @@
 			<Option target="GUIRelease WIN32" />
 		</Unit>
 		<Unit filename="GUI/pnlTxRF.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="GUI/quickselect.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>

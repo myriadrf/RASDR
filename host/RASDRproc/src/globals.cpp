@@ -45,9 +45,10 @@ int g_PwrSpanSec = 900; // Default (15 Min)X Span being Displayed on Power Chart
 int g_MaxPwrSpanSec = 86400; // Max X Span & Storage Size
 //int g_MaxPwrSpanSec = 60; //Test
 float g_framesPerMin = 1260; // Estimated
-char *g_FFTfileName[1024];
-char *g_PWRfileName[1024];
-char *g_CfgFileName[80];
+// BUGS: these were all arrays of pointers
+char g_FFTfileName[1024] = { "FFTOut.csv" };
+char g_PWRfileName[1024] = { "PowerOut.csv" };
+char g_CfgFileName[80]   = { "RASDR.cfg" };
 bool g_CfgChanged = false;
 int g_FFTfileAction = 0;
 bool g_FFTfileSetup = false;
@@ -61,11 +62,11 @@ bool g_OverwritePWRfile = false;
 bool g_PWRfileIsOpen = false;
 int g_FFTframeSkip = 5;
 int g_FFTframesOut = 64;
-int g_FFTFileType = 0; // 0 = .csv for excel 1= binary 2 = ASCI Text
-int g_PWRFileType = 0; // 0 = .csv for excel 1= binary 2 = ASCI Text
-int g_NumbFFTFiles = 1; // 12 = single 2 = multiple suffixed
-int g_NumbPWRFiles = 1; // 12 = single 2 = multiple suffixed
-int g_FFT_TimeStandard = 0; // 0 = Local Time 1 = UT
+int g_FFTFileType = 1; // 0 = .csv for excel 1 = General
+int g_PWRFileType = 0; // 0 = .csv for excel 1 = General
+int g_NumbFFTFiles = 2; // 1 = single 2 = multiple suffixed
+int g_NumbPWRFiles = 1; // 1 = single 2 = multiple suffixed
+int g_FFT_TimeStandard = 1; // 0 = Local Time 1 = UT
 int g_PWRTimeStandard = 0; // 0 = Local Time 1 = UT
 bool g_PendingRestartCapture = false;
 bool g_capturingData = false;
@@ -86,3 +87,20 @@ float g_Sim_DM = 26.8;
 float g_Sim_Duty = 25.0;
 float g_Sim_Period = 714.5;
 float g_Sim_Factor = 1.0001;
+
+// background subtraction
+int g_backgroundDebugCfg = 0x27;    // see globals.h for code
+
+// statistics gathering/reporting
+volatile long g_Statistics_updateCount = 0;
+volatile unsigned int g_Statistics_m_bytesPerSecond = 0;
+volatile int g_Statistics_ulFailures = 0;
+volatile long g_Statistics_packetReceived = 0;
+volatile long g_Statistics_countFFT = 0;
+volatile int g_Statistics_m_SamplesFIFOLength = 0;
+volatile int g_Statistics_m_fftFIFOLength = 0;
+volatile int g_Statistics_m_frameStart = 0;
+volatile bool g_Statistics_needToAlignData = false;
+volatile float g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+volatile float g_Statistics_g_framepwr = 0.0;
+volatile float g_Statistics_m_PwrAve = 0.0;
