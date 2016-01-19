@@ -99,6 +99,7 @@ SetupPWROut::SetupPWROut(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	wxFont StaticBox1Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
 	StaticBox1->SetFont(StaticBox1Font);
 	FlexGridSizer1->Add(StaticBox1, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+// BUG: this prevented the user's entry from persisting in a session
 //	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, _T("PowerOut.csv"), wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_PWRfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	wxFont OutputFileFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);

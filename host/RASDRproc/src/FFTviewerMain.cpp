@@ -552,6 +552,8 @@ bool FFTviewerFrame::SaveConfiguration()
 {
     char outbuf[80];
     char newline[3];
+    memset(outbuf,0,sizeof(outbuf));
+#define _N  (sizeof(outbuf)-1)
     wxSprintf(newline,"\r\n");
     if(g_CfgChanged) {
             g_CfgChanged = false; //Avoid repeated writes
@@ -566,76 +568,77 @@ bool FFTviewerFrame::SaveConfiguration()
                 }
                 return(false);
             }
-            m_CFG_FileClassPtr->Write("RASDRproc Version ");
-            m_CFG_FileClassPtr->Write(AutoVersion::FULLVERSION_STRING,wxStrlen(AutoVersion::FULLVERSION_STRING));
-            m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%.12f",mSpectrum->m_RxFreq);
+            wxSnprintf(outbuf,_N,"RASDRproc Version %s - NOTE: Limit to 80 column to avoid problems %s",
+                       AutoVersion::FULLVERSION_STRING,"...............................................................");
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%g",mSpectrum->m_frequencyStep);
+            wxSnprintf(outbuf,_N,"%.12f // Center Frequency (GHz)",mSpectrum->m_RxFreq);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",LMLL_RxLPFGetLpfBw());
+            wxSnprintf(outbuf,_N,"%-14g // Frequency Step",mSpectrum->m_frequencyStep);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",LMLL_RxFEGetRFB_TIA_RXFE());
+            wxSnprintf(outbuf,_N,"%-14d // LPF Bandwidth (index)",LMLL_RxLPFGetLpfBw());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",LMLL_RxVGA2GetVga2G_u());
+            wxSnprintf(outbuf,_N,"%-14d // VGA1 Gain (index)",LMLL_RxFEGetRFB_TIA_RXFE());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",LMLL_RxFEGetG_LNA_RXFE());
+            wxSnprintf(outbuf,_N,"%-14d // VGA2 Gain (index)",LMLL_RxVGA2GetVga2G_u());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",mSpectrum->chkAverage->GetValue());
+            wxSnprintf(outbuf,_N,"%-14d // LNA Gain (index)",LMLL_RxFEGetG_LNA_RXFE());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",mSpectrum->spinAvgCount->GetValue());
+            wxSnprintf(outbuf,_N,"%-14d // Enable Averaging (0=no, 1=yes)",mSpectrum->chkAverage->GetValue());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",mSpectrum->spinFFTsamples->GetValue());
+            wxSnprintf(outbuf,_N,"%-14d // Number of frames to average",mSpectrum->spinAvgCount->GetValue());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",mSpectrum->spinSamplingFreq->GetValue());
+            wxSnprintf(outbuf,_N,"%-14d // FFT log2(Samples/Frame) (N=2^integer; 10=1024, 11=2048, etc)",mSpectrum->spinFFTsamples->GetValue());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_NumbFFTFiles);
+            wxSnprintf(outbuf,_N,"%-14d // Sampling Frequency (MHz, integer, min=2, max=32)",mSpectrum->spinSamplingFreq->GetValue());
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_FFTFileType);
+            wxSnprintf(outbuf,_N,"%-14d // FFTOutput - Multiple Control (1=single 2=multiple suffixed)",g_NumbFFTFiles);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_FFT_TimeStandard);
+            wxSnprintf(outbuf,_N,"%-14d // FFTOutput - File Type Control (0=.csv for excel 1=General)",g_FFTFileType);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_FFTframeSkip);
+            wxSnprintf(outbuf,_N,"%-14d // FFTOutput - Time Standard Control (0=Local Time 1=UTC)",g_FFT_TimeStandard);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_FFTframesOut);
+            wxSnprintf(outbuf,_N,"%-14d // FFTOutput - Number of Frames To Skip (integer)",g_FFTframeSkip);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_NumbPWRFiles);
+            wxSnprintf(outbuf,_N,"%-14d // FFTOutput - Number of Frames to Write (integer)",g_FFTframesOut);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_PWRFileType);
+            wxSnprintf(outbuf,_N,"%-14d // PWROutput - Multiple Control (1=single 2=multiple suffixed)",g_NumbPWRFiles);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_PWRTimeStandard);
+            wxSnprintf(outbuf,_N,"%-14d // PWROutput - File Type Control",g_PWRFileType);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_PwrRecordRate);
+            wxSnprintf(outbuf,_N,"%-14d // PWROutput - Time Standard Control (0=Local Time 1=UTC)",g_PWRTimeStandard);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_PwrSpanSec);
+            wxSnprintf(outbuf,_N,"%-14d // PWROutput - Recording Rate (seconds/sample)",g_PwrRecordRate);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSprintf(outbuf,"%d",g_FFTDataSource);
+            wxSnprintf(outbuf,_N,"%-14d // PWROutput - Plot Span (seconds)",g_PwrSpanSec);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%-14d // FFTOutput - Record Span (0=full range, 1=zoom/span)",g_FFTDataSource);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
  /*           m_CFG_FileClassPtr->Write(g_FFTfileName);
             m_CFG_FileClassPtr->Write(newline); */
 #if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
-            wxSprintf(outbuf,"%d",g_backgroundDebugCfg);
+            wxSnprintf(outbuf,_N,"%-14d // Background Subraction Code (bit encoded, try 71, bit0=en)",g_backgroundDebugCfg);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
 #endif // defined

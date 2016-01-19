@@ -933,7 +933,8 @@ void pnlSpectrum::GetConfiguration()
             while(!m_CFG_File->Eof())
             {
                 line++;
-                strcpy(inbuf,m_CFG_File->GetNextLine());
+                memset(inbuf,0,sizeof(inbuf));
+                strncpy(inbuf,m_CFG_File->GetNextLine(),sizeof(inbuf)-1);
 //                if(m_CFG_File->Eof()) break;
                 cout << inbuf << endl;
                 if(line == 1)  m_RxFreq = atof(inbuf);
