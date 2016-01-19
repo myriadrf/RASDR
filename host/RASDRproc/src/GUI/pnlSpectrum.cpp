@@ -969,6 +969,9 @@ void pnlSpectrum::GetConfiguration()
  //               if(line == 22) strncpy(g_FFTfileName,inbuf,1023);
 #if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
                 if(line == 22) g_backgroundDebugCfg = atoi(inbuf);
+                if(line == 23) g_integrationGain = atof(inbuf);
+                if(line == 24) g_DcOffsetI = atof(inbuf);
+                if(line == 25) g_DcOffsetQ = atof(inbuf);
 #endif
             }
             m_CFG_File->Close();
@@ -1720,7 +1723,14 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     else
                         g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
                     if( g_backgroundDebugCfg & BACKGROUND_SUBTRACT)
-                        memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+                    {
+                        if( g_backgroundDebugCfg & BACKGROUND_VECTOR )
+                        {
+                            memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+                        } else {
+                            for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = g_Statistics_g_FFTbackgroundReferenceLevel;
+                        }
+                    }
 #ifdef _DEBUG
                     // convert statistics to dB for logging
                     min = (min <= 0.0) ? -370.0 : 10 * log10( min );
@@ -1785,6 +1795,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     float value;
 #if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
                     m_FFTamplitudes[i] -= m_FFTbackground[i];
+                    m_FFTamplitudes[i] *= g_integrationGain;
                     if( g_backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE )
                     {
                         if( m_FFTamplitudes[i] <= g_Statistics_g_FFTbackgroundReferenceLevel )  // NB: may be 0.0
@@ -1914,7 +1925,14 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     else
                         g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
                     if( g_backgroundDebugCfg & BACKGROUND_SUBTRACT)
-                        memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+                    {
+                        if( g_backgroundDebugCfg & BACKGROUND_VECTOR )
+                        {
+                            memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+                        } else {
+                            for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = g_Statistics_g_FFTbackgroundReferenceLevel;
+                        }
+                    }
 #ifdef _DEBUG
                     // convert statistics do dB for logging
                     min = (min <= 0.0) ? -370.0 : 10 * log10( min );
@@ -1971,6 +1989,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     m_FFTamplitudes[i]  = m_FFTamplitudesBuffer[m_buffersCount][i];
 #if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
                     m_FFTamplitudes[i] -= m_FFTbackground[i];
+                    m_FFTamplitudes[i] *= g_integrationGain;
                     if( g_backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE )
                     {
                         m_FFTamplitudes[i] += g_Statistics_g_FFTbackgroundReferenceLevel;
@@ -2098,12 +2117,12 @@ void pnlSpectrum::UpdatePwrGraph()
             if(m_CSVFileClassPtr == NULL) m_CSVFileClassPtr = new wxFile();
             m_CSVFileClassPtr->Create(CSV_DEBUG,TRUE,wxS_DEFAULT);
 
-            wxSprintf(outbuf,"Timestamp,Rate (KB/s),UpdateCode,Failures,Packets,FFTs,Samples FIFO Level,FFT FIFO Level,Polarity,I/Q Shift,ReferenceLevel,Pwr (mW),Avg Pwr (mW)\r\n");
+            wxSprintf(outbuf,"Timestamp,Rate (KB/s),UpdateCode,Failures,Packets,FFTs,Samples FIFO Level,FFT FIFO Level,Polarity,I/Q Shift,ReferenceLevel,avgI,avgQ,Pwr (mW),Avg Pwr (mW)\r\n");
             m_CSVFileClassPtr->Write(outbuf);
             cout << outbuf;
             once = false;
         }
-        wxSprintf(outbuf,"%s.%03dZ,%u,%ld,%d,%ld,%ld,%d,%d,%s,%s,%f,%f,%f\r\n",
+        wxSprintf(outbuf,"%s.%03dZ,%u,%ld,%d,%ld,%ld,%d,%d,%s,%s,%f,%f,%f,%f,%f\r\n",
             ts.ToUTC().FormatISOCombined().c_str(), ts.GetMillisecond(),
             g_Statistics_m_bytesPerSecond,
             updateCount,
@@ -2115,6 +2134,7 @@ void pnlSpectrum::UpdatePwrGraph()
             (g_Statistics_m_frameStart ? "QI" : "IQ"),
             (g_Statistics_needToAlignData ? "true" : "false"),
             g_Statistics_g_FFTbackgroundReferenceLevel,
+            g_avgI, g_avgQ,
             g_framepwr,
             m_PwrAve );
         m_CSVFileClassPtr->Write(outbuf);

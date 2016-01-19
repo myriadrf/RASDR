@@ -641,6 +641,15 @@ bool FFTviewerFrame::SaveConfiguration()
             wxSnprintf(outbuf,_N,"%-14d // Background Subraction Code (bit encoded, try 71, bit0=en)",g_backgroundDebugCfg);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%.12f // Integration Gain",g_integrationGain);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%.12f // DC Offset for I samples",(g_DcOffsetI == 0.0?g_avgI:g_DcOffsetI));
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%.12f // DC Offset for Q samples",(g_DcOffsetQ == 0.0?g_avgQ:g_DcOffsetQ));
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
 #endif // defined
             m_CFG_FileClassPtr->Flush();
             m_CFG_FileClassPtr->Close();

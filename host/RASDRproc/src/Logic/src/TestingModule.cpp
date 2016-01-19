@@ -700,8 +700,8 @@ bool TestingModule::externalCalculateFFT()
             {
                 sumI += (m_fftCalcIn[samplesReceived][0] = splitPkt->Qdata[samplesUsed]);
                 sumQ += (m_fftCalcIn[samplesReceived][1] = splitPkt->Idata[samplesUsed]);
-                SumVsq += (splitPkt->Idata[samplesUsed] * splitPkt-> Idata[samplesUsed]) +
-                           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
+                //SumVsq += (splitPkt->Idata[samplesUsed] * splitPkt-> Idata[samplesUsed]) +
+                //           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
                 ++samplesReceived;
                 ++samplesUsed;
             }
@@ -712,14 +712,12 @@ bool TestingModule::externalCalculateFFT()
             {
                 sumI += (m_fftCalcIn[samplesReceived][0] = splitPkt->Idata[samplesUsed]);
                 sumQ += (m_fftCalcIn[samplesReceived][1] = splitPkt->Qdata[samplesUsed]);
-                SumVsq += (splitPkt->Idata[samplesUsed] * splitPkt-> Idata[samplesUsed]) +
-                           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
+                //SumVsq += (splitPkt->Idata[samplesUsed] * splitPkt-> Idata[samplesUsed]) +
+                //           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
                 ++samplesReceived;
                 ++samplesUsed;
             }
         }
-
-
 		//enough samples received for FFT, start calculating
 		if (samplesReceived >= FFTsamples)
 		{
@@ -728,18 +726,24 @@ bool TestingModule::externalCalculateFFT()
 
 			avgI = sumI * oneOverN;
 			avgQ = sumQ * oneOverN;
-			g_framepwr = SumVsq * scalefactor * oneOverN ;
+			//g_framepwr = SumVsq * scalefactor * oneOverN ;
 			sumI = 0;
 			sumQ = 0;
 			SumVsq = 0;
 			//do DC correction
 			if (m_DCcorrectionOnOff)
+			{
 				for (int i = 0; i < FFTsamples; ++i)
 				{
-					m_fftCalcIn[i][0] -= avgI;
-					m_fftCalcIn[i][1] -= avgQ;
+					m_fftCalcIn[i][0] -= g_DcOffsetI;
+					m_fftCalcIn[i][1] -= g_DcOffsetQ;
+                    SumVsq += (m_fftCalcIn[i][0] * m_fftCalcIn[i][0]) +
+                              (m_fftCalcIn[i][1] * m_fftCalcIn[i][1]);
 				}
-			//calculate FFT
+			}
+			g_avgI = avgI;
+			g_avgQ = avgQ;
+			g_framepwr = SumVsq * scalefactor * oneOverN ;
 
 //			cout << "Start FFT Calc Ticks : " <<GetTickCount();
 

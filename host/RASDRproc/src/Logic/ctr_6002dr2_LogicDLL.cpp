@@ -7807,9 +7807,9 @@ CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize
 		}
 	int size = fftPkt.size-1;
 
-	//remove DC
-	FFTdataY[0] = FFTdataY[1];
-	FFTdataY[size/2] = (FFTdataY[size/2+1]+	FFTdataY[size/2-1])/2;
+	////remove DC
+	//FFTdataY[0] = FFTdataY[1];
+	//FFTdataY[size/2] = (FFTdataY[size/2+1]+	FFTdataY[size/2-1])/2;
 	FFTsize = size;
 }
 

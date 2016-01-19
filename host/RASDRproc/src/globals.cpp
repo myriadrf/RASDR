@@ -90,6 +90,11 @@ float g_Sim_Factor = 1.0001;
 
 // background subtraction
 int g_backgroundDebugCfg = 0x27;    // see globals.h for code
+float g_integrationGain = 1.0;
+float g_DcOffsetI = 0.0;
+float g_DcOffsetQ = 0.0;
+float g_avgI = 0.0;
+float g_avgQ = 0.0;
 
 // statistics gathering/reporting
 volatile long g_Statistics_updateCount = 0;
