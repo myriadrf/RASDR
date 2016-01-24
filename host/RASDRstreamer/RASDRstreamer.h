@@ -4,7 +4,7 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION "0.1"
+#define SOFTWAREVERSION "0.1.1"
 
 namespace Streams
 {
@@ -234,6 +234,8 @@ namespace Streams
             this->RateProgressBar->Name = S"RateProgressBar";
             this->RateProgressBar->Size = System::Drawing::Size(350, 16);
             this->RateProgressBar->TabIndex = 0;
+            this->RateProgressBar->BackColor = System::Drawing::Color::White;
+
             // 
             // SampleRateBox
             // 
@@ -391,6 +393,7 @@ namespace Streams
 
         static ProgressBar			*XferRateBar;
         static Label				*XferRateLabel;
+        static long				    XferRateExpected;
         static TextBox				*DataBox;
         static TextBox				*SuccessBox;
         static TextBox				*FailureBox;
@@ -780,6 +783,7 @@ namespace Streams
 			tmp = String::Concat(tmp, TimeOut.ToString("0"), " ms");
 			Display(tmp);
 
+			XferRateExpected = (long)rate;
             //SamplesPerFrameBox->Text = PPX.ToString();
         }
 
@@ -896,7 +900,7 @@ namespace Streams
 				if (!e) fclose(fp);
 				e = fopen_s(&fp, fname, "wb");
 				if (e == 0) Display(String::Concat("Opened ", fname));
-				else        Display(String::Concat("Did not open ", fname));
+				else      { Display(String::Concat("Did not open ", fname)); fp = NULL; }
 			}
 
             // The infinite xfer loop.
@@ -1076,14 +1080,21 @@ namespace Streams
             if (totMS <= 0)	return;
 
             long XferRate = bytesXferred / totMS;
-			long XferRateRounded;
+            long XferRateRounded;
 
             // Convert to KiB/s
             XferRate = XferRate * 1000 / 1024;
 
             // Truncate last 1 or 2 digits
             int rounder = (XferRate > 2000) ? 100 : 10;
-			XferRateRounded = XferRate / rounder * rounder;
+            XferRateRounded = XferRate / rounder * rounder;
+
+            if (abs(XferRateExpected - XferRateRounded) > (10 * XferRateExpected / 100))
+                XferRateBar->BackColor = System::Drawing::Color::Red;		// >10%
+            else if (abs(XferRateExpected - XferRateRounded) > (3 * XferRateExpected / 100))
+                XferRateBar->BackColor = System::Drawing::Color::Orange;	// 3>10%
+            else
+                XferRateBar->BackColor = System::Drawing::Color::White;		// <3%
 
 			if(XferRate>625000)
 				XferRate = 625000;
