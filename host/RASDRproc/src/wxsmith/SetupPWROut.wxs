@@ -31,8 +31,8 @@
 				<object class="wxRadioBox" name="ID_RADIOBOX2" variable="NumbFiles" member="yes">
 					<label>Number of Files</label>
 					<content>
-						<item>Single (Append)</item>
-						<item>Multiple (Sufix File Name)</item>
+						<item>Single</item>
+						<item>Multiple (Suffix File Name)</item>
 					</content>
 					<default>-1</default>
 					<font>

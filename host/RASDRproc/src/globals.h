@@ -50,7 +50,6 @@ extern float g_avgQ;
 extern int g_UnlimitedAveraging;
 
 #define CSV_DEBUG   "RASDRproc-%s.csv"      // filename template to produce .csv output
-#define PROPER_ISO_TIMESTAMPS       true    // produce properly formatted ISO timestamps
 
 ////include <wx/string.h>
 extern int g_frame_delay;

@@ -39,7 +39,7 @@
 #define PACKETS_H
 
 #define SPLIT_PACKET_SIZE 10880 //number of I and Q pairs in split packet
-#define FFT_PACKET_SIZE 16384 // number of samples in FFT packet
+#define FFT_PACKET_SIZE 16384   // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
 #include <iostream>
 using namespace std;
 /**

@@ -93,7 +93,7 @@ TestingModule::TestingModule(Main_Module *pMainModule)
 	m_DCcorrectionOnOff = 1;
 	device = NULL;
 
-    initializeFFTplan(16384);
+    initializeFFTplan(16384);       // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
     initializeFIFO(DIGIGREEN_SPLIT_PACKET_SIZE, FFTsamples);
 }
 

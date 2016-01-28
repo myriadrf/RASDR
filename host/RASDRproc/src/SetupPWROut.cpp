@@ -79,8 +79,8 @@ SetupPWROut::SetupPWROut(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	FlexGridSizer1->Add(FileType, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	wxString __wxRadioBoxChoices_2[2] =
 	{
-		_T("Single (Append)"),
-		_T("Multiple (Sufix File Name)")
+		_T("Single"),
+		_T("Multiple (Suffix File Name)")
 	};
 	NumbFiles = new wxRadioBox(this, ID_RADIOBOX2, _T("Number of Files"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));
 	wxFont NumbFilesFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
@@ -99,13 +99,11 @@ SetupPWROut::SetupPWROut(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	wxFont StaticBox1Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
 	StaticBox1->SetFont(StaticBox1Font);
 	FlexGridSizer1->Add(StaticBox1, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-// BUG: this prevented the user's entry from persisting in a session
-//	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, _T("PowerOut.csv"), wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
-	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_PWRfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
+	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, _T("PowerOut.csv"), wxEmptyString, _T("*.csv"), wxDefaultPosition, wxDefaultSize, wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	wxFont OutputFileFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
 	OutputFile->SetFont(OutputFileFont);
 	FlexGridSizer1->Add(OutputFile, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	OverwriteFile = new wxCheckBox(this, ID_CHECKBOX1, _T("OVERWRITE"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+	OverwriteFile = new wxCheckBox(this, ID_CHECKBOX1, _T("Append/Overwrite File\?"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	OverwriteFile->SetValue(false);
 	wxFont OverwriteFileFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
 	OverwriteFile->SetFont(OverwriteFileFont);

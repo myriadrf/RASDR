@@ -348,6 +348,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	StaticText12 = new wxStaticText(Panel9, ID_STATICTEXT14, _("Samps/Frame:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT14"));
 	FlexGridSizer8->Add(StaticText12, 0, wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer9 = new wxFlexGridSizer(0, 3, 0, 0);
+	// TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
 	txtFFTsamples = new wxTextCtrl(Panel9, ID_TEXTCTRL3, _("16384"), wxDefaultPosition, wxSize(56,21), wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	txtFFTsamples->Disable();
 	FlexGridSizer9->Add(txtFFTsamples, 0, wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -1317,6 +1318,19 @@ void pnlSpectrum::changeSamplingFrequency(float samplingFrequency)
 {
     if(m_fftxaxisValues)
     {
+        // NB: this is the only place we need to test for a sampling
+        //     frequency change which determines if the frequency plan
+        //     changes.  Clear g_FFTfileIsDefined or g_OverwriteFFTfile if so
+        if( m_samplingFrequency != (unsigned long)samplingFrequency ) {
+            g_FFTfileIsDefined = false;     // require re-entry into FFT Output control
+            // or
+            //g_OverwriteFFTfile = false;   // will cause the next record to not append, but require a new file
+            //OverwriteChk->SetValue(false);
+#if _DEBUG
+            cout << "Disabling FFT file definition because sampling frequency changed" << endl;
+#endif // _DEBUG
+        }
+
         //negative frequencies
         for (int f = 0; f < m_FFTsamplesCount / 2 - 1; f++)
         {
@@ -1623,10 +1637,25 @@ void pnlSpectrum::OnspinSpanFreqChange(wxSpinEvent& event)
 
 /**
     @brief Changes FFT samples count used for calculations
+    @todo  May require a stop capture, start capture cycle...
 */
 void pnlSpectrum::OnspinFFTsamplesChange(wxSpinEvent& event)
 {
     int power = spinFFTsamples->GetValue();
+
+    // NB: this is the only place we need to check for changes to
+    //     the FFT samples/frame, for the purpose of cancelling
+    //     the g_FFTfileIsDefined or xxx in order to prevent
+    //     appending the wrong frequency plan to the same file.
+    if( twotoN(power) != m_FFTsamplesCount) {
+        g_FFTfileIsDefined = false;     // require re-entry into FFT Output control
+        // or
+        //g_OverwriteFFTfile = false;   // will cause the next record to not append, but require a new file
+        //OverwriteChk->SetValue(false);
+#if _DEBUG
+        cout << "Disabling FFT file definition because FFT samples changed" << endl;
+#endif // _DEBUG
+    }
     m_FFTsamplesCount = twotoN(power);
     if(ogl_IQline) ogl_IQline->SetDisplayArea(0, m_FFTsamplesCount, -2048, 2048);
     txtFFTsamples->SetValue( wxString::Format("%i", m_FFTsamplesCount));
@@ -1762,7 +1791,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                 // Write Time Stamp to file
                 if(g_FFTfileRecording && m_FFTCounter == 0) {
                     int ms = dt.UNow().GetMillisecond();
-                    wxSprintf(outbuf,":%d",ms); // FIXME: should be a '.' instead of ':'
+                    wxSprintf(outbuf,".%03d",ms);
                     if(g_FFTFileType == 0) {
                             if(g_FFT_TimeStandard == 0) {
                                     m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
@@ -1770,9 +1799,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                             else {
  // Bug fix 5/24                                   m_FileClassPtr->Write(dt.Now().ToUTC().FormatTime().c_str());
                                     m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
-#if defined(PROPER_ISO_TIMESTAMPS)
-                                    wxSprintf(outbuf,".%d",ms);
-#endif  // PROPER_ISO_TIMESTAMPS
+                                    wxSprintf(outbuf,".%03d",ms);
                                     m_FFTFileClassPtr->Write(outbuf);
                                     m_FFTFileClassPtr->Write("Z");
                                     }
@@ -1780,15 +1807,11 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     else {
                             if(g_FFT_TimeStandard == 0){
                                 m_FFTFileClassPtr->Write(dt.Now().FormatISOCombined().c_str());
-#if defined(PROPER_ISO_TIMESTAMPS)
-                                wxSprintf(outbuf,".%d",ms);
-#endif  // PROPER_ISO_TIMESTAMPS
+                                wxSprintf(outbuf,".%03d",ms);
                                 m_FFTFileClassPtr->Write(outbuf);}
                             else{
                                 m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
-#if defined(PROPER_ISO_TIMESTAMPS)
-                                wxSprintf(outbuf,".%d",ms);
-#endif  // PROPER_ISO_TIMESTAMPS
+                                wxSprintf(outbuf,".%03d",ms);
                                 m_FFTFileClassPtr->Write(outbuf);
                                 m_FFTFileClassPtr->Write("Z"); }
                             }
@@ -1964,7 +1987,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                 // Write Time Stamp to file
                 if(g_FFTfileRecording && m_FFTCounter == 0) {
                     int ms = dt.UNow().GetMillisecond();
-                    wxSprintf(outbuf,":%d",ms); // FIXME: should be a '.' instead of ':'
+                    wxSprintf(outbuf,".%03d",ms);
                     if(g_FFT_TimeStandard == 0 && g_FFTFileType == 0){
                         m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
                         m_FFTFileClassPtr->Write(outbuf); }
@@ -1973,16 +1996,12 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         m_FFTFileClassPtr->Write(outbuf);}
                     if(g_FFT_TimeStandard == 1 && g_FFTFileType == 0) {
                         m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
-#if defined(PROPER_ISO_TIMESTAMPS)
-                        wxSprintf(outbuf,".%d",ms);
-#endif  // PROPER_ISO_TIMESTAMPS
+                        wxSprintf(outbuf,".%03d",ms);
                         m_FFTFileClassPtr->Write(outbuf);
                         m_FFTFileClassPtr->Write("Z"); }
                     if(g_FFT_TimeStandard == 1 && g_FFTFileType == 1) {
                         m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
-#if defined(PROPER_ISO_TIMESTAMPS)
-                        wxSprintf(outbuf,".%d",ms);
-#endif  // PROPER_ISO_TIMESTAMPS
+                        wxSprintf(outbuf,".%03d",ms);
                         m_FFTFileClassPtr->Write(outbuf);
                         m_FFTFileClassPtr->Write("Z"); }
                     m_FFTFileClassPtr->Write(",");
@@ -2238,7 +2257,7 @@ void pnlSpectrum::RecordPwrLine(int index, double value)
     if(!m_PWRFileClassPtr || !m_PWRFileClassPtr->IsOpened()) return; // File not Opened
 
         int ms = dt.UNow().GetMillisecond();
-        wxSprintf(outbuf,":%d",ms); // FIXME: should be a '.' instead of ':'
+        wxSprintf(outbuf,".%03d",ms);
         if(g_PWRTimeStandard == 0 && g_PWRFileType == 0){
             m_PWRFileClassPtr->Write(dt.Now().FormatTime().c_str());
             m_PWRFileClassPtr->Write(outbuf); }
@@ -2247,16 +2266,12 @@ void pnlSpectrum::RecordPwrLine(int index, double value)
             m_PWRFileClassPtr->Write(outbuf);}
         if(g_PWRTimeStandard == 1 && g_PWRFileType == 0) {
             m_PWRFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
-#if defined(PROPER_ISO_TIMESTAMPS)
-            wxSprintf(outbuf,".%d",ms);
-#endif  // PROPER_ISO_TIMESTAMPS
+            wxSprintf(outbuf,".%03d",ms);
             m_PWRFileClassPtr->Write(outbuf);
             m_PWRFileClassPtr->Write("Z"); }
         if(g_PWRTimeStandard == 1 && g_PWRFileType == 1) {
             m_PWRFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
-#if defined(PROPER_ISO_TIMESTAMPS)
-            wxSprintf(outbuf,".%d",ms);
-#endif  // PROPER_ISO_TIMESTAMPS
+            wxSprintf(outbuf,".%03d",ms);
             m_PWRFileClassPtr->Write(outbuf);
             m_PWRFileClassPtr->Write("Z"); }
 
@@ -2365,33 +2380,17 @@ void pnlSpectrum::OnRecordFFTClick(wxCommandEvent& event)
 {
     FFTRec_btn->Enable(false); // Avoid Key Bounce
     if(!g_FFTfileRecording) {
-      bool success = OpenFFTfile();
-      if( success ) {
-        char outbuf[80];
-        FFTRec_btn->SetLabel("Stop FFT Rec");
-        cout << "FFT File recording" << endl;
-        m_FFTsRecorded = 0; //Reset
-        sprintf(outbuf,"%d",m_FFTsRecorded);
-        FFTsREC->SetValue(outbuf);
-        sprintf(outbuf,"***BEGIN DATA COLLECTION***\r\nKHz\r\n\0");
-        m_FFTFileClassPtr->Write(outbuf);
-                // Write Frequencies to File
-        for(int f = 0; f < m_FFTsamplesCount-1; f++){
-                if((g_FFTDataSource == 1)
-                   &&(m_fftxaxisValues[f]  >= m_FFTChartCenter- (m_FFTChartSpan/2))
-                   && (m_fftxaxisValues[f] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
-                sprintf(outbuf,",%0.5f\0",m_fftxaxisValues[f]*1e3);
-                m_FFTFileClassPtr->Write(outbuf);}
-                else if(g_FFTDataSource == 0){
-                sprintf(outbuf,",%0.5f\0",m_fftxaxisValues[f]*1e3);
-                m_FFTFileClassPtr->Write(outbuf);
-                }
-
-            }
-        sprintf(outbuf,"\r\n\0");
-        m_FFTFileClassPtr->Write(outbuf);
-        g_FFTfileRecording = true;  // only *AFTER* the header has been written...
-      }
+        bool success = OpenFFTfile();
+        if( success ) {
+            char outbuf[80];
+            FFTRec_btn->SetLabel("Stop FFT Rec");
+            cout << "FFT File recording" << endl;
+            m_FFTsRecorded = 0; //Reset
+            sprintf(outbuf,"%d",m_FFTsRecorded);
+            FFTsREC->SetValue(outbuf);
+            // NB: moved headers and frequency tags to OpenFFTfile()
+            g_FFTfileRecording = true;  // only *AFTER* the header has been written...
+        }
     } else {
         g_FFTfileRecording = false;
         FFTRec_btn->SetLabel("FFT Record");
@@ -2645,18 +2644,25 @@ bool pnlSpectrum::OpenFFTfile()
 {
     char outbuf[80];
     wxDateTime dt;
-    wxCommandEvent dummy;
+
     if(g_FFTfileIsDefined) {
-        //if(g_capturingData) OnbtnStopCaptureClick(dummy);
-        //if(!g_FFTfileIsOpen) {
-            cout << "Before new file" << endl;
-            if(m_FFTFileClassPtr == NULL) m_FFTFileClassPtr = new wxFile();
+        if(m_FFTFileClassPtr == NULL) m_FFTFileClassPtr = new wxFile();
+        if(g_OverwriteFFTfile && m_FFTFileClassPtr->Exists(g_FFTfileName)) {
+            // support for append mode
+            // NB: changes to frequency settings will disable g_FFTfileIsDefined
+            //     if necessary, it could be possible to read the file and compare
+            //     with the active frequency settings, but that is more work for
+            //     a dubious amount of gain.  By disabling g_FFTfileIsDefined,
+            //     the GUI will require the user to re-assign the FFT Output file
+            m_FFTFileClassPtr->Open(g_FFTfileName,wxFile::write_append,wxS_DEFAULT);
+            if(m_FFTFileClassPtr->IsOpened()) return true;
+        } else {
             m_FFTFileClassPtr->Create(g_FFTfileName,g_OverwriteFFTfile,wxS_DEFAULT);
-            cout << "After Create File" << endl;
             if(m_FFTFileClassPtr->IsOpened()) {
-                cout << "File Opened Success" << endl;
-                sprintf(outbuf,"To Record %d Frames Every %th Frame\0",g_FFTframesOut, g_FFTframeSkip);
+#ifdef _DEBUG
+                sprintf(outbuf,"To Record %d Frames Every %d-th Frame\0",g_FFTframesOut, g_FFTframeSkip);
                 cout << outbuf << endl;
+#endif
                 if(g_FFTFileType == 0 && m_FFTsamplesCount > 128){ //Set Max Samps/FRame for Excel
                     int fftsamples = 128;
                     txtFFTsamples->SetValue( wxString::Format("%i", fftsamples));
@@ -2684,10 +2690,27 @@ bool pnlSpectrum::OpenFFTfile()
                 else wxSprintf(outbuf,"Time Zn,UT");
                 m_FFTFileClassPtr->Write(outbuf);
                 m_FFTFileClassPtr->Write(",\r\n");
+                // NB: the frequency plan is written out here
+                sprintf(outbuf,"***BEGIN DATA COLLECTION***\r\nKHz\r\n\0");
+                m_FFTFileClassPtr->Write(outbuf);
+                for(int f = 0; f < m_FFTsamplesCount-1; f++) {
+                    if((g_FFTDataSource == 1)
+                            && (m_fftxaxisValues[f] >= m_FFTChartCenter - (m_FFTChartSpan/2))
+                            && (m_fftxaxisValues[f] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
+                        sprintf(outbuf,",%0.5f\0",m_fftxaxisValues[f]*1e3);
+                        m_FFTFileClassPtr->Write(outbuf);
+                    } else if(g_FFTDataSource == 0) {
+                        sprintf(outbuf,",%0.5f\0",m_fftxaxisValues[f]*1e3);
+                        m_FFTFileClassPtr->Write(outbuf);
+                    }
+                }
+                sprintf(outbuf,"\r\n\0");
+                m_FFTFileClassPtr->Write(outbuf);
                 return true;
             } else {
                 cout << "FFT file open Failed" << endl;
             }
+        }
     }
     else cout << "FFT filename is not defined" << endl;
     return false;
@@ -2697,21 +2720,17 @@ bool pnlSpectrum::OpenPWRfile()
 {
     char outbuf[80];
     wxDateTime dt;
-    wxCommandEvent dummy;
+
     if(g_PWRfileIsDefined) {
-        //if(g_capturingData) OnbtnStopCaptureClick(dummy);
-        //if(!g_PWRfileIsOpen) {
-            cout << "Before new file" << endl;
-            if(m_PWRFileClassPtr == NULL) m_PWRFileClassPtr = new wxFile(); // NB: only done once...
+        if(m_PWRFileClassPtr == NULL) m_PWRFileClassPtr = new wxFile();
+        if(g_OverwritePWRfile && m_PWRFileClassPtr->Exists(g_PWRfileName)) {
+            // support for append mode
+            m_PWRFileClassPtr->Open(g_PWRfileName,wxFile::write_append,wxS_DEFAULT);
+            if(m_PWRFileClassPtr->IsOpened()) return true;
+        } else {
             m_PWRFileClassPtr->Create(g_PWRfileName,g_OverwritePWRfile,wxS_DEFAULT);
-            cout << "After Create File" << endl;
             if(m_PWRFileClassPtr->IsOpened()) {
-                //if(g_PendingRestartCapture) { //Toggle to Place in effect
-                //        btnStartCapture->Enable(true);
-                //        OnbtnStartCaptureClick(dummy);
-                //        g_PendingRestartCapture = false;
-                //        }
-                m_PWRFileClassPtr->Write(g_FFTfileName ,wxStrlen((g_FFTfileName)));
+                m_PWRFileClassPtr->Write(g_PWRfileName ,wxStrlen((g_PWRfileName)));
                 m_PWRFileClassPtr->Write(",,,Created,");
                 if(g_PWRTimeStandard == 0) m_PWRFileClassPtr->Write(dt.Now().FormatDate().c_str()); //Local Time
                 else m_PWRFileClassPtr->Write(dt.Now().ToUTC().FormatDate().c_str()); //UT
@@ -2722,16 +2741,17 @@ bool pnlSpectrum::OpenPWRfile()
                 m_PWRFileClassPtr->Write(outbuf);
                 m_PWRFileClassPtr->Write(",\r\n");
                 // Insert Column header line.
-                m_PWRFileClassPtr->Write("TIME,ADC PWR,(MicroWatts),\r\n");
+                m_PWRFileClassPtr->Write("TIME,ADC PWR (uW),\r\n");
                 return true;
             } else {
                 cout << "PWR file open Failed" << endl;
             }
         }
- //   }
+    }
     else cout << "PWR filename is not defined" << endl;
     return false;
 }
+
 void pnlSpectrum::OnchkUpdateGraphsClick(wxCommandEvent& event)
 {
 }
