@@ -131,7 +131,7 @@
 			<object class="sizeritem">
 				<object class="wxFilePickerCtrl" name="ID_FILEPICKERCTRL1" variable="OutputFile" member="yes">
 					<message></message>
-					<path>FFTout.csv</path>
+					<path></path>
 					<wildcard>*.csv</wildcard>
 					<font>
 						<size>12</size>
@@ -149,7 +149,7 @@
 			</object>
 			<object class="sizeritem">
 				<object class="wxCheckBox" name="ID_CHECKBOX1" variable="OverwriteChk" member="yes">
-					<label>Overwrite File?</label>
+					<label>Append/Overwrite File?</label>
 					<size>199,26</size>
 					<font>
 						<size>12</size>
