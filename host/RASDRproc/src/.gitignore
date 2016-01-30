@@ -1,0 +1,5 @@
+*.depend
+*.layout
+obj
+DebugWin32
+ReleaseWin32
