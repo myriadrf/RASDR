@@ -122,7 +122,7 @@
 #define GPIO_X37		44  // X3.7
 #define GPIO_X39		45  // X3.9
 
-//gpif interface control signals - not ussed
+//gpif interface control signals - not used
 #define GPIO_SLCS		33
 #define GPIO_SLWR		34
 #define GPIO_SLOE		35
@@ -130,6 +130,12 @@
 #define GPIO_PKTEND		37
 #define GPIO_A0			38
 #define GPIO_A1			39
+
+// GPIO pin to function as a random number generator
+// http://www.cypress.com/forum/usb-30-super-speed/random-numbers
+#define GPIO_RANDOM		57
+#define RMAX_VAL		50
+#define RMAX_VAL_DIV_2	(RMAX_VAL/2)
 
 //USB control endpoint commands
 #define CFG_ADDR			0xAA
@@ -160,7 +166,7 @@ CyU3PDmaChannel glChHandlePtoU;          /* DMA Channel handle for FX3->USB tran
 
 uint32_t glDMARxCount = 0;               /* Counter to track the number of buffers received from USB. */
 uint32_t glDMATxCount = 0;               /* Counter to track the number of buffers sent to USB. */
-CyBool_t glIsApplnActive = CyFalse;      /* Whether the application is active or not. */
+CyBool_t glIsApplnActive    = CyFalse;   /* Whether the application is active or not. */
 CyBool_t glDataTransStarted = CyFalse;   /* Whether DMA transfer has been started after enumeration. */
 CyBool_t StandbyModeEnable  = CyFalse;   /* Whether standby mode entry is enabled. */
 CyBool_t TriggerStandbyMode = CyFalse;   /* Request to initiate standby entry. */
@@ -177,6 +183,7 @@ uint16_t on_time = 0, off_time = 0;
 CyU3PEvent glBulkLpEvent;       /* Event group used to signal the thread that there is a pending request. */
 uint32_t   gl_setupdat0;        /* Variable that holds the setupdat0 value (bmRequestType, bRequest and wValue). */
 uint32_t   gl_setupdat1;        /* Variable that holds the setupdat1 value (wIndex and wLength). */
+
 #define CYFX_USB_CTRL_TASK      (1 << 0)        /* Event that indicates that there is a pending USB control request. */
 #define CYFX_USB_HOSTWAKE_TASK  (1 << 1)        /* Event that indicates the a Remote Wake should be attempted. */
 
@@ -193,6 +200,33 @@ uint8_t *gl_UsbLogBuffer = NULL;
 #define ERR_DIGIT_OFF	400
 #define ERR_DIGIT_SPACE	1000
 #define ERR_DIGIT_END   3000
+
+/* Application Buffer Filler - creates plausible I/Q data
+ *
+ * TODO: add single/multi tone capability
+ * TODO: doing bursts of buffers does not provide sufficient entropy, consider doing one sample at a time
+ */
+uint16_t *glEp1Buffer[CY_FX_APP_DMA_BUF_COUNT];
+uint16_t  glEp1BufferSize[CY_FX_APP_DMA_BUF_COUNT];
+
+void
+CyFxAppFillBuffer(uint16_t *p, uint16_t sz)
+{
+	uint32_t rval;
+	uint16_t ui;
+	int16_t sample;
+
+    for( ui=0; ui<sz; ui+=sizeof(uint32_t))
+    {
+        (void)CyU3PGpioComplexSampleNow(GPIO_RANDOM, &rval);
+        sample = RMAX_VAL_DIV_2 - rval;
+        *p++ = 0xF000 | (sample & 0x0FFF);
+
+        (void)CyU3PGpioComplexSampleNow(GPIO_RANDOM, &rval);
+        sample = RMAX_VAL_DIV_2 - rval;
+        *p++ = 0xE000 | (sample & 0x0FFF);
+    }
+}
 
 /* Application Error Handler */
 void
@@ -306,7 +340,11 @@ CyFxUtoPDmaCallback (
     {
         /* This is a produce event notification to the CPU. This notification is 
          * received upon reception of every buffer. We have to discard the buffer
-         * as soon as it is received to implement the data sink. */
+         * as soon as it is received to implement the data sink.
+         *
+         * TODO: this is where the data would be used to write into the outgoing
+         * data blocks so that one could define the data playback buffer.
+         */
         status = CyU3PDmaChannelDiscardBuffer(chHandle);
         if (status != CY_U3P_SUCCESS)
         {
@@ -358,7 +396,6 @@ CyFxApplnStart(void)
     CyU3PDmaChannelConfig_t dmaCfg;
     CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
     CyU3PUSBSpeed_t usbSpeed = CyU3PUsbGetSpeed();
-
 
     /* First identify the usb speed. Once that is identified,
      * create a DMA channel and start the transfer on this. */
@@ -477,7 +514,15 @@ CyFxApplnStart(void)
             //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaChannelGetBuffer failed, Error code = %d\n", apiRetStatus);
             CyFxAppErrorHandler(apiRetStatus,4);
         }
-        CyU3PMemSet(buf_p.buffer, CY_FX_APP_PATTERN, buf_p.size);
+
+        // Keep track of buffer locations so that we can keep filling it in the background
+        glEp1Buffer[index]     = (uint16_t *)buf_p.buffer;
+        glEp1BufferSize[index] = buf_p.size;
+
+        // Fill with plausible RASDR data (12 bit values in noise with I, Q signaling)
+        //CyU3PMemSet(buf_p.buffer, CY_FX_APP_PATTERN, buf_p.size);
+        CyFxAppFillBuffer(glEp1Buffer[index], glEp1BufferSize[index]);
+
         apiRetStatus = CyU3PDmaChannelCommitBuffer(&glChHandlePtoU, buf_p.size, 0);
         if (apiRetStatus != CY_U3P_SUCCESS)
         {
@@ -807,7 +852,7 @@ CyFxApplnUSBVendorCB (
     			  glEp0Buffer_Tx[i+2] = serial_num[(i*2)+2];
     		  }
 
-    		  break;
+    		break;
 
     	  case CMD_ADF_WR:
     		  	//Command format:
@@ -1000,7 +1045,6 @@ CyFxApplnUSBSetupCB (
                     isHandled = CyTrue;
                     CyU3PUsbAckSetup();
                 }
-
                 if (wIndex == CY_FX_EP_CONSUMER)
                 {
                     CyU3PDmaChannelReset(&glChHandlePtoU);
@@ -1108,6 +1152,17 @@ CyFxConfigureGPIO(void)
     CyU3PGpioClock_t  gpioClock;
 	CyU3PGpioSimpleConfig_t gpioConfig;
 
+	// http://www.cypress.com/forum/usb-30-super-speed/random-numbers
+	CyU3PGpioComplexConfig_t gpioRandomNumberConfig = {
+		CyFalse, CyFalse, CyFalse, CyFalse,
+		CY_U3P_GPIO_MODE_STATIC,           // The GPIO itself is not to be affected, we just use the timer.
+		CY_U3P_GPIO_NO_INTR,               // No interrupts associated with this timer.
+		CY_U3P_GPIO_TIMER_HIGH_FREQ,       // Run the GPIO at the high clock frequency selected at GpioInit.
+		0,                                 // Start timer at 0.
+		RMAX_VAL,                          // Set the period to the range of the numbers to be generated.
+		0                                  // The threshold is don't care.
+	};
+
 	/* Initialize the GPIO block. If we are transitioning from the boot app, we can verify whether the GPIO
 	   state is retained. */
 	gpioClock.fastClkDiv = 2;
@@ -1142,6 +1197,14 @@ CyFxConfigureGPIO(void)
 	{
 		//CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PGpioSetSimpleConfig failed, error code = %d\n", apiRetStatus);
 		CyFxAppErrorHandler(apiRetStatus,46);
+	}
+
+	/* Configure a GPIO as a random timer */
+	apiRetStatus = CyU3PGpioSetComplexConfig(GPIO_RANDOM, &gpioRandomNumberConfig);
+	if (apiRetStatus != CY_U3P_SUCCESS)
+	{
+		//CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PGpioSetComplexConfig failed, error code = %d\n", apiRetStatus);
+		CyFxAppErrorHandler(apiRetStatus,47);
 	}
 }
 
@@ -1315,6 +1378,7 @@ AppThread_Entry (
     uint32_t eventStat;                                                 /* Variable to hold current status of the events. */
     uint16_t prevUsbLogIndex = 0, tmp1, tmp2;
     CyU3PUsbLinkPowerMode curState;
+    int index = 0;
 
     /* Initialize the peripheral modules */
     CyFxApplnDebugInit();
@@ -1340,6 +1404,10 @@ AppThread_Entry (
         }
         /* LED toggling function end  */
 
+        /* stir-in variations in the output values as we run */
+        CyFxAppFillBuffer(glEp1Buffer[index], glEp1BufferSize[index]);
+        if ( ++index >= CY_FX_APP_DMA_BUF_COUNT ) index = 0;
+
         /* The following call will block until at least one of the events enabled in eventMask is received.
            The eventStat variable will hold the events that were active at the time of returning from this API.
            The CLEAR flag means that all events will be atomically cleared before this function returns.
@@ -1359,10 +1427,11 @@ AppThread_Entry (
                     stat = CyU3PUsbSendDevNotification(1, 0, 0);
                 else
                     stat = CyU3PUsbDoRemoteWakeup();
-
                 if (stat != CY_U3P_SUCCESS)
+                {
                     //CyU3PDebugPrint(2, "Remote wake attempt failed with code: %d\r\n", stat);
                     CyFxAppErrorHandler(stat,65);
+                }
             }
         }
 
@@ -1380,7 +1449,6 @@ AppThread_Entry (
         }
         else
         {
-
             /* Once data transfer has started, we keep trying to get the USB link to stay in U0. If this is done
                before data transfers have started, there is a likelihood of failing the TD 9.24 U1/U2 test. */
             if ((CyU3PUsbGetSpeed() == CY_U3P_SUPER_SPEED) && (glDataTransStarted))

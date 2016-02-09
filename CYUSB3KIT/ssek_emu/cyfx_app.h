@@ -52,7 +52,6 @@
 #define CY_FX_APP_DMA_TX_SIZE        (0)                       /* DMA transfer size is set to infinite */
 #define CY_FX_APP_THREAD_STACK       (0x1000)                  /* Application thread stack size */
 #define CY_FX_APP_THREAD_PRIORITY    (8)                       /* Application thread priority */
-#define CY_FX_APP_PATTERN            (0xAA)                    /* 8-bit pattern to be loaded to the source buffers. */
 
 /* Endpoint and socket definitions for the application */
 
@@ -78,7 +77,6 @@
 /* Burst mode definitions: Only for super speed operation. The maximum burst mode 
  * supported is limited by the USB hosts available. The maximum value for this is 16
  * and the minimum (no-burst) is 1. */
-
 
 /* Burst length in 1 KB packets. Only applicable to USB 3.0. */
 #define CY_FX_EP_BURST_LENGTH           (4)                       /* 1 to 16.  More is faster, but uses more buffer memory */
