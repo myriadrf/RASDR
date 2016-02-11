@@ -142,10 +142,10 @@
 			<object class="sizeritem">
 				<object class="wxChoice" name="ID_CHOICE1" variable="RecordRate" member="yes">
 					<content>
-						<item>1 Per Second</item>
-						<item>1 Per 10 Seconds</item>
-						<item>1 Per 30 Seconds</item>
-						<item>1 Per Minute</item>
+						<item>Every integration</item>
+						<item>Every 10 integrations</item>
+						<item>Every 30 integrations</item>
+						<item>Every 60 integrations</item>
 					</content>
 					<selection>2</selection>
 					<size>150,27</size>

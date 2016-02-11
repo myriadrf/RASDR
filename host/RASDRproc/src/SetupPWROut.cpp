@@ -116,10 +116,10 @@ SetupPWROut::SetupPWROut(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	StaticText1->SetFont(StaticText1Font);
 	FlexGridSizer1->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	RecordRate = new wxChoice(this, ID_CHOICE1, wxDefaultPosition, wxSize(150,27), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
-	RecordRate->Append(_T("1 Per Second"));
-	RecordRate->Append(_T("1 Per 10 Seconds"));
-	RecordRate->SetSelection( RecordRate->Append(_T("1 Per 30 Seconds")) );
-	RecordRate->Append(_T("1 Per Minute"));
+	RecordRate->Append(_T("Every integration"));
+	RecordRate->Append(_T("Every 10 integrations"));
+	RecordRate->SetSelection( RecordRate->Append(_T("Every 30 integrations")) );
+	RecordRate->Append(_T("Every 60 integrations"));
 	wxFont RecordRateFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
 	RecordRate->SetFont(RecordRateFont);
 	FlexGridSizer1->Add(RecordRate, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
