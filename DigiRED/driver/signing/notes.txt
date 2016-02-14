@@ -1,6 +1,11 @@
 = Signing =
 
-From reading [1], I have boiled down the information to that which is minimially relevant.
+From reading [1], I have boiled down the information to that which is minimially relevant.  I have made two batch files for my own use, see 'test1.bat' and 'test2.bat'.
+
+'test1.bat' creates the certificates you need
+'test2.bat' signs the driver package with the certificates you created in 'test1.bat'
+
+The remainder is a discussion on how I got to these two scripts.  See also [7].
 
 == Background ==
 
@@ -58,6 +63,14 @@ certmgr.exe -add OutputFile.cer -s -r localMachine trustedpublisher
 
 = Appendix =
 
+== Using the signing certificates ==
+
+I had recently archived the certificates I used in signing our driver package in September 2015.  In February, Cypress had released to internal users a driver set that included Windows 10 support.  I attempted to use the signing certificate I had created before, but it was failing because it would say 'password not matching' or something like that.  It seems that using *ANY* password for the 'signing' certificate leads you into the 'password not matching' condition.
+
+In the end, I created a new signing certificate from the original authority certificate (whose password was known and accepted) that used 'None' for the password.  This allowed the signing process to complete.
+
+== Turning off signed driver testing ==
+
 Some places suggest turning test signing on for kernel mode signatures.  This is only needed if you are trying to use a kernel driver that is not signed with certificates that chain up to the root-of-trust that is pre-installed/updated in windows the registry.  For the purpose of RASDR, we are now using WHQL/signed drivers from Cypress, so we do not need this.
 
 From [6, pg 16], The following shows an example of running BDCEdit at the command prompt:
@@ -75,6 +88,7 @@ Bcdedit.exe /set TESTSIGNING OFF
 [4] http://msdn.microsoft.com/en-us/library/windows/hardware/ff544842.aspx
 [5] http://msdn.microsoft.com/en-us/windows/hardware/dn913721
 [6] http://msdn.microsoft.com/en-us/library/windows/hardware/gg487332.aspx
+[7] https://groups.google.com/forum/#!msg/microsoft.public.development.device.drivers/b6yExkfvRWU/GAdXsutfKHoJ
 
 [x] https://technet.microsoft.com/en-us/library/dd919238%28v=ws.10%29.aspx
 [x] http://stackoverflow.com/questions/7175203/how-to-sign-my-driver-so-it-will-install-on-windows-7-64-bit
