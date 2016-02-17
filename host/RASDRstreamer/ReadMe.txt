@@ -34,6 +34,12 @@ The program does not overwrite an existing file, rather it adds a '#NNN' suffix 
 
 The format of the data are interleaved I and Q 16-bit samples encoded as described in Appendix E of the RASDR User Manual pg. 67-68.  That is, the control bits for I/Q, FIFO flags and PPS are encoded and must be removed in post-processing to interpret the ADC data.  The I/Q streams will also need to be de-interleaved and aligned.  If the HOST PC data acquisition system cannot keep up with the actual data rate (as calculated) then correct interpretation of the I/Q data may require flipping of bits and re-synchronizing to the PPS signal bit.
 
+NOTE:  As per Microsofts documentation:
+https://msdn.microsoft.com/en-us/windows-drivers/develop/using_the_microsoft_c_runtime_with_user_mode_drivers_and_apps
+
+The VC re-distributable components are provided with the application file.  They can also be downloaded here:
+https://www.microsoft.com/en-us/download/details.aspx?id=40784
+
 ==============================================================================
     CHANGELOG
 ==============================================================================
