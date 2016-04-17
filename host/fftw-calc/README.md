@@ -89,7 +89,7 @@ CPU Threads = 2
 ```
 Ok, it seems obvious that how you build fftw makes a difference, but how to document and describe that so that you build in the most efficient way...  [This](http://www.fftw.org/fftw3_doc/Installation-on-Unix.html#Installation-on-Unix) is a good place to start.
 
-I confirm that by using {{{ ./configure --enable-sse2 --enable-avx }}} when building fftw 3.3.4, I get the same performance as the native fftw 3.3.3-sse2-avx that came with GNU Radio Live DVD 3.7.9.1
+I confirm that by using ``` ./configure --enable-sse2 --enable-avx ``` when building fftw 3.3.4, I get the same performance as the native fftw 3.3.3-sse2-avx that came with GNU Radio Live DVD 3.7.9.1
 
 ### References
 
