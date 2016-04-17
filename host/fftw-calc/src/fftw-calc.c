@@ -95,6 +95,7 @@ void main(int argc, char *argv[], char *envp[])
 	printf("FS=%.2f%s, %.2f%% overlap, %.2f %s (%s method)\n",
 		FS, fs_units, WIN*100.0, ntotal, units, EST?"by estimate":"by measure");
 
+    printf("FFTw Version = %s\n", fftw_version);
     printf("Current CPU = %s\n", cpu.name.str);
     printf("CPU Threads = %d\n", cpu.threads);
 
