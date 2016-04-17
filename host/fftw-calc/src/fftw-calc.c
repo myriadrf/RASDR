@@ -68,7 +68,7 @@ void main(int argc, char *argv[], char *envp[])
 
     cpuid_get_info( &cpu );
 
-	printf("FFT(%u,%s):\n",N,EST?"estimated":"measured");
+	printf("FFT(%zu,%s):\n",N,EST?"estimated":"measured");
 	in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
 	out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
 	p = fftw_plan_dft_1d(N, in, out, FFTW_FORWARD, EST?FFTW_ESTIMATE:FFTW_MEASURE);
