@@ -61,6 +61,33 @@ Win7 32-bit, FFTW 3.3.3, Code::Blocks 12.11/MinGW 3.20
 ### TODO
 
 - Explore use of [mingw-w64](http://mingw-w64.org/doku.php)
+- Find out why different builds of fftw behave different.  E.g:
+
+{{{ GNU Radio Live DVD 3.7.9.1 w/native fftw fftw-3.3.3-sse2-avx:
+$ test.1/fftw-calc 2048 2e6 0.0 0
+FFT(2048,measured):
+(dft-ct-dit/64
+  (dftw-direct-64/252 "t2fv_64_sse2")
+  (dft-direct-32-x64 "n2fv_32_sse2"))
+FLOPS: add=25824 mul=8000 fma=2688 total=39200 Flops/frame
+FS=2.00MHz, 0.00% overlap, 38.28 MFlops (by measure method)
+Current CPU = Intel(R) Pentium(R) Dual  CPU  E2140  @ 1.60GHz
+CPU Threads = 2
+}}}
+{{{ GNU Radio Live DVD 3.7.9.1 w/re-built fftw 3.3.4:
+$ build/fftw-calc 2048 2e6 0.0 0
+FFT(2048,measured):
+(dft-ct-dit/32
+  (dftw-direct-32/62 "t1_32")
+  (dft-direct-64-x32 "n1_64"))
+FLOPS: add=47616 mul=11904 fma=9344 total=78208 Flops/frame
+FS=2.00MHz, 0.00% overlap, 76.38 MFlops (by measure method)
+Current CPU = Intel(R) Pentium(R) Dual  CPU  E2140  @ 1.60GHz
+CPU Threads = 2
+}}}
+Ok, it seems obvious that how you build fftw makes a difference, but how to document and describe that so that you build in the most efficient way...  [This](http://www.fftw.org/fftw3_doc/Installation-on-Unix.html#Installation-on-Unix) is a good place to start.
+
+I confirm that by using {{{ ./configure --enable-sse2 --enable-avx }}} when building fftw 3.3.4, I get the same performance as the native fftw 3.3.3-sse2-avx that came with GNU Radio Live DVD 3.7.9.1
 
 ### References
 
