@@ -25,6 +25,12 @@ Using a shell or command prompt window, create a directory and launch CMake.  It
 
 ### Tested On
 
+Linux/[GNU Radio Live DVD](http://gnuradio.org/redmine/projects/gnuradio/wiki/GNURadioLiveDVD) 3.7.9.1, FFTW 3.3.4, GCC 4.8.
+
+### Previously Tested On June 2015
+
+These environments had previously worked, but it has been a while and a few adjustments were needed when testing with the [GNU Radio Live DVD](http://gnuradio.org/redmine/projects/gnuradio/wiki/GNURadioLiveDVD).  They need to be re-tested.
+
 Linux/CentOS 6, FFTW 3.3.3, GCC 4.4.7
   - NB: this just worked as above
 
