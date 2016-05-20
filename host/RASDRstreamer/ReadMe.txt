@@ -13,7 +13,7 @@ https://github.com/myriadrf/RASDR/tree/master/host/RASDRstreamer
 To use the Program, perform the following steps:
 
 1) insert RASDR device to a USB2 or USB3 port
-2) Load RASDRviewer 1.2.2.2, and configure it to the acquisition parameters you wish to use.  { sample rate, samples/frame, bandwidth, gain settings, etc. }
+2) Load RASDRviewer 1.2.2.2 or RASDRproc, and configure it to the acquisition parameters you wish to use.  { sample rate, samples/frame, bandwidth, gain settings, etc. }
    a. Please note that when using USB2, 10 MS/s is the practical limit
 3) Ensure that you are taking data the way you want it by using RASDRviewer to START and STOP capturing samples.
 4) Start RASDRstreamer.exe (x86 or x64) and select the RASDR device in the Connected Devices List
@@ -43,6 +43,12 @@ https://www.microsoft.com/en-us/download/details.aspx?id=40784
 ==============================================================================
     CHANGELOG
 ==============================================================================
+
+v0.1.1 - First Public Distribution
+
+  Track when transfer rate is not close to what is expected
+  Color the transfer rate bar if the expected/actual data rate differs by more than 3% and 10%
+  Fix bug when closing if raw output file is not opened
 
 v0.1 - First Source Code Release
 
