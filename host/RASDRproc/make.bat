@@ -34,6 +34,26 @@ set PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRo
 call %CODEBLOCKS_ROOT%\MinGW\mingwvars.bat
 @if errorlevel 1 goto stop
 
+@rem Build automation for release engineering
+@if "%1" == "release" @(
+    @pushd %_DP0%
+    @if exist "%_DP0%\dist" rmdir /s/q "%_DP0%\dist"
+    @echo *** Building RASDRproc Release.  ETA about 4min... ***
+    ( cd "%_DP0%\%FOLDER%" & "%CODEBLOCKS_ROOT%\codeblocks.exe" --rebuild --target="Release Win32" "%PROJECT%" )
+    @if errorlevel 1 goto stop
+    @echo *** Building RASDRproc Debug.  ETA about 4min... ***
+    ( cd "%_DP0%\%FOLDER%" & "%CODEBLOCKS_ROOT%\codeblocks.exe" --rebuild --target="Debug Win32" "%PROJECT%" )
+    @if errorlevel 1 goto stop
+    @mkdir "%_DP0%\dist"
+    @copy "%_DP0%\%FOLDER%\ReleaseWin32\*.dll" "%_DP0%\dist"
+    @copy "%_DP0%\%FOLDER%\ReleaseWin32\RASDRproc.exe" "%_DP0%\dist"
+    @copy "%_DP0%\%FOLDER%\DebugWin32\RASDRproc_d.exe" "%_DP0%\dist"
+    @copy "%_DP0%\relnotes.txt" "%_DP0%\dist\readme.txt"
+    @echo *** DONE.  The release distribution is in the %_DP0%\dist\ ***
+    @popd
+    goto done
+)
+
 @rem Batch build the program
 ( cd %_DP0%\%FOLDER% & %CODEBLOCKS_ROOT%\codeblocks.exe --no-batch-window-close --rebuild --target="%BUILD_TARGET%" %PROJECT% )
 @if not errorlevel 1 goto done

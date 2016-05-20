@@ -1,0 +1,50 @@
+RASDRproc v0.2.0.3 - May 20, 2016
+=================================
+
+RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
+RASDRproc_d.exe is a debug version that opens a DOS console which writes diagnostic data out
+
+The program is able to configure RASDR2 and RASDR3 devices, set sample rates and receiver parameters.  It can optionally also display received data in time and frequency domain, I vs Q and total power.  Data collected may be saved to ASCII output files for further analysis and post-processing.
+
+
+System Requirements:
+
+1. Windows (XP or later) machine.  Dual core machines will work but a quad (or larger) core system is recommended.
+2. Lime Microsystems/Myriad RF - DigiRed board with Myriad RF board ("RASDR2").
+3. USB 2 or USB 3 port.
+4. SARA "RASDR Radio Astronomy SDR Rx Interface" driver.
+
+
+Usage:
+
+Connect a RASDR2 device to the USB port of your computer (see the RASDR user manual for details on assigning the driver).  Double-click either RASDRproc or RASDRproc_d and wait for it to configure the device.  If you see non-zero values for "chip: rev: mask:" in the lower-left corner of the screen, it has connected to the RASDR device successfully.  Otherwise, you may still use the GUI functions to setup the configuration file.
+
+At this point, you may press 'Start Acquisition' and observe the data collection.
+
+When you close the program, the last set of parameters used will be written to the "RASDR.cfg" file for use next time.  RASDRproc produces annotated configuration files whose settings are described in the file itself.  It is compatible with the (un-annotated) ASCII configuration files used by RASDRviewer 1.2.2.2 and BELOW.
+
+
+DC Offset Correction:
+
+RASDRproc uses *STATIC* DC Offset Correction.  The calibration procedure is as follows:
+
+1) Edit the RASDR.cfg file in the same folder as RASDRproc(_d).exe to set the "DC Offset for I samples" and "DC Offset for Q samples" to 0.0.  You can also delete the RASDR.cfg file which will also have the effect of clearing the DC Offset.
+
+2) Start the program, pick some settings and Start Acquisition to acquire data for a short time.  You will see the signal-vs-time plot in the upper left corner of the GUI have different levels for the blue and red plots.
+
+3) Stop Acquisition and CLOSE the program.  The "RASDR.cfg" file that is written by the program will have calculated the DC Offset value needed to correct the offset.
+
+4) Start the program again.  Now, the values listed in the configuration file will be used to correct the offset.
+
+If necessary, repeat the above procedure to compute new offsets.  Typically, it has not been seen that the offset needs to be corrected continuously, but the offset IS different each time the RASDR2 device is powered up and it does depend on what antenna system and front end electronics are connected to the RASDR RX port.
+
+
+Known Issues:
+
+The program will give an ugly dialog box if it cannot find its settings file 'RASDR.cfg', but will create a new one when the program exits.
+
+When using USB 3 on a marginal machine (e.g. dual core, 4GB RAM) the application is known to stop acquiring data.  With the updated Cypress WHQL driver, this condition can be cleared by manually stopping then restarting acquisition.  It is not yet understood why this occurs.  This behavior has not been observed on a more robust machine (e.g. quad core, 8GB RAM).  The working theory at this point is that RASDRviewer/RASDRproc and its use of the Cypress driver API requires two cores to itself and OS activity can interfere with the timing of completion requests for USB buffers.  This condition will be corrected as soon as the root cause is determined.
+
+Scaling of the frequency plot, the use of markers and other aspects of the UI can produce unsatisfactory results.  Please be persistent in your efforts to make the plot look they way you want it.
+
+"RASDRproc.exe", if started w/o a RASDR device connection may take a very long time to start.  This does not seem to be the case with "RASDRproc_d.exe"
