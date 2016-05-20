@@ -3,3 +3,5 @@
 ipch
 x64
 x86
+dist
+build.log
