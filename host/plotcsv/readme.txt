@@ -9,7 +9,7 @@ Options:
                         Specify how to perform background subtraction;if the
                         word automatic is used, then the background will be
                         takenfrom the average of all lines in the file.
-                        Otherwise, it is takenas a file to process.  The file
+                        Otherwise, it is taken as a file to process.  The file
                         must have the same frequency plan as the foreground
                         file.
   -c, --cancel-dc       Cancel out component at frequency bin for 0Hz

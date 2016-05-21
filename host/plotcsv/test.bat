@@ -10,7 +10,7 @@
 @REM                         Specify how to perform background subtraction;if the
 @REM                         word automatic is used, then the background will be
 @REM                         takenfrom the average of all lines in the file.
-@REM                         Otherwise, it is takenas a file to process.  The file
+@REM                         Otherwise, it is taken as a file to process.  The file
 @REM                         must have the same frequency plan as the foreground
 @REM                         file.
 @REM   -c, --cancel-dc       Cancel out component at frequency bin for 0Hz
