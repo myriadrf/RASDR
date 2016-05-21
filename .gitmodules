@@ -1,0 +1,3 @@
+[submodule "host/fftw-calc"]
+	path = host/fftw-calc
+	url = https://github.com/bvacaliuc/fftw-calc
