@@ -25,6 +25,8 @@
 
 #if defined(_MSC_VER)
 #define strcasecmp      _stricmp
+static FILE *_fopen(const char *f, const char *m) { FILE *fp = NULL; int e = fopen_s(&fp, f, m); return fp; }
+#define fopen(F,M)      _fopen(F,M)
 #else
 #include <strings.h>    // POSIX
 #endif
