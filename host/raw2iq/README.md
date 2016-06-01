@@ -38,9 +38,12 @@ MacOS 10.10.5, MACPORTS 2.3.4, GCC 4.8.5
   - NB: used $ CC=gcc-mp-4.8 CXX=g++-mp-4.8 cmake ../src
   - NB: used $ make
 
+Win7  32-bit, MSVC++ Express 2013
+
 ### TODO
 
-- Actually implement the code; this is just a template
+- still need to handle I/Q flip conditions
+- still need to output ASCII timestamp index file
 
 ### References
 
