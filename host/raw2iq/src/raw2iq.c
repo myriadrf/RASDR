@@ -225,12 +225,15 @@ int main(int argc, char *argv[], char *envp[])
                 size_t n, r;
 
                 //#pragma omp master
-                n = fread(b,PAGE,g.threads,g.infd);
+                n = fread(b, sizeof(uint8_t), PAGE*g.threads, g.infd);
                 //#pragma omp barrier
 
                 TRACE("n="__SIZE_T_SPECIFIER", %d, err=%d\n", n, PAGE*g.threads, ferror(g.infd));
 
                 if (ferror(g.infd)) { perror(g.infile); }
+                if ((n % PAGE) != 0) TRACE("bytes read is not modulo PAGE\n");
+                if ( n < PAGE ) TRACE("did not read enough bytes to process a full PAGE\n");
+                n = n / PAGE;
                 if (n < 1) break;
 
                 // TODO: inspect first sample of each block to determine I/Q mismatch,
