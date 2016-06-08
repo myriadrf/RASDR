@@ -228,7 +228,10 @@ int main(int argc, char *argv[], char *envp[])
                 n = fread(b,PAGE,g.threads,g.infd);
                 //#pragma omp barrier
 
-                TRACE("n="__SIZE_T_SPECIFIER", %d\n", n, PAGE*g.threads);
+                TRACE("n="__SIZE_T_SPECIFIER", %d, err=%d\n", n, PAGE*g.threads, ferror(g.infd));
+
+                if (ferror(g.infd)) { perror(g.infile); }
+                if (n < 1) break;
 
                 // TODO: inspect first sample of each block to determine I/Q mismatch,
                 //       if so, convert the last sample of each block and place in a
@@ -257,9 +260,9 @@ int main(int argc, char *argv[], char *envp[])
                         char _tag[4];
                         int _s;
 
-                        for (_s=0;_s<32;_s++,_iq++)  // N=number of samples to dump
+                        for (_s = 0; _s<32; _s++, _iq++)  // N=number of samples to dump
                         {
-                            snprintf(_tag,sizeof(_tag),"%c%02d",_s%2?'q':'i',_s/2);
+                            snprintf(_tag, sizeof(_tag), "%c%02d", _s % 2 ? 'q' : 'i', _s / 2);
                             TRACE("%s=%#0x, sample=%+ 5d, iqsel=%u, flag=%#x, pps=%u\n",
                                 _tag, _iq->ui, _iq->s.sample, _iq->s.iqsel, _iq->s.flag, _iq->s.pps);
                         }
@@ -279,6 +282,28 @@ int main(int argc, char *argv[], char *envp[])
                         *out++ = in->s.sample;
                         in++;
                     }
+
+                    //http://stackoverflow.com/questions/7661114/the-openmp-master-pragma-must-not-be-enclosed-by-the-parallel-for-pragma
+                    //#pragma omp master it is error
+                    //#pragma omp critical it is right
+#ifdef _OPENMP
+                    if (g.verbose > 3 && omp_get_thread_num() == 0)
+#else
+                    if (g.verbose > 3)
+#endif
+                    {
+                        int16_t *_iq = (int16_t *)&b[i*PAGE];
+                        char _tag[4];
+                        int _s;
+
+                        for (_s = 0; _s<32; _s++, _iq++)  // N=number of samples to dump
+                        {
+                            snprintf(_tag, sizeof(_tag), "%c%02d", _s % 2 ? 'q' : 'i', _s / 2);
+                            TRACE("%s, sample=%+ 5d, otm=%d, xcc=%d\n",
+                                _tag, *_iq, otm[_s], xcc[_s]);
+                        }
+                    }
+
                 }
 
                 // render ASCII output
