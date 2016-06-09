@@ -172,12 +172,14 @@ void argparse( int argc, char *argv[], char *envp[] )
 }
 
 // http://stackoverflow.com/questions/1644868/c-define-macro-for-debug-printing
+// http://stackoverflow.com/questions/7788850/macro-definition
+// http://blog.mellenthin.de/archives/2010/10/26/portable-__va_args__-macros-for-linux-hp-ux-solaris-and-aix/comment-page-1/
 #define LOG(fmt, ...) \
-            do { fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+            do { fprintf(stderr, fmt, ##__VA_ARGS__); } while (0)
 #define INFO(fmt, ...) \
-            if (g.verbose>0) { fprintf(stderr, fmt, __VA_ARGS__); }
+            if (g.verbose>0) { fprintf(stderr, fmt, ##__VA_ARGS__); }
 #define TRACE(fmt, ...) \
-            if (g.verbose>1) { fprintf(stderr, fmt, __VA_ARGS__); }
+            if (g.verbose>1) { fprintf(stderr, fmt, ##__VA_ARGS__); }
 
 #define PAGE    4096
 
@@ -266,7 +268,7 @@ int main(int argc, char *argv[], char *envp[])
                         for (_s = 0; _s<32; _s++, _iq++)  // N=number of samples to dump
                         {
                             snprintf(_tag, sizeof(_tag), "%c%02d", _s % 2 ? 'q' : 'i', _s / 2);
-                            TRACE("%s=%#0x, sample=%+ 5d, iqsel=%u, flag=%#x, pps=%u\n",
+                            TRACE("%s=%#0x, sample=%+5d, iqsel=%u, flag=%#x, pps=%u\n",
                                 _tag, _iq->ui, _iq->s.sample, _iq->s.iqsel, _iq->s.flag, _iq->s.pps);
                         }
                     }
@@ -302,7 +304,7 @@ int main(int argc, char *argv[], char *envp[])
                         for (_s = 0; _s<32; _s++, _iq++)  // N=number of samples to dump
                         {
                             snprintf(_tag, sizeof(_tag), "%c%02d", _s % 2 ? 'q' : 'i', _s / 2);
-                            TRACE("%s, sample=%+ 5d, otm=%d, xcc=%d\n",
+                            TRACE("%s, sample=%+5d, otm=%d, xcc=%d\n",
                                 _tag, *_iq, otm[_s], xcc[_s]);
                         }
                     }
@@ -328,7 +330,7 @@ int main(int argc, char *argv[], char *envp[])
                             const char f1 = (xcc[j] || xcc[j + 1]) ? 'X' : ' ';
                             const char f2 = (otm[j] || otm[j + 1]) ? 'T' : ' ';
                             //#pragma warning(disable:4996)
-                            snprintf(&out[j * 8], 16, "%+ 5d,%+ 5d,%c%c\r\n",*in++, *in++, f1, f2);
+                            snprintf(&out[j * 8], 16, "%+5d,%+5d,%c%c\r\n",*in++, *in++, f1, f2);
                         }
                     }
 
