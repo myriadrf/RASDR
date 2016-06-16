@@ -50,7 +50,7 @@ struct _global {
     uint16_t otm_polarity;
     uint16_t flag_mask;
     uint16_t flag_value;
-    uint16_t _reserved;
+    uint16_t iq_polarity;
 } g = { NULL, NULL, "wb", NULL, NULL, 0, 0, 1, 3, 3, 0 };
 
 typedef union _sample {
@@ -73,7 +73,9 @@ void usage( const char *argv0 )
 	"\nWhere:"
 	"\n  -i, --input-file FILE   Full path to file to be read or - for stdin"
 	"\n  -o, --output-file FILE  Full path to file to be written or - for stdout"
-    "\n  --otm-polarity N        Define OTM/PPS polarity level"
+    "\n  --iq-polarity N         Define starting I/Q polarity level"
+    "\n                            (0=I sample first, 1=Q sample first, default=0)"
+    "\n  --pps-polarity N        Define OTM/PPS polarity level"
     "\n                            (0=active low, 1=active high, default=0)"
     "\n  --flag-value HEX        Define FLAGs code for valid data"
     "\n                            (two bits, default=3)"
@@ -128,6 +130,10 @@ void argparse( int argc, char *argv[], char *envp[] )
             if ((i + 1) >= argc) break;
             g.otm_polarity = atoi(argv[++i])? 1 : 0;
         }
+        else if (strncmp(key, "--iq-polarity", 13) == 0) {
+            if ((i + 1) >= argc) break;
+            g.iq_polarity = atoi(argv[++i])? 1 : 0;
+        }
         else if (strncmp(key, "--flag-mask", 11) == 0) {
             if ((i + 1) >= argc) break;
             g.flag_mask = atoi(argv[++i]);
@@ -146,7 +152,7 @@ void argparse( int argc, char *argv[], char *envp[] )
         g.infd = stdin;
         g.infile = "stdin";
     } else {
-        g.infd = fopen(g.infile, "r");
+        g.infd = fopen(g.infile, "rb"); // NB: input stream must be labeled binary
         if (g.infd == NULL) {
             perror("cannot open input file");
             exit(1);
@@ -191,7 +197,7 @@ int main(int argc, char *argv[], char *envp[])
     INFO("output=%s, fmt=%s\n", g.outfile, g.ofmt);
     INFO("CPU Threads=%d\n", g.threads);
     TRACE("sizeof(sample_t)="__SIZE_T_SPECIFIER"\n", sizeof(sample_t));
-    TRACE("otm_polarity=%hu\n", g.otm_polarity);
+    TRACE("polarity otm,iq=%hu,%hu\n", g.otm_polarity, g.iq_polarity);
     TRACE("flag_mask,value=%hu,%hu\n", g.flag_mask, g.flag_value);
 
     //exit(1);
@@ -227,16 +233,14 @@ int main(int argc, char *argv[], char *envp[])
                 size_t n, r;
 
                 //#pragma omp master
-                n = fread(b, sizeof(uint8_t), PAGE*g.threads, g.infd);
+                n = fread(b, PAGE, g.threads, g.infd);
                 //#pragma omp barrier
 
-                TRACE("n="__SIZE_T_SPECIFIER", %d, err=%d\n", n, PAGE*g.threads, ferror(g.infd));
+                //TRACE("n="__SIZE_T_SPECIFIER", err=%d%s\n", n, ferror(g.infd), feof(g.infd)?" EOF":"");
 
                 if (ferror(g.infd)) { perror(g.infile); }
-                if ((n % PAGE) != 0) TRACE("bytes read is not modulo PAGE\n");
-                if ( n < PAGE ) TRACE("did not read enough bytes to process a full PAGE\n");
-                n = n / PAGE;
-                if (n < 1) break;
+                if ( n < 1 ) TRACE("did not read enough bytes to process a full PAGE\n");
+                if ( n < 1 ) break;
 
                 // TODO: inspect first sample of each block to determine I/Q mismatch,
                 //       if so, convert the last sample of each block and place in a
@@ -262,13 +266,14 @@ int main(int argc, char *argv[], char *envp[])
 #endif
                     {
                         sample_t *_iq = in;
-                        char _tag[4];
+                        char _tag[6];
                         int _s;
 
+                        TRACE("--- Coded input block ---\n");
                         for (_s = 0; _s<32; _s++, _iq++)  // N=number of samples to dump
                         {
-                            snprintf(_tag, sizeof(_tag), "%c%02d", _s % 2 ? 'q' : 'i', _s / 2);
-                            TRACE("%s=%#0x, sample=%+5d, iqsel=%u, flag=%#x, pps=%u\n",
+                            snprintf(_tag, sizeof(_tag), "%c%04d", _s % 2 ? 'q' : 'i', _s / 2); _tag[5] = '\0';
+                            TRACE("%s=0x%04x, sample=%+5d, iqsel=%u, flag=%#x, pps=%u\n",
                                 _tag, _iq->ui, _iq->s.sample, _iq->s.iqsel, _iq->s.flag, _iq->s.pps);
                         }
                     }
@@ -276,16 +281,55 @@ int main(int argc, char *argv[], char *envp[])
                     memset(otm, 0, PAGE);                   // OTM is cleared in each block
                     memset(xcc, 0, PAGE);                   // invalid is cleared in each block
                     if ( (unsigned)i >= n ) continue;       // this thread did get a block read - does no work
-                    for (j=0; j < PAGE/2; j+=2)             // PAGE/sizeof(sample_t)
+                    for (j=0; j < PAGE/2; j+=2, in+=2)      // PAGE/sizeof(sample_t)
                     {
-                        if (in->s.iqsel || (in->s.flag & g.flag_mask) != g.flag_value) { xcc[j] = 1; }
-                        if ( in->s.pps == g.otm_polarity ) { otm[j] = 1; }
-                        *out++ = in->s.sample;
-                        in++;
-                        if (!in->s.iqsel || (in->s.flag & g.flag_mask) != g.flag_value ) { xcc[j + 1] = 1; }
-                        if ( in->s.pps == g.otm_polarity) { otm[j + 1] = 1; }
-                        *out++ = in->s.sample;
-                        in++;
+                        sample_t *_i, *_q;
+
+                        if ( g.iq_polarity ) { _q = &in[0]; _i = &in[1]; }
+                        else                 { _i = &in[0]; _q = &in[1]; }
+
+                        if ( _i->s.iqsel || (_i->s.flag & g.flag_mask) != g.flag_value ) { xcc[j] = 1; }
+                        if ( _i->s.pps == g.otm_polarity ) { otm[j] = 1; }
+                        *out++ = _i->s.sample;
+                        if ( !_q->s.iqsel || (_q->s.flag & g.flag_mask) != g.flag_value ) { xcc[j + 1] = 1; }
+                        if ( _q->s.pps == g.otm_polarity) { otm[j + 1] = 1; }
+                        *out++ = _q->s.sample;
+                        
+                        // DEBUG
+#ifdef _OPENMP
+                        if ( g.verbose > 1 && (otm[j] || xcc[j]) && omp_get_thread_num() == 0 )
+#else
+                        if ( g.verbose > 1 && (otm[j] || xcc[j]) )
+#endif
+                        {
+                            char _tag[6];
+                            static int _max = 10;
+                            if (_max > 0)
+                            {
+                            snprintf(_tag, sizeof(_tag), "%c%04d", j % 2 ? 'q' : 'i', j / 2); _tag[5] = '\0';
+                            TRACE("block="__SIZE_T_SPECIFIER",%s=0x%04x%s%s\n",
+                                n_count, _tag, _i->ui, xcc[j]?",INVALID":"", otm[j]?",OTM":"");
+                            _max--;
+                            if (_max==0) TRACE("*** MAX I sample diagnostic output\n");
+                            }
+                        }
+#ifdef _OPENMP
+                        if ( g.verbose > 1 && (otm[j+1] || xcc[j+1]) && omp_get_thread_num() == 0 )
+#else
+                        if ( g.verbose > 1 && (otm[j+1] || xcc[j+1]) )
+#endif
+                        {
+                            char _tag[6];
+                            static int _max = 10;
+                            if (_max > 0)
+                            {
+                            snprintf(_tag, sizeof(_tag), "%c%04d", (j+1) % 2 ? 'q' : 'i', (j+1) / 2); _tag[5] = '\0';
+                            TRACE("block="__SIZE_T_SPECIFIER",%s=0x%04x%s%s\n",
+                                n_count, _tag, _q->ui, xcc[j+1]?",INVALID":"", otm[j+1]?",OTM":"");
+                            _max--;
+                            if (_max==0) TRACE("*** MAX Q sample diagnostic output\n");
+                            }
+                        }
                     }
 
                     //http://stackoverflow.com/questions/7661114/the-openmp-master-pragma-must-not-be-enclosed-by-the-parallel-for-pragma
@@ -298,17 +342,17 @@ int main(int argc, char *argv[], char *envp[])
 #endif
                     {
                         int16_t *_iq = (int16_t *)&b[i*PAGE];
-                        char _tag[4];
+                        char _tag[6];
                         int _s;
 
+                        TRACE("--- Decoded input block ---\n");
                         for (_s = 0; _s<32; _s++, _iq++)  // N=number of samples to dump
                         {
-                            snprintf(_tag, sizeof(_tag), "%c%02d", _s % 2 ? 'q' : 'i', _s / 2);
+                            snprintf(_tag, sizeof(_tag), "%c%04d", _s % 2 ? 'q' : 'i', _s / 2); _tag[5] = '\0';
                             TRACE("%s, sample=%+5d, otm=%d, xcc=%d\n",
                                 _tag, *_iq, otm[_s], xcc[_s]);
                         }
                     }
-
                 }
 
                 // render ASCII output
@@ -334,14 +378,24 @@ int main(int argc, char *argv[], char *envp[])
                         }
                     }
 
+#ifdef _OPENMP
+                    if (g.verbose > 3 && omp_get_thread_num() == 0)
+#else
+                    if (g.verbose > 3)
+#endif
+                    {
+                        char _s[(32*16)+1];
+                        memcpy(_s,a,32*16); _s[sizeof(_s)-1] = '\0';
+                        TRACE("--- ASCII output block ---\n");
+                        TRACE("%s\n",_s);
+                    }
+
                     // TODO: refine the timestamp for the first sample of the output block
                     //       and figure out a way to express it in the ASCII output stream
+
                     //#pragma omp master
-                    r = fwrite(a,PAGE*8,n,g.outfd);
+                    r = fwrite(a,PAGE*8,n,g.outfd); // NB: output is *exactly* 8 times larger than the input buffer
                     //#pragma omp barrier
-
-                    TRACE("r="__SIZE_T_SPECIFIER", "__SIZE_T_SPECIFIER"\n", r, PAGE * 8 * n);
-
                 }
                 // render BINARY output
                 else if( g.ofmt[1] == 'b' )
@@ -349,19 +403,51 @@ int main(int argc, char *argv[], char *envp[])
                     // TODO: refine the timestamp for the first sample of the output block
                     // TODO: produce the ASCII index file correlating sample with timestamp
 
+#ifdef _OPENMP
+                    if (g.verbose > 3 && omp_get_thread_num() == 0)
+#else
+                    if (g.verbose > 3)
+#endif
+                    {
+                        uint16_t *_hex = (uint16_t *)b;
+                        int16_t *_iq = (int16_t *)b;
+                        char _tag[6];
+                        int _s;
+
+                        TRACE("--- Binary output block ---\n");
+                        for (_s = 0; _s<32; _s++, _hex++, _iq++)  // N=number of samples to dump
+                        {
+                            snprintf(_tag, sizeof(_tag), "%c%04d", _s % 2 ? 'q' : 'i', _s / 2); _tag[5] = '\0';
+                            TRACE("%s=0x%04x, sample=%+5d\n",
+                                _tag, *_hex, *_iq);
+                        }
+                    }
+
                     //#pragma omp master
                     r = fwrite(b,PAGE,n,g.outfd);
                     //#pragma omp barrier
-
-                    TRACE("r="__SIZE_T_SPECIFIER", "__SIZE_T_SPECIFIER"\n", r, PAGE * n);
                 }
                 // render NO output
                 else
                 {
+#ifdef _OPENMP
+                    if (g.verbose > 3 && omp_get_thread_num() == 0)
+#else
+                    if (g.verbose > 3)
+#endif
+                    { TRACE("--- Render No Output ---\n"); }
+
                     //#pragma omp master
                     r = n;
                     //#pragma omp barrier
                 }
+
+                //TRACE("r="__SIZE_T_SPECIFIER"\n", r);
+
+                //#pragma omp master
+                n_count = n_count + n;
+                r_count = r_count + r;
+                //#pragma omp barrier
 
                 // Diagnostics
                 #pragma omp parallel for private(i,j) reduction(+:t_count,x_count)
@@ -378,10 +464,9 @@ int main(int argc, char *argv[], char *envp[])
                     }
                 }
 
-                //#pragma omp master
-                n_count = n_count + n;
-                r_count = r_count + r;
-                //#pragma omp barrier
+                //TRACE("t_count="__SIZE_T_SPECIFIER"\n", t_count);
+                //TRACE("x_count="__SIZE_T_SPECIFIER"\n", x_count);
+
             } // while(!feof)
         //}   // parallel
 
@@ -389,6 +474,7 @@ int main(int argc, char *argv[], char *envp[])
         LOG(__SIZE_T_SPECIFIER" records out\n",r_count);
         if (t_count > 0) INFO(__SIZE_T_SPECIFIER" On-Time-Markers\n", t_count);
         if (x_count > 0) INFO(__SIZE_T_SPECIFIER" Invalid Samples\n", x_count);
+        if (n_count > 0) INFO(__SIZE_T_SPECIFIER" Total Samples\n", n_count * (PAGE/2));
     }
 
     if( g.infd )  fclose(g.infd);
