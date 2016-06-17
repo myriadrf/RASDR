@@ -43,29 +43,30 @@
    the consumer of data to the host. Appropriate vendor class USB enumeration
    descriptors with these two bulk endpoints are implemented.
 
-   The GPIF configuration data for the Synchronous Slave FIFO operation is
-   loaded onto the appropriate GPIF registers. The p-port data transfers are
-   done via the producer p-port socket and the consumer p-port socket.
+   The GPIF configuration data for the Synchronous Slave FIFO operation is loaded onto
+   the appropriate GPIF registers. The p-port data transfers are done via the producer
+   p-port socket and the consumer p-port socket.
 
-   This interface implements one DMA Channels in AUTO mode one for P to U data
-   transfer.  There is no implementation of the U to P data transfer, and the
-   firmware will cause a fatal error to occur if any data is attempted to be
-   sent to the OUT endpoint.
+   This application implements two DMA Channels in MANUAL mode one for P to U data transfer
+   and one for U to P data transfer.
 
-   The P to U DMA channel connects the producer p-port socket to the USB
+   The U to P DMA channel connects the USB producer (OUT) endpoint to the CPU
+   socket. The P to U DMA channel connects the producer p-port socket to the USB 
    consumer (IN) endpoint.
 
-   Upon every reception of data in the DMA buffer from the host, the
-   CPU is signalled using DMA callbacks. There are two DMA callback functions
-   implemented each for U to P and P to U data paths. The CPU then commits the
-   DMA buffer received so that the data is transferred to the consumer.
+   CPU is signaled of the data reception using DMA callbacks. The CPU
+   discards this buffer. This leads to the sink mechanism. A callback is raised whenever
+   a buffer is available on the producer p-port socket.  The CPU commits this to 
+   the DMA data transfer to the consumer endpoint which then gets transferred to the host.
+
+   Upon every reception of data in the DMA buffer from the host or from the p-port, the
+   CPU is signalled using DMA callbacks. There are two DMA callback functions implemented
+   each for U to P and P to U data paths. The CPU then commits the DMA buffer received so
+   that the data is transferred to the consumer.
 
    The DMA buffer size for each channel is defined based on the USB speed. 64
    for full speed, 512 for high speed and 1K for super speed. The number of
-   DMA buffers is 4.
-
-   The constant CY_FX_APP_GPIF_16_32BIT_CONF_SELECT in the header file is
-   used to select 16bit GPIF data bus configuration.
+   DMA buffers is defined by CY_FX_DMA_BUF_COUNT.
 
    The firmware implements vendor commands 0xC0 and 0xC1 on control EP0
    to perform programmed I/O read or write firmware operations, respectively.
@@ -128,7 +129,7 @@
 #define GPIO_X37		44  // X3.7
 #define GPIO_X39		45  // X3.9
 
-//gpif interface control signals - not ussed
+//gpif interface control signals - not used
 #define GPIO_SLCS		33
 #define GPIO_SLWR		34
 #define GPIO_SLOE		35
@@ -161,39 +162,40 @@
 #define CMD_ADF_WR			0xAD
 
 CyU3PThread     AppThread;	             /* Application thread structure */
-CyU3PDmaChannel glChHandleUtoP;          /* DMA Channel handle for USB->FX3 transfer. */
-CyU3PDmaChannel glChHandlePtoU;          /* DMA Channel handle for FX3->USB transfer. */
+//CyU3PDmaChannel glChHandleUtoP;          /* DMA Channel handle for USB->FX3 transfer. */
+CyU3PDmaMultiChannel glChHandlePtoU;     /* DMA Channel handle for FX3->USB transfer. */
 
-uint32_t glDMARxCount = 0;               /* Counter to track the number of buffers received from USB. */
-uint32_t glDMATxCount = 0;               /* Counter to track the number of buffers sent to USB. */
-CyBool_t glIsApplnActive = CyFalse;      /* Whether the application is active or not. */
-CyU3PDmaMultiChannel glChHandleUVCStream;               /* DMA multi-channel handle. */
-CyU3PDmaMultiChannelConfig_t dmaMultiConfig;
+volatile uint32_t glDMARxCount = 0;      /* Counter to track the number of buffers received from USB. */
+volatile uint32_t glDMATxCount = 0;      /* Counter to track the number of buffers sent to USB. */
+CyBool_t glIsApplnActive    = CyFalse;   /* Whether the application is active or not. */
+CyBool_t glIsApplnFaulted    = CyFalse;  /* Whether the application is faulted or not. */
+
 
 uint8_t glEp0Buffer_Rx[64] __attribute__ ((aligned (32)));
 uint8_t glEp0Buffer_Tx[64] __attribute__ ((aligned (32)));
 int glEp0Buffer_Tx_Expected = 0;
 
-uint8_t  config_led = 0;
+volatile uint8_t config_led = 0;
 uint16_t on_time = 0, off_time = 0;
 CyBool_t tx_id;
 
-extern CyU3PReturnStatus_t CyU3PUsbSetTxSwing(uint32_t swing);
+//extern CyU3PReturnStatus_t CyU3PUsbSetTxSwing(uint32_t swing);
 
 void
-CyFxUvcApplnDmaCallback(
+CyFxPtoUDmaAcctCallback(
         CyU3PDmaMultiChannel *multiChHandle,
         CyU3PDmaCbType_t      type,
         CyU3PDmaCBInput_t    *input
         )
 {
 	CyU3PGpioSetValue(GPIO_LED3, LED_ON);
+    //glDMATxCount += 2;
 }
 
 #define ERR_DIGIT_ON	100
 #define ERR_DIGIT_OFF	400
-#define ERR_DIGIT_SPACE	1000
-#define ERR_DIGIT_END   3000
+#define ERR_DIGIT_SPACE	250
+#define ERR_DIGIT_END   750
 
 /* Application Error Handler */
 void
@@ -204,6 +206,7 @@ CyFxAppErrorHandler(
 {
     /* Application failed with the error code apiRetStatus */
     //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyFxAppErrorHandler, Error code = %d\n", apiRetStatus);
+	glIsApplnFaulted = CyTrue;
 
     /* Add custom debug or recovery actions here */
 	if( code > 99 ) code = 99;
@@ -215,11 +218,27 @@ CyFxAppErrorHandler(
     	int digit0 = code % 10;
     	int cc;
 
+    	// marker:
+		CyU3PGpioSetValue(GPIO_LED3, LED_ON);
+    	CyU3PThreadSleep(ERR_DIGIT_SPACE);
+		CyU3PGpioSetValue(GPIO_LED2, LED_ON);
+    	CyU3PThreadSleep(ERR_DIGIT_SPACE);
+		CyU3PGpioSetValue(GPIO_LED1, LED_ON);
+    	CyU3PThreadSleep(ERR_DIGIT_SPACE);
+		CyU3PGpioSetValue(GPIO_LED3, LED_OFF);
+		CyU3PGpioSetValue(GPIO_LED2, LED_OFF);
+		CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
+    	CyU3PThreadSleep(ERR_DIGIT_SPACE);
+
     	// digit1:
     	for(cc=0;cc<digit1;cc++) {
     		CyU3PGpioSetValue(GPIO_LED3, LED_ON);
+    		CyU3PGpioSetValue(GPIO_LED2, LED_ON);
+    		CyU3PGpioSetValue(GPIO_LED1, LED_ON);
     		CyU3PThreadSleep(ERR_DIGIT_ON);
     		CyU3PGpioSetValue(GPIO_LED3, LED_OFF);
+    		CyU3PGpioSetValue(GPIO_LED2, LED_OFF);
+    		CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
     	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
@@ -230,8 +249,12 @@ CyFxAppErrorHandler(
     	// digit0:
     	for(cc=0;cc<digit0;cc++) {
     		CyU3PGpioSetValue(GPIO_LED3, LED_ON);
+    		CyU3PGpioSetValue(GPIO_LED2, LED_ON);
+    		CyU3PGpioSetValue(GPIO_LED1, LED_ON);
     		CyU3PThreadSleep(ERR_DIGIT_ON);
     		CyU3PGpioSetValue(GPIO_LED3, LED_OFF);
+    		CyU3PGpioSetValue(GPIO_LED2, LED_OFF);
+    		CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
     	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
@@ -300,64 +323,6 @@ CyFxI2cInit()
     return status;
 }
 
-/* DMA callback function to handle the produce events for U to P transfers. */
-void
-CyFxUtoPDmaCallback (
-        CyU3PDmaChannel   *chHandle, /* Handle to the DMA channel. */
-        CyU3PDmaCbType_t  type,      /* Callback type.             */
-        CyU3PDmaCBInput_t *input)    /* Callback status.           */
-{
-	// we do not expect transfers *TO* the LIME on this interface
-	CyFxAppErrorHandler(CY_U3P_ERROR_INVALID_SEQUENCE,30);
-#if 0
-    CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
-
-    if (type == CY_U3P_DMA_CB_PROD_EVENT)
-    {
-        /* This is a produce event notification to the CPU. This notification is 
-         * received upon reception of every buffer. The buffer will not be sent
-         * out unless it is explicitly committed. The call shall fail if there
-         * is a bus reset / usb disconnect or if there is any application error. */
-        status = CyU3PDmaChannelCommitBuffer(chHandle, input->buffer_p.count, 0);
-        if (status != CY_U3P_SUCCESS)
-        {
-            //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaChannelCommitBuffer failed, Error code = %d\n", status);
-        	CyFxAppErrorHandler(status,30);
-        }
-
-        /* Increment the counter. */
-        glDMARxCount++;
-    }
-#endif
-}
-
-/* DMA callback function to handle the produce events for P to U transfers. */
-void
-CyFxPtoUDmaCallback(
-        CyU3PDmaChannel   *chHandle, /* Handle to the DMA channel. */
-        CyU3PDmaCbType_t  type,      /* Callback type.             */
-        CyU3PDmaCBInput_t *input)    /* Callback status.           */
-{
-    CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
-
-    if (type == CY_U3P_DMA_CB_PROD_EVENT)
-    {
-        /* This is a produce event notification to the CPU. This notification is 
-         * received upon reception of every buffer. The buffer will not be sent
-         * out unless it is explicitly committed. The call shall fail if there
-         * is a bus reset / usb disconnect or if there is any application error. */
-        status = CyU3PDmaChannelCommitBuffer(chHandle, input->buffer_p.count, 0);
-        if (status != CY_U3P_SUCCESS)
-        {
-            //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaChannelCommitBuffer failed, Error code = %d\n", status);
-        	CyFxAppErrorHandler(status,31);
-        }
-
-        /* Increment the counter. */
-        glDMATxCount++;
-    }
-}
-
 /* This function starts the application. This is called
  * when a SET_CONF event is received from the USB host. The endpoints
  * are configured and the DMA pipe is setup in this function. */
@@ -365,7 +330,9 @@ void
 CyFxApplnStart(void)
 {
     uint16_t size = 0;
+    uint8_t burstLength = 1;
     CyU3PEpConfig_t epCfg;
+    CyU3PDmaMultiChannelConfig_t dmaMultiConfig;
     CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
     CyU3PUSBSpeed_t usbSpeed = CyU3PUsbGetSpeed();
 
@@ -389,6 +356,7 @@ CyFxApplnStart(void)
 
     case  CY_U3P_SUPER_SPEED:
         size = CY_FX_SUPER_SPEED_EP_SIZE;						/* If connected to Super-speed, the endpoint size should be 1024 bytes */
+        burstLength = CY_FX_EP_BURST_LENGTH;
         on_time  = SUPERSPEED_BLINK_ON_TIME;
         off_time = XSPEED_BLINK_PERIOD-SUPERSPEED_BLINK_ON_TIME;
         break;
@@ -402,7 +370,7 @@ CyFxApplnStart(void)
     CyU3PMemSet((uint8_t *)&epCfg, 0, sizeof (epCfg));
     epCfg.enable = CyTrue;
     epCfg.epType = CY_U3P_USB_EP_BULK;
-    epCfg.burstLen = (usbSpeed == CY_U3P_SUPER_SPEED) ? (CY_FX_EP_BURST_LENGTH) : 1;
+    epCfg.burstLen = burstLength;
     epCfg.streams = 0;
     epCfg.pcktSize = size;
 
@@ -422,21 +390,30 @@ CyFxApplnStart(void)
         CyFxAppErrorHandler(apiRetStatus,3);
     }
 
-    /* Create a DMA Auto channel*/
-    dmaMultiConfig.size           = 4*1024;//4k
+	/* Create a AUTO_MANY_TO_ONE channel for the consumer USB socket. */
+	CyU3PMemSet ((uint8_t *)&dmaMultiConfig, 0, sizeof (dmaMultiConfig));
+	/* The buffer size will be same as packet size for the
+	 * full speed, high speed and super speed non-burst modes.
+	 * For super speed burst mode of operation, the buffers will be
+	 * 1024 * burst length so that a full burst can be completed.
+	 * This will mean that a buffer will be available only after it
+	 * has been filled or when a short packet is received. */
+    dmaMultiConfig.size           = 4*1024;
     dmaMultiConfig.count          = 4;
     dmaMultiConfig.validSckCount  = 2;
-    dmaMultiConfig.prodSckId [0]  = (CyU3PDmaSocketId_t)CY_U3P_PIB_SOCKET_0;
-    dmaMultiConfig.prodSckId [1]  = (CyU3PDmaSocketId_t)CY_U3P_PIB_SOCKET_1;
-    dmaMultiConfig.consSckId [0]  = CY_FX_EP_CONSUMER_SOCKET;
-    dmaMultiConfig.prodAvailCount = 0;
-    dmaMultiConfig.prodHeader     = 0;
-    dmaMultiConfig.prodFooter     = 0;
-    dmaMultiConfig.consHeader     = 0;
+    dmaMultiConfig.prodSckId[0]   = (CyU3PDmaSocketId_t)CY_U3P_PIB_SOCKET_0;
+    dmaMultiConfig.prodSckId[1]   = (CyU3PDmaSocketId_t)CY_U3P_PIB_SOCKET_1;
+    dmaMultiConfig.consSckId[0]   = CY_FX_EP_CONSUMER_SOCKET;
+    // NB: zeroed by memset above
+    //dmaMultiConfig.prodAvailCount = 0;
+    //dmaMultiConfig.prodHeader     = 0;
+    //dmaMultiConfig.prodFooter     = 0;
+    //dmaMultiConfig.consHeader     = 0;
     dmaMultiConfig.dmaMode        = CY_U3P_DMA_MODE_BYTE;
-    dmaMultiConfig.notification   = 0xFF;//CY_U3P_DMA_CB_CONS_EVENT;
-    dmaMultiConfig.cb             = CyFxUvcApplnDmaCallback;
-    apiRetStatus = CyU3PDmaMultiChannelCreate(&glChHandleUVCStream, CY_U3P_DMA_TYPE_AUTO_MANY_TO_ONE,
+    dmaMultiConfig.notification   = 0xFF;
+    dmaMultiConfig.cb             = CyFxPtoUDmaAcctCallback;
+
+    apiRetStatus = CyU3PDmaMultiChannelCreate(&glChHandlePtoU, CY_U3P_DMA_TYPE_AUTO_MANY_TO_ONE,
             &dmaMultiConfig);
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
@@ -447,7 +424,12 @@ CyFxApplnStart(void)
     CyU3PUsbFlushEp(CY_FX_EP_CONSUMER);
 	CyU3PUsbFlushEp(CY_FX_EP_PRODUCER);
 
-	CyU3PDmaMultiChannelSetXfer(&glChHandleUVCStream, 0, 0);
+	apiRetStatus = CyU3PDmaMultiChannelSetXfer(&glChHandlePtoU, 0, 0);
+    if (apiRetStatus != CY_U3P_SUCCESS)
+    {
+        //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaMultiChannelSetXfer failed, Error code = %d\n", apiRetStatus);
+        CyFxAppErrorHandler(apiRetStatus,4);
+    }
 
     /* Update the flag so that the application thread is notified of this. */
     glIsApplnActive = CyTrue;
@@ -467,24 +449,24 @@ CyFxApplnStop(
     glIsApplnActive = CyFalse;
 
     /* Destroy the channels */
-    CyU3PDmaChannelDestroy(&glChHandleUtoP);
-    CyU3PDmaChannelDestroy(&glChHandlePtoU);
+    //CyU3PDmaChannelDestroy(&glChHandleUtoP);
+    CyU3PDmaMultiChannelDestroy(&glChHandlePtoU);
 
     /* Flush the endpoint memory */
     CyU3PUsbFlushEp(CY_FX_EP_PRODUCER);
     CyU3PUsbFlushEp(CY_FX_EP_CONSUMER);
 
-    /* Disable endpoints. */
+    /* Disable endpoints */
     CyU3PMemSet((uint8_t *)&epCfg, 0, sizeof (epCfg));
     epCfg.enable = CyFalse;
 
     /* Producer endpoint configuration. */
-    apiRetStatus = CyU3PSetEpConfig(CY_FX_EP_PRODUCER, &epCfg);
-    if (apiRetStatus != CY_U3P_SUCCESS)
-    {
-        //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PSetEpConfig failed, Error code = %d\n", apiRetStatus);
-        CyFxAppErrorHandler(apiRetStatus,5);
-    }
+    //apiRetStatus = CyU3PSetEpConfig(CY_FX_EP_PRODUCER, &epCfg);
+    //if (apiRetStatus != CY_U3P_SUCCESS)
+    //{
+    //    //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PSetEpConfig failed, Error code = %d\n", apiRetStatus);
+    //    CyFxAppErrorHandler(apiRetStatus,5);
+    //}
 
     /* Consumer endpoint configuration. */
     apiRetStatus = CyU3PSetEpConfig(CY_FX_EP_CONSUMER, &epCfg);
@@ -742,16 +724,21 @@ CyFxApplnUSBVendorCB (
 
 	          glEp0Buffer_Tx_Expected = 52;
 
-    		  CyU3PGpifGetSMState(&glEp0Buffer_Tx[1]);
     		  serial_num = (uint8_t *)CyFxUSBSerialDscr;
 
     		  CyU3PGpioGetValue (GPIO_TX_ID, &tx_id);
     		  glEp0Buffer_Tx[0] = tx_id;
-    		  //CyU3PGpifGetSMState(), above.
+    		  CyU3PGpifGetSMState(&glEp0Buffer_Tx[1]);
     		  for(i=0,serial_num = (uint8_t *)CyFxUSBSerialDscr;i<8;i++)
     		  {
     			  glEp0Buffer_Tx[i+2] = serial_num[(i*2)+2];
     		  }
+    		  CyU3PMemSet ((uint8_t *)&glEp0Buffer_Tx[10], 0, 6);	// [10-15] reserved
+    		  CyU3PMemCopy((uint8_t *)&glEp0Buffer_Tx[16], (uint8_t *)&glDMARxCount, sizeof (uint32_t));
+    		  CyU3PMemSet ((uint8_t *)&glEp0Buffer_Tx[20], 0, 4);	// [20-23] reserved
+    		  CyU3PMemCopy((uint8_t *)&glEp0Buffer_Tx[24], (uint8_t *)&glDMATxCount, sizeof (uint32_t));
+    		  glEp0Buffer_Tx[29] = 0x0E;	// END-of-buffer mark
+    		  glEp0Buffer_Tx[30] = 0x0F;	// "
 
     		  break;
 
@@ -852,8 +839,6 @@ CyFxApplnUSBVendorCB (
 
     		  break;
     	}
-
-    	config_led = 1;
     	break;
 
         default:
@@ -887,8 +872,6 @@ CyFxApplnUSBSetupCB (
     uint8_t  bType, bTarget;
     uint16_t wValue, wIndex;
     CyBool_t isHandled = CyFalse;
-//    unsigned char i;
-//    CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
 
     /* Decode the fields from the setup request. */
     bReqType = (setupdat0 & CY_U3P_USB_REQUEST_TYPE_MASK);
@@ -907,7 +890,9 @@ CyFxApplnUSBSetupCB (
                     || (bRequest == CY_U3P_USB_SC_CLEAR_FEATURE)) && (wValue == 0))
         {
             if (glIsApplnActive)
+            {
                 CyU3PUsbAckSetup();
+            }
             else
                 CyU3PUsbStall(0, CyTrue, CyFalse);
 
@@ -936,7 +921,7 @@ CyFxApplnUSBSetupCB (
     }
 
     /* Handle supported vendor requests. */
-    if (bType == CY_U3P_USB_VENDOR_RQT)
+    if ((bType == CY_U3P_USB_VENDOR_RQT) && (bTarget == CY_U3P_USB_TARGET_DEVICE))
     {
         isHandled = CyFxApplnUSBVendorCB( setupdat0, setupdat1 );
     }
@@ -953,12 +938,19 @@ CyFxApplnUSBEventCB (
 {
     switch (evtype)
     {
+    case CY_U3P_USB_EVENT_CONNECT:
+      //++num_connect;
+      break;
+
     case CY_U3P_USB_EVENT_SETCONF:
         /* Stop the application before re-starting. */
         if (glIsApplnActive)
         {
             CyFxApplnStop();
         }
+        // Cypress AN65974, pg. 58
+        // NOTE: may cause USB compliance fail
+        //CyU3PUsbLPMDisable();
         CyFxApplnStart();
         break;
 
@@ -998,6 +990,7 @@ CyFxApplnInit(void)
 {
     CyU3PPibClock_t pibClock;
     CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
+    CyBool_t no_renum = CyFalse;
 
     /* Initialize the p-port block. */
     pibClock.clkDiv = 2;
@@ -1030,13 +1023,15 @@ CyFxApplnInit(void)
 
     /* Start the USB functionality. */
     apiRetStatus = CyU3PUsbStart();
-    if (apiRetStatus != CY_U3P_SUCCESS)
+    if (apiRetStatus == CY_U3P_ERROR_NO_REENUM_REQUIRED)
+        no_renum = CyTrue;
+    else if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PUsbStart failed to Start, Error code = %d\n", apiRetStatus);
         CyFxAppErrorHandler(apiRetStatus,20);
     }
 
-    CyU3PUsbSetTxSwing(127); //TX Amplitude swing of the electrical signalling on the USB superspeed lines in 10 mV units. Should be less than 1.28V.
+    //CyU3PUsbSetTxSwing(127); //TX Amplitude swing of the electrical signalling on the USB superspeed lines in 10 mV units. Should be less than 1.28V.
 
     /* The fast enumeration is the easiest way to setup a USB connection,
      * where all enumeration phase is handled by the library. Only the
@@ -1143,12 +1138,22 @@ CyFxApplnInit(void)
     }
 
     /* Connect the USB Pins with super speed operation enabled. */
-    apiRetStatus = CyU3PConnectState(CyTrue, CyTrue);
-    if (apiRetStatus != CY_U3P_SUCCESS)
-    {
-        //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB Connect failed, Error code = %d\n", apiRetStatus);
-        CyFxAppErrorHandler(apiRetStatus,21);
+    if (!no_renum) {
+        apiRetStatus = CyU3PConnectState(CyTrue, CyTrue);
+        if (apiRetStatus != CY_U3P_SUCCESS)
+        {
+            //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "USB Connect failed, Error code = %d\n", apiRetStatus);
+            CyFxAppErrorHandler(apiRetStatus,21);
+        }
     }
+    else
+    {
+        /* USB connection is already active. Configure the endpoints and DMA channels. */
+        if (glIsApplnActive)
+            CyFxApplnStop();
+        CyFxApplnStart();
+    }
+    //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyFxApplnInit complete\r\n");
 }
 
 /* Entry function for the AppThread. */
@@ -1164,13 +1169,15 @@ AppThread_Entry (
     //CyFxApplnDebugInit();
     //CyU3PDebugPrint(1, "UART debug initialized\r\n");
     CyFxI2cInit();
-    CyFxSpiInit(8);//LMS6_WORDLEN);
+    CyFxSpiInit(LMS6_WORDLEN);  // TODO: will need to detect LMS7002M
 
     /* Initialize the application */
     CyFxApplnInit();
 
     for (;;)
     {
+    	if (glIsApplnFaulted == CyTrue) break;
+
         /* LED toggling function start */
         if(on_time != 0)
         {
@@ -1186,7 +1193,7 @@ AppThread_Entry (
 
     	count_old = prodXferCount;
     	sckIndex = 0;
-        CyU3PDmaMultiChannelGetStatus(&glChHandleUVCStream, &state, &prodXferCount, &consXferCount, sckIndex);
+        CyU3PDmaMultiChannelGetStatus(&glChHandlePtoU, &state, &prodXferCount, &consXferCount, sckIndex);
         count_new = prodXferCount;
 
         if (count_new != count_old) CyU3PGpioSetValue(GPIO_LED2, LED_ON);
@@ -1201,27 +1208,6 @@ AppThread_Entry (
             config_led--;
         }
         else CyU3PGpioSetValue(GPIO_LED3, LED_OFF);
-
-#if 0
-        if (glIsApplnActive)
-        {
-            /* Print the number of buffers received so far from the USB host. */
-            CyU3PDebugPrint(6, "Data tracker: buffers received: %d, buffers sent: %d.\r\n",  glDMARxCount, glDMATxCount);
-
-            sckIndex = 0;
-            CyU3PDmaMultiChannelGetStatus(&glChHandleUVCStream, &state, &prodXferCount, &consXferCount, sckIndex);
-            CyU3PDebugPrint(6, "DMA state: %d prodXferCount: %d consXferCount: %d sckIndex: %d.\r\n",  state, prodXferCount, consXferCount, sckIndex);
-
-            sckIndex = 1;
-            CyU3PDmaMultiChannelGetStatus(&glChHandleUVCStream, &state, &prodXferCount, &consXferCount, sckIndex);
-            CyU3PDebugPrint(6, "DMA state: %d prodXferCount: %d consXferCount: %d sckIndex: %d.\r\n",  state, prodXferCount, consXferCount, sckIndex);
-
-
-            CyU3PGpifGetSMState(&sstate);
-            CyU3PDebugPrint(6, "Sstate: %d.\r\n",  sstate);
-        }
-#endif
-
     }
 }
 
@@ -1271,15 +1257,29 @@ main (void)
 {
     CyU3PIoMatrixConfig_t io_cfg;
     CyU3PReturnStatus_t status = CY_U3P_SUCCESS;
+    CyU3PSysClockConfig_t clkCfg;
+
+    // AN65974 pg. 59
+    clkCfg.setSysClk400  = CyTrue;
+    clkCfg.cpuClkDiv     = 2;
+    clkCfg.dmaClkDiv     = 2;
+    clkCfg.mmioClkDiv    = 2;
+    clkCfg.useStandbyClk = CyFalse;
+    clkCfg.clkSrc        = CY_U3P_SYS_CLK;
 
     /* Initialize the device */
-    status = CyU3PDeviceInit(NULL);
+    status = CyU3PDeviceInit(&clkCfg);
     if (status != CY_U3P_SUCCESS)
     {
         goto handle_fatal_error;
     }
 
-    /* Initialize the caches. Enable both Instruction and Data Caches. */
+    /* Initialize the caches. Enable instruction cache and keep data cache disabled.
+     * The data cache is useful only when there is a large amount of CPU based memory
+     * accesses. When used in simple cases, it can decrease performance due to large 
+     * number of cache flushes and cleans and also it adds to the complexity of the
+     * code. */
+    //status = CyU3PDeviceCacheControl(CyTrue, CyFalse, CyFalse);
     status = CyU3PDeviceCacheControl(CyTrue, CyTrue, CyTrue);
     if (status != CY_U3P_SUCCESS)
     {

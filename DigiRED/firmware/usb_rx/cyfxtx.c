@@ -48,12 +48,12 @@
    such as thread stacks and memory for message queues. The Cypress FX3
    libraries require a Mem heap size of at least 32 KB.
  */
-#define CY_U3P_MEM_HEAP_BASE         ((uint8_t *)0x4001F000)
-#define CY_U3P_MEM_HEAP_SIZE         (0x8000)
+#define CY_U3P_MEM_HEAP_BASE         ((uint8_t *)0x40020000)    // coordinate with fx3.ld
+#define CY_U3P_MEM_HEAP_SIZE         (0x8000)                   // coordinate with fx3.ld
 
 /* The last 32 KB of RAM is reserved for 2-stage boot operation. This value can be changed to
    0x40040000 if 2-stage boot is not used by the application. */
-#define CY_U3P_SYS_MEM_TOP           (0x40038000)
+#define CY_U3P_SYS_MEM_TOP           (0x40038000)               // coordinate with fx3.ld
 
 /*
    The buffer heap is used to obtain data buffers for DMA transfers in or out of

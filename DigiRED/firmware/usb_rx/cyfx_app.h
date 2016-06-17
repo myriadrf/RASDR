@@ -76,7 +76,7 @@
 
 
 /* Burst length in 1 KB packets. Only applicable to USB 3.0. */
-#define CY_FX_EP_BURST_LENGTH           (4)                       /* 1 to 16.  More is faster, but uses more buffer memory */
+#define CY_FX_EP_BURST_LENGTH           (1)                       /* 1 to 16.  More is faster, but uses more buffer memory */
 #define CY_FX_DMA_MULTIPLIER			(2)                       /* 1 to 3 */
 /* Size of each DMA buffer. This should ideally be set to 2X the EP burst size. */
 #define CY_FX_APP_DMA_BUF_SIZE			(CY_FX_DMA_MULTIPLIER * CY_FX_EP_BURST_LENGTH * 1024)

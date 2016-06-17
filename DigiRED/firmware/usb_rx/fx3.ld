@@ -44,10 +44,10 @@
    The MODIFIED memory map used for FX3-CY3011 applications is as follows:
 
    Descriptor area Base: 0x40000000 Size: 12KB
-   Code area       Base: 0x40003000 Size: 100KB
-   Data area       Base: 0x4001C000 Size: 8KB
-   Driver heap     Base: 0x4001F000 Size: 32KB  (Update cyfxtx.c to change this.)
-   Buffer area     Base: 0x40027000 Size: 68KB  (Update cyfxtx.c to change this.)
+   Code area       Base: 0x40003000 Size: 108KB
+   Data area       Base: 0x4001E000 Size: 8KB
+   Driver heap     Base: 0x40020000 Size: 32KB  (Update cyfxtx.c to change this.)
+   Buffer area     Base: 0x40028000 Size: 64KB  (Update cyfxtx.c to change this.)
    2-stage boot    Base: 0x40038000 Size: 32KB  (Update cyfxtx.c to change this.)
 
    Interrupt handlers to be placed in I-TCM (16KB).
@@ -71,8 +71,8 @@ ENTRY(CyU3PFirmwareEntry);
 MEMORY
 {
     I-TCM       : ORIGIN = 0x100,       LENGTH = 0x3F00
-    SYS_MEM     : ORIGIN = 0x40003000   LENGTH = 0x19000
-    DATA        : ORIGIN = 0x4001C000   LENGTH = 0x2000
+    SYS_MEM     : ORIGIN = 0x40003000   LENGTH = 0x1B000
+    DATA        : ORIGIN = 0x4001E000   LENGTH = 0x2000
 }
 
 SECTIONS
@@ -99,7 +99,7 @@ SECTIONS
 		. = ALIGN(4);
 	} > SYS_MEM
 
-	. = 0x4001C000;
+	. = 0x4001E000;
 	.data :
 	{
 		_data = .;
