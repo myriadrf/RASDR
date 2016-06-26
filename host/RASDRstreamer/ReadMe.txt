@@ -47,7 +47,7 @@ https://www.microsoft.com/en-us/download/details.aspx?id=40784
 
 1) RASDR2 Firmware prior to June 2016 (Device Descriptor BcdDevice="00 03" or earlier) had issues with USB3 operation on certain computers (lower specification) that caused glitches and failed transports.  With Firmware BcdDevice="00 04", this has been *partially mitigated* by eliminating the burst mode when using USB3 SuperSpeed mode.  The change does not eliminate the glitch, but reduces its liklihood considerably.
 
-The workaround is a software close and re-open of the USB device.  For RASDRstreamer, this can be accomplished by restarting the program or stopping the transfer and re-selecting the device, then pressing START.
+The workaround is a software close and re-open of the USB device.  For RASDRstreamer, this can be accomplished by restarting the program or stopping the transfer and re-selecting the device, then pressing START.  With version v0.2.1 and later, the program has a compile-time choice to perform a self-restart and continue acquiring buffers.  This seems to work until the firmware gets into a non-recoverable state (see #3) below, which then requires a disconnect/reconnect cycle.
 
 2) v0.1.2 and below of RASDRstreamer has a threading issue in the ::Display() call that leads to random exceptions.  Particularly if there is an early failure in the USB immediately upon pressing the START button.
 
@@ -56,6 +56,12 @@ The workaround is a software close and re-open of the USB device.  For RASDRstre
 ==============================================================================
     CHANGELOG
 ==============================================================================
+
+v0.2.1 - First release with restart capability
+
+  Add (configurable) code to re-initialize the USB device when a transfer failure is detected
+  Refactor management of the USBDevice and EndPt pointer to reduce interdependent references
+  (some whitespace changes due to the microsoft editor)
 
 v0.2.0 - Unreleased
 

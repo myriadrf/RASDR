@@ -4,8 +4,9 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION "0.2.0"
+#define SOFTWAREVERSION "0.2.1"
 #define MAX_QUEUE_SZ    512
+#define ATTEMPT_TO_REINIT
 
 namespace Streams
 {
@@ -63,12 +64,18 @@ namespace Streams
 
     private: System::Windows::Forms::Timer* displayTimer;
 
+#ifdef ATTEMPT_TO_REINIT
+    private: System::Windows::Forms::Timer* reInitTimer;
+#endif
 
     public:	
 
         Form1(void)
         {
             InitializeComponent();
+
+            USBDevice           = NULL;
+            _EndPtAddr          = (UCHAR)0;
 
             bPnP_Arrival		= false;
             bPnP_Removal		= false;
@@ -85,6 +92,15 @@ namespace Streams
             Successes = 0;
             Failures = 0;
             pFile = NULL;
+
+#ifdef ATTEMPT_TO_REINIT
+            hRestartReq = CreateEvent(NULL, true, false, NULL);        // manual-reset, non-signalled
+            hRestartAck = CreateEvent(NULL, true, true, NULL);         // manual-reset, non-signalled
+            reInitCount = 0;
+            reInitExit  = false;
+            reInitTimer = new System::Windows::Forms::Timer;
+            reInitTimer->Tick += new System::EventHandler(this, &Streams::Form1::TimerEventProcessor);
+#endif
         }
 
 
@@ -389,6 +405,9 @@ namespace Streams
             this->Name = S"Form1";
             this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = String::Concat(S"RASDRstreamer", " v", SOFTWAREVERSION);
+#ifdef ATTEMPT_TO_REINIT
+            this->Text = String::Concat(this->Text, " - ReInit @stall");
+#endif
             this->Load += new System::EventHandler(this, &Form1::Form1_Load);
             this->Closed += new System::EventHandler(this, &Form1::Form1_Closed);
             this->RateGroupBox->ResumeLayout(false);
@@ -401,7 +420,7 @@ namespace Streams
      
         Thread						*XferThread;
 
-        CCyUSBDevice				*USBDevice;
+        static CCyUSBDevice			*USBDevice;
 
         static const int			VENDOR_ID	= 0x1D50;
         static const int			PRODUCT_ID	= 0x6099; 
@@ -409,13 +428,13 @@ namespace Streams
         // These declared static because accessed from the static XferLoop method
         // XferLoop is static because it is used as a separate thread.
 
-        static CCyUSBEndPoint		*EndPt;
+        static UCHAR                _EndPtAddr;
         static int					PPX;
         static int					QueueSize;
         static int					TimeOut;
         static bool					bShowData;
         static bool					bStreaming;
-        static bool                 bDeviceRefreshNeeded;
+        static bool                 bDeviceRefreshNeeded;   // TODO: this doesnt make too much sense...
         static bool                 bAppQuiting;
         static bool					bHighSpeedDevice;
         static bool					bSuperSpeedDevice;
@@ -445,14 +464,38 @@ namespace Streams
         // http://stackoverflow.com/questions/11563963/writing-a-binary-file-in-c-very-fast
         static FILE                 *pFile;    // good ol' FILE is still the fastest way cross-platform...
 
+#ifdef ATTEMPT_TO_REINIT
+        static HANDLE               hRestartReq;
+        static HANDLE               hRestartAck;
+        static int                  reInitCount;
+        static bool                 reInitExit;
+
+        void TimerEventProcessor(System::Object *  sender, System::EventArgs *  e)
+        {
+            reInitTimer->Stop();
+
+            if (WaitForSingleObject(hRestartReq,0) == WAIT_OBJECT_0)
+            {
+                // Restarts the timer and increments the counter.
+                reInitCount += 1;
+                StartBtn_Click(sender,e);
+            }
+            reInitTimer->Enabled = true;
+        }
+#endif
+
         void GetStreamerDevice()
         {
-            StartBtn->Enabled = false;
+            StartBtn->Enabled = false;  // TODO: No, no, no...
 
             EndPointsBox->Items->Clear();
             EndPointsBox->Text = "";
 
+            // NOTE: release references to the device
+            if (USBDevice != NULL) delete USBDevice;
             USBDevice = new CCyUSBDevice((HANDLE)this->Handle,CYUSBDRV_GUID,true);
+            // NOTE: EndPt should be obtained by a call to EndPointsBox_SelectedIndexChanged()
+            // which can only be made after we have constructed the list below.
 
             if (USBDevice == NULL) return;
 
@@ -474,7 +517,7 @@ namespace Streams
                 strDeviceData = String::Concat(strDeviceData, " - 0x");
                 strDeviceData = String::Concat(strDeviceData, USBDevice->ProductID.ToString("X4"));
                 strDeviceData = String::Concat(strDeviceData, ") ");
-                strDeviceData = String::Concat(strDeviceData, USBDevice->FriendlyName);               
+                strDeviceData = String::Concat(strDeviceData, USBDevice->FriendlyName);
                 
                 DeviceComboBox->Items->Add(strDeviceData);      
                 DeviceComboBox->Enabled = true;
@@ -489,14 +532,14 @@ namespace Streams
             {
                 StartBtn->Enabled = true;
 
-                int interfaces = USBDevice->AltIntfcCount()+1;
+                int interfaces = USBDevice->AltIntfcCount() + 1;
 
                 bHighSpeedDevice = USBDevice->bHighSpeed;
                 bSuperSpeedDevice = USBDevice->bSuperSpeed;
 
                 for (int i=0; i< interfaces; i++)
                 {
-                    if (USBDevice->SetAltIntfc(i) == true )
+                    if (USBDevice->SetAltIntfc(i) == true)
                     {
 
                         int eptCnt = USBDevice->EndPointCount();
@@ -513,7 +556,7 @@ namespace Streams
                                        ((ept->Attributes == 2) ? "BULK " : "INTR ")));
                                 s = String::Concat(s, ept->bIn ? "IN,       " : "OUT,   ");
                                 s = String::Concat(s, ept->MaxPktSize.ToString(), " Bytes,");
-                                if(USBDevice->BcdUSB == USB30MAJORVER)
+                                if (USBDevice->BcdUSB == USB30MAJORVER)
                                     s = String::Concat(s, ept->ssmaxburst.ToString(), " MaxBurst,");
 
                                 s = String::Concat(s, "   (", i.ToString(), " - ");
@@ -528,6 +571,12 @@ namespace Streams
                 else
                     StartBtn->Enabled = false;
             }
+            // NOTE: EndPt could be obtained by a call to EndPointsBox_SelectedIndexChanged()
+            // but the existing code deferred this choice until the user selected it or the
+            // thread started and made the call itself.
+            //
+            // I've added a GetEndpoint() accessor to get the private EndPt, so we don't need
+            // to call EndPointsBox_SelectedIndexChanged() to create the endpoint
         }
 
 
@@ -569,6 +618,12 @@ namespace Streams
             if (XferThread->ThreadState == System::Threading::ThreadState::Running)
                 XferThread->Join(10);
 
+#ifdef ATTEMPT_TO_REINIT
+            reInitTimer->Stop();
+            reInitTimer->Enabled = false;
+            if (pFile != NULL) fclose(pFile);
+#endif
+
             displayTimer->Stop();
             displayTimer->Enabled = false;
         }
@@ -601,8 +656,7 @@ namespace Streams
 					PPX = 32;			// default, will override in EnforceValidPPX()
 					QueueSize = 16;		// default
 
-                    if (EndPt == NULL ) EndPointsBox_SelectedIndexChanged(NULL, NULL);
-                    else EnforceValidPPX();
+                    EndPointsBox_SelectedIndexChanged(NULL, NULL);   // call at least once
 
                     StartBtn->Text = "Stop";
                     SuccessBox->Text = "";
@@ -625,12 +679,25 @@ namespace Streams
                     ShowDataBox->Enabled		= false;
                     DeviceComboBox->Enabled     = false;
 
+#ifdef ATTEMPT_TO_REINIT
+                    ResetEvent(hRestartReq);
+                    SetEvent(hRestartAck);
+                    reInitTimer->Interval = 5000;
+                    //reInitTimer->Enabled = true;
+                    reInitTimer->Start();
+#endif
+
                     XferThread->Start();
                     break;
                 case System::Threading::ThreadState::Running:
                     StartBtn->Text = "Start";
                     StartBtn->BackColor = Color::Aquamarine;
                     StartBtn->Refresh();
+
+#ifdef ATTEMPT_TO_REINIT
+                    reInitTimer->Stop();
+                    reInitTimer->Enabled = false;
+#endif
 
                     bStreaming = false;  // Stop the thread's xfer loop
                     XferThread->Join(10);
@@ -642,6 +709,7 @@ namespace Streams
                     ShowDataBox->Enabled		= true;
                     DeviceComboBox->Enabled     = true;
 
+                    // TODO: this doesnt make too much sense...
                     if (bDeviceRefreshNeeded == true )
                     {
                         bDeviceRefreshNeeded = false;
@@ -660,9 +728,9 @@ namespace Streams
             if (DeviceComboBox->SelectedIndex == -1 ) return;
 
             if (USBDevice->IsOpen() == true) USBDevice->Close();
-            USBDevice->Open(DeviceComboBox->SelectedIndex);           
+            USBDevice->Open(DeviceComboBox->SelectedIndex);
 
-            int interfaces = USBDevice->AltIntfcCount()+1;
+            int interfaces = USBDevice->AltIntfcCount() + 1;
 
             bHighSpeedDevice = USBDevice->bHighSpeed;
             bSuperSpeedDevice = USBDevice->bSuperSpeed;
@@ -708,6 +776,12 @@ namespace Streams
                 StartBtn->Enabled = false;
         }
 
+        static CCyUSBEndPoint *GetEndpoint(void)
+        {
+            if (USBDevice == NULL) return NULL;
+            return USBDevice->EndPointOf(_EndPtAddr);
+        }
+
         void EndPointsBox_SelectedIndexChanged(System::Object *  sender, System::EventArgs *  e)
         {
             // Parse the alt setting and endpoint address from the EndPointsBox->Text
@@ -729,13 +803,11 @@ namespace Streams
                 return;
             }
 
+            _EndPtAddr = (UCHAR)eptAddr;
 
-            EndPt = USBDevice->EndPointOf((UCHAR)eptAddr);
+            StartBtn->Enabled = true;   // TODO: this so doesnt belong here...
 
-            StartBtn->Enabled = true;
-
-
-            if (EndPt->Attributes == 1)
+            if (GetEndpoint()->Attributes == 1)
             {
                 SuccessLabel->Text = "Good Pkts";
                 FailureLabel->Text = "Bad Pkts";
@@ -752,10 +824,12 @@ namespace Streams
 
         void EnforceValidPPX()
         {
+            CCyUSBEndPoint *EndPt = GetEndpoint();
+
             // Defaults
             if (SamplesPerFrameBox->SelectedIndex == -1 ) SamplesPerFrameBox->SelectedIndex = 7;
             if (SampleRateBox->SelectedIndex == -1 ) SampleRateBox->SelectedIndex = 1;
-            if (EndPt->MaxPktSize == 0)
+            if (!EndPt || EndPt->MaxPktSize == 0)
 				return;
 
 			int BPS = 2 * 2;												// bytes/sample
@@ -819,6 +893,9 @@ namespace Streams
 			Double rate = (Double)bytes_per_sec / (1024.0);		// convert to KiB/sec
 			tmp = String::Concat(tmp, rate.ToString("0"), " KiB/s, timeout=");
 			tmp = String::Concat(tmp, TimeOut.ToString("0"), " ms");
+#ifdef ATTEMPT_TO_REINIT
+            if (reInitCount>0) tmp = String::Concat(tmp, ", re=", reInitCount.ToString());
+#endif
 			Display(tmp);
 
 			XferRateExpected = (long)rate;
@@ -894,14 +971,32 @@ namespace Streams
         {
             long BytesXferred = 0;
             unsigned long FailuresSinceLastSuccess = 0;
+#ifdef ATTEMPT_TO_REINIT
+            unsigned long FailuresToInitiateRequeue = (unsigned long)3;
+            bool bAttemptRestart = false;
+#endif
             int i = 0;
             FILE *fp = pFile;
 
             // Allocate the arrays needed for queueing
             struct _buffers s;
 
+            CCyUSBEndPoint *EndPt = GetEndpoint();
+
+            if (EndPt == NULL || EndPt->MaxPktSize == 0)
+            {
+                Display("No Endpoint Configured");
+                ExitXferLoop("Start");
+                return;
+            }
+
             long len = EndPt->MaxPktSize * PPX; // Each xfer request will get PPX isoc packets
 
+#ifdef ATTEMPT_TO_REINIT
+            DWORD wfso = WaitForSingleObject(hRestartAck,INFINITE);
+            if (wfso != WAIT_OBJECT_0) return;
+            ResetEvent(hRestartAck);
+#endif
             EndPt->SetXferSize(len);
             CreateBuffers(s);
 
@@ -1053,8 +1148,11 @@ namespace Streams
                 // Re-submit this queue element to keep the queue full
                 if (!BeginOneTransfer(i, s))
                 {
-                    // TODO: a restart may be possible here
+                    // a restart may be possible here
                     // but it requires a close/open of the USB driver
+#ifdef ATTEMPT_TO_REINIT
+                    bAttemptRestart = true;
+#endif
                     break;
                 }
 
@@ -1067,13 +1165,30 @@ namespace Streams
                 }
 
                 // RASDR2 firmware has issues with USB3 requiring flush and re-queue of transfers
-                //if (FailuresSinceLastSuccess >= FailuresToInitiateRequeue) break;
+#ifdef ATTEMPT_TO_REINIT
+                if (FailuresSinceLastSuccess >= FailuresToInitiateRequeue)
+                {
+                    bAttemptRestart = true;
+                    break;
+                }
+#endif
 
             }  // End of the infinite loop
 
             // Memory clean-up
             FlushXferLoop(QueueSize, s);
             DestroyBuffers(s);
+#ifdef ATTEMPT_TO_REINIT
+            // If we attempt to restart, we exit the thread but
+            // leave the file open; a successful restart will continue to add data.
+            // Timestamping (when implemented) will track the time gap.
+            if (bAttemptRestart)
+            {
+                SetEvent(hRestartReq);
+                ExitXferLoop("Restart Cancel");
+                return;
+            }
+#endif
 			if (fp != NULL)
 			{
 				Display(String::Concat("File closed at end of data collection", ""));
@@ -1086,7 +1201,7 @@ namespace Streams
         // Buffer Management Methods (allow parts to called without exiting the thread)
         static void CreateBuffers(struct _buffers &s)
         {
-            long len = EndPt->MaxPktSize * PPX;
+            long len = GetEndpoint()->MaxPktSize * PPX;
 
             s.buffers = new PUCHAR[QueueSize];
             s.isoPktInfos = new CCyIsoPktInfo*[QueueSize];
@@ -1118,6 +1233,10 @@ namespace Streams
 
         static bool BeginOneTransfer(int j, struct _buffers &s)
         {
+            CCyUSBEndPoint *EndPt = GetEndpoint();
+
+            if (EndPt == NULL || EndPt->MaxPktSize == 0) return false;
+
             long len = EndPt->MaxPktSize * PPX;
             //ResetEvent(s.inOvLap[j])
             s.contexts[j] = EndPt->BeginDataXfer(s.buffers[j], len, &s.inOvLap[j]);
@@ -1134,6 +1253,10 @@ namespace Streams
 
         static bool FinishOneTransfer(int j, struct _buffers &s, bool aborted)
         { 
+            CCyUSBEndPoint *EndPt = GetEndpoint();
+
+            if (EndPt == NULL || EndPt->MaxPktSize == 0) return false;
+
             long expected, len = EndPt->MaxPktSize * PPX;
             bool status;
             expected = len;
@@ -1177,7 +1300,7 @@ namespace Streams
 
         static void FlushXferLoop(int pending, struct _buffers &s)
         {
-            EndPt->Abort();     // TODO: does Abort() kill one or all of them?
+            GetEndpoint()->Abort();     // TODO: does Abort() kill one or all of them?
             for (int j = 0; j<pending; j++)
             {
                 if (j<pending) (void)FinishOneTransfer(j, s, true);
@@ -1286,12 +1409,9 @@ namespace Streams
                     if (XferThread->IsAlive == false) 
                     {
                         bStreaming = false;                        
-                        if (this->USBDevice) delete this->USBDevice;
-                        this->EndPt = NULL;
-                        USBDevice = NULL;
                         GetStreamerDevice();
                     }
-                    bDeviceRefreshNeeded = XferThread->IsAlive;
+                    //bDeviceRefreshNeeded = XferThread->IsAlive;
                 }
 
                 // If DBT_DEVICEARRIVAL followed by DBT_DEVNODES_CHANGED
@@ -1302,9 +1422,6 @@ namespace Streams
                     bDeviceRefreshNeeded = XferThread->IsAlive;
                     if (XferThread->IsAlive == false) 
                     {
-                        if (this->USBDevice) delete this->USBDevice;
-                        this->EndPt = NULL;
-                        USBDevice = NULL;
                         GetStreamerDevice();
                     }
                 }
