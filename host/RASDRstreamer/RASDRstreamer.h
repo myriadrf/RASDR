@@ -4,7 +4,8 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION "0.1.3"
+#define SOFTWAREVERSION "0.2.0"
+#define MAX_QUEUE_SZ    512
 
 namespace Streams
 {
@@ -19,6 +20,13 @@ namespace Streams
     using namespace System::Reflection;
     using namespace System::Collections::Concurrent;
 
+    struct _buffers {
+        // Allocate the arrays needed for queueing
+        PUCHAR			*buffers;
+        CCyIsoPktInfo	**isoPktInfos;
+        PUCHAR			*contexts;
+        OVERLAPPED		inOvLap[MAX_QUEUE_SZ];
+    };
 
     public __gc class Form1 : public System::Windows::Forms::Form
     {	
@@ -73,6 +81,10 @@ namespace Streams
             displayTimer->Tick += new System::EventHandler(this, &Streams::Form1::DisplayEventProcessor);
             displayTimer->Interval = 250;   // 250ms latency
             displayTimer->Start();
+
+            Successes = 0;
+            Failures = 0;
+            pFile = NULL;
         }
 
 
@@ -391,7 +403,6 @@ namespace Streams
 
         CCyUSBDevice				*USBDevice;
 
-        static const int			MAX_QUEUE_SZ = 512;
         static const int			VENDOR_ID	= 0x1D50;
         static const int			PRODUCT_ID	= 0x6099; 
 
@@ -429,6 +440,10 @@ namespace Streams
 
         static ConcurrentQueue<System::String*> *qDisplay;
 
+        static unsigned long        Successes;
+        static unsigned long        Failures;
+        // http://stackoverflow.com/questions/11563963/writing-a-binary-file-in-c-very-fast
+        static FILE                 *pFile;    // good ol' FILE is still the fastest way cross-platform...
 
         void GetStreamerDevice()
         {
@@ -799,8 +814,8 @@ namespace Streams
 			this->TimeOutBox->Text = ms_per_transfer.ToString("0");
 			TimeOut = (ms_per_transfer > 0) ? int(ms_per_transfer * 2.0) : 1500;
 
-			tmp = String::Concat(tmp, _ppx.ToString(), "/");
-			tmp = String::Concat(tmp, PPX.ToString(), ", rate=");
+			tmp = String::Concat(tmp, PPX.ToString(), "*");
+            tmp = String::Concat(tmp, QueueSize.ToString(), ", rate=");
 			Double rate = (Double)bytes_per_sec / (1024.0);		// convert to KiB/sec
 			tmp = String::Concat(tmp, rate.ToString("0"), " KiB/s, timeout=");
 			tmp = String::Concat(tmp, TimeOut.ToString("0"), " ms");
@@ -878,48 +893,31 @@ namespace Streams
         static void XferLoop()
         {
             long BytesXferred = 0;
-            unsigned long Successes = 0;
-            unsigned long Failures = 0;
+            unsigned long FailuresSinceLastSuccess = 0;
             int i = 0;
-
-			// http://stackoverflow.com/questions/11563963/writing-a-binary-file-in-c-very-fast
-			FILE *fp = NULL;		// good ol' FILE is still the fastest way cross-platform...
+            FILE *fp = pFile;
 
             // Allocate the arrays needed for queueing
-            PUCHAR			*buffers		= new PUCHAR[QueueSize];
-            CCyIsoPktInfo	**isoPktInfos	= new CCyIsoPktInfo*[QueueSize];
-            PUCHAR			*contexts		= new PUCHAR[QueueSize];
-            OVERLAPPED		inOvLap[MAX_QUEUE_SZ];
+            struct _buffers s;
 
             long len = EndPt->MaxPktSize * PPX; // Each xfer request will get PPX isoc packets
 
             EndPt->SetXferSize(len);
-
-            // Allocate all the buffers for the queues
-            for (i=0; i< QueueSize; i++) 
-            { 
-                buffers[i]        = new UCHAR[len];
-                isoPktInfos[i]    = new CCyIsoPktInfo[PPX];
-                inOvLap[i].hEvent = CreateEvent(NULL, false, false, NULL);
-
-                memset(buffers[i],0xEF,len);
-            }
+            CreateBuffers(s);
 
             DateTime t1 = DateTime::Now;	// For calculating xfer rate
 
-            // Queue-up the first batch of transfer requests
-            for (i=0; i< QueueSize; i++)	
+            i = QueueXferLoop(QueueSize, s);
+            if (i < QueueSize)
             {
-                contexts[i] = EndPt->BeginDataXfer(buffers[i], len, &inOvLap[i]);
-                if (EndPt->NtStatus || EndPt->UsbdStatus) // BeginDataXfer failed
-                {
-                    Display(String::Concat("Xfer request rejected. NTSTATUS = ",EndPt->NtStatus.ToString("x")));
-                    AbortXferLoop(i+1, buffers,isoPktInfos,contexts,inOvLap);
-                    return;
-                }
+                if(i>0) FlushXferLoop(i+1, s);
+                DestroyBuffers(s);
+                // This fault did not appear to be recoverable in tests...
+                ExitXferLoop("Start");
+                return;
             }
 
-			if (bShowData)
+			if (bShowData && fp==NULL)
 			{
 				// Do not overwrite existing file and make #1, #2, etc. variants.
 				// http://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c-cross-platform
@@ -935,28 +933,43 @@ namespace Streams
 				e = fopen_s(&fp, fname, "wb");
 				if (e == 0) Display(String::Concat("Opened ", fname));
 				else      { Display(String::Concat("Did not open ", fname)); fp = NULL; }
+                pFile = fp;
 			}
 
             // The infinite xfer loop.
 			i = 0;
+            FailuresSinceLastSuccess = 0;
 			for (; bStreaming;)
             {
                 long rLen = len;	// Reset this each time through because
                 // FinishDataXfer may modify it
 
-                if (!EndPt->WaitForXfer(&inOvLap[i], TimeOut))
+                if (!EndPt->WaitForXfer(&s.inOvLap[i], TimeOut))
                 {
-                    EndPt->Abort();
-                    if (EndPt->LastError == ERROR_IO_PENDING)
-                        WaitForSingleObject(inOvLap[i].hEvent,2000);
+                    // DEBUG
+                    String *tag = String::Concat("@", i.ToString());
+                    Display(String::Concat(tag, " WaitForXfer(,",TimeOut.ToString(),") faults"));
+
+                    int TimeOut2 = TimeOut * 100;
+                    if (!EndPt->WaitForXfer(&s.inOvLap[i], TimeOut2))
+                    {
+                        Display(String::Concat(tag, " WaitForXfer(,", TimeOut2.ToString(), ") faults"));
+
+                        EndPt->Abort();
+                        if (EndPt->LastError == ERROR_IO_PENDING)
+                        {
+                            DWORD wfso = WaitForSingleObject(s.inOvLap[i].hEvent,2000);
+                            if (wfso != WAIT_OBJECT_0) Display(String::Concat(tag, "  WFSO=", wfso.ToString("x")));
+                        }
+                    }
                 }
 
                 if (EndPt->Attributes == 1) // ISOC Endpoint
                 {	
-                    if (EndPt->FinishDataXfer(buffers[i], rLen, &inOvLap[i], contexts[i], isoPktInfos[i])) 
+                    if (EndPt->FinishDataXfer(s.buffers[i], rLen, &s.inOvLap[i], s.contexts[i], s.isoPktInfos[i]))
                     {			
-                        CCyIsoPktInfo *pkts = isoPktInfos[i];
-						unsigned char *p = buffers[i];
+                        CCyIsoPktInfo *pkts = s.isoPktInfos[i];
+                        unsigned char *p = s.buffers[i];
 						size_t offset = 0;
 						size_t rc;
 
@@ -976,14 +989,17 @@ namespace Streams
 										Display(String::Concat(tmp, errno.ToString()));
 										fclose(fp);
 										fp = NULL;
+                                        pFile = NULL;
 									}
 								}
 								offset += pkts[j].Length;
                                 Successes++;
+                                FailuresSinceLastSuccess = 0;
                             }
 							else
 							{
 								Failures++;
+                                FailuresSinceLastSuccess++;
 								offset += pkts[j].Length;
 							}
 
@@ -992,33 +1008,39 @@ namespace Streams
                         }
 
                     } 
-                    else
+                    else {
                         Failures++; 
+                        FailuresSinceLastSuccess++;
+                    }
 
                 } 
 
                 else // BULK Endpoint
                 {
-                    if (EndPt->FinishDataXfer(buffers[i], rLen, &inOvLap[i], contexts[i])) 
+                    if (EndPt->FinishDataXfer(s.buffers[i], rLen, &s.inOvLap[i], s.contexts[i]))
                     {			
                         Successes++;
+                        FailuresSinceLastSuccess = 0;
                         BytesXferred += len;
 
 						if (fp != NULL)
 						{
 							//Display16Bytes(buffers[i]);
-							size_t rc = fwrite(buffers[i], len, 1, fp);
+                            size_t rc = fwrite(s.buffers[i], len, 1, fp);
 							if (rc != 1)
 							{
 								String *tmp = "Writing stopped, code=";
 								Display(String::Concat(tmp, errno.ToString()));
 								fclose(fp);
 								fp = NULL;
+                                pFile = NULL;
 							}
 						}
 					}
-                    else
+                    else {
                         Failures++; 
+                        FailuresSinceLastSuccess++;
+                    }
                 }
 
 
@@ -1029,14 +1051,11 @@ namespace Streams
                 }
 
                 // Re-submit this queue element to keep the queue full
-                contexts[i] = EndPt->BeginDataXfer(buffers[i], len, &inOvLap[i]);
-                if (EndPt->NtStatus || EndPt->UsbdStatus) // BeginDataXfer failed
+                if (!BeginOneTransfer(i, s))
                 {
-                    Display(String::Concat("Xfer request rejected. NTSTATUS = ",EndPt->NtStatus.ToString("x")));
-                    AbortXferLoop(QueueSize,buffers,isoPktInfos,contexts,inOvLap);
-					if (fp != NULL)
-						fclose(fp);
-                    return;
+                    // TODO: a restart may be possible here
+                    // but it requires a close/open of the USB driver
+                    break;
                 }
 
                 i++;
@@ -1047,55 +1066,135 @@ namespace Streams
                     ShowStats(t1, BytesXferred, Successes, Failures);					
                 }
 
+                // RASDR2 firmware has issues with USB3 requiring flush and re-queue of transfers
+                //if (FailuresSinceLastSuccess >= FailuresToInitiateRequeue) break;
+
             }  // End of the infinite loop
 
             // Memory clean-up
-            AbortXferLoop(QueueSize,buffers,isoPktInfos,contexts,inOvLap);
+            FlushXferLoop(QueueSize, s);
+            DestroyBuffers(s);
 			if (fp != NULL)
 			{
 				Display(String::Concat("File closed at end of data collection", ""));
 				fclose(fp);
-			}
+                pFile = NULL;   // somehow declaring FILE * in the class alters its convention
+            }
+            ExitXferLoop("Start");
         }
 
-
-        static void AbortXferLoop(int pending, PUCHAR *buffers, CCyIsoPktInfo **isoPktInfos, PUCHAR *contexts, OVERLAPPED inOvLap __nogc [])
+        // Buffer Management Methods (allow parts to called without exiting the thread)
+        static void CreateBuffers(struct _buffers &s)
         {
             long len = EndPt->MaxPktSize * PPX;
-            EndPt->Abort();
 
-            for (int j=0; j< QueueSize; j++) 
-            { 
-                if (j<pending)
-                {
-                    EndPt->WaitForXfer(&inOvLap[j], TimeOut);
-                    /*{
-                        EndPt->Abort();
-                        if (EndPt->LastError == ERROR_IO_PENDING)
-                            WaitForSingleObject(inOvLap[j].hEvent,2000);
-                    }*/
-                    EndPt->FinishDataXfer(buffers[j], len, &inOvLap[j], contexts[j]);
-                }
+            s.buffers = new PUCHAR[QueueSize];
+            s.isoPktInfos = new CCyIsoPktInfo*[QueueSize];
+            s.contexts = new PUCHAR[QueueSize];
 
-                CloseHandle(inOvLap[j].hEvent);
+            // Allocate all the buffers for the queues
+            for (int i = 0; i< QueueSize; i++)
+            {
+                s.buffers[i] = new UCHAR[len];
+                s.isoPktInfos[i] = new CCyIsoPktInfo[PPX];
+                s.inOvLap[i].hEvent = CreateEvent(NULL, false, false, NULL);    // auto-reset, non-signalled
+                memset(s.buffers[i], 0xEF, len);
+            }
+        }
 
-                delete [] buffers[j];
-                delete [] isoPktInfos[j];
+        static void DestroyBuffers(struct _buffers &s)
+        {
+            for (int j = 0; j< QueueSize; j++)
+            {
+                CloseHandle(s.inOvLap[j].hEvent);
+                delete[] s.isoPktInfos[j];
+                delete[] s.buffers[j];
             }
 
-            delete [] buffers;
-            delete [] isoPktInfos;
-            delete [] contexts;
+            delete[] s.buffers;
+            delete[] s.isoPktInfos;
+            delete[] s.contexts;
+        }
 
+        static bool BeginOneTransfer(int j, struct _buffers &s)
+        {
+            long len = EndPt->MaxPktSize * PPX;
+            //ResetEvent(s.inOvLap[j])
+            s.contexts[j] = EndPt->BeginDataXfer(s.buffers[j], len, &s.inOvLap[j]);
+            if (EndPt->NtStatus || EndPt->UsbdStatus) // BeginDataXfer failed
+            {
+                String *tmp = String::Concat("Begin @", j.ToString());
+                tmp = String::Concat(tmp, ", NtStatus=", EndPt->NtStatus.ToString("x"));
+                tmp = String::Concat(tmp, ", UsbdStatus=", EndPt->UsbdStatus.ToString("x"));
+                Display(tmp);
+                return false;
+            }
+            return true;
+        }
 
+        static bool FinishOneTransfer(int j, struct _buffers &s, bool aborted)
+        { 
+            long expected, len = EndPt->MaxPktSize * PPX;
+            bool status;
+            expected = len;
+            if (!EndPt->WaitForXfer(&s.inOvLap[j], TimeOut))
+            {
+                if (EndPt->LastError == ERROR_IO_PENDING)
+                {
+                    DWORD wfso = WaitForSingleObject(s.inOvLap[j].hEvent, 10000/*INFINITE*/);
+                    if (wfso != WAIT_OBJECT_0) Display(String::Concat("@", j.ToString(), " WFSO=", wfso.ToString("x")));
+                } else
+                    Display(String::Concat("@", j.ToString(), " LastError=", EndPt->LastError.ToString()));
+            }
+            if (EndPt->Attributes == 1) // ISOC Endpoint
+                status = EndPt->FinishDataXfer(s.buffers[j], len, &s.inOvLap[j], s.contexts[j], s.isoPktInfos[j]);
+            else
+                status = EndPt->FinishDataXfer(s.buffers[j], len, &s.inOvLap[j], s.contexts[j]);
+            if (!aborted)
+            {
+                if (!status) Display(String::Concat("@", j.ToString(), " FinishDataXfer() faults"));
+                if (len != EndPt->MaxPktSize * PPX)
+                {
+                    // DEBUG
+                    String *tmp = String::Concat("@", j.ToString());
+                    tmp = String::Concat(tmp, " FinishDataXfer(,", len.ToString(), ",,,)");
+                    tmp = String::Concat(tmp, " !=", expected.ToString());
+                    Display(tmp);
+                }
+                return status;
+            }
+            return true;
+        }
+
+        static int QueueXferLoop(int pending, struct _buffers &s)
+        {
+            for (int j = 0; j<pending; j++)
+            {
+                if (!BeginOneTransfer(j, s)) return j;
+            }
+            return pending;
+        }
+
+        static void FlushXferLoop(int pending, struct _buffers &s)
+        {
+            EndPt->Abort();     // TODO: does Abort() kill one or all of them?
+            for (int j = 0; j<pending; j++)
+            {
+                if (j<pending) (void)FinishOneTransfer(j, s, true);
+            }
+        }
+
+        // Call before exit of XferLoop thread
+        static void ExitXferLoop(const char *tag)
+        {
             bStreaming = false;
 
             if (bAppQuiting == false )
             {
-                // TODO: (needs to be here to prevent assertions in debugger)
+                // TODO: until we figure out how to do this better
                 CheckForIllegalCrossThreadCalls = false;
 
-                StartButton->Text = "Start";
+                StartButton->Text   = tag;
                 StartButton->BackColor = Color::Aquamarine;
                 StartButton->Refresh();
 

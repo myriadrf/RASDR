@@ -57,6 +57,11 @@ The workaround is a software close and re-open of the USB device.  For RASDRstre
     CHANGELOG
 ==============================================================================
 
+v0.2.0 - Unreleased
+
+  Refactor buffers in XferLoop() to be conducive to restart operation
+  Keep success/failure count persistent across XferLoop() starts/stops
+
 v0.1.3 - Unreleased
 
   Add queued string output to prevent crashes
