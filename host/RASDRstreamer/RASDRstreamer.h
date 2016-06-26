@@ -4,7 +4,7 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION "0.1.2"
+#define SOFTWAREVERSION "0.1.3"
 
 namespace Streams
 {
@@ -17,6 +17,7 @@ namespace Streams
     using namespace System::Threading;
     using namespace System::Diagnostics;
     using namespace System::Reflection;
+    using namespace System::Collections::Concurrent;
 
 
     public __gc class Form1 : public System::Windows::Forms::Form
@@ -52,6 +53,8 @@ namespace Streams
 
     private: System::Windows::Forms::Label *  FailureLabel;
 
+    private: System::Windows::Forms::Timer* displayTimer;
+
 
     public:	
 
@@ -64,6 +67,12 @@ namespace Streams
             bPnP_DevNodeChange	= false;
             bAppQuiting         = false;
             bDeviceRefreshNeeded = false;
+
+            qDisplay = new ConcurrentQueue<System::String*>();
+            displayTimer = new System::Windows::Forms::Timer;
+            displayTimer->Tick += new System::EventHandler(this, &Streams::Form1::DisplayEventProcessor);
+            displayTimer->Interval = 250;   // 250ms latency
+            displayTimer->Start();
         }
 
 
@@ -418,6 +427,8 @@ namespace Streams
         bool						bPnP_Removal;
         bool						bPnP_DevNodeChange;
 
+        static ConcurrentQueue<System::String*> *qDisplay;
+
 
         void GetStreamerDevice()
         {
@@ -542,6 +553,9 @@ namespace Streams
 
             if (XferThread->ThreadState == System::Threading::ThreadState::Running)
                 XferThread->Join(10);
+
+            displayTimer->Stop();
+            displayTimer->Enabled = false;
         }
 
 
@@ -830,9 +844,20 @@ namespace Streams
 
         static void Display(String *s)
         {
-            DataBox->Text = String::Concat(DataBox->Text, s, "\r\n");
-            DataBox->SelectionStart = DataBox->Text->Length;
-            DataBox->ScrollToCaret();
+            qDisplay->Enqueue(String::Concat(s,""));
+        }
+
+        void DisplayEventProcessor(System::Object *  sender, System::EventArgs *  e)
+        {
+            String *s;
+            displayTimer->Stop();
+            while (qDisplay->TryDequeue(&s))
+            {
+                DataBox->Text = String::Concat(DataBox->Text, s, "\r\n");
+                DataBox->SelectionStart = DataBox->Text->Length;
+                DataBox->ScrollToCaret();
+            }
+            displayTimer->Enabled = true;
         }
 
         static void Display16Bytes(PUCHAR data)
@@ -1067,6 +1092,9 @@ namespace Streams
 
             if (bAppQuiting == false )
             {
+                // TODO: (needs to be here to prevent assertions in debugger)
+                CheckForIllegalCrossThreadCalls = false;
+
                 StartButton->Text = "Start";
                 StartButton->BackColor = Color::Aquamarine;
                 StartButton->Refresh();

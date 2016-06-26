@@ -50,10 +50,19 @@ https://www.microsoft.com/en-us/download/details.aspx?id=40784
 The workaround is a software close and re-open of the USB device.  For RASDRstreamer, this can be accomplished by restarting the program or stopping the transfer and re-selecting the device, then pressing START.
 
 2) v0.1.2 and below of RASDRstreamer has a threading issue in the ::Display() call that leads to random exceptions.  Particularly if there is an early failure in the USB immediately upon pressing the START button.
+
+3) If you get 'Xfer request rejected. NTSTATUS = c0000001' when trying to START, this means that the firmware has entered an invalid state, and the device must be disconnected and reconnected.  (The Firmware BcdDevice="00 04" is only *partially mitigated*) 
  
 ==============================================================================
     CHANGELOG
 ==============================================================================
+
+v0.1.3 - Unreleased
+
+  Add queued string output to prevent crashes
+  Add temporary workaround 'CheckForIllegalCrossThreadCalls=false' for calling UI components from thread functions
+
+<rant>Why does *every* example software have such bad UI thread issues?  Its crushing how much code is written like this.  It works for simple cases, and then as soon as you start to extend it...  boom, crash, game over.  Its such a waste of time.  You were much better off starting from scratch.  But then...  you will have invested so much time in the code that any rational human being will want to get some compensation for it, and you will close the source and keep it secret.  Well, I am not rational, so I hope that my (insignificant) efforts at repairing these will help some poor soul stuck with the same problems in the code they have to deal with.</rant>
 
 v0.1.2 - Unreleased
 
