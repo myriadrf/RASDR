@@ -75,7 +75,7 @@ namespace Streams
             InitializeComponent();
 
             USBDevice           = NULL;
-            _EndPtAddr          = (UCHAR)0;
+            _EndPtAddr          = (UCHAR)255;
 
             bPnP_Arrival		= false;
             bPnP_Removal		= false;
@@ -656,7 +656,8 @@ namespace Streams
 					PPX = 32;			// default, will override in EnforceValidPPX()
 					QueueSize = 16;		// default
 
-                    EndPointsBox_SelectedIndexChanged(NULL, NULL);   // call at least once
+                    if (_EndPtAddr == 255) EndPointsBox_SelectedIndexChanged(NULL, NULL);   // call at least once
+                    else                   EnforceValidPPX();                               // otherwise call this
 
                     StartBtn->Text = "Stop";
                     SuccessBox->Text = "";
