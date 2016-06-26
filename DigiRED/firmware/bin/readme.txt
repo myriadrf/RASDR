@@ -1,4 +1,4 @@
-RASDR - DigiRED+MyriadRF Receive Port Firmware - Release 1.2 - Oct 07, 2015
+RASDR - DigiRED+MyriadRF Receive Port Firmware - Release 1.3 - Jun 26, 2016
 ===========================================================================
 
 error-codes.txt		- Blink codes for firmware error reporting
