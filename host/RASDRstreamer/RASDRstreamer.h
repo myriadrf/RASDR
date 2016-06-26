@@ -4,7 +4,7 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION "0.1.1"
+#define SOFTWAREVERSION "0.1.2"
 
 namespace Streams
 {
@@ -67,7 +67,14 @@ namespace Streams
         }
 
 
-
+    /* *** BEWARE: if you change the form via the UI designer
+       *** this next section can get re-written.  In my experience,
+       *** I added the vertical scrollbar option, and the tool
+       *** switched to managed heap, started using gcnew everywhere
+       *** and caused a build failure.
+       ***
+       *** http://stackoverflow.com/questions/202459/what-is-gcnew
+    */ 
     private:
 
         System::ComponentModel::IContainer *  components;
@@ -193,6 +200,7 @@ namespace Streams
             this->DataTextBox->Location = System::Drawing::Point(17, 295);
             this->DataTextBox->Multiline = true;
             this->DataTextBox->Name = S"DataTextBox";
+            this->DataTextBox->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
             this->DataTextBox->Size = System::Drawing::Size(389, 112);
             this->DataTextBox->TabIndex = 18;
             this->DataTextBox->TabStop = false;
@@ -368,6 +376,7 @@ namespace Streams
 
         }	
 
+        /* *** End of section that changed (see note above) */
      
         Thread						*XferThread;
 
@@ -890,7 +899,7 @@ namespace Streams
 				// Do not overwrite existing file and make #1, #2, etc. variants.
 				// http://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c-cross-platform
 				char fname[] = "RASDRstreamer.raw\0\0\0\0";		// space for RASDRstreamer#999.raw
-				errno_t e = fopen_s(&fp,fname,"r");				// try opening (for existence)
+				errno_t e = fopen_s(&fp,fname,"rb");			// try opening (for existence)
 				i = 1;
 				while( e==0 && i < 1000 ) {
 					fclose(fp);
@@ -1089,17 +1098,21 @@ namespace Streams
             int rounder = (XferRate > 2000) ? 100 : 10;
             XferRateRounded = XferRate / rounder * rounder;
 
+            // Prevent out-of-bounds exceptions
+            if (XferRate>625000) XferRate = 625000;
+            if (XferRate<0) XferRate = 0;
+            if (XferRateRounded>625000) XferRateRounded = 625000;
+            if (XferRateRounded<0) XferRateRounded = 0;
+
+            //thread safe-commented (needs to be here to prevent assertions in debugger)
+            CheckForIllegalCrossThreadCalls = false;
+
             if (abs(XferRateExpected - XferRateRounded) > (10 * XferRateExpected / 100))
                 XferRateBar->BackColor = System::Drawing::Color::Red;		// >10%
             else if (abs(XferRateExpected - XferRateRounded) > (3 * XferRateExpected / 100))
                 XferRateBar->BackColor = System::Drawing::Color::Orange;	// 3>10%
             else
                 XferRateBar->BackColor = System::Drawing::Color::White;		// <3%
-
-			if(XferRate>625000)
-				XferRate = 625000;
-            //thread safe-commented
-            CheckForIllegalCrossThreadCalls = false;
 
 			XferRateBar->Value = XferRateRounded;
             XferRateLabel->Text = XferRate.ToString("0");

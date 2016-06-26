@@ -23,6 +23,7 @@ To use the Program, perform the following steps:
 5) Select the 'Samples/Frame', 'Rate (MHz)' and 'Integration Time (ms)' fields to match what RASDRviewer was set to.
    a. These settings only define the packetization parameters, the actual transfer rate was defind by the RASDRviewer configuration of the LMS6002D chip.
 6) Decide you wish to save RAW data or not by ticking the check box
+   a. When using USB3 and writing .raw file, you will observe a rate reduction when the in-memory file system buffers fill up.
 7) Press START.
 
 ![RASDRstreamer-example](https://github.com/myriadrf/RASDR/tree/master/host/RASDRstreamer/RASDRstreamer-example.png)
@@ -41,8 +42,23 @@ The VC re-distributable components are provided with the application file.  They
 https://www.microsoft.com/en-us/download/details.aspx?id=40784
 
 ==============================================================================
+    BUGS
+==============================================================================
+
+1) RASDR2 Firmware prior to June 2016 (Device Descriptor BcdDevice="00 03" or earlier) had issues with USB3 operation on certain computers (lower specification) that caused glitches and failed transports.  With Firmware BcdDevice="00 04", this has been *partially mitigated* by eliminating the burst mode when using USB3 SuperSpeed mode.  The change does not eliminate the glitch, but reduces its liklihood considerably.
+
+The workaround is a software close and re-open of the USB device.  For RASDRstreamer, this can be accomplished by restarting the program or stopping the transfer and re-selecting the device, then pressing START.
+
+2) v0.1.2 and below of RASDRstreamer has a threading issue in the ::Display() call that leads to random exceptions.  Particularly if there is an early failure in the USB immediately upon pressing the START button.
+ 
+==============================================================================
     CHANGELOG
 ==============================================================================
+
+v0.1.2 - Unreleased
+
+  Add vertical scrollbar to diagnostic output
+  Fix bug not using 'rb' when writing .raw files that leads to files getting premature EOF
 
 v0.1.1 - First Public Distribution
 
