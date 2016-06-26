@@ -1,13 +1,13 @@
-Blink Error Codes for 'usb_rx.img' Sep 26, 2015
+Blink Error Codes for 'usb_rx.img' Jun 26, 2016
 
-Upon an error condition, the firmware will emit an error code sequence on LED D6 of the digiRED board.  The code describes a two-digit code by blinking the most-significant, pause, then the least significant digit.  This is followed by a long pause and the code repeats.  The codes are defined as follows:
+Upon an error condition, the firmware will emit an error code sequence on LED D6 of the digiRED board.  It begins with a walk of all three LEDs, then describes a two-digit code by blinking all three LEDs with the most-significant, pause and blink the center LED once, then blink all three LEDs with the least significant digit.  This is followed by a pause and the code repeats beginning with the LED walk.  The codes are defined as follows:
 
 01	Invalid USB Speed
 02	Producer EP configuration failed at INITIALIZATION
 03	Consumer EP configuration failed at INITIALIZATION
-04	DMA channel creation failed
-05	Producer EP configuration failed at RESET/DISCONNECT
-06	Consumer EP configuration failed at RESET/DISCONNECT
+04	Consumer (PORT->USB) DMA channel creation failed
+05	Consumer (PORT->USB) DMA activation failed
+06	Consumer EP disable failed at RESET/DISCONNECT
 07	P-PORT initialization failed
 08	GPIF load failed
 09	GPIF state machine start failed
@@ -23,9 +23,9 @@ Upon an error condition, the firmware will emit an error code sequence on LED D6
 19	USB String Descriptor failure (2)
 20	USB Start Failure
 21	USB SS Start Failure
-30	DMA channel commit buffer failure (UtoP)
-31	DMA channel commit buffer failure (PtoU)
+22-39	<spare>
 40	Application Thread start failure
+41-49	<spare>
 50	Invalid Sequence (2nd read before previous I2C Read completed)
 51	Invalid Sequence (2nd read before previous LMS Read completed)
 52	Invalid Sequence (2nd read before previous INFO Read completed)
@@ -38,4 +38,5 @@ Upon an error condition, the firmware will emit an error code sequence on LED D6
 59	Invalid Sequence (2nd read before previous ADF Write completed)
 60	Invalid Sequence (command to read the TX buffer w/o previous command to fill it)
 61	USB String Descriptor failure (3)
+62-98	<spare>
 99	TEST CODE
