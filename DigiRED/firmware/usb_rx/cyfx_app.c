@@ -168,7 +168,7 @@ CyU3PDmaMultiChannel glChHandlePtoU;     /* DMA Channel handle for FX3->USB tran
 volatile uint32_t glDMARxCount = 0;      /* Counter to track the number of buffers received from USB. */
 volatile uint32_t glDMATxCount = 0;      /* Counter to track the number of buffers sent to USB. */
 CyBool_t glIsApplnActive    = CyFalse;   /* Whether the application is active or not. */
-CyBool_t glIsApplnFaulted    = CyFalse;  /* Whether the application is faulted or not. */
+CyBool_t glIsApplnFaulted   = CyFalse;   /* Whether the application has faulted or not. */
 
 
 uint8_t glEp0Buffer_Rx[64] __attribute__ ((aligned (32)));
@@ -241,10 +241,14 @@ CyFxAppErrorHandler(
     		CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
-    	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
+        //for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
 
     	// space between digit1 and digit0:
-    	CyU3PThreadSleep(ERR_DIGIT_SPACE);
+        CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
+        CyU3PGpioSetValue(GPIO_LED2, LED_ON);
+        CyU3PThreadSleep(ERR_DIGIT_ON);
+        CyU3PGpioSetValue(GPIO_LED2, LED_OFF);
+        CyU3PThreadSleep(ERR_DIGIT_OFF);
 
     	// digit0:
     	for(cc=0;cc<digit0;cc++) {
@@ -257,7 +261,7 @@ CyFxAppErrorHandler(
     		CyU3PGpioSetValue(GPIO_LED1, LED_OFF);
     		CyU3PThreadSleep(ERR_DIGIT_OFF);
     	}
-    	for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
+        //for( ;cc<10;cc++) CyU3PThreadSleep(ERR_DIGIT_ON+ERR_DIGIT_OFF);
 
     	// space after digit0:
     	CyU3PThreadSleep(ERR_DIGIT_END);
@@ -428,7 +432,7 @@ CyFxApplnStart(void)
     if (apiRetStatus != CY_U3P_SUCCESS)
     {
         //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PDmaMultiChannelSetXfer failed, Error code = %d\n", apiRetStatus);
-        CyFxAppErrorHandler(apiRetStatus,4);
+        CyFxAppErrorHandler(apiRetStatus,5);
     }
 
     /* Update the flag so that the application thread is notified of this. */
@@ -449,7 +453,7 @@ CyFxApplnStop(
     glIsApplnActive = CyFalse;
 
     /* Destroy the channels */
-    //CyU3PDmaChannelDestroy(&glChHandleUtoP);
+    //CyU3PDmaMultiChannelReset(&glChHandlePtoU);
     CyU3PDmaMultiChannelDestroy(&glChHandlePtoU);
 
     /* Flush the endpoint memory */
@@ -465,7 +469,7 @@ CyFxApplnStop(
     //if (apiRetStatus != CY_U3P_SUCCESS)
     //{
     //    //CyU3PDebugPrint(CY_FX_DEBUG_PRIORITY, "CyU3PSetEpConfig failed, Error code = %d\n", apiRetStatus);
-    //    CyFxAppErrorHandler(apiRetStatus,5);
+    //    CyFxAppErrorHandler(apiRetStatus,xx);
     //}
 
     /* Consumer endpoint configuration. */
@@ -1013,6 +1017,10 @@ CyFxApplnInit(void)
         CyFxAppErrorHandler(apiRetStatus,8);
     }
 
+    // AN65974 Example has these two here:
+    //CyU3PGpifSocketConfigure (0,CY_U3P_PIB_SOCKET_0,6,CyFalse,1);
+    //CyU3PGpifSocketConfigure (1,CY_U3P_PIB_SOCKET_1,6,CyFalse,1);
+
     /* Start the state machine. */
     apiRetStatus = CyU3PGpifSMStart(START, ALPHA_START);
     if (apiRetStatus != CY_U3P_SUCCESS)
@@ -1162,7 +1170,7 @@ AppThread_Entry (
         uint32_t input)
 {
 	CyU3PDmaState_t state;
-	uint32_t prodXferCount, consXferCount, count_new, count_old;
+	uint32_t prodXferCount=0, consXferCount, count_new, count_old;
 	uint8_t sckIndex;
 
     /* Initialize the peripheral modules */
