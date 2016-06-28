@@ -2,8 +2,8 @@
 <wxsmith>
 	<object class="wxFrame" name="FFTviewerFrame">
 		<title>RASDRproc</title>
-		<size>900,700</size>
-		<minsize>900,700</minsize>
+		<size>1100,800</size>
+		<minsize>1100,800</minsize>
 		<id_arg>0</id_arg>
 		<style>wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX</style>
 		<handler function="OnClose" entry="EVT_CLOSE" />
@@ -14,8 +14,8 @@
 			<growablerows>0</growablerows>
 			<object class="sizeritem">
 				<object class="wxNotebook" name="ID_NOTEBOOK1" variable="Notebook1" member="yes">
-					<size>800,600</size>
-					<minsize>900,500</minsize>
+					<size>1072,678</size>
+					<minsize>1072,678</minsize>
 					<object class="notebookpage">
 						<object class="wxPanel" name="ID_PANEL1" subclass="pnlSpectrum" variable="mSpectrum" member="yes">
 							<style>0</style>
@@ -23,12 +23,14 @@
 						</object>
 						<label>Spectrum</label>
 					</object>
+					<!--
 					<object class="notebookpage">
 						<object class="wxPanel" name="ID_PANEL2" subclass="PulsarPnl" variable="mPulsar" member="yes">
 							<style>0</style>
 						</object>
 						<label>Pulsar</label>
 					</object>
+					-->
 				</object>
 				<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 				<border>5</border>
@@ -74,6 +76,10 @@
 					<label>Display Time</label>
 					<handler function="OnDispTimeSelected" entry="EVT_MENU" />
 				</object>
+				<object class="wxMenuItem" name="idTuningParameters" variable="MenuItem8B" member="yes">
+					<label>Tuning Parameters</label>
+					<handler function="OnTuningParametersSelected" entry="EVT_MENU" />
+				</object>
 			</object>
 			<object class="wxMenu" variable="Menu5" member="yes">
 				<label>Define Output</label>
@@ -85,6 +91,7 @@
 					<label>Setup Power Output</label>
 					<handler function="OnSetupPWROutSelected" entry="EVT_MENU" />
 				</object>
+				<!--
 				<object class="wxMenu" name="ID_MENUITEM8" variable="MenuItem10" member="yes">
 					<label>Setup Pulse Output</label>
 					<object class="wxMenuItem" name="ID_MENUITEM10" variable="SetupDMOutMenu" member="yes">
@@ -96,7 +103,9 @@
 						<handler function="OnSetupPulsePeriodOutSelected" entry="EVT_MENU" />
 					</object>
 				</object>
+				-->
 			</object>
+			<!--
 			<object class="wxMenu" variable="Menu6" member="yes">
 				<label>Simulation</label>
 				<object class="wxMenuItem" name="ID_MENUITEM11" variable="Setup_Sim" member="yes">
@@ -104,6 +113,7 @@
 					<handler function="OnSetup_SimSelected" entry="EVT_MENU" />
 				</object>
 			</object>
+			-->
 			<object class="wxMenu" variable="Menu2" member="no">
 				<label>Help</label>
 				<object class="wxMenuItem" name="idMenuAbout" variable="MenuItem2" member="no">

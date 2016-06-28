@@ -19,7 +19,7 @@
 			<growablerows>1</growablerows>
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
-					<minsize>800,32</minsize>
+					<minsize>900,32</minsize>
 					<object class="wxCheckBox" name="ID_CHECKBOX3" variable="chkUpdateGraphs" member="yes">
 						<label>Update graphs</label>
 						<checked>1</checked>
@@ -507,7 +507,7 @@
 												<underlined>0</underlined>
 												<family>swiss</family>
 											</font>
-											<minsize>400,150</minsize>
+											<minsize>420,150</minsize>
 											<style>wxSIMPLE_BORDER</style>
 										</object>
 										<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
@@ -518,49 +518,74 @@
 										<object class="wxPanel" name="ID_PANEL5" variable="Panel5" member="yes">
 											<object class="wxBoxSizer" variable="BoxSizer3" member="no">
 												<orient>wxVERTICAL</orient>
-												<object class="sizeritem">
-													<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
-														<label>Pwr Span (1 to 1440 Min)</label>
-														<size>156,17</size>
-													</object>
-													<flag>wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
-													<border>5</border>
-													<option>1</option>
-												</object>
-												<object class="sizeritem">
-													<object class="wxSpinCtrl" name="ID_SPINCTRL5" variable="PwrSpan" member="yes">
-														<value>15</value>
-														<min>1</min>
-														<max>1440</max>
-														<handler function="OnPwrSpanChange" entry="EVT_SPINCTRL" />
-													</object>
-													<flag>wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
-													<border>5</border>
-													<option>1</option>
-												</object>
-												<object class="sizeritem">
-													<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
-														<label>Integration Time (S)</label>
-														<size>126,18</size>
-													</object>
-													<flag>wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
-													<border>5</border>
-													<option>1</option>
-												</object>
-												<object class="sizeritem">
-													<object class="wxChoice" name="ID_CHOICE1" variable="Integration_Time" member="yes">
-														<content>
-															<item>1</item>
-															<item>5</item>
-															<item>10</item>
-														</content>
-														<selection>0</selection>
-														<handler function="OnIntegration_TimeSelect" entry="EVT_CHOICE" />
-													</object>
-													<flag>wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
-													<border>5</border>
-													<option>1</option>
-												</object>
+                                                <object class="sizeritem">
+                                                    <object class="wxCheckBox" name="ID_CHECKBOX1B" variable="chkAutoscalePwrY" member="yes">
+                                                        <label>Autoscale Power (uW)</label>
+                                                    </object>
+                                                    <flag>wxALIGN_LEFT|wxALIGN_LEFT</flag>
+                                                    <border>5</border>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <object class="wxCheckBox" name="ID_CHECKBOX1C" variable="chkAutoscalePwrX" member="yes">
+                                                        <label>Autoscale Power (Time)</label>
+                                                    </object>
+                                                    <flag>wxALIGN_LEFT|wxALIGN_LEFT</flag>
+                                                    <border>5</border>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <object class="wxFlexGridSizer" variable="FlexGridSizer3A" member="no">
+                                                        <cols>2</cols>
+                                                        <rows>2</rows>
+        												<object class="sizeritem">
+        													<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
+        														<label>Span (Min)</label>
+        														<size>90,30</size>
+        													</object>
+        													<flag>wxALL|wxALIGN_TOP|wxALIGN_LEFT</flag>
+        													<border>5</border>
+        													<option>0</option>
+        												</object>
+        												<object class="sizeritem">
+        													<object class="wxSpinCtrl" name="ID_SPINCTRL5" variable="PwrSpan" member="yes">
+        														<size>60,25</size>        														<value>15</value>
+                                                                <value>15</value>
+        														<min>1</min>
+        														<max>1440</max>
+        														<handler function="OnPwrSpanChange" entry="EVT_SPINCTRL" />
+        													</object>
+        													<flag>wxALL|wxALIGN_TOP|wxALIGN_RIGHT</flag>
+        													<border>5</border>
+        													<option>1</option>
+        												</object>
+        												<object class="sizeritem">
+        													<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
+        														<label>Integration Time (Sec)</label>
+        														<size>90,30</size>
+        													</object>
+        													<flag>wxALL|wxALIGN_TOP|wxALIGN_LEFT</flag>
+        													<border>5</border>
+        													<option>0</option>
+        												</object>
+        												<object class="sizeritem">
+        													<object class="wxChoice" name="ID_CHOICE1" variable="Integration_Time" member="yes">
+        														<size>60,25</size>        														<value>15</value>
+        														<content>
+        															<item>1</item>
+        															<item>5</item>
+        															<item>10</item>
+        														</content>
+        														<selection>0</selection>
+        														<handler function="OnIntegration_TimeSelect" entry="EVT_CHOICE" />
+        													</object>
+        													<flag>wxALL|wxALIGN_TOP|wxALIGN_RIGHT</flag>
+        													<border>5</border>
+        													<option>1</option>
+        												</object>
+                                                    </object>
+                                                    <flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                            	</object>
 											</object>
 										</object>
 										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>

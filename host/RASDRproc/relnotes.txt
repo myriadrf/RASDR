@@ -1,4 +1,4 @@
-RASDRproc v0.2.0.3 - May 20, 2016
+RASDRproc v0.2.1.0 - Jun 26, 2016
 =================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -26,25 +26,27 @@ When you close the program, the last set of parameters used will be written to t
 
 DC Offset Correction:
 
-RASDRproc uses *STATIC* DC Offset Correction.  The calibration procedure is as follows:
+RASDRproc uses *MANUAL* DC Offset Correction.  The calibration procedure is as follows:
 
-1) Edit the RASDR.cfg file in the same folder as RASDRproc(_d).exe to set the "DC Offset for I samples" and "DC Offset for Q samples" to 0.0.  You can also delete the RASDR.cfg file which will also have the effect of clearing the DC Offset.
+1) Setup the desired acquisition parameters and start data collection.  While collecting data, connect a 50ohm load to the RX of the receiver.
 
-2) Start the program, pick some settings and Start Acquisition to acquire data for a short time.  You will see the signal-vs-time plot in the upper left corner of the GUI have different levels for the blue and red plots.
+2) From the 'Performance Parameters' menu, select 'Tuning Parameters'.  This brings up a pop-up window where an I and Q offset is able to be entered.  While data is being collected, press the 'Use Current Averages' and observe that the values are updated. Then, press 'OK Accept Values' and see that the DC offset correction is applied.
 
-3) Stop Acquisition and CLOSE the program.  The "RASDR.cfg" file that is written by the program will have calculated the DC Offset value needed to correct the offset.
+The calibration values are saved along with the other parameters in the RASDR.cfg file.
 
-4) Start the program again.  Now, the values listed in the configuration file will be used to correct the offset.
-
-If necessary, repeat the above procedure to compute new offsets.  Typically, it has not been seen that the offset needs to be corrected continuously, but the offset IS different each time the RASDR2 device is powered up and it does depend on what antenna system and front end electronics are connected to the RASDR RX port.
+If necessary, repeat the above procedure to compute new offsets.  Typically, it has not been seen that the offset needs to be corrected continuously, but the offset IS different each time the RASDR2 device is powered up and it does depend on what antenna system and front end electronics are connected to the RASDR RX port, as well as the sampling rate and gain settings.
 
 
 Known Issues:
 
-The program will give an ugly dialog box if it cannot find its settings file 'RASDR.cfg', but will create a new one when the program exits.
+1) The program will give an ugly dialog box if it cannot find its settings file 'RASDR.cfg', but will create a new one when the program exits.
 
-When using USB 3 on a marginal machine (e.g. dual core, 4GB RAM) the application is known to stop acquiring data.  With the updated Cypress WHQL driver, this condition can be cleared by manually stopping then restarting acquisition.  It is not yet understood why this occurs.  This behavior has not been observed on a more robust machine (e.g. quad core, 8GB RAM).  The working theory at this point is that RASDRviewer/RASDRproc and its use of the Cypress driver API requires two cores to itself and OS activity can interfere with the timing of completion requests for USB buffers.  This condition will be corrected as soon as the root cause is determined.
+2) When using USB 3 on a marginal machine (e.g. dual core, 4GB RAM) the application is known to stop acquiring data.  With the updated Cypress WHQL driver, this condition can be cleared by manually stopping then restarting acquisition.  It is not yet understood why this occurs.  This behavior has not been observed on a more robust machine (e.g. quad core, 8GB RAM).  The working theory at this point is that RASDRviewer/RASDRproc and its use of the Cypress driver API requires two cores to itself and OS activity can interfere with the timing of completion requests for USB buffers.  This condition will be corrected as soon as the root cause is determined.
 
-Scaling of the frequency plot, the use of markers and other aspects of the UI can produce unsatisfactory results.  Please be persistent in your efforts to make the plot look they way you want it.
+3) Scaling of the frequency plot, the use of markers and other aspects of the UI can produce unsatisfactory results.  Please be persistent in your efforts to make the plot look they way you want it.  RASDRproc v0.2.1.0 has made some progress in the operation of the Power plot.
 
-"RASDRproc.exe", if started w/o a RASDR device connection may take a very long time to start.  This does not seem to be the case with "RASDRproc_d.exe"
+4) "RASDRproc.exe", if started w/o a RASDR device connection may take a very long time to start.  This does not seem to be the case with "RASDRproc_d.exe"
+
+5) Sometimes when restarting (or if Auto Restart) is enabled, the program will raise an exception in the CCyUSBEndPoint::FinishDataXfer() as it deletes buffers.  This is when the stop is initiated by a call to LMLL_Testing_StopSdramRead() to stop collecting data from the USB stream.
+
+Debugging this has not illuminated a good explanation for this behavior.

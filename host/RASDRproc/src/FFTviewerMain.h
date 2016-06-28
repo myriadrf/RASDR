@@ -90,6 +90,7 @@ class FFTviewerFrame: public wxFrame
         void OnMenuStartCaptureSelected(wxCommandEvent& event);
         void OnMenuStopCaptureSelected(wxCommandEvent& event);
         void OnFrameDelaySelected(wxCommandEvent& event);
+        void OnTuningParametersSelected(wxCommandEvent& event);
         void OnmSpectrumPaint(wxPaintEvent& event);
         void OnMenuItemSaveConfigSelected(wxCommandEvent& event);
         void OnDispTimeSelected(wxCommandEvent& event);
@@ -117,18 +118,20 @@ class FFTviewerFrame: public wxFrame
         static const long ID_MENUITEM6;
         static const long idFrameDelay;
         static const long idDsplayTime;
+        static const long idTuningParameters;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM7;
-        static const long ID_MENUITEM10;
-        static const long ID_MENUITEM9;
-        static const long ID_MENUITEM8;
-        static const long ID_MENUITEM11;
+//        static const long ID_MENUITEM10;
+//        static const long ID_MENUITEM9;
+//        static const long ID_MENUITEM8;
+//        static const long ID_MENUITEM11;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
         //*)
 
         //(*Declarations(FFTviewerFrame)
         wxMenuItem* MenuItem8;
+        wxMenuItem* MenuItem8B;
         wxMenuItem* MenuItem7;
         wxNotebook* Notebook1;
         wxMenuItem* MenuItem5;
@@ -136,15 +139,15 @@ class FFTviewerFrame: public wxFrame
         pnlSpectrum* mSpectrum;
         wxMenu* Menu3;
         wxMenuItem* MenuItem4;
-        PulsarPnl* mPulsar;
-        wxMenuItem* MenuItem11;
-        wxMenu* MenuItem10;
+//        PulsarPnl* mPulsar;
+//        wxMenuItem* MenuItem11;
+//        wxMenu* MenuItem10;
         wxMenuItem* DispTime;
         wxMenuItem* MenuItem3;
         wxMenuItem* MenuItem6;
-        wxMenuItem* Setup_Sim;
-        wxMenuItem* SetupDMOutMenu;
-        wxMenu* Menu6;
+//        wxMenuItem* Setup_Sim;
+//        wxMenuItem* SetupDMOutMenu;
+//        wxMenu* Menu6;
         wxMenuItem* MenuItem9;
         wxMenu* Menu5;
         wxMenu* Menu4;

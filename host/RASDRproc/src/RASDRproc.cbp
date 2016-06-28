@@ -680,6 +680,8 @@
 		</Unit>
 		<Unit filename="PopList.cpp" />
 		<Unit filename="PopList.h" />
+		<Unit filename="PopTuning.cpp" />
+		<Unit filename="PopTuning.h" />
 		<Unit filename="PopTimeSpan.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -758,6 +760,7 @@
 			<Option target="GUIRelease WIN32" />
 		</Unit>
 		<Unit filename="wxsmith/PopList.wxs" />
+		<Unit filename="wxsmith/PopTuning.wxs" />
 		<Unit filename="wxsmith/PopTimeSpan.wxs">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -893,6 +896,7 @@
 					<wxPanel wxs="wxsmith/pnlSamplesGenerator.wxs" src="GUI/pnlSamplesGenerator.cpp" hdr="GUI/pnlSamplesGenerator.h" fwddecl="1" i18n="1" name="pnlSamplesGenerator" language="CPP" />
 					<wxPanel wxs="wxsmith/pnlADF.wxs" src="GUI/pnlADF.cpp" hdr="GUI/pnlADF.h" fwddecl="1" i18n="1" name="pnlADF" language="CPP" />
 					<wxDialog wxs="wxsmith/PopList.wxs" src="PopList.cpp" hdr="PopList.h" fwddecl="0" i18n="1" name="PopList" language="CPP" />
+					<wxDialog wxs="wxsmith/PopTuning.wxs" src="PopTuning.cpp" hdr="PopTuning.h" fwddecl="0" i18n="1" name="PopTuning" language="CPP" />
 					<wxPanel wxs="wxsmith/PopDialog.wxs" src="PopDialog.cpp" hdr="PopDialog.h" fwddecl="0" i18n="1" name="PopDialog" language="CPP" />
 					<wxDialog wxs="wxsmith/PopTimeSpan.wxs" src="PopTimeSpan.cpp" hdr="PopTimeSpan.h" fwddecl="0" i18n="1" name="PopTimeSpan" language="CPP" />
 					<wxDialog wxs="wxsmith/SetupFFTout.wxs" src="SetupFFTout.cpp" hdr="SetupFFTout.h" fwddecl="0" i18n="1" name="SetupFFTout" language="CPP" />

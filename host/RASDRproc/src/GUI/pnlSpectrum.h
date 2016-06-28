@@ -172,6 +172,8 @@ class pnlSpectrum: public wxPanel
 		wxCheckBox* chkIchannelEnabled;
 		wxStaticText* StaticText4;
 		wxCheckBox* chkAverage;
+		wxCheckBox* chkAutoscalePwrY;
+		wxCheckBox* chkAutoscalePwrX;
 		OpenGLGraph* ogl_IQline;
 		wxSpinCtrl* spinSamplingFreq;
 		//*)
@@ -211,6 +213,8 @@ class pnlSpectrum: public wxPanel
 		static const long ID_BUTTON1;
 		static const long ID_BUTTON2;
 		static const long ID_CHECKBOX1;
+		static const long ID_CHECKBOX1B;
+		static const long ID_CHECKBOX1C;
 		static const long ID_SPINCTRL4;
 		static const long ID_STATICTEXT14;
 		static const long ID_TEXTCTRL3;

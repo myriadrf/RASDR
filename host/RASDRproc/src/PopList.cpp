@@ -81,7 +81,8 @@ PopList::~PopList()
 	//*)
 }
 
-FFTviewerFrame *parent;
+// CHECK: this definition doesnt belong here, and not with that name...
+//FFTviewerFrame *parent;
 
 void PopList::OnInit(wxInitDialogEvent& event)
 {

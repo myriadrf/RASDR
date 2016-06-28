@@ -28,6 +28,7 @@
 //
 // REVISIONS:   as appropriate
 // -----------------------------------------------------------------------------
+#include <float.h>          // FLT_MAX
 #include "pnlSpectrum.h"
 #include "GUIUtils.h"
 #include "ctr_6002dr2_LogicDLL.h"
@@ -93,6 +94,8 @@ const long pnlSpectrum::ID_SPLITTERWINDOW1 = wxNewId();
 const long pnlSpectrum::ID_BUTTON1 = wxNewId();
 const long pnlSpectrum::ID_BUTTON2 = wxNewId();
 const long pnlSpectrum::ID_CHECKBOX1 = wxNewId();
+const long pnlSpectrum::ID_CHECKBOX1B = wxNewId();
+const long pnlSpectrum::ID_CHECKBOX1C = wxNewId();
 const long pnlSpectrum::ID_SPINCTRL4 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT14 = wxNewId();
 const long pnlSpectrum::ID_TEXTCTRL3 = wxNewId();
@@ -144,8 +147,8 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 //pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size, int style, wxString str) : m_buffersCount(64)
 {
     m_PwrIntTime = 1;
-    m_PwrMax = 30;
-    m_PwrMin = 20;
+    m_PwrMax = 0.1;
+    m_PwrMin = 0.0;
     m_lastUpdate = 0;
 //    m_capturingData = false;
     m_updating = false;
@@ -219,6 +222,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	//(*Initialize(pnlSpectrum)
 	wxStaticBoxSizer* StaticBoxSizer2;
 	wxFlexGridSizer* FlexGridSizer3;
+	wxFlexGridSizer* FlexGridSizer3A;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxFlexGridSizer* FlexGridSizer9;
 	wxFlexGridSizer* FlexGridSizer2;
@@ -239,7 +243,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(1);
 	Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	Panel1->SetMinSize(wxSize(800,32));
+	Panel1->SetMinSize(wxSize(900,32));
 	chkUpdateGraphs = new wxCheckBox(Panel1, ID_CHECKBOX3, _("Update graphs"), wxPoint(25,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
 	chkUpdateGraphs->SetValue(true);
 	chkIchannelEnabled = new wxCheckBox(Panel1, ID_CHECKBOX4, _("I channel"), wxPoint(144,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
@@ -423,24 +427,32 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 		WX_GL_STENCIL_SIZE,    0,
 		0, 0 };
 	oglPWRChart = new OpenGLGraph(Panel9, ID_GLCANVAS4, wxPoint(-1,-1), wxDefaultSize, wxSIMPLE_BORDER, _T("ID_GLCANVAS4"), GLCanvasAttributes_4);
-	oglPWRChart->SetMinSize(wxSize(400,150));
+	oglPWRChart->SetMinSize(wxSize(420,150));
 	wxFont oglPWRChartFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	oglPWRChart->SetFont(oglPWRChartFont);
 	FlexGridSizer3->Add(oglPWRChart, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	Panel5 = new wxPanel(Panel9, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
 	BoxSizer3 = new wxBoxSizer(wxVERTICAL);
-	StaticText2 = new wxStaticText(Panel5, ID_STATICTEXT2, _("Pwr Span (1 to 1440 Min)"), wxDefaultPosition, wxSize(156,17), 0, _T("ID_STATICTEXT2"));
-	BoxSizer3->Add(StaticText2, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
-	PwrSpan = new wxSpinCtrl(Panel5, ID_SPINCTRL5, _T("15"), wxDefaultPosition, wxDefaultSize, 0, 1, 1440, 15, _T("ID_SPINCTRL5"));
+	chkAutoscalePwrY = new wxCheckBox(Panel5, ID_CHECKBOX1B, _("Autoscale Power (uW)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1B"));
+	chkAutoscalePwrY->SetValue(false);
+	BoxSizer3->Add(chkAutoscalePwrY, 0, wxALL|wxALIGN_TOP|wxALIGN_LEFT, 5);
+	chkAutoscalePwrX = new wxCheckBox(Panel5, ID_CHECKBOX1C, _("Autoscale Power (Time)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1C"));
+	chkAutoscalePwrX->SetValue(true);
+	BoxSizer3->Add(chkAutoscalePwrX, 0, wxALL|wxALIGN_TOP|wxALIGN_LEFT, 5);
+	FlexGridSizer3A = new wxFlexGridSizer(2, 2, 0, 0);
+	StaticText2 = new wxStaticText(Panel5, ID_STATICTEXT2, _("Span (Min)"), wxDefaultPosition, wxSize(90,30), 0, _T("ID_STATICTEXT2"));
+	FlexGridSizer3A->Add(StaticText2, 0, wxALL|wxALIGN_TOP|wxALIGN_LEFT, 5);
+	PwrSpan = new wxSpinCtrl(Panel5, ID_SPINCTRL5, _T("15"), wxDefaultPosition, wxSize(60,25), 0, 1, 1440, 15, _T("ID_SPINCTRL5"));
 	PwrSpan->SetValue(_T("15"));
-	BoxSizer3->Add(PwrSpan, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
-	StaticText4 = new wxStaticText(Panel5, ID_STATICTEXT4, _("Integration Time (S)"), wxDefaultPosition, wxSize(126,18), 0, _T("ID_STATICTEXT4"));
-	BoxSizer3->Add(StaticText4, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
-	Integration_Time = new wxChoice(Panel5, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
+	FlexGridSizer3A->Add(PwrSpan, 1, wxALL|wxALIGN_TOP|wxALIGN_RIGHT, 5);
+	StaticText4 = new wxStaticText(Panel5, ID_STATICTEXT4, _("Integration Time (Sec)"), wxDefaultPosition, wxSize(90,30), 0, _T("ID_STATICTEXT4"));
+	FlexGridSizer3A->Add(StaticText4, 0, wxALL|wxALIGN_TOP|wxALIGN_LEFT, 5);
+	Integration_Time = new wxChoice(Panel5, ID_CHOICE1, wxDefaultPosition, wxSize(60,25), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
 	Integration_Time->SetSelection( Integration_Time->Append(_("1")) );
 	Integration_Time->Append(_("5"));
 	Integration_Time->Append(_("10"));
-	BoxSizer3->Add(Integration_Time, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
+	FlexGridSizer3A->Add(Integration_Time, 1, wxALL|wxALIGN_TOP|wxALIGN_RIGHT, 5);
+	BoxSizer3->Add(FlexGridSizer3A, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	Panel5->SetSizer(BoxSizer3);
 	BoxSizer3->Fit(Panel5);
 	BoxSizer3->SetSizeHints(Panel5);
@@ -739,29 +751,30 @@ void pnlSpectrum::initializeGraphs()
         ogl_IQscatter->settings.title = "I versus Q";
         ogl_IQscatter->settings.titleXaxis = "I";
         ogl_IQscatter->settings.titleYaxis = "Q";
-        ogl_IQscatter->settings.gridXlines = 8;
-        ogl_IQscatter->settings.gridYlines = 8;
+        ogl_IQscatter->settings.gridXlines = 4;     // was 8
+        ogl_IQscatter->settings.gridYlines = 4;     // was 8
         ogl_IQscatter->settings.marginLeft = 64;
         ogl_IQscatter->settings.marginBottom = 35;
     }
 	if(oglPWRChart)
     {
+        m_PwrMax = 0.1;
+        m_PwrMin = 0.0;
         oglPWRChart->settings.useVBO = true;
         oglPWRChart->AddSeries();
         oglPWRChart->series[0]->color = 0xFF0000FF; //Red initially
-        oglPWRChart->SetInitialDisplayArea(0, 3600, 1, 100);
+        oglPWRChart->SetInitialDisplayArea(0, g_PwrSpanSec, m_PwrMin, m_PwrMax);  // xmin,xmax,ymin,ymax
         oglPWRChart->SetDrawingMode(GLG_LINE);
         oglPWRChart->settings.title = "Integrated ADC Power";
-        oglPWRChart->settings.titleXaxis = "";
+        oglPWRChart->settings.titleXaxis = "Seconds";
         oglPWRChart->settings.titleYaxis = "";
         oglPWRChart->settings.gridXlines = 10;
-        oglPWRChart->settings.gridYlines = 10;
-        oglPWRChart->settings.marginLeft = 50;
-        oglPWRChart->settings.marginRight = 0;
-        oglPWRChart->settings.marginBottom = 20;
-        oglPWRChart->settings.xUnits = " S";
+        oglPWRChart->settings.gridYlines = 5;       // was 10
+        oglPWRChart->settings.marginLeft = 60;      // was 50
+        oglPWRChart->settings.marginRight = 5;      // was 0
+        oglPWRChart->settings.marginBottom = 35;    // was 20
+        oglPWRChart->settings.xUnits = "";
         oglPWRChart->settings.yUnits = " uW";
-  //      oglPWRChart->ZoomX(g_DisplayFrames/2,g_DisplayFrames); //Initial Span
     }
     if(ogl_FFTline)
     {
@@ -777,9 +790,9 @@ void pnlSpectrum::initializeGraphs()
         ogl_FFTline->settings.title = "FFT";
         ogl_FFTline->settings.marginLeft = 75;
         ogl_FFTline->settings.marginBottom = 35;
-        ogl_FFTline->settings.titleXaxis = "Center Offset Frequency";
+        ogl_FFTline->settings.titleXaxis = "Center Offset Frequency (MHz)";
         ogl_FFTline->settings.titleYaxis = "Amplitude";
-        ogl_FFTline->settings.xUnits = " MHz";
+        ogl_FFTline->settings.xUnits = "";
         ogl_FFTline->settings.yUnits = " dB";
         ogl_FFTline->markersEnabled = true;
     }
@@ -835,9 +848,8 @@ void pnlSpectrum::allocateMemory(unsigned int samples)
     m_PWRvalues = new float[g_MaxPwrSpanSec];
  //   m_PWRvalues = new float[g_MaxDispFrames];
 
-    // Initialize data to negative value
-    for(int i = 0; i < g_MaxPwrSpanSec; i++) m_PWRvalues[i] = -1;
-//    for(int i = 0; i < g_MaxDispFrames; i++) m_PWRvalues[i] = 0;
+    // Initialize data to very large negative values
+    for(int i = 0; i < g_MaxPwrSpanSec; i++) m_PWRvalues[i] = -FLT_MAX;
 
 	m_FFTamplitudesBuffer = new float*[m_buffersCount+1];
 	for(int i=0; i<m_buffersCount+1; i++)
@@ -1126,11 +1138,12 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
     LMLL_BoardSetClockOutputFormat(2,3); // Clock 2 Both on
     LMLL_BoardConfigureSi5356A(); // Boots Chip to activate Values
 
-	if(spinSpanFreq->GetValue()/1e3>samprate/1e6)spinSpanFreq->SetValue(samprate/1e3);	// Match the Span to the Sample rate
-//	ogl_FFTline->ZoomX(spinCenterFreq->GetValue(),samprate);
-//    ogl_FFTline->SetDisplayArea(-samprate/2,samprate/2,-70,70);
-    ogl_FFTline->SetDisplayArea(-samprate/2e6,samprate/2e6,-70,70);
-    ogl_FFTline->ZoomX(spinCenterFreq->GetValue()/1e3, spinSpanFreq->GetValue()/1e3);
+    if (m_samplingFrequency != samprate/1e6)
+    {
+        if(spinSpanFreq->GetValue()/1e3>samprate/1e6) spinSpanFreq->SetValue(samprate/1e3);	// Match the Span to the Sample rate
+        ogl_FFTline->SetDisplayArea(-samprate/2e6,samprate/2e6,-70,70);                     // Reconfigure graph when chaning sample rate
+        ogl_FFTline->ZoomX(spinCenterFreq->GetValue()/1e3, spinSpanFreq->GetValue()/1e3);   // TODO: "
+    }
     if(LMLL_Testing_SetFFTSamplesCount(m_FFTsamplesCount))
     {
         allocateMemory(m_FFTsamplesCount);
@@ -1556,14 +1569,11 @@ void pnlSpectrum::StartCapturing()
 	//spinSamplingFreq->Enable(false);
 
     if(m_firststart) {
-            oglPWRChart->ZoomX(g_MaxPwrSpanSec/2,g_MaxPwrSpanSec); //Initial Span
-//            m_curPwrX_ctr = g_MaxPwrSpanSec/2;
-//            m_curPwrX_span = g_MaxPwrSpanSec;
-//            m_curPwrX_min = 0;
-//            m_CurPwrX_Max = g_MaxPwrSpanSec;
-            m_firststart = false;}
-    else
             oglPWRChart->ZoomX(g_PwrSpanSec/2,g_PwrSpanSec);
+            m_firststart = false;}
+// Do not mess with the zoom on the power chart when starting
+//    else
+//            oglPWRChart->ZoomX(g_PwrSpanSec/2,g_PwrSpanSec);
 
 }
 
@@ -2104,22 +2114,52 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 //	m_lastUpdate = GetTickCount();
     m_updating = false;
 }
-void pnlSpectrum::SetPwrRange() {
 
-m_PwrMax = 0;
-m_PwrMin = 999;
-for(int i = m_Index; i > m_Index - g_PwrSpanSec; i--){
-    if(i < 0) break;
-    if(m_PWRvalues[i] > m_PwrMax)  m_PwrMax = 1.1 * m_PWRvalues[i];
-    if(m_PWRvalues[i] < m_PwrMin) m_PwrMin = 0.9 * m_PWRvalues[i];
+// Autoscale the PWR plot
+void pnlSpectrum::SetPwrRange()
+{
+    int window_min = m_Index - g_PwrSpanSec - 1;
+    int window_max = m_Index;
+    float _max = -FLT_MAX;
+    float _min = FLT_MAX;
 
+    if (window_min < 0 ) window_min = 0;
+    if (window_max > g_MaxPwrSpanSec) window_max = g_MaxPwrSpanSec;
+
+#if 0
+// m_Index is the current insertion cursor (and is an invalid value)
+// m_MinCurPwrIndex is the lowest visible point (and is most likely a bad value due to startup issue)
+// g_PwrSpanSec is the width of the visible graph
+// g_MaxPwrSpanSec is the range of m_PWRvalues[]
+
+cout << "::SetPwrRange() m_Index=" << m_Index
+     << ", window=[" << window_min << "," << window_max << "]"
+     << ", m_MinCurPwrIndex=" << m_MinCurPwrIndex
+     << ", g_PwrSpanSec=" << g_PwrSpanSec
+     << endl;
+#endif
+
+    for(int i = window_min; i < window_max; i++)
+    {
+        if(m_PWRvalues[i] == -FLT_MAX) continue;  // unused entries are 'painted' with -FLT_MAX
+        if(m_PWRvalues[i] > _max) _max = m_PWRvalues[i];
+        if(m_PWRvalues[i] < _min) _min = m_PWRvalues[i];
     }
 
-float span = m_PwrMax - m_PwrMin;
-float center = m_PwrMin + (span/2);
-    if(oglPWRChart) {
-        oglPWRChart->ZoomY(center,span);
+    m_PwrMax = 1.1 * _max;
+    m_PwrMin = 0.9 * _min;
 
+    if(oglPWRChart)
+    {
+        float span = (float)fabs(m_PwrMax - m_PwrMin);
+        float center = m_PwrMin + (span/2);
+#if 0
+        cout << "::SetPwrRange() g_framepwr=" << g_framepwr
+             << " min,max=" << m_PwrMin << "," << m_PwrMax
+             << " center,span=" << center << "," << span
+             << endl;
+#endif
+        oglPWRChart->ZoomY(center,span);
     }
 }
 void pnlSpectrum::UpdatePwrGraph()
@@ -2208,6 +2248,7 @@ void pnlSpectrum::UpdatePwrGraph()
             StartCapturing();
 		}
 
+#if 0   // yeah... no.
             if(m_Index == 1) {
  //                   m_curPwrX_ctr = g_PwrSpanSec/2;
  //                   m_curPwrX_span = ;
@@ -2219,20 +2260,46 @@ void pnlSpectrum::UpdatePwrGraph()
                 m_CurPwrX_Max++;
                 m_curPwrX_min++;
             } */
+#endif
 
-            if(m_Index == g_PwrSpanSec + m_MinCurPwrIndex){
-                oglPWRChart ->ZoomX(m_Index +1 -g_PwrSpanSec/2,g_PwrSpanSec);
-                m_MinCurPwrIndex = m_Index +1 - g_PwrSpanSec;
-                oglPWRChart->Refresh();
-                }
-            if(m_PWRSpanSecChanged) {
+        if (chkAutoscalePwrX->GetValue())
+        {
+            int max, min;
+            float center, span;
+
+            // m_Index is the current cursor
+            // g_PwrSpanSec is the size of the
+            if (m_PWRSpanSecChanged)
+            {
+                max = m_Index + g_PwrSpanSec/2; // center the cursor
                 m_PWRSpanSecChanged = false;
-                if(m_Index > g_PwrSpanSec){ //Handles Change in spansec
-                    oglPWRChart ->ZoomX(m_Index,g_PwrSpanSec);
-                    m_MinCurPwrIndex = m_Index - g_PwrSpanSec /2;
-                    }
+            } else {
+                max = m_Index;                  // put the cursor at the end
             }
+            min = max - g_PwrSpanSec;
+
+//            cout << "::SetPwrRange(X) m_Index=" << m_Index
+//                 << " g_PwrSpanSec=" << g_PwrSpanSec
+//                 << " min/max=[" << min << "," << max << "]"
+//                 << endl;
+
+            if (min < 0) min = 0;               // but not less than the beginning edge
+            max = min + g_PwrSpanSec;           // ending edge is the span we want
+
+            center = ((float)max + float(min))/2.0;
+            span   = (float)g_PwrSpanSec;
+
+//            cout << "::SetPwrRange(X)"
+//                 << " min/max=[" << min << "," << max << "]"
+//                 << " ZoomX=(" << center << "," << span << ")"
+//                 << endl;
+
+            oglPWRChart->ZoomX(center, span);
+            m_MinCurPwrIndex = min;             // track minimum visible datum
+        }
+#if 0
     if(m_PwrRefOffset > 0) {
+        // TODO: This is just wierd...
 		if(m_PwrAve -m_PwrRefOffset < 0.25 * m_YSPan[m_curYstep] && m_curYstep > 0) {
             m_curYstep--;
             oglPWRChart->ZoomY(m_YCent[m_curYstep],m_YSPan[m_curYstep]);}
@@ -2240,12 +2307,12 @@ void pnlSpectrum::UpdatePwrGraph()
             m_curYstep++;
             oglPWRChart->ZoomY(m_YCent[m_curYstep],m_YSPan[m_curYstep]);}
         }
+#endif
 
     oglPWRChart->series[0]->AssignValues(PwrcountXaxis, m_PWRvalues, g_DisplayFrames);
+    //if(g_framepwr > 0.9 * m_PwrMax || g_framepwr < 0.9 * m_PwrMin)
+    if (chkAutoscalePwrY->GetValue()) SetPwrRange();
     oglPWRChart->Refresh();
-
-    if(g_framepwr > 0.9 * m_PwrMax || g_framepwr < 0.9 * m_PwrMin)
-        SetPwrRange();
 
     if(g_framepwr < MIN_THRESH || g_framepwr > MAX_THRESH)
         oglPWRChart->series[0]->color = 0xFF0000FF; //Red
@@ -2788,11 +2855,8 @@ void pnlSpectrum::OnPanel5Paint(wxPaintEvent& event)
 
 void pnlSpectrum::OnPwrSpanChange(wxSpinEvent& event)
 {
-
-    char outbuf[80];
     g_PwrSpanSec = 60 * PwrSpan->GetValue();
     m_PWRSpanSecChanged = true;
-
 }
 
 // NOTE: the "quirky" handling of g_PendingRestartCapture

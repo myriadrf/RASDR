@@ -46,6 +46,7 @@
 #include "version.h"
 #include <dbt.h>
 #include "PopList.h"
+#include "PopTuning.h"
 #include "PopTimeSpan.h"
 #include "SetupFFTout.h"
 #include "SetupPWROut.h"
@@ -70,12 +71,13 @@ const long FFTviewerFrame::ID_MENUITEM5 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM6 = wxNewId();
 const long FFTviewerFrame::idFrameDelay = wxNewId();
 const long FFTviewerFrame::idDsplayTime = wxNewId();
+const long FFTviewerFrame::idTuningParameters = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM4 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM7 = wxNewId();
-const long FFTviewerFrame::ID_MENUITEM10 = wxNewId();
-const long FFTviewerFrame::ID_MENUITEM9 = wxNewId();
-const long FFTviewerFrame::ID_MENUITEM8 = wxNewId();
-const long FFTviewerFrame::ID_MENUITEM11 = wxNewId();
+//const long FFTviewerFrame::ID_MENUITEM10 = wxNewId();
+//const long FFTviewerFrame::ID_MENUITEM9 = wxNewId();
+//const long FFTviewerFrame::ID_MENUITEM8 = wxNewId();
+//const long FFTviewerFrame::ID_MENUITEM11 = wxNewId();
 const long FFTviewerFrame::idMenuAbout = wxNewId();
 const long FFTviewerFrame::ID_STATUSBAR1 = wxNewId();
 //*)
@@ -108,17 +110,17 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     wxMenu* Menu2;
 
     Create(parent, wxID_ANY, _("RASDRproc"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX, _T("wxID_ANY"));
-    SetClientSize(wxSize(900,700));
-    SetMinSize(wxSize(900,700));
+    SetClientSize(wxSize(1100,800));
+    SetMinSize(wxSize(1100,800));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
     FlexGridSizer1->AddGrowableRow(0);
-    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxSize(800,600), 0, _T("ID_NOTEBOOK1"));
-    Notebook1->SetMinSize(wxSize(900,500));
+    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxSize(1072,678), 0, _T("ID_NOTEBOOK1"));
+    Notebook1->SetMinSize(wxSize(1072,678));
     mSpectrum = new pnlSpectrum(Notebook1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_PANEL1"));
-    mPulsar = new PulsarPnl(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, 0, _T("ID_PANEL2"));
+//    mPulsar = new PulsarPnl(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, 0, _T("ID_PANEL2"));
     Notebook1->AddPage(mSpectrum, _("Spectrum"), false);
-    Notebook1->AddPage(mPulsar, _("Pulsar"), false);
+//    Notebook1->AddPage(mPulsar, _("Pulsar"), false);
     FlexGridSizer1->Add(Notebook1, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
@@ -141,23 +143,25 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Menu4->Append(MenuItem8);
     DispTime = new wxMenuItem(Menu4, idDsplayTime, _("Display Time"), wxEmptyString, wxITEM_NORMAL);
     Menu4->Append(DispTime);
+    MenuItem8B = new wxMenuItem(Menu4, idTuningParameters, _("Tuning Parameters"), wxEmptyString, wxITEM_NORMAL);
+    Menu4->Append(MenuItem8B);
     MenuBar1->Append(Menu4, _("Performance Parameters"));
     Menu5 = new wxMenu();
     MenuItem5 = new wxMenuItem(Menu5, ID_MENUITEM4, _("Setup FFT  Output"), wxEmptyString, wxITEM_NORMAL);
     Menu5->Append(MenuItem5);
     MenuItem9 = new wxMenuItem(Menu5, ID_MENUITEM7, _("Setup Power Output"), wxEmptyString, wxITEM_NORMAL);
     Menu5->Append(MenuItem9);
-    MenuItem10 = new wxMenu();
-    SetupDMOutMenu = new wxMenuItem(MenuItem10, ID_MENUITEM10, _("Setup DM Data Output"), wxEmptyString, wxITEM_NORMAL);
-    MenuItem10->Append(SetupDMOutMenu);
-    MenuItem11 = new wxMenuItem(MenuItem10, ID_MENUITEM9, _("Setup Pulse Data Output"), wxEmptyString, wxITEM_NORMAL);
-    MenuItem10->Append(MenuItem11);
-    Menu5->Append(ID_MENUITEM8, _("Setup Pulse Output"), MenuItem10, wxEmptyString);
+//    MenuItem10 = new wxMenu();
+//    SetupDMOutMenu = new wxMenuItem(MenuItem10, ID_MENUITEM10, _("Setup DM Data Output"), wxEmptyString, wxITEM_NORMAL);
+//    MenuItem10->Append(SetupDMOutMenu);
+//    MenuItem11 = new wxMenuItem(MenuItem10, ID_MENUITEM9, _("Setup Pulse Data Output"), wxEmptyString, wxITEM_NORMAL);
+//    MenuItem10->Append(MenuItem11);
+//    Menu5->Append(ID_MENUITEM8, _("Setup Pulse Output"), MenuItem10, wxEmptyString);
     MenuBar1->Append(Menu5, _("Define Output"));
-    Menu6 = new wxMenu();
-    Setup_Sim = new wxMenuItem(Menu6, ID_MENUITEM11, _("Setup Simulation"), wxEmptyString, wxITEM_NORMAL);
-    Menu6->Append(Setup_Sim);
-    MenuBar1->Append(Menu6, _("Simulation"));
+//    Menu6 = new wxMenu();
+//    Setup_Sim = new wxMenuItem(Menu6, ID_MENUITEM11, _("Setup Simulation"), wxEmptyString, wxITEM_NORMAL);
+//    Menu6->Append(Setup_Sim);
+//    MenuBar1->Append(Menu6, _("Simulation"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     Menu2->Append(MenuItem2);
@@ -180,11 +184,12 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuItem7Selected);
     Connect(idFrameDelay,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnFrameDelaySelected);
     Connect(idDsplayTime,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnDispTimeSelected);
+    Connect(idTuningParameters,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnTuningParametersSelected);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupFFTOutSelected);
     Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPWROutSelected);
-    Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupDMOutSelected);
-    Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPulsePeriodOutSelected);
-    Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetup_SimSelected);
+//    Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupDMOutSelected);
+//    Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPulsePeriodOutSelected);
+//    Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetup_SimSelected);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnAbout);
     Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&FFTviewerFrame::OnClose);
     //*)
@@ -328,6 +333,10 @@ void FFTviewerFrame :: shutdown()
  /*   if(MenuItem8 != NULL) {
         MenuItem8->Destroy();
         MenuItem8 = NULL;  }*/
+
+/*   if(MenuItem8B != NULL) {
+        MenuItem8B->Destroy();
+        MenuItem8B = NULL;  }*/
 
    /* if(MenuItem7 != NULL) {
         MenuItem7->Destroy();
@@ -536,6 +545,12 @@ void FFTviewerFrame::OnMenuStopCaptureSelected(wxCommandEvent& event)
 void FFTviewerFrame::OnFrameDelaySelected(wxCommandEvent& event)
 {
   PopList dialog(this);
+  dialog.ShowModal();
+}
+
+void FFTviewerFrame::OnTuningParametersSelected(wxCommandEvent& event)
+{
+  PopTuning dialog(this);
   dialog.ShowModal();
 }
 
