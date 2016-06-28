@@ -4,7 +4,7 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION "0.2.1"
+#define SOFTWAREVERSION "0.2.2"
 #define MAX_QUEUE_SZ    512
 #define ATTEMPT_TO_REINIT
 
@@ -452,6 +452,7 @@ namespace Streams
         static Button				*StartButton;
         static TextBox				*TimeoutBox;
         static CheckBox				*ShowBox;
+        static ComboBox             *DevCmboBox;
 
         bool						bPnP_Arrival;
         bool						bPnP_Removal;
@@ -595,6 +596,7 @@ namespace Streams
             StartButton		= StartBtn;
             TimeoutBox		= TimeOutBox;
             ShowBox			= ShowDataBox;
+            DevCmboBox      = DeviceComboBox;
             bDeviceRefreshNeeded = false;
 
             if (SamplesPerFrameBox->SelectedIndex == -1 ) SamplesPerFrameBox->SelectedIndex = 7;
@@ -681,6 +683,22 @@ namespace Streams
                     DeviceComboBox->Enabled     = false;
 
 #ifdef ATTEMPT_TO_REINIT
+                    if (GetEndpoint() == NULL)
+                    {
+                        Display(String::Concat("@Start, No Endpoint - trying again",""));
+                        // TODO: once in a while, restart will get a NULL response from GetEndpoint()
+                        // inside the XferThread, causing it to abort and not restart.  There isnt
+                        // a good reason for this as far as I can tell.  I don't want to keep patching
+                        // this thing, but it seems reasonable if we are working around things anyway
+                        // to give it another shot.
+                        StartBtn->Text = "Cancel Restart";
+                        StartBtn->Refresh();
+
+                        // Just leave the Restart event signalled and not start the thread
+                        reInitTimer->Interval = 5000;
+                        reInitTimer->Start();
+                        break;
+                    }
                     ResetEvent(hRestartReq);
                     SetEvent(hRestartAck);
                     reInitTimer->Interval = 5000;
@@ -1327,6 +1345,7 @@ namespace Streams
                 QueueBox->Enabled	= true;
                 TimeoutBox->Enabled	= true;
                 ShowBox->Enabled	= true;
+                DevCmboBox->Enabled = true;
             }
         }
 

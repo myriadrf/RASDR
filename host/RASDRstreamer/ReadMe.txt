@@ -57,6 +57,11 @@ The workaround is a software close and re-open of the USB device.  For RASDRstre
     CHANGELOG
 ==============================================================================
 
+v0.2.2 - Bugfix
+
+  Add workaround for NULL endpoint at Start
+  Fix bug that caused Device selection to be left disabled upon a failure at start.
+
 v0.2.1 - First release with restart capability
 
   Add (configurable) code to re-initialize the USB device when a transfer failure is detected
