@@ -285,6 +285,7 @@ class pnlSpectrum: public wxPanel
         float *m_YSPan;
         float *m_YCent;
         bool m_PlottingLow;
+        bool m_ADFInitialized;
 
         float m_TxFreq;
 

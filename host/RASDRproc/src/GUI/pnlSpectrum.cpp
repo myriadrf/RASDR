@@ -173,6 +173,7 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	m_PwrCount = 0;
 	m_Index = 0;
 	m_PlottingLow = true;
+    m_ADFInitialized = false;
 	//m_PWRdataSize changed to Global variable for user changes
 //	m_PWRdataSize = 60000; // Greater than 30 minutes at 32 updates/S
 //	m_PWRdataSize = 38000; // Test
@@ -1078,6 +1079,8 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
 
 	// Set the Reference Frequency in the ADF Chip
 
+    // Modified 4/30/2016 to avoid multiple initializations
+    if(!m_ADFInitialized) {
 	// ADF Reference Counter Latch Default Values
 	int ldp = 3;
 	int abw = 2.9;
@@ -1109,6 +1112,8 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
     LMLL_ADF_SetFrefFvco(fref,fvco,rcount,nCounter);
     // Send ADF
     LMLL_ADF_SendConfig();
+    m_ADFInitialized = true;
+    }
 
 	//set the sampling rate
 	double samprate = (double)(1e6*spinSamplingFreq->GetValue());
@@ -1567,12 +1572,10 @@ void pnlSpectrum::StartCapturing()
 */
 void pnlSpectrum::StopCapturing()
 {
-//    cout << "Before Timer Stop" << endl;
-    //stop graphs update thread
-    m_updateTimer->Stop();
-//    cout << "After Timer Stop" << endl;
+    // Per Paul Oxley, May 4, 2016, call StopRead before Timer->Stop().
     LMLL_Testing_StopSdramRead();
-//    cout << "After StopSdramRead" << endl;
+    m_updateTimer->Stop();
+
     btnStartCapture->Enable(true);
 	btnStopCapture->Enable(false);
 	PwrRef->Enable(false);
