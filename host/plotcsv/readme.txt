@@ -44,77 +44,21 @@ Options:
   --format=X.Y.Z        Specify the RASDRviewer .csv output format to
                         interpret; default=1.2.2
 
-Examples:
-
-This shows how Paul's "LocalTime" format can be processed with averaging
-
-dos> python plotcsv.py FFTOut-format-1.2.2-localtime.csv --localtime -v -a 3
-FFTOut-format-1.2.2-localtime.csv.date=05/10/15 ('UTC-4', '') (2015-05-10 10:35:51.512000)
-FFTOut-format-1.2.2-localtime.csv.time=4
-FFTOut-format-1.2.2-localtime.csv.freq=(127,) (scale=0.001000)
-range (MHz)=[-984.375000,984.375000]
-zero index=63
-frequency bins=127
-bandwidth/bin (Hz)=15501968.503937
-start=2015-05-10 10:35:51.512000
-end  =2015-05-10 10:35:51.714000
-inter-frame period=0.069000 sec (14 fr/s)
-averaging=3
-loading FFTOut-format-1.2.2-localtime.csv...
-line 0/4 max@72 val=18.624000
-line 1/4 max@72 val=18.454100
-line 2/4 max@72 val=18.363900
--> plot min=-1.000000 max=20.000000
-Saved spectrum-2015_May_10_10_35_51.png
-line 3/4 max@72 val=18.335300
--> plot min=-1.000000 max=20.000000
-Saved spectrum-2015_May_10_10_35_51.png
-
-Here is the general format output as another example:
-
-dos> python plotcsv.py FFTout-format-1.2.2-universaltime.csv -v
-FFTout-format-1.2.2-universaltime.csv.date=05/10/15 UTC (2015-05-10 14:35:03.537000+00:00)
-FFTout-format-1.2.2-universaltime.csv.time=4
-FFTout-format-1.2.2-universaltime.csv.freq=(16383,) (scale=0.001000)
-range (MHz)=[-0.999878,0.999878]
-zero index=8191
-frequency bins=16383
-bandwidth/bin (Hz)=122.062862
-start=2015-05-10 14:35:03.537000+00:00
-end  =2015-05-10 14:35:04.220000+00:00
-inter-frame period=0.251000 sec (4 fr/s)
-averaging=1
-loading FFTout-format-1.2.2-universaltime.csv...
-line 0/4 max@8192 val=15.054600
--> plot min=-27.000000 max=17.000000
-Saved spectrum-2015_May_10_14_35_03.png
-line 1/4 max@8192 val=15.017500
--> plot min=-27.000000 max=17.000000
-Saved spectrum-2015_May_10_14_35_03.png
-line 2/4 max@8192 val=15.003400
--> plot min=-27.000000 max=17.000000
-Saved spectrum-2015_May_10_14_35_03.png
-line 3/4 max@8192 val=15.019000
--> plot min=-27.000000 max=17.000000
-Saved spectrum-2015_May_10_14_35_04.png
-
-
 NOTES:
 
-You can use the pre-compiled version of the above scripted commands:
+Edit the 'go.bat' provided to assign the path to the file and any needed options.  Then double-click the go.bat file.
 
-dos> plotcsv.exe FFTOut-format-1.2.2-localtime.csv --localtime -a 3
-dos> plotcsv.exe FFTout-format-1.2.2-universaltime.csv
+If you have python installed, you can also run the program with the python interpreter:
 
-Should produce the same result as using the scripted program.
+dos> python plotcsv.py FFTOut-2msps-500avg-srh77ca.csv -a 120
 
-You can also use the 'test.bat' to setup the parameters for the executable
-so you can run it from the Windows GUI by clicking it
+Should produce the same result as using the pre-compiled program.
 
 Several versions of RASDRviewer had produced different header formats that
 need to be parsed differently.  The --format option allows you to specify
 this if you are dealing with older data files.  Currently valid options are:
 1.0.4, 1.1.1, 1.2.2 (current)
+
 
 BUGS:
 

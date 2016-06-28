@@ -7,10 +7,10 @@ setup.py py2exe
 @goto done
 :ok
 @echo.
-@copy /Y *.csv dist
+@copy /Y FFTOut-2msps-500avg-srh77ca.csv dist
 @copy /Y plotcsv.py dist
 @copy /Y readme.txt dist
-@copy /Y test.bat dist
+@copy /Y go.bat dist
 @echo *** Your application is built in dist/
 :done
 @pause
