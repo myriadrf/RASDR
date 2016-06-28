@@ -55,10 +55,12 @@ call %CODEBLOCKS_ROOT%\MinGW\mingwvars.bat
 )
 
 @rem Batch build the program
+@echo Please close the window when build is complete
 ( cd %_DP0%\%FOLDER% & %CODEBLOCKS_ROOT%\codeblocks.exe --no-batch-window-close --rebuild --target="%BUILD_TARGET%" %PROJECT% )
 @if not errorlevel 1 goto done
 
 :stop
 @echo *** STOP.  There was an error in the last command ***
 :done
+@cd %_DP0%
 @pause
