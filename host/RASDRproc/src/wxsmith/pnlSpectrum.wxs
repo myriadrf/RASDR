@@ -525,14 +525,14 @@
 												<orient>wxVERTICAL</orient>
                                                 <object class="sizeritem">
                                                     <object class="wxCheckBox" name="ID_CHECKBOX1B" variable="chkAutoscalePwrY" member="yes">
-                                                        <label>Autoscale Power</label>
+                                                        <label>Autoscale Power Axis</label>
                                                     </object>
                                                     <flag>wxALIGN_LEFT|wxALIGN_LEFT</flag>
                                                     <border>5</border>
                                                 </object>
                                                 <object class="sizeritem">
                                                     <object class="wxCheckBox" name="ID_CHECKBOX1C" variable="chkAutoscalePwrX" member="yes">
-                                                        <label>Autoscale Power (Time)</label>
+                                                        <label>Autoscale Time Axis</label>
                                                     </object>
                                                     <flag>wxALIGN_LEFT|wxALIGN_LEFT</flag>
                                                     <border>5</border>

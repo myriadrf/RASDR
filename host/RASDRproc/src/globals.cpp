@@ -36,14 +36,10 @@ int g_frame_delay = 1000;
 int g_closedelay  = 0;// This is used in debug mode on closing by slowing process
 // Set to 0 for normal operation Higher values delay the steps in closing
 double g_framepwr; // Used to return the frame power from the testing module
-float g_DisplayTimeSpan = 30;
-//int g_DisplayFrames = 37800;
-//int g_MaxDispFrames = 113400;
-int g_DisplayFrames = 3600;
-int g_MaxDispFrames = 3600;
+//float g_DisplayTimeSpan = 30;
+//int g_DisplayFrames = 3600;
 int g_PwrSpanSec = 900; // Default (15 Min)X Span being Displayed on Power Chart
 int g_MaxPwrSpanSec = 86400; // Max X Span & Storage Size
-//int g_MaxPwrSpanSec = 60; //Test
 float g_framesPerMin = 1260; // Estimated
 // BUGS: these were all arrays of pointers
 char g_FFTfileName[1024] = { "FFTOut.csv" };

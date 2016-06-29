@@ -1,4 +1,4 @@
-RASDRproc v0.2.2.0 - Jun 28, 2016
+RASDRproc v0.2.2.1 - Jun 28, 2016
 =================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -52,7 +52,7 @@ Known Issues:
 
 One very strong driver of this condtion was the use of burst mode transfer for USB3 super speed.  When the burst length is set to 1, the effect it has on a lower spec machine is dramatic.  Unfortunately, it was not the only thing needed, and in some rare cases a glitch was still observed to occur.  For this reason, a workaround was found to allow data to keep being collected.
 
-3) Scaling of the frequency plot, the use of markers and other aspects of the UI can produce unsatisfactory results.  Please be persistent in your efforts to make the plot look they way you want it.  RASDRproc v0.2.1.0 has made some progress in the operation of the Power plot.
+3) Scaling of the frequency plot, the use of markers and other aspects of the UI can produce unsatisfactory results.  Please be persistent in your efforts to make the plot look they way you want it.  RASDRproc v0.2.2.1 has for all intents and purposes solved the issues with the Power Plot.  Please let us know if you find a behavior that is unsatisfactory.
 
 4) "RASDRproc.exe", if started w/o a RASDR device connection may take a very long time to start.  This does not seem to be the case with "RASDRproc_d.exe"
 
@@ -60,4 +60,4 @@ One very strong driver of this condtion was the use of burst mode transfer for U
 
 Debugging this has not illuminated a good explanation for this behavior.
 
-6) After 3600 seconds the Power Plot display stops updating and a STOP and START does not resume it.  This was discovered after post-release testing, and will be fixed in the next release.  The data is captured and saved to the log file as well as the power output file.
+6) If choosing a high sample rate with a lot of integration, please be patient for the FFT spectrum window.  The first spectra will not be available until after the first integration time is complete.  You can estimate the ETA by observing the frame rate and dividing that from the 'average over frames' value. 

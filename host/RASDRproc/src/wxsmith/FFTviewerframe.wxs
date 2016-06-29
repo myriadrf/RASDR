@@ -72,10 +72,12 @@
 					<label>Frame Delay</label>
 					<handler function="OnFrameDelaySelected" entry="EVT_MENU" />
 				</object>
+				<!--
 				<object class="wxMenuItem" name="idDsplayTime" variable="DispTime" member="yes">
 					<label>Display Time</label>
 					<handler function="OnDispTimeSelected" entry="EVT_MENU" />
 				</object>
+				-->
 				<object class="wxMenuItem" name="idTuningParameters" variable="MenuItem8B" member="yes">
 					<label>Tuning Parameters</label>
 					<handler function="OnTuningParametersSelected" entry="EVT_MENU" />

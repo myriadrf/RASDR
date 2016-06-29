@@ -149,7 +149,7 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 //pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size, int style, wxString str) : m_buffersCount(64)
 {
     m_PwrIntTime = 1;
-    m_PwrMax = 0.1;
+    m_PwrMax = 10.0;
     m_PwrMin = 0.0;
     m_lastUpdate = 0;
 //    m_capturingData = false;
@@ -159,7 +159,6 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_restart_step = 0;
     m_time = 0;
     m_frames = 0;
-    m_PWRSpanSecChanged = false;
 
     m_addingMarkers = false;
 	m_fftxaxisValues = NULL;
@@ -182,9 +181,22 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	m_Index = 0;
 	m_PlottingLow = true;
     m_ADFInitialized = false;
-	//m_PWRdataSize changed to Global variable for user changes
-//	m_PWRdataSize = 60000; // Greater than 30 minutes at 32 updates/S
-//	m_PWRdataSize = 38000; // Test
+
+    // NB: BuildContent() reference member variables of this object
+    // it *CANNOT* be called before the object is fully initialized
+    // or risk SEGV.  However, the implementation model used here clearly
+    // requires BuildContent() to be called in the constructor.
+    //
+    // Solutions are to move all static initializations into the constructor
+    // initialization list, and only do all dynamic content initialzation
+    // here.  Or make sure that BuildContent() is called after all of
+    // its dependent member objects have been created.  Its a bad
+    // situation due to a weak design pattern.
+    //
+    // In my case, I hit the issue when I made the units dynamic...
+
+    m_PwrRefScale = 1.0;
+    m_PwrRefScaleUnits = " mW";
 
     BuildContent(parent,id,pos,size);
     m_FFTsamplesCount = twotoN(spinFFTsamples->GetValue());
@@ -200,7 +212,6 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 
     m_updateTimer = new wxTimer(this, GRAPH_UPDATE_MESSAGE_ID);
     m_firststart = true;
-    m_MinCurPwrIndex = 0;
 // BUG: makes unterminated strings.  Globals shall be initialized in globals.cpp
 //    strncpy(g_FFTfileName,"FFTOut.csv",10) ;
 //    strncpy(g_PWRfileName,"PowerOut.csv",12) ;
@@ -440,10 +451,10 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer3->Add(oglPWRChart, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	Panel5 = new wxPanel(Panel9, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
 	BoxSizer3 = new wxBoxSizer(wxVERTICAL);
-	chkAutoscalePwrY = new wxCheckBox(Panel5, ID_CHECKBOX1B, _("Autoscale Power"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1B"));
+	chkAutoscalePwrY = new wxCheckBox(Panel5, ID_CHECKBOX1B, _("Autoscale Power Axis"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1B"));
 	chkAutoscalePwrY->SetValue(false);
 	BoxSizer3->Add(chkAutoscalePwrY, 0, wxALL|wxALIGN_TOP|wxALIGN_LEFT, 5);
-	chkAutoscalePwrX = new wxCheckBox(Panel5, ID_CHECKBOX1C, _("Autoscale Power (Time)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1C"));
+	chkAutoscalePwrX = new wxCheckBox(Panel5, ID_CHECKBOX1C, _("Autoscale Time Axis"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1C"));
 	chkAutoscalePwrX->SetValue(true);
 	BoxSizer3->Add(chkAutoscalePwrX, 0, wxALL|wxALIGN_TOP|wxALIGN_LEFT, 5);
 	FlexGridSizer3A = new wxFlexGridSizer(2, 2, 0, 0);
@@ -766,7 +777,11 @@ void pnlSpectrum::initializeGraphs()
     }
 	if(oglPWRChart)
     {
-        m_PwrMax = 0.1;
+        // NOTE: the settings used here determine what the graph does
+        // when the user double-clicks the vertical axis to restore it.
+        // it should be settings that will allow one to "find" the graph
+        // if it has been lost due to zooming around.
+        m_PwrMax = 10.0 * m_PwrRefScale;    // 10 mW (absolute max is 200mW/+23dBM)
         m_PwrMin = 0.0;
         oglPWRChart->settings.useVBO = true;
         oglPWRChart->AddSeries();
@@ -782,7 +797,7 @@ void pnlSpectrum::initializeGraphs()
         oglPWRChart->settings.marginRight = 5;      // was 0
         oglPWRChart->settings.marginBottom = 35;    // was 20
         oglPWRChart->settings.xUnits = "";
-        oglPWRChart->settings.yUnits = " uW";
+        oglPWRChart->settings.yUnits = m_PwrRefScaleUnits;
     }
     if(ogl_FFTline)
     {
@@ -854,10 +869,10 @@ void pnlSpectrum::allocateMemory(unsigned int samples)
 	if(m_PWRvalues)
         delete []m_PWRvalues;
     m_PWRvalues = new float[g_MaxPwrSpanSec];
- //   m_PWRvalues = new float[g_MaxDispFrames];
 
     // Initialize data to very large negative values
     for(int i = 0; i < g_MaxPwrSpanSec; i++) m_PWRvalues[i] = -FLT_MAX;
+    m_Index = 0;
 
 	m_FFTamplitudesBuffer = new float*[m_buffersCount+1];
 	for(int i=0; i<m_buffersCount+1; i++)
@@ -1075,13 +1090,12 @@ void pnlSpectrum::Initialize()
 
 void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
 {
-    BOOL running;
+    BOOL running = false;
+    double freq;
     //Disable Data Collection for changes
     if(g_capturingData) {
             running = true;
             StopCapturing();}
-    else running = false;
-    double freq;
     //Set RX frequency
     txtRxFrequencyMHz->GetValue().ToDouble(&freq);
     if(m_RxFreq != freq / 1000) {
@@ -1326,13 +1340,15 @@ void pnlSpectrum::generateFFTxaxis(float samplingFreq)
 		samplesXaxis[i] = i;
 
     if(PwrcountXaxis != NULL)
-        delete []PwrcountXaxis;
+        delete[] PwrcountXaxis;
     PwrcountXaxis = new float[g_MaxPwrSpanSec];
-//    PwrcountXaxis = new float[g_MaxDispFrames];
- //   for(int i = 0; i < g_MaxDispFrames; i++){
-    for(int i = 0; i < g_MaxPwrSpanSec; i++){
-        PwrcountXaxis[i] = i;}
+    for(int i = 0; i < g_MaxPwrSpanSec; i++) PwrcountXaxis[i] = i;
 
+    // BUG: must keep the axis and the values consistent
+    if(m_PWRvalues != NULL)
+        delete[] m_PWRvalues;
+    m_PWRvalues = new float[g_MaxPwrSpanSec];
+    for(int i = 0; i < g_MaxPwrSpanSec; i++) m_PWRvalues[i] = -FLT_MAX;
 }
 
 
@@ -1548,13 +1564,12 @@ void pnlSpectrum::OnSpinButton2ChangeDown(wxSpinEvent& event)
 */
 void pnlSpectrum::StartCapturing()
 {
-//    changeSamplingFrequency((1e6*spinSamplingFreq->GetValue()));
     changeSamplingFrequency((spinSamplingFreq->GetValue()));
  //   LMLL_TopSetPwrSoftTx(true);
-	LMLL_TopSetPwrSoftRx(true);
+    LMLL_TopSetPwrSoftRx(true);
     LMLL_Testing_StartSdramRead();
     g_capturingData = true;
-    PwrSpan->Enable(false);
+//    PwrSpan->Enable(false);
     if(g_FFTfileIsDefined) EnableFFTRecord(true);
     if(g_PWRfileIsDefined) EnablePWRRecord(true);
 
@@ -1577,9 +1592,19 @@ void pnlSpectrum::StartCapturing()
 	//spinSamplingFreq->Enable(false);
 
     m_dtLastRestart = m_dtLastRestart.UNow();
-    if(m_firststart) {
-            oglPWRChart->ZoomX(g_PwrSpanSec/2,g_PwrSpanSec);
-            m_firststart = false;}
+    // clear the power array on each start
+    for(int i = 0; i < g_MaxPwrSpanSec; i++)
+    {
+        PwrcountXaxis[i] = i;
+        m_PWRvalues[i] = -FLT_MAX;
+    }
+    // call AssignValues() with the full size here, once to avoid alot of reallocations in the main loop
+    oglPWRChart->series[0]->AssignValues(PwrcountXaxis, m_PWRvalues, g_MaxPwrSpanSec);
+    if(m_firststart)
+    {
+        oglPWRChart->ZoomX(g_PwrSpanSec/2,g_PwrSpanSec);
+        m_firststart = false;
+    }
 // Do not mess with the zoom on the power chart when starting
 //    else
 //            oglPWRChart->ZoomX(g_PwrSpanSec/2,g_PwrSpanSec);
@@ -1603,7 +1628,7 @@ void pnlSpectrum::StopCapturing()
 	g_capturingData = false;
     EnableFFTRecord(false);
     EnablePWRRecord(false);
-    PwrSpan->Enable(true);
+//    PwrSpan->Enable(true);
     if(g_PWRfileRecording) g_PWRfileRecording = false;
 }
 
@@ -2196,8 +2221,89 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
     m_updating = false;
 }
 
-// Autoscale the PWR plot
-void pnlSpectrum::SetPwrRange()
+// Autoscale the PWR plot X-axis
+void pnlSpectrum::SetPwrRangeX()
+{
+    // m_Index is the current cursor
+    // g_PwrSpanSec is the selected visibility span
+    int max = PwrcountXaxis[m_Index];       // put the cursor at the end
+    int min = max - g_PwrSpanSec;
+    float center, span;
+
+#if 0
+    cout << "::SetPwrRangeX m_Index=" << m_Index
+         << " g_PwrSpanSec=" << g_PwrSpanSec
+         << " min/max=[" << min << "," << max << "]"
+         << endl;
+#endif
+
+    if (min < 0) min = 0;               // but not less than the beginning edge
+
+    center = ((float)max + float(min))/2.0;
+    span   = (float)g_PwrSpanSec;
+
+#if 0
+    cout << "::SetPwrRangeX()"
+         << " min/max=[" << min << "," << max << "]"
+         << " ZoomX=(" << center << "," << span << ")"
+         << endl;
+#endif
+
+    if (oglPWRChart && span > 0.0)
+        oglPWRChart->ZoomX(center, span);
+}
+
+// Determine rescaling of PWR plot X-axis
+void pnlSpectrum::SetPwrRescaleX()
+{
+    // Limit of storage is reached, we have to shift the data
+    // and then recalculate the indices so that we keep tracking.
+    //
+    // 1) copy m_PWRvalues[m_Index-g_PwrSpanSec,m_Index-1]   to m_PWRvalues[0,g_PwrSpanSec-1]
+    // 2) copy PwrcountXaxis[m_Index-g_PwrSpanSec,m_Index-1] to PwrcountXaxis[0,g_PwrSpanSec-1]
+    // 3) set m_PWRvalues[g_PwrSpanSec,g_MaxPwrSpanSec-1] to -FLT_MAX (will not be displayed)
+    // 4) set PwrcountXaxis[g_PwrSpanSec,g_MaxPwrSpanSec-1] to resume the count sequence
+    // 5) set m_Index to g_PwrSpanSec
+
+    int _begin = m_Index - g_PwrSpanSec;
+    int _end = _begin + g_PwrSpanSec;
+    int i, v;
+
+    //StopCapturing();
+    if (_begin < 0)     // degenerate condition where g_PwrSpanSec > g_MaxPwrSpanSec
+    {
+        _begin = 0;
+    } else {
+        if (_end > g_MaxPwrSpanSec) _end = g_MaxPwrSpanSec;
+
+#if 0
+        cout << "::SetPwrRescaleX()"
+             << " _copy=[" << _begin << "-" << _end << "]"
+             << endl;
+#endif
+
+        memmove(&m_PWRvalues[0],&m_PWRvalues[_begin],sizeof(float)*(_end - _begin));
+        memmove(&PwrcountXaxis[0],&PwrcountXaxis[_begin],sizeof(float)*(_end - _begin));
+        _begin = g_PwrSpanSec;
+    }
+
+#if 0
+    cout << "::SetPwrRescaleX()"
+         << " _clear=[" << _begin << "-" << g_MaxPwrSpanSec << "]"
+         << " @" << PwrcountXaxis[m_Index-1]
+         << endl;
+#endif
+
+    for(i=_begin;i<g_MaxPwrSpanSec;i++) m_PWRvalues[i] = -FLT_MAX;
+    for(v=PwrcountXaxis[m_Index-1]+1,i=_begin;i<g_MaxPwrSpanSec;i++,v++) PwrcountXaxis[i] = v;
+    m_Index = _begin;
+    // call AssignValues() with the full size here, once to avoid alot of reallocations in the main loop
+    oglPWRChart->series[0]->AssignValues(PwrcountXaxis, m_PWRvalues, g_MaxPwrSpanSec);
+    //StartCapturing();
+}
+
+// Autoscale the PWR plot Y-axis
+void pnlSpectrum::SetPwrRangeY()
 {
     int window_min = m_Index - g_PwrSpanSec - 1;
     int window_max = m_Index;
@@ -2208,18 +2314,17 @@ void pnlSpectrum::SetPwrRange()
     if (window_max > g_MaxPwrSpanSec) window_max = g_MaxPwrSpanSec;
 
 #if 0
-// m_Index is the current insertion cursor (and is an invalid value)
-// m_MinCurPwrIndex is the lowest visible point (and is most likely a bad value due to startup issue)
-// g_PwrSpanSec is the width of the visible graph
-// g_MaxPwrSpanSec is the range of m_PWRvalues[]
+    // m_Index is the current insertion cursor (and is an invalid value)
+    // g_PwrSpanSec is the width of the visible graph
+    // g_MaxPwrSpanSec is the range of m_PWRvalues[]
 
-cout << "::SetPwrRange() m_Index=" << m_Index
-     << ", window=[" << window_min << "," << window_max << "]"
-     << ", m_MinCurPwrIndex=" << m_MinCurPwrIndex
-     << ", g_PwrSpanSec=" << g_PwrSpanSec
-     << endl;
+    cout << "::SetPwrRangeY() m_Index=" << m_Index
+         << ", window=[" << window_min << "," << window_max << "]"
+         << ", g_PwrSpanSec/Max=" << g_PwrSpanSec << "/" << g_MaxPwrSpanSec
+         << endl;
 #endif
 
+    if ((window_max - window_min) < 1) return;    // degenerate case of g_PwrSpanSec > g_MaxPwrSpanSec
     for(int i = window_min; i < window_max; i++)
     {
         if(m_PWRvalues[i] == -FLT_MAX) continue;  // unused entries are 'painted' with -FLT_MAX
@@ -2227,6 +2332,7 @@ cout << "::SetPwrRange() m_Index=" << m_Index
         if(m_PWRvalues[i] < _min) _min = m_PWRvalues[i];
     }
 
+    // TODO: consider a control for the overage, the below is 10%
     m_PwrMax = 1.1 * _max;
     m_PwrMin = 0.9 * _min;
 
@@ -2235,14 +2341,44 @@ cout << "::SetPwrRange() m_Index=" << m_Index
         float span = (float)fabs(m_PwrMax - m_PwrMin);
         float center = m_PwrMin + (span/2);
 #if 0
-        cout << "::SetPwrRange() g_framepwr=" << g_framepwr
-             << " min,max=" << m_PwrMin << "," << m_PwrMax
-             << " center,span=" << center << "," << span
+        cout << "::SetPwrRangeY() g_framepwr=" << g_framepwr << " mW"
+             << " ZoomY(" << center << "," << span << ")"
              << endl;
 #endif
-        oglPWRChart->ZoomY(center,span);
+        if (span > 0.0)
+            oglPWRChart->ZoomY(center,span);
     }
 }
+
+// Determine rescaling of PWR plot Y-axis
+void pnlSpectrum::SetPwrRescaleY()
+{
+    bool _switched = false;
+    // Decide if we should adjust the range and scale factor
+    if ((g_framepwr < 0.050) && (m_PwrRefScale == 1.0)) // less than 50 uW on mW scale
+    {
+        m_PwrRefScale = 1000.0;
+        m_PwrRefScaleUnits = " uW";
+        for(int i=0; i<m_Index; i++) m_PWRvalues[i] *= m_PwrRefScale;
+        _switched = true;
+    }
+    else if ((g_framepwr > 0.500) && (m_PwrRefScale == 1000.0))   // more than 0.5 mW on a uW scale
+    {
+        double _1scale = 1.0/m_PwrRefScale;
+        m_PwrRefScale = 1.0;
+        m_PwrRefScaleUnits = " mW";
+        for(int i=0; i<m_Index; i++) m_PWRvalues[i] *= _1scale;
+        _switched = true;
+    }
+    if (oglPWRChart && _switched)
+    {
+        cout << "::AutoscalePwrY() switching to" << m_PwrRefScaleUnits << endl;
+        oglPWRChart->settings.yUnits = m_PwrRefScaleUnits;
+        // call AssignValues() with the full size here, once to avoid alot of reallocations in the main loop
+        oglPWRChart->series[0]->AssignValues(PwrcountXaxis, m_PWRvalues, g_MaxPwrSpanSec);
+    }
+}
+
 void pnlSpectrum::UpdatePwrGraph()
 {
     if(!g_capturingData) return; // Break loop for close
@@ -2300,7 +2436,7 @@ void pnlSpectrum::UpdatePwrGraph()
         m_PwrAveCount = 0;
 
      // Update the graph
-		m_PWRvalues[m_Index] = m_PwrAve - m_PwrRefOffset; // Transfer Global power for frame
+		m_PWRvalues[m_Index] = m_PwrRefScale * (m_PwrAve - m_PwrRefOffset); // Transfer Global power for frame
         if(g_PWRfileRecording){  // Output data to file
             if(g_PwrRecordRate == 1){
                 RecordPwrLine(m_Index,m_PWRvalues[m_Index]);
@@ -2317,9 +2453,14 @@ void pnlSpectrum::UpdatePwrGraph()
         }
 //		PwrcountXaxis[m_Index] = m_PwrCount; //Set X value to Power Count
 		m_PwrCount++;
+
+		// NOTE: moved here from below.  One value is updated in the display array instead of all of them
+        oglPWRChart->series[0]->UpdateXY(PwrcountXaxis[m_Index], m_PWRvalues[m_Index], m_Index);
+
 		m_Index++;
-		// Prevent Memory Overflow      todo add popup message
-		if(m_Index == g_MaxPwrSpanSec) { //Prevent Memory Overflow
+		if(m_Index == g_MaxPwrSpanSec) SetPwrRescaleX();
+#if 0
+        {
             cout << "MaxPwrSpanSec Exceeded" << endl;
             StopCapturing();
             // BUG: this is Paul's original code.  It freezes all data capturing at 86400 sec (about 24hrs).
@@ -2328,6 +2469,7 @@ void pnlSpectrum::UpdatePwrGraph()
             // TODO: it may stop file data output so this needs to be checked
             StartCapturing();
 		}
+#endif
 
 #if 0   // yeah... no.
             if(m_Index == 1) {
@@ -2343,41 +2485,8 @@ void pnlSpectrum::UpdatePwrGraph()
             } */
 #endif
 
-        if (chkAutoscalePwrX->GetValue())
-        {
-            int max, min;
-            float center, span;
+        if (chkAutoscalePwrX->GetValue()) SetPwrRangeX();
 
-            // m_Index is the current cursor
-            // g_PwrSpanSec is the size of the
-            if (m_PWRSpanSecChanged)
-            {
-                max = m_Index + g_PwrSpanSec/2; // center the cursor
-                m_PWRSpanSecChanged = false;
-            } else {
-                max = m_Index;                  // put the cursor at the end
-            }
-            min = max - g_PwrSpanSec;
-
-//            cout << "::SetPwrRange(X) m_Index=" << m_Index
-//                 << " g_PwrSpanSec=" << g_PwrSpanSec
-//                 << " min/max=[" << min << "," << max << "]"
-//                 << endl;
-
-            if (min < 0) min = 0;               // but not less than the beginning edge
-            max = min + g_PwrSpanSec;           // ending edge is the span we want
-
-            center = ((float)max + float(min))/2.0;
-            span   = (float)g_PwrSpanSec;
-
-//            cout << "::SetPwrRange(X)"
-//                 << " min/max=[" << min << "," << max << "]"
-//                 << " ZoomX=(" << center << "," << span << ")"
-//                 << endl;
-
-            oglPWRChart->ZoomX(center, span);
-            m_MinCurPwrIndex = min;             // track minimum visible datum
-        }
 #if 0
     if(m_PwrRefOffset > 0) {
         // TODO: This is just wierd...
@@ -2390,16 +2499,32 @@ void pnlSpectrum::UpdatePwrGraph()
         }
 #endif
 
-    oglPWRChart->series[0]->AssignValues(PwrcountXaxis, m_PWRvalues, g_DisplayFrames);
-    //if(g_framepwr > 0.9 * m_PwrMax || g_framepwr < 0.9 * m_PwrMin)
-    if (chkAutoscalePwrY->GetValue()) SetPwrRange();
-    oglPWRChart->Refresh();
+    if (chkAutoscalePwrY->GetValue()) SetPwrRescaleY();
+
+    // NOTE: you should be aware that this OpenGLGraph() widget does a *COPY*
+    // when ::AssignValues() is called.  OMG. The amount of copying being done
+    // in this system is incredible...  No wonder it runs like crap.
+    //
+    // Eventually this is going to get *really* big (like 86400 floats) each
+    // second to update the graph...  Really?  The only thing to do with this
+    // architecture is to limit the size of the m_PWRvalues[] held at once...
+    //
+    // Here, if we call AssignValues with the current index pointer.  This *still*
+    // copies all the OLD data up to the insertion cursor, but...  If we add an UpdateXY
+    // function, we can just
+    //if (m_Index > 0)
+        //oglPWRChart->series[0]->AssignValues(PwrcountXaxis, m_PWRvalues, m_Index);
+
+    if (chkAutoscalePwrY->GetValue()) SetPwrRangeY();
 
     if(g_framepwr < MIN_THRESH || g_framepwr > MAX_THRESH)
-        oglPWRChart->series[0]->color = 0xFF0000FF; //Red
-    else oglPWRChart->series[0]->color = 0x00FF00FF; // Green
-//        cout << g_framepwr << endl;
+        oglPWRChart->series[0]->color = 0xFF0000FF; // Red
+    else
+        oglPWRChart->series[0]->color = 0x00FF00FF; // Green
+
+    oglPWRChart->Refresh();
 }
+
 void pnlSpectrum::RecordPwrLine(int index, double value)
 {
     char outbuf[80];
@@ -2937,7 +3062,6 @@ void pnlSpectrum::OnPanel5Paint(wxPaintEvent& event)
 void pnlSpectrum::OnPwrSpanChange(wxSpinEvent& event)
 {
     g_PwrSpanSec = 60 * PwrSpan->GetValue();
-    m_PWRSpanSecChanged = true;
 }
 
 // NOTE: the "quirky" handling of g_PendingRestartCapture

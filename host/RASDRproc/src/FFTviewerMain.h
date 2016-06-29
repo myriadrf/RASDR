@@ -93,7 +93,7 @@ class FFTviewerFrame: public wxFrame
         void OnTuningParametersSelected(wxCommandEvent& event);
         void OnmSpectrumPaint(wxPaintEvent& event);
         void OnMenuItemSaveConfigSelected(wxCommandEvent& event);
-        void OnDispTimeSelected(wxCommandEvent& event);
+//        void OnDispTimeSelected(wxCommandEvent& event);
         void OnFFTCaptureSelected(wxCommandEvent& event);
         void OnSetupFFTOut5Selected(wxCommandEvent& event);
         void OnSSetupFFTOutelected(wxCommandEvent& event);
@@ -117,7 +117,7 @@ class FFTviewerFrame: public wxFrame
         static const long ID_MENUITEM5;
         static const long ID_MENUITEM6;
         static const long idFrameDelay;
-        static const long idDsplayTime;
+//        static const long idDsplayTime;
         static const long idTuningParameters;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM7;
@@ -142,7 +142,7 @@ class FFTviewerFrame: public wxFrame
 //        PulsarPnl* mPulsar;
 //        wxMenuItem* MenuItem11;
 //        wxMenu* MenuItem10;
-        wxMenuItem* DispTime;
+//        wxMenuItem* DispTime;
         wxMenuItem* MenuItem3;
         wxMenuItem* MenuItem6;
 //        wxMenuItem* Setup_Sim;

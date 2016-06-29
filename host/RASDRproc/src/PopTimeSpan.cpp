@@ -84,12 +84,12 @@ PopTimeSpan::~PopTimeSpan()
 
 void PopTimeSpan::OnInit(wxInitDialogEvent& event)
 {
-    SpinCtrl1->SetValue(g_DisplayTimeSpan);
+//    SpinCtrl1->SetValue(g_DisplayTimeSpan);
 }
 
 void PopTimeSpan::OnOKButtonClick(wxCommandEvent& event)
 {
-    g_DisplayTimeSpan = SpinCtrl1->GetValue();
-    g_DisplayFrames = g_DisplayTimeSpan * g_framesPerMin;
+//    g_DisplayTimeSpan = SpinCtrl1->GetValue();
+//    g_DisplayFrames = g_DisplayTimeSpan * g_framesPerMin;
     Destroy();
 }

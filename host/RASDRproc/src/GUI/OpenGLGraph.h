@@ -200,6 +200,16 @@ public:
 		}
 		modified = true;
 	}
+	void UpdateXY(float x, float y, unsigned int index)
+	{
+        if( index < allocatedSize )
+        {
+			valuesX[index] = x;
+			valuesY[index] = y;
+            modified = true;
+        }
+		else AddXY(x,y);
+	}
 
 	float *valuesX;
 	float *valuesY;

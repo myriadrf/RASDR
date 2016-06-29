@@ -101,6 +101,8 @@ class pnlSpectrum: public wxPanel
         bool m_PwrRefIsSet;
         bool m_backgroundSubtract;
         double m_PwrRefOffset;
+        double m_PwrRefScale;
+        const char *m_PwrRefScaleUnits;
         double m_PwrAccum;
         double m_PwrAve;
         int m_PwrAveCount;
@@ -259,7 +261,10 @@ class pnlSpectrum: public wxPanel
 //        void SuffixPWRFileName();
         void RecordPwrLine(int index,double value);
         int twotoN(int N);
-        void SetPwrRange();
+        void SetPwrRangeX();
+        void SetPwrRescaleX();
+        void SetPwrRangeY();
+        void SetPwrRescaleY();
 
         int m_IQdataSize;
         int m_FFTdataSize;
@@ -316,11 +321,9 @@ class pnlSpectrum: public wxPanel
         long m_lastUpdate;
         int m_frames;
         bool m_firststart;
-        int m_MinCurPwrIndex;
         int m_CurPwrSpan;
         int m_PWRRecordCount;
         double m_PWRRecordAccum;
-        bool m_PWRSpanSecChanged;
         float m_FFTChartCenter;
         float m_FFTChartSpan;
 

@@ -47,7 +47,7 @@
 #include <dbt.h>
 #include "PopList.h"
 #include "PopTuning.h"
-#include "PopTimeSpan.h"
+//#include "PopTimeSpan.h"
 #include "SetupFFTout.h"
 #include "SetupPWROut.h"
 #include "SeupPulsePeriod.h"
@@ -70,7 +70,7 @@ const long FFTviewerFrame::ID_MENUITEM3 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM5 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM6 = wxNewId();
 const long FFTviewerFrame::idFrameDelay = wxNewId();
-const long FFTviewerFrame::idDsplayTime = wxNewId();
+//const long FFTviewerFrame::idDsplayTime = wxNewId();
 const long FFTviewerFrame::idTuningParameters = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM4 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM7 = wxNewId();
@@ -141,8 +141,14 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Menu4 = new wxMenu();
     MenuItem8 = new wxMenuItem(Menu4, idFrameDelay, _("Frame Delay"), wxEmptyString, wxITEM_NORMAL);
     Menu4->Append(MenuItem8);
-    DispTime = new wxMenuItem(Menu4, idDsplayTime, _("Display Time"), wxEmptyString, wxITEM_NORMAL);
-    Menu4->Append(DispTime);
+    
+// TODO: The menu below can be used to change the size of the PWR buffer defined statically now
+// by the global variable g_MaxPwrSpanSec.  However when this is adjusted it requires re-allocation
+// of memory, and so it is required that it be done with acquisition OFF and the menu option disabled
+// when acquiring.  It is something for the future.  At this point g_MaxPwrSpanSec is defined in globals.cpp
+
+//    DispTime = new wxMenuItem(Menu4, idDsplayTime, _("Display Time"), wxEmptyString, wxITEM_NORMAL);
+//    Menu4->Append(DispTime);
     MenuItem8B = new wxMenuItem(Menu4, idTuningParameters, _("Tuning Parameters"), wxEmptyString, wxITEM_NORMAL);
     Menu4->Append(MenuItem8B);
     MenuBar1->Append(Menu4, _("Performance Parameters"));
@@ -183,7 +189,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuItemSaveConfigSelected);
     Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnMenuItem7Selected);
     Connect(idFrameDelay,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnFrameDelaySelected);
-    Connect(idDsplayTime,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnDispTimeSelected);
+//    Connect(idDsplayTime,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnDispTimeSelected);
     Connect(idTuningParameters,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnTuningParametersSelected);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupFFTOutSelected);
     Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPWROutSelected);
@@ -684,12 +690,12 @@ void FFTviewerFrame::OnMenuItemSaveConfigSelected(wxCommandEvent& event)
     SaveConfiguration();
 }
 
-void FFTviewerFrame::OnDispTimeSelected(wxCommandEvent& event)
-{
-    DispTime->Enable(false); // Prevents multiple uses
-    PopTimeSpan dialog(this);
-    dialog.ShowModal();
-}
+//void FFTviewerFrame::OnDispTimeSelected(wxCommandEvent& event)
+//{
+//    DispTime->Enable(false); // Prevents multiple uses
+//    PopTimeSpan dialog(this);
+//    dialog.ShowModal();
+//}
 
 void FFTviewerFrame::OnSetupFFTOutSelected(wxCommandEvent& event)
 {
