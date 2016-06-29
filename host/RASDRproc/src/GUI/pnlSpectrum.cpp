@@ -62,6 +62,7 @@
 //*)
 
 //(*IdInit(pnlSpectrum)
+const long pnlSpectrum::ID_CHECKBOX3B = wxNewId();
 const long pnlSpectrum::ID_CHECKBOX3 = wxNewId();
 const long pnlSpectrum::ID_CHECKBOX4 = wxNewId();
 const long pnlSpectrum::ID_CHECKBOX5 = wxNewId();
@@ -136,7 +137,8 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_buffersCount(1024),
     m_IchannelData(NULL), m_QchannelData(NULL), m_FFTfrequencies(NULL), m_FFTamplitudes(NULL), m_FFTbackground(NULL),
     m_FFTMaxAmplitudes(NULL), m_PWRvalues(NULL), m_FFTamplitudesBuffer(NULL),
-    m_FFTFileClassPtr(NULL), m_PWRFileClassPtr(NULL), m_CFG_File(NULL)
+    m_FFTFileClassPtr(NULL), m_PWRFileClassPtr(NULL), m_CFG_File(NULL),
+    m_capturingData(false), m_backgroundSubtract(false)
 //#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
     , m_FFTbackgroundAvg(NULL), m_FFTbackgroundDb(NULL)
 //#endif BACKGROUND_DEBUG
@@ -152,6 +154,9 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_lastUpdate = 0;
 //    m_capturingData = false;
     m_updating = false;
+    m_restarting = false;
+    m_dtLastRestart = m_dtLastRestart.UNow();
+    m_restart_step = 0;
     m_time = 0;
     m_frames = 0;
     m_PWRSpanSecChanged = false;
@@ -244,6 +249,8 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer1->AddGrowableRow(1);
 	Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
 	Panel1->SetMinSize(wxSize(900,32));
+	chkAutoRestart = new wxCheckBox(Panel1, ID_CHECKBOX3B, _("Auto Restart"), wxPoint(780,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3B"));
+	chkAutoRestart->SetValue(false);
 	chkUpdateGraphs = new wxCheckBox(Panel1, ID_CHECKBOX3, _("Update graphs"), wxPoint(25,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
 	chkUpdateGraphs->SetValue(true);
 	chkIchannelEnabled = new wxCheckBox(Panel1, ID_CHECKBOX4, _("I channel"), wxPoint(144,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
@@ -251,8 +258,8 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	chkQchannelEnabled = new wxCheckBox(Panel1, ID_CHECKBOX5, _("Q channel"), wxPoint(224,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
 	chkQchannelEnabled->SetValue(true);
 	StaticText9 = new wxStaticText(Panel1, ID_STATICTEXT9, _("Data rate KB/s:"), wxPoint(320,8), wxDefaultSize, 0, _T("ID_STATICTEXT9"));
-	lblDataRate = new wxStaticText(Panel1, ID_STATICTEXT10, _("0"), wxPoint(440,8), wxDefaultSize, 0, _T("ID_STATICTEXT10"));
-	lblFPS = new wxStaticText(Panel1, ID_STATICTEXT11, _("30"), wxPoint(720,8), wxDefaultSize, 0, _T("ID_STATICTEXT11"));
+	lblDataRate = new wxStaticText(Panel1, ID_STATICTEXT10, _("0"), wxPoint(430,8), wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+	lblFPS = new wxStaticText(Panel1, ID_STATICTEXT11, _("30"), wxPoint(700,8), wxDefaultSize, 0, _T("ID_STATICTEXT11"));
 	StaticText14 = new wxStaticText(Panel1, ID_STATICTEXT16, _("Updates per second:"), wxPoint(550,8), wxDefaultSize, 0, _T("ID_STATICTEXT16"));
 	FlexGridSizer1->Add(Panel1, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW1"));
@@ -433,7 +440,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer3->Add(oglPWRChart, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	Panel5 = new wxPanel(Panel9, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
 	BoxSizer3 = new wxBoxSizer(wxVERTICAL);
-	chkAutoscalePwrY = new wxCheckBox(Panel5, ID_CHECKBOX1B, _("Autoscale Power (uW)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1B"));
+	chkAutoscalePwrY = new wxCheckBox(Panel5, ID_CHECKBOX1B, _("Autoscale Power"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1B"));
 	chkAutoscalePwrY->SetValue(false);
 	BoxSizer3->Add(chkAutoscalePwrY, 0, wxALL|wxALIGN_TOP|wxALIGN_LEFT, 5);
 	chkAutoscalePwrX = new wxCheckBox(Panel5, ID_CHECKBOX1C, _("Autoscale Power (Time)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1C"));
@@ -537,6 +544,7 @@ void pnlSpectrum::shutdown()
 
 	Disconnect(ID_SPINCTRL3,wxEVT_TEXT,(wxObjectEventFunction)&pnlSpectrum::OnspinSamplingFreqChange);
 
+    chkAutoRestart->SetValue(false);
     chkUpdateGraphs->SetValue(false);
     chkIchannelEnabled->SetValue(false);
     chkQchannelEnabled->SetValue(false);
@@ -1568,6 +1576,7 @@ void pnlSpectrum::StartCapturing()
 	spinFFTsamples->Enable(false);
 	//spinSamplingFreq->Enable(false);
 
+    m_dtLastRestart = m_dtLastRestart.UNow();
     if(m_firststart) {
             oglPWRChart->ZoomX(g_PwrSpanSec/2,g_PwrSpanSec);
             m_firststart = false;}
@@ -1688,6 +1697,52 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 
     if(m_updating)
         return;
+
+    // RASDR2 has issues with USB3 stalling.  Requires re-initialization
+    if(m_restarting)
+    {
+        int status = 1;
+
+        // it takes several steps and we have to let the application
+        // run while we do this - cannot do all the steps at once as
+        // it will crash.
+        switch(m_restart_step)
+        {
+        case 0:
+            cout << "Restart USB Started" << endl;
+            LMLL_Testing_StopSdramRead();
+            break;
+        case 20:    // +20 to allow the threads to exit/flush before we close the device
+            LMAL_Close();
+            break;
+            // TODO: it may be best to do these together
+        case 21:
+            status = LMAL_SetConnectionType( 1 /*USB*/ );   // NOTE: may be needed after LMAL_Close()
+            if (status) status = LMAL_OpenI(LMAL_CurrentDevice());
+            break;
+        case 23:
+            LMLL_Testing_StartSdramRead();
+            break;
+        case 24:
+            cout << "Restart USB Appears Successful" << endl;
+            break;
+        case 44:    // +20 to allow the threads to re-fill the processing pipeline
+            m_dtLastRestart = m_dtLastRestart.UNow();
+            m_restarting = false;   // pick up new data next time - Good Luck!
+        default:
+            // insert arbitrary length wait states by choosing the active steps above
+            break;
+        }
+        if (status == 0)
+        {
+            // unable to open
+            cout << "USB Restart fails in step " << m_restart_step << endl;
+            StopCapturing();    // a little messy, as we already called StopSdramRead(), but it does all the UI stuff
+            m_updating = false;
+            m_restarting = false;
+        } else m_restart_step++;
+        return;
+    }
  //10/9   if(g_FFTfileSetup) return; // Break Loop for file open
     if(g_FFTfileSetup || g_PWRfileSetup) return; // Break Loop for file open
     m_updating = true;
@@ -1698,6 +1753,11 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 	bool averageFFT = chkAverage->GetValue();
 	bool calculated = false;
 	wxDateTime dt;
+
+	double sampleRateSps = (double)(1e6*spinSamplingFreq->GetValue());
+	unsigned long expect_dataRateKBps = (unsigned long)((4*sampleRateSps)/1024.0);
+	double expect_FPS = sampleRateSps / (double)m_FFTdataSize;
+
 	if(averageFFT != true)
 	{
         if(chkUpdateGraphs->GetValue() == true)
@@ -1883,6 +1943,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 	}
 	else //  averaging
 	{
+	    expect_FPS = expect_FPS / (double)m_buffersCountMask;
         if(chkUpdateGraphs->GetValue() == true)
         {
             calculated = LMLL_Testing_CalculateFFT();
@@ -2067,14 +2128,29 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
         }
 	}
 
-    unsigned long rate = 1;
+    //unsigned long rate = 1;
 	unsigned long dataRateBps = 0;
 	unsigned int failures = 0;
+	double ratio_dataRateKBps;
 
 	//get data rate and failure count
 	LMLL_Testing_GetStatusInfo(dataRateBps, failures);
-	rate = dataRateBps;
-	lblDataRate->SetLabel( wxString::Format(wxT("%i"), rate));
+	//rate = dataRateBps;
+	ratio_dataRateKBps = (double)dataRateBps / (double)expect_dataRateKBps;
+	     if (ratio_dataRateKBps > 0.97) { lblDataRate->SetLabel( wxString::Format(wxT("%i"), dataRateBps)); lblDataRate->SetBackgroundColour(0xf0f0f0f0); /* default grey */ }
+	else if (ratio_dataRateKBps > 0.80) { lblDataRate->SetLabel( wxString::Format(wxT("%i, @%.1f%%"), dataRateBps, ratio_dataRateKBps*100.0)); lblDataRate->SetBackgroundColour(0xf000ffff); /* yellow */ }
+    else                                { lblDataRate->SetLabel( wxString::Format(wxT("%i << %i"), dataRateBps, expect_dataRateKBps)); lblDataRate->SetBackgroundColour(0xf00000ff); /* red */ }
+
+    // TODO: add control for enabling auto restart...
+    if (dataRateBps == 0 && chkAutoRestart->GetValue() == true)
+    {
+        wxTimeSpan dd = dt.UNow() - m_dtLastRestart;
+        if (dd.GetSeconds() > 10)   // TODO: configure restart interval
+        {
+            m_restart_step = 0;     // start at the beginning
+            m_restarting = true;    // schedule restart next timer event...
+        }
+    }
 
 	if(chkUpdateGraphs->GetValue() == true)
 	{
@@ -2104,7 +2180,12 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 	if(m_time >= 1000 * m_PwrIntTime)
 //	if(m_time >= 1000)
     {
-        lblFPS->SetLabel( wxString::Format("%i", m_frames));
+        double ratio_FPS = (double)m_frames / expect_FPS;
+
+             if (ratio_FPS > 0.80) { lblFPS->SetLabel( wxString::Format(wxT("%i"), m_frames)); lblFPS->SetBackgroundColour(0xf0f0f0f0); /* default grey */ }
+        else if (ratio_FPS > 0.50) { lblFPS->SetLabel( wxString::Format(wxT("%i, @%.1f%%"), m_frames, ratio_FPS*100.0)); lblFPS->SetBackgroundColour(0xf000ffff); /* yellow */ }
+        else                       { lblFPS->SetLabel( wxString::Format(wxT("%i << %.0f"), m_frames, expect_FPS)); lblFPS->SetBackgroundColour(0xf00000ff); /* red */ }
+
         UpdatePwrGraph();
         m_frames = 0;
         m_time = 0;

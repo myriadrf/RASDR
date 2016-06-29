@@ -124,7 +124,7 @@ private:
 	long countBuffers;
 	unsigned long m_bufferFailures;
 
-	bool readingData;
+	volatile bool readingData;
 
 	Main_Module *pMain;
 	double samplingFrequency;

@@ -97,9 +97,9 @@ class pnlSpectrum: public wxPanel
         wxTextFile *m_CFG_File;
 
         bool IsCapturingData();
-        bool m_capturingData = false;
+        bool m_capturingData;
         bool m_PwrRefIsSet;
-        bool m_backgroundSubtract = false;
+        bool m_backgroundSubtract;
         double m_PwrRefOffset;
         double m_PwrAccum;
         double m_PwrAve;
@@ -123,6 +123,7 @@ class pnlSpectrum: public wxPanel
 		wxToggleButton* PwrRef;
 		OpenGLGraph* oglPWRChart;
 		wxButton*  RecordPWR;
+		wxCheckBox* chkAutoRestart;
 		wxCheckBox* chkUpdateGraphs;
 		wxComboBox* cmbLNAGainMode;
 		wxStaticText* StaticText13;
@@ -181,6 +182,7 @@ class pnlSpectrum: public wxPanel
 	protected:
 
 		//(*Identifiers(pnlSpectrum)
+		static const long ID_CHECKBOX3B;
 		static const long ID_CHECKBOX3;
 		static const long ID_CHECKBOX4;
 		static const long ID_CHECKBOX5;
@@ -307,6 +309,9 @@ class pnlSpectrum: public wxPanel
         int bufferPos;
 
         bool m_updating;
+        bool m_restarting;
+        wxDateTime m_dtLastRestart;
+        int m_restart_step;
         long m_time;
         long m_lastUpdate;
         int m_frames;

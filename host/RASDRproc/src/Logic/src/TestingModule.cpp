@@ -87,6 +87,7 @@ TestingModule::TestingModule(Main_Module *pMainModule)
 	m_ulFailures = 0;
 	m_bufferFailures = 0;
 
+    countFFT = 0;
 	FFTsamples = 0;
 	samplingFrequency = 10000000; // Hz
 
@@ -210,12 +211,16 @@ void TestingModule::StopSdramRead()
 	// disable data receiving and wait for other thread to exit
 	if(readingData)
     {
-        readingData = false;
-        void *status;
-//        printf("Before Join Thread"); //Test 4/17/14 This Prints
-        if( pthread_join(readThreadID, &status) )
-            printf("joining thread encountered error\n");
-//        printf("After Join Thread"); //Test 4/17/14 This does not print
+        void *status = NULL;
+        int r;
+
+        readingData = false;    // this is supposed to signal the thread to exit...
+
+        // http://pubs.opengroup.org/onlinepubs/9699919799/functions/pthread_join.html
+        r = pthread_join(readThreadID, &status);
+// DEBUG
+//        printf("TestingModule::StopSdramRead(,status=%p)=%d\n", status, r);
+        if(r) printf("TestingModule::StopSdramRead(,status=%p)=%d (%s)\n", status, r, strerror(r));
     }
     //need to unblock fifo in case other thread was waiting for data
     m_SamplesFIFO->unblock();
@@ -230,7 +235,7 @@ void* TestingModule::ReadDataThread(void *ptrTestingModule)
 {
 	TestingModule *module = reinterpret_cast<TestingModule*>(ptrTestingModule);
 	if (module == NULL || !module->readingData)
-		return 0;
+		pthread_exit(module);
 	else
     {
         char digiRed = 0;
@@ -240,7 +245,7 @@ void* TestingModule::ReadDataThread(void *ptrTestingModule)
         else
             module->ReadData();
     }
-	return 0;
+	return NULL;
 }
 
 /**
@@ -631,11 +636,11 @@ void TestingModule::ReadData_DigiRed()
 		rLen = len;
 		device->WaitForReading(contexts[i], 20);
 		device->FinishDataReading(m_Buffers[i], rLen, contexts[i]);
-		delete[]m_Buffers[i];
+		delete[] m_Buffers[i];
 		i = (i + 1) & iQueueSizeMask;
 	}
-	delete[]m_Buffers;
-	delete[]contexts;
+	delete[] m_Buffers;
+	delete[] contexts;
 	delete splitPkt;
 }
 

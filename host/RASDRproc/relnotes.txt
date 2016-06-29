@@ -1,4 +1,4 @@
-RASDRproc v0.2.1.0 - Jun 26, 2016
+RASDRproc v0.2.2.0 - Jun 28, 2016
 =================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -37,11 +37,20 @@ The calibration values are saved along with the other parameters in the RASDR.cf
 If necessary, repeat the above procedure to compute new offsets.  Typically, it has not been seen that the offset needs to be corrected continuously, but the offset IS different each time the RASDR2 device is powered up and it does depend on what antenna system and front end electronics are connected to the RASDR RX port, as well as the sampling rate and gain settings.
 
 
+Auto Restart:
+
+RASDR2 devices when used in USB3 on marginal machines exhibit a stall acquiring data.  It has been shown that if data acquisition is stopped, then started dataflow may recover (but not always).  In those cases, the driver must be closed and re-opened, and then dataflow recovers.  This version of RASDRproc implements a detection and mitigation for this condition.  It is enabled by checking the 'Auto Restart' tick box in the upper right corner near the frame rate display.
+
+In addition, this version annotates the data rate and frame rate display with a comparision to the expected rates and uses a RED or YELLOW background if the program is not keeping up.  The thresholds are fixed at compile time at the moment.
+
+
 Known Issues:
 
 1) The program will give an ugly dialog box if it cannot find its settings file 'RASDR.cfg', but will create a new one when the program exits.
 
-2) When using USB 3 on a marginal machine (e.g. dual core, 4GB RAM) the application is known to stop acquiring data.  With the updated Cypress WHQL driver, this condition can be cleared by manually stopping then restarting acquisition.  It is not yet understood why this occurs.  This behavior has not been observed on a more robust machine (e.g. quad core, 8GB RAM).  The working theory at this point is that RASDRviewer/RASDRproc and its use of the Cypress driver API requires two cores to itself and OS activity can interfere with the timing of completion requests for USB buffers.  This condition will be corrected as soon as the root cause is determined.
+2) When using USB 3 on a marginal machine (e.g. dual core, 4GB RAM) the application is known to stop acquiring data.  With the updated Cypress WHQL driver, this condition can be cleared by manually stopping then restarting acquisition.  It is not yet understood why this occurs.  This behavior has not been observed on a more robust machine (e.g. quad core, 8GB RAM).  The working theory at this point is that RASDRviewer/RASDRproc and its use of the Cypress driver API requires two cores to itself and OS activity can interfere with the timing of completion requests for USB buffers.
+
+One very strong driver of this condtion was the use of burst mode transfer for USB3 super speed.  When the burst length is set to 1, the effect it has on a lower spec machine is dramatic.  Unfortunately, it was not the only thing needed, and in some rare cases a glitch was still observed to occur.  For this reason, a workaround was found to allow data to keep being collected.
 
 3) Scaling of the frequency plot, the use of markers and other aspects of the UI can produce unsatisfactory results.  Please be persistent in your efforts to make the plot look they way you want it.  RASDRproc v0.2.1.0 has made some progress in the operation of the Power plot.
 
@@ -50,3 +59,5 @@ Known Issues:
 5) Sometimes when restarting (or if Auto Restart) is enabled, the program will raise an exception in the CCyUSBEndPoint::FinishDataXfer() as it deletes buffers.  This is when the stop is initiated by a call to LMLL_Testing_StopSdramRead() to stop collecting data from the USB stream.
 
 Debugging this has not illuminated a good explanation for this behavior.
+
+6) After 3600 seconds the Power Plot display stops updating and a STOP and START does not resume it.  This was discovered after post-release testing, and will be fixed in the next release.  The data is captured and saved to the log file as well as the power output file.

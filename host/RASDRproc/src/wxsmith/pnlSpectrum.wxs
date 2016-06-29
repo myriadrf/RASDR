@@ -20,6 +20,11 @@
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
 					<minsize>900,32</minsize>
+					<object class="wxCheckBox" name="ID_CHECKBOX3B" variable="chkAutoRestart" member="yes">
+						<label>Auto Restart</label>
+						<checked>0</checked>
+						<pos>780,8</pos>
+					</object>
 					<object class="wxCheckBox" name="ID_CHECKBOX3" variable="chkUpdateGraphs" member="yes">
 						<label>Update graphs</label>
 						<checked>1</checked>
@@ -43,11 +48,11 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT10" variable="lblDataRate" member="yes">
 						<label>0</label>
-						<pos>440,8</pos>
+						<pos>430,8</pos>
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT11" variable="lblFPS" member="yes">
 						<label>30</label>
-						<pos>720,8</pos>
+						<pos>700,8</pos>
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT16" variable="StaticText14" member="yes">
 						<label>Updates per second:</label>
@@ -520,7 +525,7 @@
 												<orient>wxVERTICAL</orient>
                                                 <object class="sizeritem">
                                                     <object class="wxCheckBox" name="ID_CHECKBOX1B" variable="chkAutoscalePwrY" member="yes">
-                                                        <label>Autoscale Power (uW)</label>
+                                                        <label>Autoscale Power</label>
                                                     </object>
                                                     <flag>wxALIGN_LEFT|wxALIGN_LEFT</flag>
                                                     <border>5</border>
