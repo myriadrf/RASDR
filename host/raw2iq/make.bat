@@ -47,9 +47,9 @@ set LOGF=build.log
     @REM @MSbuild "%_DP0%\%FOLDER%\%PROJECT%" /t:Rebuild /p:Configuration=Release /p:Platform=x64 >> %LOGF%
     @REM @if ERRORLEVEL 1 goto stop
     @copy "%_DP0%\%FOLDER%\Release\*.exe" "%_DP0%\dist\x86"
-    @REM @copy "%VCINSTALLDIR%\redist\x86\Microsoft.VC120.CRT\*.dll" "%_DP0%\dist\x86"
+    @copy "%VCINSTALLDIR%\redist\x86\Microsoft.VC120.OpenMP\*.dll" "%_DP0%\dist\x86"
     @REM @copy "%_DP0%\%FOLDER%\x64\Release\*.exe" "%_DP0%\dist\x64"
-    @REM @copy "%VCINSTALLDIR%\redist\x64\Microsoft.VC120.CRT\*.dll" "%_DP0%\dist\x64"
+    @REM @copy "%VCINSTALLDIR%\redist\x64\Microsoft.VC120.OpenMP\*.dll" "%_DP0%\dist\x64"
     @REM @copy /Y "%_DP0%\raw2iq-example.png" "%_DP0%\dist"
     @copy /Y "%_DP0%\readme.txt" "%_DP0%\dist"
     @echo *** DONE.  The release distribution is in the %_DP0%\dist\ ***
