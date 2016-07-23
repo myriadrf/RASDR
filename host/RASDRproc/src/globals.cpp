@@ -93,6 +93,12 @@ float g_avgI = 0.0;
 float g_avgQ = 0.0;
 int g_UnlimitedAveraging = 0;
 
+// Radio Sky Spectrograph integration
+char g_RSS_IP[1024] = { "127.0.0.1" };
+unsigned short g_RSS_Port = 8888;
+int  g_RSS_Channels = 100;
+bool g_RSS_Enable = false;
+
 // statistics gathering/reporting
 volatile long g_Statistics_updateCount = 0;
 volatile unsigned int g_Statistics_m_bytesPerSecond = 0;

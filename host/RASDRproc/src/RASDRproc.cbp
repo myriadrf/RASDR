@@ -22,12 +22,14 @@
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
 					<Add directory="Logic/dependencies/pthreads-w32-2-9-1-release/Pre-built.2/include" />
+					<Add directory="Logic/dependencies/sockets" />
 				</Compiler>
 				<Linker>
 					<Add option="-static" />
 					<Add library="Logic\dependencies\fftw-3.3.3\libfftw3f-3.lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
+					<Add directory="Logic/dependencies/sockets" />
 				</Linker>
 			</Target>
 			<Target title="GUIDebug WIN32">
@@ -85,6 +87,7 @@
 					<Add library="Setupapi" />
 					<Add directory="Logic/lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
+					<Add directory="Logic/dependencies/sockets" />
 				</Linker>
 			</Target>
 			<Target title="LogicRelease WIN32">
@@ -108,6 +111,7 @@
 					<Add library="libfftw3f-3.lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
+					<Add directory="Logic/dependencies/sockets" />
 				</Linker>
 			</Target>
 			<Target title="GUIRelease WIN32">
@@ -167,6 +171,7 @@
 					<Add directory="Logic/lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
+					<Add directory="Logic/dependencies/sockets" />
 				</Linker>
 			</Target>
 		</Build>
@@ -465,6 +470,22 @@
 		<Unit filename="Logic/dependencies/CyAPI/cyioctl.h" />
 		<Unit filename="Logic/dependencies/CyAPI/usb100.h" />
 		<Unit filename="Logic/dependencies/CyAPI/usb200.h" />
+		<Unit filename="Logic/dependencies/sockets/inet_ntop.c">
+			<Option compilerVar="CC" />
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/dependencies/sockets/socket.h" />
+		<Unit filename="Logic/dependencies/sockets/stristr.c">
+			<Option compilerVar="CC" />
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
+		<Unit filename="Logic/dependencies/sockets/strlcpy.c">
+			<Option compilerVar="CC" />
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
 		<Unit filename="Logic/include/ADDC_Module.h">
 			<Option target="LogicDebug WIN32" />
 			<Option target="LogicRelease WIN32" />
@@ -680,8 +701,14 @@
 		</Unit>
 		<Unit filename="PopList.cpp" />
 		<Unit filename="PopList.h" />
-		<Unit filename="PopTuning.cpp" />
-		<Unit filename="PopTuning.h" />
+		<Unit filename="PopSetupRSS.cpp">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
+		<Unit filename="PopSetupRSS.h">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
 		<Unit filename="PopTimeSpan.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -690,6 +717,8 @@
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
+		<Unit filename="PopTuning.cpp" />
+		<Unit filename="PopTuning.h" />
 		<Unit filename="PulsarPnl.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -760,11 +789,11 @@
 			<Option target="GUIRelease WIN32" />
 		</Unit>
 		<Unit filename="wxsmith/PopList.wxs" />
-		<Unit filename="wxsmith/PopTuning.wxs" />
 		<Unit filename="wxsmith/PopTimeSpan.wxs">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
+		<Unit filename="wxsmith/PopTuning.wxs" />
 		<Unit filename="wxsmith/PulsarPnl.wxs">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />

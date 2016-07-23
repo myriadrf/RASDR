@@ -48,6 +48,7 @@
 #include "PopList.h"
 #include "PopTuning.h"
 //#include "PopTimeSpan.h"
+#include "PopSetupRSS.h"
 #include "SetupFFTout.h"
 #include "SetupPWROut.h"
 #include "SeupPulsePeriod.h"
@@ -74,6 +75,7 @@ const long FFTviewerFrame::idFrameDelay = wxNewId();
 const long FFTviewerFrame::idTuningParameters = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM4 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM7 = wxNewId();
+const long FFTviewerFrame::idRssParameters = wxNewId();
 //const long FFTviewerFrame::ID_MENUITEM10 = wxNewId();
 //const long FFTviewerFrame::ID_MENUITEM9 = wxNewId();
 //const long FFTviewerFrame::ID_MENUITEM8 = wxNewId();
@@ -141,7 +143,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Menu4 = new wxMenu();
     MenuItem8 = new wxMenuItem(Menu4, idFrameDelay, _("Frame Delay"), wxEmptyString, wxITEM_NORMAL);
     Menu4->Append(MenuItem8);
-    
+
 // TODO: The menu below can be used to change the size of the PWR buffer defined statically now
 // by the global variable g_MaxPwrSpanSec.  However when this is adjusted it requires re-allocation
 // of memory, and so it is required that it be done with acquisition OFF and the menu option disabled
@@ -157,6 +159,8 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Menu5->Append(MenuItem5);
     MenuItem9 = new wxMenuItem(Menu5, ID_MENUITEM7, _("Setup Power Output"), wxEmptyString, wxITEM_NORMAL);
     Menu5->Append(MenuItem9);
+    MenuItem9B = new wxMenuItem(Menu4, idRssParameters, _("Setup RSS Output"), wxEmptyString, wxITEM_NORMAL);
+    Menu5->Append(MenuItem9B);
 //    MenuItem10 = new wxMenu();
 //    SetupDMOutMenu = new wxMenuItem(MenuItem10, ID_MENUITEM10, _("Setup DM Data Output"), wxEmptyString, wxITEM_NORMAL);
 //    MenuItem10->Append(SetupDMOutMenu);
@@ -193,6 +197,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Connect(idTuningParameters,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnTuningParametersSelected);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupFFTOutSelected);
     Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPWROutSelected);
+    Connect(idRssParameters,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnRSSParametersSelected);
 //    Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupDMOutSelected);
 //    Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPulsePeriodOutSelected);
 //    Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetup_SimSelected);
@@ -560,6 +565,12 @@ void FFTviewerFrame::OnTuningParametersSelected(wxCommandEvent& event)
   dialog.ShowModal();
 }
 
+void FFTviewerFrame::OnRSSParametersSelected(wxCommandEvent& event)
+{
+  PopSetupRSS dialog(this);
+  dialog.ShowModal();
+}
+
 void FFTviewerFrame::OnmSpectrumPaint(wxPaintEvent& event)
 {
 }
@@ -675,6 +686,20 @@ bool FFTviewerFrame::SaveConfiguration()
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
 #endif // defined
+            // RSS Integration
+            wxSnprintf(outbuf,_N,"%-14s // RSS Server IP",g_RSS_IP);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%-14hu // RSS Server Port (default=8888)", g_RSS_Port);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%-14d // RSS Channels (range is 100 to 500)", g_RSS_Channels);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%-14d // RSS Server Enabled (0=disabled, 1=enabled)", g_RSS_Enable?1:0);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            //
             m_CFG_FileClassPtr->Flush();
             m_CFG_FileClassPtr->Close();
             delete m_CFG_FileClassPtr;

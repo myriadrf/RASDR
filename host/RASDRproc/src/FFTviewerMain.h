@@ -95,6 +95,7 @@ class FFTviewerFrame: public wxFrame
         void OnMenuItemSaveConfigSelected(wxCommandEvent& event);
 //        void OnDispTimeSelected(wxCommandEvent& event);
         void OnFFTCaptureSelected(wxCommandEvent& event);
+        void OnRSSParametersSelected(wxCommandEvent& event);
         void OnSetupFFTOut5Selected(wxCommandEvent& event);
         void OnSSetupFFTOutelected(wxCommandEvent& event);
         void OnSetupFFTOutSelected(wxCommandEvent& event);
@@ -121,6 +122,7 @@ class FFTviewerFrame: public wxFrame
         static const long idTuningParameters;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM7;
+        static const long idRssParameters;
 //        static const long ID_MENUITEM10;
 //        static const long ID_MENUITEM9;
 //        static const long ID_MENUITEM8;
@@ -149,6 +151,7 @@ class FFTviewerFrame: public wxFrame
 //        wxMenuItem* SetupDMOutMenu;
 //        wxMenu* Menu6;
         wxMenuItem* MenuItem9;
+        wxMenuItem* MenuItem9B;
         wxMenu* Menu5;
         wxMenu* Menu4;
         //*)

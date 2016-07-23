@@ -100,6 +100,13 @@ extern float g_Sim_DM;
 extern float g_Sim_Period;
 extern float g_Sim_Duty;
 extern float g_Sim_Factor;
+
+// Radio Sky Spectrograph integration
+extern char g_RSS_IP[1024];
+extern unsigned short g_RSS_Port;
+extern int  g_RSS_Channels;
+extern bool g_RSS_Enable;
+
 //extern long ID_FFTOKBUTTON;
 //typedef struct statistics {
     extern volatile long g_Statistics_updateCount;

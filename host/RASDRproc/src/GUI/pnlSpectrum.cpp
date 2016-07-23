@@ -1012,6 +1012,16 @@ void pnlSpectrum::GetConfiguration()
                 if(line == 25) g_DcOffsetQ = atof(inbuf);
                 if(line == 26) g_UnlimitedAveraging = atoi(inbuf);
 #endif
+                // RSS Integration
+                if(line == 27)
+                {
+                    for(int i=0;i<sizeof(inbuf);i++)
+                        if( !isalnum(inbuf[i]) && inbuf[i]!='.' ) { inbuf[i] = '\0'; break; }
+                    strncpy(g_RSS_IP,inbuf,sizeof(g_RSS_IP)-1); g_RSS_IP[sizeof(g_RSS_IP)-1] = '\0';
+                }
+                if(line == 28) g_RSS_Port = (unsigned short)atoi(inbuf);
+                if(line == 29) g_RSS_Channels = atoi(inbuf);
+                if(line == 30) g_RSS_Enable = atoi(inbuf)?true:false;
             }
             m_CFG_File->Close();
         } else {
@@ -1054,6 +1064,10 @@ void pnlSpectrum::GetConfiguration()
             cout << g_DcOffsetQ << endl;// if(line == 25)
             cout << g_UnlimitedAveraging << endl;// if(line == 26)
 #endif
+            cout << g_RSS_IP << endl;// if(line == 27)
+            cout << g_RSS_Port << endl;// if(line == 28)
+            cout << g_RSS_Channels << endl;// if(line == 29)
+            cout << (g_RSS_Enable?1:0) << endl;// if(line == 30)
         }
         delete m_CFG_File;
         m_CFG_File = NULL;

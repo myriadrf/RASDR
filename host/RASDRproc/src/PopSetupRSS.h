@@ -1,9 +1,9 @@
 // -----------------------------------------------------------------------------
-// FILE:        "version.h"
+// FILE:        "PopSetupRSS.h"
 // DESCRIPTION: "Header File"
-// DATE:        "05/09/2015 06:44 AM "
+// DATE:        "06/26/2016 00:00 AM "
 // AUTHOR(s):   Lime Microsystems, Paul L. Oxley
-// Copyright:   Society of Amateur Radio Astronomers (2014-2015)
+// Copyright:   Society of Amateur Radio Astronomers (2014-2016)
 //
 // Based on original work from Zydrunas Tamosevicius (Lime Microsystems, Ltd.)
 // and distributed under the Apache License 2.0 at:
@@ -28,35 +28,58 @@
 //
 // REVISIONS:   as appropriate
 // -----------------------------------------------------------------------------
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef POPSETUPRSS_H
+#define POPSETUPRSS_H
 
-namespace AutoVersion{
+//(*Headers(PopSetupRSS)
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/checkbox.h>
+#include <wx/spinctrl.h>
+//*)
 
-	//Date Version Types
-	static const char DATE[] = "07";
-	static const char MONTH[] = "23";
-	static const char YEAR[] = "2016";
-	static const char UBUNTU_VERSION_STYLE[] = "13.10";
+class PopSetupRSS: public wxDialog
+{
+	public:
 
-	//Software Status
-	static const char STATUS[] = "Alpha";
-	static const char STATUS_SHORT[] = "";
+		PopSetupRSS(wxWindow* parent,wxWindowID id=wxID_ANY);
+		virtual ~PopSetupRSS();
 
-	//Standard Version Type
-	static const long MAJOR = 0;
-	static const long MINOR = 2;
-	static const long BUILD = 3;
-	static const long REVISION = 0;
+		//(*Declarations(PopSetupRSS)
+		wxButton* OKButton;
+		wxCheckBox* Enable;
+		wxStaticText* StaticText1;
+		wxTextCtrl* TextCtrl1;
+		wxStaticText* StaticText2;
+		wxTextCtrl* TextCtrl2;
+		wxStaticText* StaticText3;
+		wxSpinCtrl* Channels;
+		//*)
 
-	//Miscellaneous Version Types
-	static const long BUILDS_COUNT = 1;
-	#define RC_FILEVERSION 0,2,3,0
-	#define RC_FILEVERSION_STRING "0, 2, 3, 0\0"
-	static const char FULLVERSION_STRING[] = "0.2.3.0";
+	protected:
 
-	//These values are to keep track of your versioning state, don't modify them.
-	static const long BUILD_HISTORY = 33;
+		//(*Identifiers(PopSetupRSS)
+		static const long ID_BUTTON1;
+		static const long ID_CHECKBOX1;
+		static const long ID_STATICTEXT1;
+		static const long ID_TEXTCTRL1;
+		static const long ID_STATICTEXT2;
+		static const long ID_TEXTCTRL2;
+		static const long ID_STATICTEXT3;
+		static const long ID_SPINCTRL1;
+		//*)
 
-}
-#endif //VERSION_H
+	private:
+
+		//(*Handlers(PopSetupRSS)
+		void OnInit(wxInitDialogEvent& event);
+		void OnOKButtonClick(wxCommandEvent& event);
+		//*)
+
+		DECLARE_EVENT_TABLE()
+};
+
+#endif
