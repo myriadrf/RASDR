@@ -121,4 +121,47 @@ public:
 	float *amplitudes;
 };
 
+/**
+    Packet used for transferring Accumulated FFT calculation results to graphs
+*/
+struct FFTAvgPacket
+{
+public:
+	FFTAvgPacket(unsigned int packetSize, float c=0.0, float o=0.0)
+        : used(false), size(packetSize), fcenter(c), foffset(o)
+	{
+	    offset_frequencies = new float[packetSize];
+	    amplitudes = new float[packetSize];
+	}
+
+	~FFTAvgPacket()
+	{
+        delete offset_frequencies;
+        delete amplitudes;
+	}
+
+	FFTAvgPacket& operator=(FFTAvgPacket& obj)
+	{
+	    unsigned int cpSize = 0;
+	    if(size < obj.size)
+            cpSize = size;
+        else
+            cpSize = obj.size;
+		memcpy(this->offset_frequencies, obj.offset_frequencies, sizeof(float)*cpSize);
+		memcpy(this->amplitudes, obj.amplitudes, sizeof(float)*cpSize);
+		this->used = obj.used;
+		this->fcenter = obj.fcenter;
+		this->foffset = obj.foffset;
+		obj.used = true;
+		return *this;
+	}
+
+	bool used;
+	const unsigned int size;
+	float *offset_frequencies;  // In MHz (FIXME: normalize to GHz)
+	float *amplitudes;          // in dB
+	float fcenter;              // In GHz
+	float foffset;              // In GHz
+};
+
 #endif

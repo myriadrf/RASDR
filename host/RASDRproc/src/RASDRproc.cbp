@@ -476,11 +476,6 @@
 			<Option target="LogicRelease WIN32" />
 		</Unit>
 		<Unit filename="Logic/dependencies/sockets/socket.h" />
-		<Unit filename="Logic/dependencies/sockets/stristr.c">
-			<Option compilerVar="CC" />
-			<Option target="LogicDebug WIN32" />
-			<Option target="LogicRelease WIN32" />
-		</Unit>
 		<Unit filename="Logic/dependencies/sockets/strlcpy.c">
 			<Option compilerVar="CC" />
 			<Option target="LogicDebug WIN32" />

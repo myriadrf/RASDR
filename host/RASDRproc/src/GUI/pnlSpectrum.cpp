@@ -1393,7 +1393,7 @@ void pnlSpectrum::changeSamplingFrequency(float samplingFrequency)
             m_fftxaxisValues[f] = (-1) * (m_FFTsamplesCount / 2 - 1 - f) *
                 (samplingFrequency / m_FFTsamplesCount);
         }
-        // possitive frequencies
+        //positive frequencies
         for (int f = 0; f < m_FFTsamplesCount / 2; f++)
         {
             m_fftxaxisValues[f + m_FFTsamplesCount / 2 - 1] =
@@ -1797,6 +1797,12 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 	unsigned long expect_dataRateKBps = (unsigned long)((4*sampleRateSps)/1024.0);
 	double expect_FPS = sampleRateSps / (double)m_FFTdataSize;
 
+	// RSS Integration
+	struct {
+        int min;
+        int max;
+    } idx;
+
 	if(averageFFT != true)
 	{
         if(chkUpdateGraphs->GetValue() == true)
@@ -1929,6 +1935,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                             }
                     m_FFTFileClassPtr->Write(",");
                 }
+
+                idx = { 0, m_FFTdataSize-1 };
+
                 //convert FFT results to dB
                 for(int i=0; i<m_FFTdataSize; i++)
                 {
@@ -1956,13 +1965,18 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
                         m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
                     value = m_MaxHold ? m_FFTMaxAmplitudes[i] : m_FFTamplitudes[i];
+
+                    // NB: factored up, as I need the min/max indices later
+                    if (g_FFTDataSource == 1)
+                    {
+                        if( m_fftxaxisValues[i] < m_FFTChartCenter - (m_FFTChartSpan/2) ) idx.min = i;
+                        if( m_fftxaxisValues[i] > m_FFTChartCenter + (m_FFTChartSpan/2) ) idx.max = i;
+                    }
                     if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
                         if(g_FFTDataSource == 0) {
                             sprintf(outbuf,"%.4f,\0",value);
                             m_FFTFileClassPtr->Write(outbuf); }
-                        if(g_FFTDataSource == 1
-                        &&(m_fftxaxisValues[i] >= m_FFTChartCenter - (m_FFTChartSpan/2))
-                        &&(m_fftxaxisValues[i] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
+                        else if(g_FFTDataSource == 1 && i >= idx.min && i <= idx.max) {
                             sprintf(outbuf,"%.4f,\0",value);
                             m_FFTFileClassPtr->Write(outbuf); }
                     }
@@ -1977,6 +1991,11 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         OnRecordFFTClick(dummy);
                 }
                 else if(g_FFTfileRecording) m_FFTCounter++;
+
+                // write FFT spectra to FIFO
+                LMLL_Testing_SetFFTSpectra(
+                    &m_FFTamplitudes[idx.min], &m_fftxaxisValues[idx.min],
+                    idx.max - idx.min, m_RxFreq );
             }
         }
 	}
@@ -2119,6 +2138,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         m_FFTFileClassPtr->Write("Z"); }
                     m_FFTFileClassPtr->Write(",");
                 }
+
+                idx = { 0, m_FFTdataSize-1 };
+
                 //convert to dB
                 for(int i=0; i<m_FFTdataSize; i++)
                 {
@@ -2142,13 +2164,19 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
                         m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
                     value = m_MaxHold ? m_FFTMaxAmplitudes[i] : m_FFTamplitudes[i];
+
+                    // NB: factored up, as I need the min/max indices later
+                    if (g_FFTDataSource == 1)
+                    {
+                        if( m_fftxaxisValues[i] < m_FFTChartCenter - (m_FFTChartSpan/2) ) idx.min = i;
+                        if( m_fftxaxisValues[i] > m_FFTChartCenter + (m_FFTChartSpan/2) ) idx.max = i;
+                    }
+
                     if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
                         if(g_FFTDataSource == 0) {
                             sprintf(outbuf,"%.4f,\0",value);
                             m_FFTFileClassPtr->Write(outbuf); }
-                        if(g_FFTDataSource == 1
-                        &&(m_fftxaxisValues[i] >= m_FFTChartCenter - (m_FFTChartSpan/2))
-                        &&(m_fftxaxisValues[i] <= m_FFTChartCenter + (m_FFTChartSpan/2))) {
+                        else if(g_FFTDataSource == 1 && i >= idx.min && i <= idx.max) {
                             sprintf(outbuf,"%.4f,\0",value);
                             m_FFTFileClassPtr->Write(outbuf); }
                     }
@@ -2163,6 +2191,12 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         OnRecordFFTClick(dummy);
                 }
                 else if(g_FFTfileRecording) m_FFTCounter++;
+
+                // write FFT spectra to FIFO
+                LMLL_Testing_SetFFTSpectra(
+                    &m_FFTamplitudes[idx.min], &m_fftxaxisValues[idx.min],
+                    idx.max - idx.min, m_RxFreq );
+
             }
         }
 	}
@@ -2438,7 +2472,7 @@ void pnlSpectrum::UpdatePwrGraph()
         }
         if( m_CSVFileClassPtr && m_CSVFileClassPtr->IsOpened()) {
             m_CSVFileClassPtr->Write(outbuf);
-            cout << outbuf;
+            //cout << outbuf;
         }
     }
 #elif defined(_DEBUG)

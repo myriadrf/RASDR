@@ -7768,6 +7768,22 @@ CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize
 
 /**
 	@ingroup Testing
+	@brief Publishes accumulated FFT spectra for the TransmitSpectra function
+	@param *FFTdataY pointer to array for storing frequency amplitudes from FFT
+	@param *FFTdataX pointer to array for storing frequency bin center from FFT
+	@param FFTsize represents the number of points in the FFTdataY and FFTdataX arrays
+	@param FCenter represents the center frequency of the array
+*/
+CTR_6002DR2_API void LMLL_Testing_SetFFTSpectra(float *FFTdataY, float *FFTdataX, int FFTsize, float FCenter)
+{
+    FFTAvgPacket avgPkt(FFTsize,FCenter);
+    memcpy(avgPkt.amplitudes,FFTdataY,sizeof(float)*FFTsize);
+    memcpy(avgPkt.offset_frequencies,FFTdataX,sizeof(float)*FFTsize);
+    getMainModule()->getTesting()->m_fftAvgFIFO->push(&avgPkt);
+}
+
+/**
+	@ingroup Testing
 	@brief Returns FFT calculations data and results.
 	@param *Ich pointer to array for storing I channel samples
 	@param *Qch pointer to array for storing Q channel samples
@@ -7786,6 +7802,8 @@ CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize
         IQSize = 0;
         FFTsize = 0;
         itemsLeft = 0;
+        // FIXME: does it need to unfreeze?
+        //getMainModule()->getTesting()->m_fftFIFO->unfreeze();
         return;
     }
 	getMainModule()->getTesting()->m_fftFIFO->pop(&fftPkt);

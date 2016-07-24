@@ -73,11 +73,14 @@ public:
     static void *ReadDataThread(void *ptrTestingModule);
 	void ReadData();
 	void ReadData_DigiRed();
-	unsigned long readDataThreadID;
+	unsigned long readDataThreadID;  // FIXME: really used?
 
 	bool externalCalculateFFT();
 
-	unsigned long calcFFTThreadID;
+	unsigned long calcFFTThreadID;  // FIXME: really used?
+
+	static void *TransmitSpectraThread(void *ptrTestingModule);
+	void TransmitSpectra_RSS();
 
 	void UpdateInterface(int code, char *param);
 	void (*updateInterfaceCallback)(int ,char *);
@@ -104,6 +107,7 @@ public:
 
 	blockingFIFO<SplitPacket> *m_SamplesFIFO;
 	blockingFIFO<FFTPacket> *m_fftFIFO;
+	blockingFIFO<FFTAvgPacket> *m_fftAvgFIFO;
 	fftwf_complex* m_fftCalcIn;
 	fftwf_complex* m_fftCalcOut;
 	fftwf_plan m_fftCalcPlan;
@@ -125,6 +129,8 @@ private:
 	unsigned long m_bufferFailures;
 
 	volatile bool readingData;
+	bool transmitActive;
+	int m_svr;  // server socket
 
 	Main_Module *pMain;
 	double samplingFrequency;

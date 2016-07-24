@@ -112,6 +112,7 @@ public:
 		writePos &= sizeMask;
 		if(filled < size)
 			++filled;
+        // FIXME: silently overwrites data
 		if(consumerWaiting)
 		{
 			consumerWaiting = false;

@@ -30,9 +30,13 @@
 #include <stdio.h>
 #include <pthread.h>
 //#include "globals.h"
+#include "socket.h"     // for sockets code
+#include <float.h>      // for FLT_MIN, FLT_MAX
 
 pthread_t readThreadID;
-pthread_t calculateThreadID;
+pthread_t calculateThreadID;    // huh... not used.. it could be...
+pthread_t transmitThreadID;
+
 
 using namespace std;
 
@@ -70,6 +74,7 @@ TestingModule::TestingModule(Main_Module *pMainModule)
     m_hwDigiRed = false;
     m_SamplesFIFO = NULL;
     m_fftFIFO = NULL;
+    m_fftAvgFIFO = NULL;
     m_fftCalcIn = NULL;
     m_fftCalcOut = NULL;
     //fftwf_import_wisdom_from_filename("fftw_wisdom.bin");
@@ -83,6 +88,7 @@ TestingModule::TestingModule(Main_Module *pMainModule)
 	m_FPGA_TXSRC_ADC = true;
 
 	readingData = false;
+	transmitActive = false;
 	m_bytesPerSecond = 0;
 	m_ulFailures = 0;
 	m_bufferFailures = 0;
@@ -96,6 +102,9 @@ TestingModule::TestingModule(Main_Module *pMainModule)
 
     initializeFFTplan(16384);       // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
     initializeFIFO(DIGIGREEN_SPLIT_PACKET_SIZE, FFTsamples);
+
+    // Support for RSS Integration
+    socket_init();
 }
 
 /**
@@ -126,6 +135,17 @@ void TestingModule::initializeFIFO(int samplesSize, int fftSize)
     }
     else
         m_fftFIFO = new blockingFIFO<FFTPacket>(32, fftSize);
+
+    if(m_fftAvgFIFO)
+    {
+        if(m_fftAvgFIFO->m_packetSize != fftSize)
+        {
+            delete m_fftAvgFIFO;
+            m_fftAvgFIFO = new blockingFIFO<FFTAvgPacket>(32, fftSize);
+        }
+    }
+    else
+        m_fftAvgFIFO = new blockingFIFO<FFTAvgPacket>(32, fftSize);
 }
 
 /**
@@ -155,8 +175,12 @@ void TestingModule::initializeFFTplan(int samplesCount)
  */
 TestingModule::~TestingModule()
 {
+    // Support for RSS Integration
+    socket_fini();
+
 	delete m_SamplesFIFO;
 	delete m_fftFIFO;
+	delete m_fftAvgFIFO;
 }
 
 /**
@@ -199,7 +223,14 @@ void TestingModule::StartSdramRead()
 		EnableFPGA(true, m_FPGA_Tx_enabled);
 
 		readingData = true;
+        transmitActive = false; // this will tell us if we have to join the TransmitSpectraThread
 		pthread_create(&readThreadID, NULL, ReadDataThread, this);
+		if( g_RSS_Enable )
+		{
+		    transmitActive = true;
+		    m_svr = -1;
+            pthread_create(&transmitThreadID, NULL, TransmitSpectraThread, this);
+		}
 	}
 }
 
@@ -214,17 +245,29 @@ void TestingModule::StopSdramRead()
         void *status = NULL;
         int r;
 
-        readingData = false;    // this is supposed to signal the thread to exit...
+        readingData = false;    // this is supposed to signal the threads to exit...
+
+        //need to unblock fifo in case other thread was waiting for data
+        m_SamplesFIFO->unblock();
+        m_fftFIFO->unblock();
+        m_fftAvgFIFO->unblock();
 
         // http://pubs.opengroup.org/onlinepubs/9699919799/functions/pthread_join.html
         r = pthread_join(readThreadID, &status);
-// DEBUG
-//        printf("TestingModule::StopSdramRead(,status=%p)=%d\n", status, r);
-        if(r) printf("TestingModule::StopSdramRead(,status=%p)=%d (%s)\n", status, r, strerror(r));
+        if(r) printf("::StopSdramRead pthread_join(readThreadID,status=%p)=%d (%s)\n", status, r, strerror(r));
+        if(transmitActive)
+        {
+            if (m_svr > 0) socket_close(m_svr); // if thread is in accept()
+            r = pthread_join(transmitThreadID, &status);
+            if(r) printf("::StopSdramRead pthread_join(transmitThreadID,status=%p)=%d (%s)\n", status, r, strerror(r));
+        }
+    // FIXME: not sure if this is needed in the else:
+    } else {
+        //need to unblock fifo in case other thread was waiting for data
+        m_SamplesFIFO->unblock();
+        m_fftFIFO->unblock();
+        m_fftAvgFIFO->unblock();
     }
-    //need to unblock fifo in case other thread was waiting for data
-    m_SamplesFIFO->unblock();
-	m_fftFIFO->unblock();
 }
 
 /**
@@ -377,6 +420,7 @@ void TestingModule::ReadData()
 
 			cout << " samples FIFO len: " << m_SamplesFIFO->length() << endl;
 			cout << " FFT FIFO len: " << m_fftFIFO->length() << endl << endl;
+			cout << " FFT AVG FIFO len: " << m_fftAvgFIFO->length() << endl << endl;
 
 			cout << " Frame Power: " << g_framepwr << endl;
 
@@ -617,6 +661,7 @@ void TestingModule::ReadData_DigiRed()
 
 			cout << " samples FIFO len: " << m_SamplesFIFO->length() << endl;
 			cout << " FFT FIFO len: " << m_fftFIFO->length() << endl << endl;
+			cout << " FFT AVG FIFO len: " << m_fftAvgFIFO->length() << endl << endl;
 
 			cout << "frame start : " << !m_frameStart << endl;
 			cout << "need to shift : " << (needToAlignData ? "true" : "false") << endl;
@@ -806,6 +851,174 @@ bool TestingModule::externalCalculateFFT()
 	delete splitPkt;
 	return true;
 }
+
+/**
+	@brief Thread handles spectrum output service.
+	@param ptrTestingModule pointer to testing module.
+ */
+void* TestingModule::TransmitSpectraThread(void *ptrTestingModule)
+{
+	TestingModule *module = reinterpret_cast<TestingModule*>(ptrTestingModule);
+	if (module == NULL || !module->readingData)
+		pthread_exit(module);
+	else
+    {
+        // TODO: allow other forms of output service
+        module->TransmitSpectra_RSS();
+    }
+	return NULL;
+}
+
+/**
+	@brief Reads data stream from board.
+ */
+void TestingModule::TransmitSpectra_RSS()
+{
+    FFTAvgPacket avgPkt(FFTsamples,0);
+    int flag;
+	//const char *options = "ipv4";   // TODO: may need to provide options
+    int s, n, l;
+    unsigned int channel = 0;
+
+    // NB: socket_init() was called once in the TestingModule constructor
+
+    flag = SOCKET_VERBOSE;
+    //if( strstr(options,"ipv6") ) flag |= SOCKET_IPV6;
+    //if( strstr(options,"bsd") ) flag |= SOCKET_BSD;
+
+    // setup socket server
+    // accept connection
+
+    m_svr = socket_open_bind_and_listen(g_RSS_IP,g_RSS_Port,1,flag);
+    if (m_svr>0) do
+    {
+        cout << "::TransmitSpectra_RSS accepting connection..." << endl;
+
+        s = socket_accept(m_svr,flag);
+        if (s>0)
+        {
+            unsigned int imin = 0, imax = 0;
+            float fmin = 0.0, fmax = 0.0, fcenter = 0.0;
+
+            // obtain first buffer
+            m_fftAvgFIFO->pop(&avgPkt);     // NB: blocks until first buffer is received
+            if( !readingData ) continue;    // stop before 1st average is computed
+            else {
+                char buffer[1024];
+                unsigned int bandwidth;
+
+                // construct configuration string
+                fcenter = avgPkt.fcenter*1e9;
+                imax = channel = avgPkt.size;
+                fmin = avgPkt.offset_frequencies[0]*1e6 + fcenter;  // FIXME: normalize to Ghz
+                fmax = avgPkt.offset_frequencies[channel - 1]*1e6 + fcenter;
+                bandwidth = (unsigned int)fabs(fmax - fmin);
+
+                cout << "::TransmitSpectra_RSS"
+                     << " fcenter=" << avgPkt.fcenter
+                     << ",channel=" << avgPkt.size
+                     << ",fmin=" << fmin << ",fmax=" << fmax
+                     << ",bandwidth=" << bandwidth
+                     << endl;
+
+                if ( g_RSS_Channels > channel ) break;  // invalid channels
+                if ( g_RSS_Channels < channel )         // need to pick a subset to send to RSS
+                {
+                    imin = channel/2 - g_RSS_Channels/2;
+                    imax = imin + g_RSS_Channels;
+                    fmin = avgPkt.offset_frequencies[imin]*1e6 + fcenter;
+                    fmax = avgPkt.offset_frequencies[imax - 1]*1e6 + fcenter;
+                    bandwidth = (unsigned int)fabs(fmax - fmin);
+                }
+                // if its the same, then imin/imax/fmin/fmax are already set correctly
+
+                // send configuration string
+                // see http://cygnusa.blogspot.com/2015/07/how-to-talk-to-radio-sky-spectrograph.html
+                // TODO: does RSS need/care about the trailing '|' and CRLF?
+                n = snprintf(buffer,sizeof(buffer),"F %u|S %u|O %u|C %d|\r\n",
+                    (unsigned int)fcenter, bandwidth, (unsigned int)(avgPkt.foffset*1e9), g_RSS_Channels );
+                buffer[sizeof(buffer)-1] = '\0';    // force NUL
+
+                cout << "::TransmitSpectra_RSS send (" << n << ") " << buffer << endl;
+
+                l=socket_send(s,buffer,n,0);
+                if( l!=n ) break;
+            }
+
+            // get next buffer
+            while( readingData )
+            {
+                short buffer[g_RSS_Channels+1];
+                char *p = (char *)&buffer[0];
+                size_t todo = sizeof(buffer);
+                float _fmin, _fmax, _fcenter;
+
+                m_fftAvgFIFO->pop(&avgPkt);     // NB: blocks until first buffer is received
+                if( !readingData ) break;
+
+                // verify configuration has not changed, drop connection if it has
+                _fcenter = avgPkt.fcenter*1e9;
+                _fmin = avgPkt.offset_frequencies[imin]*1e6 + _fcenter;  // FIXME: normalize to Ghz
+                _fmax = avgPkt.offset_frequencies[imax - 1]*1e6 + _fcenter;
+                if ( (fabs(fcenter-_fcenter) > 1.0) ||
+                     (fabs(fmin-_fmin) > 1.0) ||
+                     (fabs(fmax-_fmax) > 1.0) ) //break;  // change of parameters requires reconnect
+                     // DEBUG
+                     {
+                        cout << "::TransmitSpectra_RSS *changed*"
+                             << " fcenter=" << _fcenter << ((fabs(fcenter-_fcenter) > 1.0)?"(*)":"")
+                             << ",channel=" << avgPkt.size
+                             << ",fmin=" << _fmin << ((fabs(fmin-_fmin) > 1.0)?"(*)":"")
+                             << ",fmax=" << _fmax << ((fabs(fmax-_fmax) > 1.0)?"(*)":"")
+                             << ",bandwidth=" << fabs(_fmax - _fmin)
+                             << endl;
+                        break;
+                     }
+
+                // format the protocol buffer to match RSS requirement
+                for(unsigned int i=0,u=imin;u<imax;i++,u++)
+                {
+                    float v = avgPkt.amplitudes[channel - u - 1];
+                    // see protocol spec
+                    if ((short)v < SHRT_MIN) buffer[i] = SHRT_MIN;
+                    else if ((short)v > SHRT_MAX) buffer[i] = SHRT_MAX;
+                    else buffer[i] = (short)roundf(v);
+                }
+                buffer[g_RSS_Channels] = 0xFEFE;    // see protocol spec
+
+#if 0
+                // DEBUGGING - send ASCII over telnet for diagnostic w/o RSS
+                char cbuf[1024];
+                short _amin = SHRT_MAX, _amax = SHRT_MIN;
+                float _aminf = FLT_MAX, _amaxf = FLT_MIN;
+                for(unsigned int i=0,u=imin;u<imax;i++,u++)
+                {
+                    float v = avgPkt.amplitudes[channel - u - 1];
+                    if (v < _aminf) _aminf = v;
+                    if (v > _amaxf) _amaxf = v;
+                    if (buffer[i] < _amin) _amin = buffer[i];
+                    if (buffer[i] > _amax) _amax = buffer[i];
+                }
+                n = snprintf(cbuf,sizeof(cbuf),"f[%.0f,%.0f] @%.0f min/max=[%g(%hd),%g(%hd)]\r\n",
+                    _fmin, _fmax, _fcenter, _aminf, _amin, _amaxf, _amax );
+                cbuf[sizeof(cbuf)-1] = '\0';    // force NUL
+                p = &cbuf[0];
+                todo = n;
+#endif
+
+                l = socket_send(s,p,todo,0);
+                if ( l != todo ) break;
+            }
+
+            cout << "::TransmitSpectra_RSS close" << endl;
+
+            socket_close(s);
+        }
+    } while( readingData );     // client disconnected, but we are still capturing...
+
+    cout << "::TransmitSpectra_RSS exit" << endl;
+}
+
 
 /**
  @brief Prints out given byte array in hexadecimal format.
