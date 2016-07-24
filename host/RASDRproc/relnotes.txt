@@ -1,4 +1,4 @@
-RASDRproc v0.2.2.1 - Jun 28, 2016
+RASDRproc v0.2.3.0 - Jul 23, 2016
 =================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -42,6 +42,16 @@ Auto Restart:
 RASDR2 devices when used in USB3 on marginal machines exhibit a stall acquiring data.  It has been shown that if data acquisition is stopped, then started dataflow may recover (but not always).  In those cases, the driver must be closed and re-opened, and then dataflow recovers.  This version of RASDRproc implements a detection and mitigation for this condition.  It is enabled by checking the 'Auto Restart' tick box in the upper right corner near the frame rate display.
 
 In addition, this version annotates the data rate and frame rate display with a comparision to the expected rates and uses a RED or YELLOW background if the program is not keeping up.  The thresholds are fixed at compile time at the moment.
+
+
+Radio Sky Spectrograph Integration:
+
+This version supports a TCP/IP connection to allow Radio Sky Spectrograph to manage the display of a waterfall.  The protocol is described here:
+http://cygnusa.blogspot.com/2015/07/how-to-talk-to-radio-sky-spectrograph.html
+
+in RASDRproc the TCP/IP server, if enabled, will be active during periods of active acquisition (after pressing 'Start Acquisition').  In RSS, you tell it to use the 'RTL Dongle Receiver' under the Radio menu.  The connection is established by RSS when you press 'Start' on its GUI.  If you change certain parameters in RASDRproc or otherwise affect the frequency plan, the connection will disconnect and you can re-start by 'Start' on the RSS screen.  It seems to be pretty robust.
+
+What I'm not certain about is the color mapping; I might have the data bytes swapped somehow.  Stay tuned...
 
 
 Known Issues:
