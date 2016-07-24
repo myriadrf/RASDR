@@ -104,6 +104,7 @@
 					<Add directory="Logic/include" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
+					<Add directory="Logic/dependencies/sockets" />
 				</Compiler>
 				<Linker>
 					<Add option="-static-libgcc -static-libstdc++ -static" />
@@ -475,7 +476,10 @@
 			<Option target="LogicDebug WIN32" />
 			<Option target="LogicRelease WIN32" />
 		</Unit>
-		<Unit filename="Logic/dependencies/sockets/socket.h" />
+		<Unit filename="Logic/dependencies/sockets/socket.h">
+			<Option target="LogicDebug WIN32" />
+			<Option target="LogicRelease WIN32" />
+		</Unit>
 		<Unit filename="Logic/dependencies/sockets/strlcpy.c">
 			<Option compilerVar="CC" />
 			<Option target="LogicDebug WIN32" />
