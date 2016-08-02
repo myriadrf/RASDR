@@ -106,6 +106,14 @@ extern char g_RSS_IP[1024];
 extern unsigned short g_RSS_Port;
 extern int  g_RSS_Channels;
 extern bool g_RSS_Enable;
+extern float g_RSS_FrequencyOffset;
+extern volatile bool g_RSS_MustDisconnect;
+extern bool g_RSS_Extension;
+extern float g_RSS_Offset;
+extern float g_RSS_Gain;
+extern float g_RSS_Bias;
+extern float g_RSS_MinValue;
+extern float g_RSS_MaxValue;
 
 //extern long ID_FFTOKBUTTON;
 //typedef struct statistics {

@@ -7776,7 +7776,7 @@ CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize
 */
 CTR_6002DR2_API void LMLL_Testing_SetFFTSpectra(float *FFTdataY, float *FFTdataX, int FFTsize, float FCenter)
 {
-    FFTAvgPacket avgPkt(FFTsize,FCenter);
+    FFTAvgPacket avgPkt(FFTsize,FCenter,g_RSS_FrequencyOffset);
     memcpy(avgPkt.amplitudes,FFTdataY,sizeof(float)*FFTsize);
     memcpy(avgPkt.offset_frequencies,FFTdataX,sizeof(float)*FFTsize);
     getMainModule()->getTesting()->m_fftAvgFIFO->push(&avgPkt);

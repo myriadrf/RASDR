@@ -81,6 +81,7 @@ public:
 
 	static void *TransmitSpectraThread(void *ptrTestingModule);
 	void TransmitSpectra_RSS();
+	void TransmitSpectra_RSSx();
 
 	void UpdateInterface(int code, char *param);
 	void (*updateInterfaceCallback)(int ,char *);

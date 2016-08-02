@@ -670,7 +670,7 @@ bool FFTviewerFrame::SaveConfiguration()
  /*           m_CFG_FileClassPtr->Write(g_FFTfileName);
             m_CFG_FileClassPtr->Write(newline); */
 #if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
-            wxSnprintf(outbuf,_N,"%-14d // Background Subraction Code (bit encoded, try 71, bit0=en)",g_backgroundDebugCfg);
+            wxSnprintf(outbuf,_N,"%-14d // Background Subtraction Code (bit encoded, try 71, bit0=en)",g_backgroundDebugCfg);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
             wxSnprintf(outbuf,_N,"%.12f // Integration Gain",g_integrationGain);
@@ -693,10 +693,32 @@ bool FFTviewerFrame::SaveConfiguration()
             wxSnprintf(outbuf,_N,"%-14hu // RSS Server Port (default=8888)", g_RSS_Port);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-            wxSnprintf(outbuf,_N,"%-14d // RSS Channels (range is 100 to 500)", g_RSS_Channels);
+            wxSnprintf(outbuf,_N,"%-14d // RSS Channels (range is 100 to 512 unless extensions enabled)", g_RSS_Channels);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
             wxSnprintf(outbuf,_N,"%-14d // RSS Server Enabled (0=disabled, 1=enabled)", g_RSS_Enable?1:0);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            // RSS RASDR Extension
+            wxSnprintf(outbuf,_N,"%14.10f // RSS Frequency Offset (GHz)",g_RSS_FrequencyOffset);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%-14d // RSS Extensions Enabled (0=disabled, 1=enabled)", g_RSS_Extension?1:0);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%14.10f // RSS Channel Offset Adjustment",g_RSS_Offset);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%14.10f // RSS Channel Gain Adjustment",g_RSS_Gain);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%14.10f // RSS Channel Bias Adjustment",g_RSS_Bias);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%14.9f // RSS Channel Minimum Output Value",g_RSS_MinValue);
+            m_CFG_FileClassPtr->Write(outbuf);
+            m_CFG_FileClassPtr->Write(newline);
+            wxSnprintf(outbuf,_N,"%14.9f // RSS Channel Maximum Output Value",g_RSS_MaxValue);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
             //

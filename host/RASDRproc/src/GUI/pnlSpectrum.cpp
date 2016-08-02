@@ -1022,6 +1022,14 @@ void pnlSpectrum::GetConfiguration()
                 if(line == 28) g_RSS_Port = (unsigned short)atoi(inbuf);
                 if(line == 29) g_RSS_Channels = atoi(inbuf);
                 if(line == 30) g_RSS_Enable = atoi(inbuf)?true:false;
+                // RSS Extension
+                if(line == 31) g_RSS_FrequencyOffset = atof(inbuf);
+                if(line == 32) g_RSS_Extension = atoi(inbuf)?true:false;
+                if(line == 33) g_RSS_Offset = atof(inbuf);
+                if(line == 34) g_RSS_Gain = atof(inbuf);
+                if(line == 35) g_RSS_Bias = atof(inbuf);
+                if(line == 36) g_RSS_MinValue = atof(inbuf);
+                if(line == 37) g_RSS_MaxValue = atof(inbuf);
             }
             m_CFG_File->Close();
         } else {
@@ -1690,12 +1698,14 @@ void pnlSpectrum::OnspinCenterFreqChange(wxSpinEvent& event)
 {
     ogl_FFTline->ZoomX((m_FFTChartCenter = spinCenterFreq->GetValue()/1e3),
                        (m_FFTChartSpan = spinSpanFreq->GetValue()/1e3));
+    g_RSS_MustDisconnect = true;
 }
 
 void pnlSpectrum::OnspinSpanFreqChange(wxSpinEvent& event)
 {
     ogl_FFTline->ZoomX((m_FFTChartCenter = spinCenterFreq->GetValue()/1e3),
                        (m_FFTChartSpan = spinSpanFreq->GetValue()/1e3));
+    g_RSS_MustDisconnect = true;
 
     cout << "Center Zoom =  " << m_FFTChartCenter << endl;
     cout << "Span Zoom = " << m_FFTChartSpan << endl;

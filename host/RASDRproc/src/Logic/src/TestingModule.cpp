@@ -861,11 +861,8 @@ void* TestingModule::TransmitSpectraThread(void *ptrTestingModule)
 	TestingModule *module = reinterpret_cast<TestingModule*>(ptrTestingModule);
 	if (module == NULL || !module->readingData)
 		pthread_exit(module);
-	else
-    {
-        // TODO: allow other forms of output service
-        module->TransmitSpectra_RSS();
-    }
+	else if(g_RSS_Extension) module->TransmitSpectra_RSSx();
+	else                     module->TransmitSpectra_RSS();
 	return NULL;
 }
 
@@ -874,11 +871,10 @@ void* TestingModule::TransmitSpectraThread(void *ptrTestingModule)
  */
 void TestingModule::TransmitSpectra_RSS()
 {
-    FFTAvgPacket avgPkt(FFTsamples,0);
+    FFTAvgPacket avgPkt(FFTsamples);
     int flag;
 	//const char *options = "ipv4";   // TODO: may need to provide options
     int s, n, l;
-    unsigned int channel = 0;
 
     // NB: socket_init() was called once in the TestingModule constructor
 
@@ -897,8 +893,8 @@ void TestingModule::TransmitSpectra_RSS()
         s = socket_accept(m_svr,flag);
         if (s>0)
         {
-            unsigned int imin = 0, imax = 0;
-            float fmin = 0.0, fmax = 0.0, fcenter = 0.0;
+            unsigned int imin, imax, imid, channel;
+            float fmin, fmax, fmid, fcenter, foffset;
 
             // obtain first buffer
             m_fftAvgFIFO->pop(&avgPkt);     // NB: blocks until first buffer is received
@@ -906,40 +902,114 @@ void TestingModule::TransmitSpectra_RSS()
             else {
                 char buffer[1024];
                 unsigned int bandwidth;
+                float fbin = fabs(avgPkt.offset_frequencies[1] - avgPkt.offset_frequencies[0])*1e6;
 
                 // construct configuration string
                 fcenter = avgPkt.fcenter*1e9;
-                imax = channel = avgPkt.size;
-                fmin = avgPkt.offset_frequencies[0]*1e6 + fcenter;  // FIXME: normalize to Ghz
-                fmax = avgPkt.offset_frequencies[channel - 1]*1e6 + fcenter;
+                foffset = avgPkt.foffset*1e9;
+                channel = avgPkt.size;
+                imin = 0;
+                imid = channel / 2;
+                imax = avgPkt.size - 1;
+                fmin = avgPkt.offset_frequencies[imin]*1e6 + fcenter;  // FIXME: normalize to Ghz
+                fmid = avgPkt.offset_frequencies[imid]*1e6 + fcenter;
+                fmax = avgPkt.offset_frequencies[imax]*1e6 + fcenter;
                 bandwidth = (unsigned int)fabs(fmax - fmin);
 
-                cout << "::TransmitSpectra_RSS"
-                     << " fcenter=" << avgPkt.fcenter
-                     << ",channel=" << avgPkt.size
-                     << ",fmin=" << fmin << ",fmax=" << fmax
-                     << ",bandwidth=" << bandwidth
-                     << endl;
-
-                if ( g_RSS_Channels > channel ) break;  // invalid channels
+                if ( g_RSS_Channels > channel )         // invalid channels
+                {
+                    cout << "::TransmitSpectra_RSS channels (" << g_RSS_Channels
+                         << ") > actual (" << channel << ") - STOP"
+                         << endl;
+                    break;
+                }
                 if ( g_RSS_Channels < channel )         // need to pick a subset to send to RSS
                 {
-                    imin = channel/2 - g_RSS_Channels/2;
-                    imax = imin + g_RSS_Channels;
+                    channel = (unsigned int)g_RSS_Channels;
+                    imin = imid - channel / 2;
+                    //imid stays where it is (at the fcenter)
+                    imax = imid + channel / 2 - 1;
                     fmin = avgPkt.offset_frequencies[imin]*1e6 + fcenter;
-                    fmax = avgPkt.offset_frequencies[imax - 1]*1e6 + fcenter;
+                    fmid = avgPkt.offset_frequencies[imid]*1e6 + fcenter;
+                    fmax = avgPkt.offset_frequencies[imax]*1e6 + fcenter;
+
+                    // FIXME: offset_frequencies[-2,-1] appear to be incorrect
+                    // so compute from the bin size
+                    if (imax >= avgPkt.size-2)
+                    {
+                        float _fmax = fmax;
+                        fmax = fmin + channel * fbin;
+
+                        cout << "::TransmitSpectra_RSS BUG adjust"
+                             << " fmax " << _fmax*1e-6 << " MHz -> " << fmax*1e-6 << " MHz"
+                             << endl;
+                    }
+
                     bandwidth = (unsigned int)fabs(fmax - fmin);
                 }
+                else
+                {
+                    // FIXME: offset_frequencies[-2,-1] appear to be incorrect
+                    // so compute from the bin size
+                    float _fmax = fmax;
+                    fmax = fmin + channel * fbin;
+
+                    cout << "::TransmitSpectra_RSS BUG adjust"
+                         << " fmax " << _fmax*1e-6 << " MHz -> " << fmax*1e-6 << " MHz"
+                         << endl;
+
+                    bandwidth = (unsigned int)fabs(fmax - fmin);
+
+                }
                 // if its the same, then imin/imax/fmin/fmax are already set correctly
+                g_RSS_MustDisconnect = false;
+
+                cout << "::TransmitSpectra_RSS"
+                     << " fcenter=" << fcenter*1e-6 << " MHz"
+                     << ",channel=" << channel
+                     << ",fmin=" << fmin*1e-6 << " MHz"
+                     << ",fmid=" << fmid*1e-6 << " MHz"
+                     << ",fmax=" << fmax*1e-6 << " MHz"
+                     << ",bandwidth=" << bandwidth
+                     << endl;
 
                 // send configuration string
                 // see http://cygnusa.blogspot.com/2015/07/how-to-talk-to-radio-sky-spectrograph.html
                 // TODO: does RSS need/care about the trailing '|' and CRLF?
-                n = snprintf(buffer,sizeof(buffer),"F %u|S %u|O %u|C %d|\r\n",
-                    (unsigned int)fcenter, bandwidth, (unsigned int)(avgPkt.foffset*1e9), g_RSS_Channels );
+                n = snprintf(buffer,sizeof(buffer),"F %u|S %u|O %u|C %u|\r\n",
+                    (unsigned int)fmid, bandwidth, (unsigned int)foffset, channel );
                 buffer[sizeof(buffer)-1] = '\0';    // force NUL
 
-                cout << "::TransmitSpectra_RSS send (" << n << ") " << buffer << endl;
+                cout << "::TransmitSpectra_RSS send (" << n << ") " << buffer
+                     << endl
+                     << "::TransmitSpectra_RSS "
+                     << fmin*1e-6 << " MHz" << " to " << fmax*1e-6 << " MHz"
+                     << ",[" << imin << "," << imid << "," << imax << "]"
+                     << endl
+                     << "::TransmitSpectra_RSS offset "
+                     << avgPkt.offset_frequencies[imin]*1e3 << " KHz"
+                     << "," << avgPkt.offset_frequencies[imid]*1e3 << " KHz"
+                     << "," << avgPkt.offset_frequencies[imax]*1e3 << " KHz"
+                     << endl;
+
+                // DEBUG
+                /*
+                if (0)
+                {
+                    float last = 0.0;
+                    cout << "::TransmitSpectra_RSS frequencies: " << endl;
+                    for(int i=0;i<avgPkt.size;i++)
+                    {
+                        float f = avgPkt.offset_frequencies[i]*1e6 + fcenter;
+                        const char *mark = (f<last)?"**":"  ";  // HIGHLIGHT non-increasing values
+                        if( i >= imin && i <= imax )
+                            cout << mark << "[" << i << "]=" << f << endl;
+                        else
+                            cout << mark << "(" << i << ")=" << f << endl;
+                        last = f;
+                    }
+                }
+                */
 
                 l=socket_send(s,buffer,n,0);
                 if( l!=n ) break;
@@ -948,43 +1018,24 @@ void TestingModule::TransmitSpectra_RSS()
             // get next buffer
             while( readingData )
             {
-                short buffer[g_RSS_Channels+1];
+                short buffer[channel+1];
                 char *p = (char *)&buffer[0];
                 size_t todo = sizeof(buffer);
-                float _fmin, _fmax, _fcenter;
 
                 m_fftAvgFIFO->pop(&avgPkt);     // NB: blocks until first buffer is received
-                if( !readingData ) break;
-
-                // verify configuration has not changed, drop connection if it has
-                _fcenter = avgPkt.fcenter*1e9;
-                _fmin = avgPkt.offset_frequencies[imin]*1e6 + _fcenter;  // FIXME: normalize to Ghz
-                _fmax = avgPkt.offset_frequencies[imax - 1]*1e6 + _fcenter;
-                if ( (fabs(fcenter-_fcenter) > 1.0) ||
-                     (fabs(fmin-_fmin) > 1.0) ||
-                     (fabs(fmax-_fmax) > 1.0) ) //break;  // change of parameters requires reconnect
-                     // DEBUG
-                     {
-                        cout << "::TransmitSpectra_RSS *changed*"
-                             << " fcenter=" << _fcenter << ((fabs(fcenter-_fcenter) > 1.0)?"(*)":"")
-                             << ",channel=" << avgPkt.size
-                             << ",fmin=" << _fmin << ((fabs(fmin-_fmin) > 1.0)?"(*)":"")
-                             << ",fmax=" << _fmax << ((fabs(fmax-_fmax) > 1.0)?"(*)":"")
-                             << ",bandwidth=" << fabs(_fmax - _fmin)
-                             << endl;
-                        break;
-                     }
+                if( !readingData || g_RSS_MustDisconnect ) break;
+                if( avgPkt.size < channel ) break;  // safety
 
                 // format the protocol buffer to match RSS requirement
-                for(unsigned int i=0,u=imin;u<imax;i++,u++)
+                for(unsigned int i=0,u=imin;i<channel;i++,u++)
                 {
-                    float v = avgPkt.amplitudes[channel - u - 1];
+                    float v = ((avgPkt.amplitudes[imax - u - 1] + g_RSS_Offset) * g_RSS_Gain) + g_RSS_Bias;
                     // see protocol spec
-                    if ((short)v < SHRT_MIN) buffer[i] = SHRT_MIN;
-                    else if ((short)v > SHRT_MAX) buffer[i] = SHRT_MAX;
+                    if (v < g_RSS_MinValue) buffer[i] = (short)g_RSS_MinValue;
+                    else if (v > g_RSS_MaxValue) buffer[i] = (short)g_RSS_MaxValue;
                     else buffer[i] = (short)roundf(v);
                 }
-                buffer[g_RSS_Channels] = 0xFEFE;    // see protocol spec
+                buffer[channel] = 0xFEFE;    // see protocol spec
 
 #if 0
                 // DEBUGGING - send ASCII over telnet for diagnostic w/o RSS
@@ -1019,6 +1070,13 @@ void TestingModule::TransmitSpectra_RSS()
     cout << "::TransmitSpectra_RSS exit" << endl;
 }
 
+/**
+	@brief Reads data stream from board.
+ */
+void TestingModule::TransmitSpectra_RSSx()
+{
+    cout << "::TransmitSpectra_RSSx not implemented at the moment..." << endl;
+}
 
 /**
  @brief Prints out given byte array in hexadecimal format.

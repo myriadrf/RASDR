@@ -1,4 +1,4 @@
-RASDRproc v0.2.3.0 - Jul 23, 2016
+RASDRproc v0.2.3.2 -  Aug 1, 2016
 =================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -51,8 +51,29 @@ http://cygnusa.blogspot.com/2015/07/how-to-talk-to-radio-sky-spectrograph.html
 
 in RASDRproc the TCP/IP server, if enabled, will be active during periods of active acquisition (after pressing 'Start Acquisition').  In RSS, you tell it to use the 'RTL Dongle Receiver' under the Radio menu.  The connection is established by RSS when you press 'Start' on its GUI.  If you change certain parameters in RASDRproc or otherwise affect the frequency plan, the connection will disconnect and you can re-start by 'Start' on the RSS screen.  It seems to be pretty robust.
 
-What I'm not certain about is the color mapping; I might have the data bytes swapped somehow.  Stay tuned...
+There are a few caveats (as of RSS 2.4.20 used to test this release):
 
+- Values transmitted must never be less than zero.  It slows RSS down (not sure why, perhaps handling exceptions).
+- 256 is the largest number of channels.  If you go above this, strange artifacts appear in the RSS waterfall output.
+- Frequency offset must never be less than zero.  It will crash RSS.
+- RSS does a pretty nice job with scaling (see RSS Color->Multiply, Color->Non-Linear Multiply and Color->No Multiply menu).
+
+To deal with the above, the RSS control panel (in RASDRproc Define Output->Setup RSS Output menu) has several tunable parameters:
+
+- Channel Offset
+- Channel Gain
+- Channel Bias
+
+These affect the calculation of the spectrum output as follows:  S[n] = (( s[n] + offset ) * gain ) + bias
+
+- Minimum Value (clip)
+- Maximum value (clip)
+
+These will enforce the spectral outputs to prevent RSS from slowing down or going unresponsive.
+
+- Frequency Offset
+
+This can be used if you are using an upconverter to provide the correct offset frequency so that RSS will display the actual RF frequency instead of the IF frequency that the RASDR unit is tuned to.  NOTE: by rights, this is needed to be known by RASDRproc itself, but so far it was not implemented that way.  In the future this control may move to a different place, but for now it is listed here with the RSS stuff.
 
 Known Issues:
 
@@ -70,4 +91,10 @@ One very strong driver of this condtion was the use of burst mode transfer for U
 
 Debugging this has not illuminated a good explanation for this behavior.
 
-6) If choosing a high sample rate with a lot of integration, please be patient for the FFT spectrum window.  The first spectra will not be available until after the first integration time is complete.  You can estimate the ETA by observing the frame rate and dividing that from the 'average over frames' value. 
+6) If choosing a high sample rate with a lot of integration, please be patient for the FFT spectrum window.  The first spectra will not be available until after the first integration time is complete.  You can estimate the ETA by observing the frame rate and dividing that from the 'average over frames' value.
+
+7) For the RSS output, the frequencies streamed out are at *below* the RF Center Frequency by the number of channels given, when the number of channels is less than the FFT size.  When the number of channels matches the FFT size, the frequency range is not computed correctly (it is only half the expected value).  There is no good explanation for this behavior in the code, so debugging continues.
+
+8) When using FFT plot markers, the font is not a fixed-width font, and so when there is a '1' displayed, the string shifts around and is distracting.  Need to figure out how to create and use a fixed-width font instead.  Some references:
+https://www.opengl.org/archives/resources/features/fontsurvey/#tmt
+http://diyhpl.us/~bryan/irc/darpa/avm/meta/meta/QRG/code-library/lisp/opengl/_devel/glfont2/glfont.htm

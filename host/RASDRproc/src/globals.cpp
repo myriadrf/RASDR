@@ -98,6 +98,14 @@ char g_RSS_IP[1024] = { "127.0.0.1" };
 unsigned short g_RSS_Port = 8888;
 int  g_RSS_Channels = 100;
 bool g_RSS_Enable = false;
+float g_RSS_FrequencyOffset = 0.0;
+volatile bool g_RSS_MustDisconnect = false;
+bool g_RSS_Extension = false;
+float g_RSS_Offset = 0.0;
+float g_RSS_Gain = 1.0;
+float g_RSS_Bias = 0.0;
+float g_RSS_MinValue = (float)(0<<12);
+float g_RSS_MaxValue = (float)(1<<12)-1.0;
 
 // statistics gathering/reporting
 volatile long g_Statistics_updateCount = 0;

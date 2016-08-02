@@ -46,17 +46,31 @@ class PopSetupRSS: public wxDialog
 	public:
 
 		PopSetupRSS(wxWindow* parent,wxWindowID id=wxID_ANY);
-		virtual ~PopSetupRSS();
+		//virtual ~PopSetupRSS();
 
 		//(*Declarations(PopSetupRSS)
 		wxButton* OKButton;
 		wxCheckBox* Enable;
 		wxStaticText* StaticText1;
-		wxTextCtrl* TextCtrl1;
+		wxTextCtrl* IP;
 		wxStaticText* StaticText2;
-		wxTextCtrl* TextCtrl2;
+		wxTextCtrl* Port;
 		wxStaticText* StaticText3;
 		wxSpinCtrl* Channels;
+		wxStaticText* StaticText4;
+		wxTextCtrl* Offset;
+		wxStaticText* StaticText5;
+		wxTextCtrl* Gain;
+		wxStaticText* StaticText6;
+		wxTextCtrl* Bias;
+		wxStaticText* StaticText7;
+		wxTextCtrl* MinValue;
+		wxStaticText* StaticText8;
+		wxTextCtrl* MaxValue;
+		wxStaticText* StaticText9;
+		wxTextCtrl* FrequencyOffset;
+		wxButton* ApplyButton;
+		wxCheckBox* Extension;
 		//*)
 
 	protected:
@@ -70,6 +84,20 @@ class PopSetupRSS: public wxDialog
 		static const long ID_TEXTCTRL2;
 		static const long ID_STATICTEXT3;
 		static const long ID_SPINCTRL1;
+		static const long ID_STATICTEXT4;
+		static const long ID_TEXTCTRL3;
+		static const long ID_STATICTEXT5;
+		static const long ID_TEXTCTRL4;
+		static const long ID_STATICTEXT6;
+		static const long ID_TEXTCTRL5;
+		static const long ID_STATICTEXT7;
+		static const long ID_TEXTCTRL6;
+		static const long ID_STATICTEXT8;
+		static const long ID_TEXTCTRL7;
+		static const long ID_STATICTEXT9;
+		static const long ID_TEXTCTRL8;
+		static const long ID_BUTTON2;
+		static const long ID_CHECKBOX2;
 		//*)
 
 	private:
@@ -77,6 +105,7 @@ class PopSetupRSS: public wxDialog
 		//(*Handlers(PopSetupRSS)
 		void OnInit(wxInitDialogEvent& event);
 		void OnOKButtonClick(wxCommandEvent& event);
+		void OnApplyButtonClick(wxCommandEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()
