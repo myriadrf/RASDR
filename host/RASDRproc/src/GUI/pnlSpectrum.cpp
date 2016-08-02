@@ -1174,6 +1174,7 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
     LMLL_BoardSetClockOutputFormat(2,3); // Clock 2 Both on
     LMLL_BoardConfigureSi5356A(); // Boots Chip to activate Values
 
+    ogl_FFTline->SetCenterFrequency(m_RxFreq*1e3);  // in MHz (same units as X axis)
     if (m_samplingFrequency != samprate/1e6)
     {
         if(spinSpanFreq->GetValue()/1e3>samprate/1e6) spinSpanFreq->SetValue(samprate/1e3);	// Match the Span to the Sample rate
@@ -1649,6 +1650,7 @@ void pnlSpectrum::StopCapturing()
 void pnlSpectrum::OnbtnRemoveMarkerClick(wxCommandEvent& event)
 {
     ogl_FFTline->RemoveMarker();
+    btnAddMarker->Enable(true);
 }
 
 /**
@@ -1657,6 +1659,7 @@ void pnlSpectrum::OnbtnRemoveMarkerClick(wxCommandEvent& event)
 void pnlSpectrum::OnbtnAddMarkerClick(wxCommandEvent& event)
 {
     m_addingMarkers = true;
+    btnAddMarker->Enable(false);
 }
 
 /**
@@ -1664,11 +1667,13 @@ void pnlSpectrum::OnbtnAddMarkerClick(wxCommandEvent& event)
 */
 void pnlSpectrum::Onogl_FFTlineLeftDown(wxMouseEvent& event)
 {
+    int more = 0;
     if(m_addingMarkers)
-        ogl_FFTline->AddMarker(event.GetX(), event.GetY());
+        ogl_FFTline->AddMarker(event.GetX(), event.GetY(), more);
     else
         ogl_FFTline->leftClick(event);
     m_addingMarkers = false;
+    if( more > 0 ) btnAddMarker->Enable(true);
 }
 
 void pnlSpectrum::OnchkIchannelEnabledClick1(wxCommandEvent& event)

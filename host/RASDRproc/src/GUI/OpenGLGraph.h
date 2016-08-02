@@ -306,6 +306,7 @@ public:
 
 	void SetInitialDisplayArea(float minx, float maxx, float miny, float maxy);
 	void SetDisplayArea(float minx, float maxx, float miny, float maxy);
+	void SetCenterFrequency(float fcenter) { m_fcenter = fcenter; }
 	void ZoomY( float centerY, float spanY);
 	void ZoomX( float centerX, float spanX);
 	void Zoom( float centerX, float centerY, float spanX, float spanY);
@@ -328,7 +329,7 @@ public:
 	void OnMouseMove(int X, int Y);
 	void ResetView();
 
-	void AddMarker(int posX, float size);
+	void AddMarker(int posX, float size, int& more);
 	void MoveMarker(int markerID, int posX);
 	void RemoveMarker();
 
@@ -391,6 +392,7 @@ private:
 	int m_selectedMarker;
 	int m_maxMarkers;
 	int clickedOnMarker(int X, int Y);
+	float m_fcenter;
 
 	GLuint gridVBOid;
 

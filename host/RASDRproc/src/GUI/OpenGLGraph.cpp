@@ -78,7 +78,7 @@ OpenGLGraph::OpenGLGraph(wxPanel* parent,  wxWindowID id = -1,
                     long style=0, const wxString& name="GLCanvas",
                     int* args = 0)
 : wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-initialDisplayArea(-100, 100, -100, 100), m_MouseCoord(0, 0, 0, 0)
+initialDisplayArea(-100, 100, -100, 100), m_MouseCoord(0, 0, 0, 0), m_fcenter(0.0)
 {
     m_font = NULL;
     pthread_mutex_init(&mutex_canDraw, NULL);
@@ -142,6 +142,7 @@ void OpenGLGraph::Initialize(int width, int height)
 	initialized = true;
 
 	m_font = new GLFont();
+	// FIXME: find/use a fixed-width font
 	m_font->loadFromArray(standardStaticFont, sizeof(standardStaticFont));
 }
 
@@ -1049,7 +1050,7 @@ int OpenGLGraph::LineHeight()
 	@param posX mouse x coordinate in graph window
 	@param size added marker size
 */
-void OpenGLGraph::AddMarker(int posX, float size)
+void OpenGLGraph::AddMarker(int posX, float size, int& more)
 {
 	bool found = false;
 	//check if allowed to add more markers
@@ -1094,6 +1095,7 @@ void OpenGLGraph::AddMarker(int posX, float size)
 			markers.push_back(mark);
 		}
 	}
+	more = m_maxMarkers - markers.size();
 }
 
 /**
@@ -1151,11 +1153,13 @@ void OpenGLGraph::DrawMarkers()
 		//draw marker data at the right upper corner of data view
 		char text[256];
 		float textScale = 1;
-		float delta = 0;
+		float delta_f = 0, delta_a = 0;
 		for(int i=0; i<markers.size(); ++i)
 		{
 			glColor4f(markers[i].color.red, markers[i].color.green, markers[i].color.blue, markers[i].color.alpha);
-			sprintf(text, "Marker%i: F=% .0f Hz Gain=%+6.1f dB", i, series[0]->valuesX[markers[i].dataValueIndex], series[0]->valuesY[markers[i].dataValueIndex]);
+			sprintf(text, "Marker%i: F=% .3f MHz Gain=%+6.1f dB", i,
+                series[0]->valuesX[markers[i].dataValueIndex] + m_fcenter,
+                series[0]->valuesY[markers[i].dataValueIndex]);
 			posX = settings.windowWidth-settings.marginRight - textScale*TextWidthInPixels(text);
 			int h= textScale*m_font->lineHeight()*(i+1);
 			posY = settings.windowHeight-settings.marginTop - h;
@@ -1165,9 +1169,25 @@ void OpenGLGraph::DrawMarkers()
 		}
 		if(markers.size() == 2) // if 2 markers are added display data difference
 		{
+            const char *delta_f_unit = "MHz";
+
 			glColor4f(0.1, 0.1, 0.1, 1);
-			delta = markers[0].posY > markers[1].posY ? markers[0].posY-markers[1].posY : markers[1].posY-markers[0].posY;
-			sprintf(text, "Delta = % 7.2f", delta);
+			if( markers[0].posY > markers[1].posY )
+            {
+                delta_a = markers[0].posY - markers[1].posY;
+                delta_f = series[0]->valuesX[markers[0].dataValueIndex] - series[0]->valuesX[markers[1].dataValueIndex];
+            }
+            else
+            {
+                delta_a = markers[1].posY - markers[0].posY;
+                delta_f = series[0]->valuesX[markers[1].dataValueIndex] - series[0]->valuesX[markers[0].dataValueIndex];
+            }
+            if (delta_f < 1.0)
+            {
+                delta_f *= 1e3;
+                delta_f_unit = "KHz";
+            }
+			sprintf(text, "Delta: F=% .3f %s Gain=% 7.2f dB", delta_f, delta_f_unit, delta_a);
 			posX = settings.windowWidth-settings.marginRight - textScale*TextWidthInPixels(text);
 			posY = settings.windowHeight-settings.marginTop - textScale*m_font->lineHeight()*3;
 			int wid =  textScale*TextWidthInPixels(text);
