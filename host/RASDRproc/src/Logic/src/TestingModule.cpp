@@ -1026,10 +1026,10 @@ void TestingModule::TransmitSpectra_RSS()
                 if( !readingData || g_RSS_MustDisconnect ) break;
                 if( avgPkt.size < channel ) break;  // safety
 
-                // format the protocol buffer to match RSS requirement
-                for(unsigned int i=0,u=imin;i<channel;i++,u++)
+                // format the protocol buffer to match RSS requirement (high->low frequency)
+                for(unsigned int i=0,u=imax;i<channel;i++,u--)
                 {
-                    float v = ((avgPkt.amplitudes[imax - u - 1] + g_RSS_Offset) * g_RSS_Gain) + g_RSS_Bias;
+                    float v = ((avgPkt.amplitudes[u] + g_RSS_Offset) * g_RSS_Gain) + g_RSS_Bias;
                     // see protocol spec
                     if (v < g_RSS_MinValue) buffer[i] = (short)g_RSS_MinValue;
                     else if (v > g_RSS_MaxValue) buffer[i] = (short)g_RSS_MaxValue;
