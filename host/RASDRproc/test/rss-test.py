@@ -11,7 +11,7 @@ import numpy as np
 
 DEF_VERSION = '0.2.3.1'     # x.y.z.* to match RASDRproc version
 
-def rss(s,opts):
+def rss(s,opts,csv=None):
     '''Interpret the stream using the standard RSS format defined at
     http://cygnusa.blogspot.com/2015/07/how-to-talk-to-radio-sky-spectrograph.html
     @param s        - socket just successfully connected to the RSS server
@@ -72,8 +72,8 @@ def rss(s,opts):
     stats['var']  = 0.0
 
     hdr = 'N,MIN,MAX,MEAN,VAR'
-    if opts.statistics is not None:
-        opts['csv'].write(hdr+os.linesep)
+    if csv is not None:
+        csv.write(hdr+os.linesep)
     sys.stdout.write(hdr+os.linesep)
 
     while psd.shape[0] > 0 and psd.shape[1] == channels+1:
@@ -90,8 +90,8 @@ def rss(s,opts):
         # display stats
         msg = '%d,%.3f,%.3f,%.3f,%.3f' % \
             (stats['n'], stats['min'], stats['max'], stats['mean'], stats['var'])
-        if opts.statistics is not None:
-            opts['csv'].write(msg+os.linesep)
+        if csv is not None:
+            csv.write(msg+os.linesep)
 
         # http://stackoverflow.com/questions/517127/how-do-i-write-output-in-same-place-on-the-console
         sys.stdout.write(msg+'      \r')
@@ -105,7 +105,7 @@ def rss(s,opts):
             b = np.frombuffer(s.recv(scanlen),dtype=opts.dtype)
             psd = np.reshape(b, (-1,channels+1))
 
-def rssx(s,opts):
+def rssx(s,opts,csv=None):
     '''Interpret the stream using the extended RSS format
     @param s        - socket just successfully connected to the RSS server
     @param opts     - options object from OptionParser
@@ -146,17 +146,16 @@ if __name__ == '__main__':
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG if opts.verbose else logging.INFO)
     logger.info('*** STARTED ***')
+    csv = open(opts.statistics,'w') if opts.statistics is not None else None
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((opts.ip, opts.port))
-        if opts.statistics is not None:
-            opts['csv'] = open(opts.statistics,'w')
         if opts.extended:
-            rssx(s,opts)
+            rssx(s,opts, csv=csv)
         else:
-            rss(s,opts)
+            rss(s,opts, csv=csv)
     except Exception, e:
         logger.error('rss-test', exc_info=True)
-
-    if opts.statistics is not None:
-        opts['csv'].close()
+    finally:
+        if csv is not None:
+            csv.close()
