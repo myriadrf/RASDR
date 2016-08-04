@@ -4,12 +4,13 @@ output.  The program is used to diagnose and analyze the streaming spectrum.
 '''
 import os
 import sys
+import time
 import datetime
 import logging
 import socket
 import numpy as np
 
-DEF_VERSION = '0.2.3.1'     # x.y.z.* to match RASDRproc version
+DEF_VERSION = '0.2.3.2'     # x.y.z.* to match RASDRproc version
 
 def rss(s,opts,csv=None):
     '''Interpret the stream using the standard RSS format defined at
@@ -18,7 +19,8 @@ def rss(s,opts,csv=None):
     @param opts     - options object from OptionParser
     '''
     # receive connection string and some amount of spectral data
-    p = s.recv(1024)
+    p  = s.recv(1024)
+    ts = time.time()
     if len(p) < 1:
         return
     d = p.rpartition('|')
@@ -54,12 +56,23 @@ def rss(s,opts,csv=None):
     # determine an EOS marker according to the dtype we selected
     data = '\xFE\xFE'
     eos_marker = np.frombuffer(data,dtype=opts.dtype)
+    
+    # calculate frequency parameters like rtl-power
+    # http://kmkeen.com/rtl-power/
+    hz_low  = (conf['F'] - conf['S']/2) + conf['O']
+    hz_step = int(float(conf['S']) / float(conf['C']))
+    hz_high = hz_low + conf['C'] * hz_step
+    assert( abs(hz_high - (hz_low + conf['S'])) < (hz_step/2) ) # CHECK: how good is this?
+    hz_hdr = 'Hz low, Hz high, Hz step, samples'
+    hz_msg = '%d,%d,%d,' % \
+        (hz_low, hz_high, hz_step)
 
     # build out complete scans from this first buffer
     data = d[2].strip()
     extra = scanlen - (len(data) % scanlen)
     if extra > 0:
         data += s.recv(extra)
+        ts = time.time()
     b = np.frombuffer(data,dtype=opts.dtype)
     psd = np.reshape(b, (-1,channels+1))
 
@@ -73,28 +86,33 @@ def rss(s,opts,csv=None):
 
     hdr = 'N,MIN,MAX,MEAN,VAR'
     if csv is not None:
-        csv.write(hdr+os.linesep)
-    sys.stdout.write(hdr+os.linesep)
+        csv.write('TS,'+hdr+os.linesep)
+    sys.stdout.write('TS,'+hz_hdr+','+hdr+os.linesep)
 
     while psd.shape[0] > 0 and psd.shape[1] == channels+1:
         assert(psd[0][channels] == eos_marker)  # End of scan marker
         scan = psd[0][0:channels]
         stats['n']   += 1
-        stats['min']  = scan.min() if scan.min() < stats['min'] else stats['min']
-        stats['max']  = scan.max() if scan.max() > stats['max'] else stats['max']
+        stats['min']  = scan.min() # if scan.min() < stats['min'] else stats['min']
+        stats['max']  = scan.max() # if scan.max() > stats['max'] else stats['max']
         # http://stackoverflow.com/questions/19391149/numpy-mean-and-variance-from-single-function
         stats['mean'] = scan.mean()
         c = scan-stats['mean']
         stats['var']  = np.dot(c,c)/scan.size
+        
+        # compute timestamp
+        dt = datetime.datetime.fromtimestamp(ts)
 
         # display stats
-        msg = '%d,%.3f,%.3f,%.3f,%.3f' % \
+        msg = '%d,%.1f,%.1f,%.1f,%.1f' % \
             (stats['n'], stats['min'], stats['max'], stats['mean'], stats['var'])
         if csv is not None:
-            csv.write(msg+os.linesep)
-
+            csv.write(dt.isoformat()+','+msg+os.linesep)
+        msg = dt.isoformat()+','+hz_msg+','+msg
+        if len(msg) > 77:
+            msg = msg[0:77]+'*'
         # http://stackoverflow.com/questions/517127/how-do-i-write-output-in-same-place-on-the-console
-        sys.stdout.write(msg+'      \r')
+        sys.stdout.write(msg+' \r')
         sys.stdout.flush()
 
         if psd.shape[0] > 1:
@@ -102,7 +120,9 @@ def rss(s,opts,csv=None):
             psd = np.delete(psd, (0), axis=0)
         else:
             # this is the typical case where we read in the next scan from the network
-            b = np.frombuffer(s.recv(scanlen),dtype=opts.dtype)
+            data = s.recv(scanlen)
+            ts   = time.time()
+            b    = np.frombuffer(data,dtype=opts.dtype)
             psd = np.reshape(b, (-1,channels+1))
 
 def rssx(s,opts,csv=None):
