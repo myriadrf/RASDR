@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
-	<object class="wxDialog" name="PopTuning">
+	<object class="wxDialog" name="PopSetupRSS">
 		<title>Setup RSS Output</title>
 		<id_arg>0</id_arg>
 		<handler function="OnInit" entry="EVT_INIT_DIALOG" />
