@@ -141,6 +141,9 @@ if __name__ == '__main__':
     x,y,name = sys.argv[0].replace('\\','/').rpartition('/')
     name,x,ext = name.rpartition('.')
     handler = logging.FileHandler(name+'.log')
+    formatter = logging.Formatter('%(levelname)s:%(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
     logger.setLevel(logging.DEBUG if opts.verbose else logging.INFO)
     logger.info('*** STARTED ***')
     try:
