@@ -41,8 +41,8 @@
 const long PopSetupRSS::ID_BUTTON1 = wxNewId();
 const long PopSetupRSS::ID_CHECKBOX1 = wxNewId();
 const long PopSetupRSS::ID_STATICTEXT1 = wxNewId();
-const long PopSetupRSS::ID_TEXTCTRL1 = wxNewId();
 const long PopSetupRSS::ID_STATICTEXT2 = wxNewId();
+const long PopSetupRSS::ID_TEXTCTRL1 = wxNewId();
 const long PopSetupRSS::ID_TEXTCTRL2 = wxNewId();
 const long PopSetupRSS::ID_STATICTEXT3 = wxNewId();
 const long PopSetupRSS::ID_SPINCTRL1 = wxNewId();
@@ -76,77 +76,59 @@ PopSetupRSS::PopSetupRSS(wxWindow* parent,wxWindowID id)
 	Create(parent, wxID_ANY, _("Setup RSS Output"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
 	BoxSizer1 = new wxBoxSizer(wxVERTICAL);
 	GridSizer1 = new wxGridSizer(0, 2, 0, 0);
-	// row 1
 	OKButton = new wxButton(this, ID_BUTTON1, _("OK Accept Values"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
 	GridSizer1->Add(OKButton, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	Enable = new wxCheckBox(this, ID_CHECKBOX1, _("Enable\?"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
-	Enable->SetValue(g_RSS_Enable);
+	Enable->SetValue(false);
 	GridSizer1->Add(Enable, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    // row 2
 	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Server IP"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	GridSizer1->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_BOTTOM, 5);
+	GridSizer1->Add(StaticText1, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
 	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("Port"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-	GridSizer1->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_BOTTOM, 5);
-    // row 3
+	GridSizer1->Add(StaticText2, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
 	IP = new wxTextCtrl(this, ID_TEXTCTRL1, _("127.0.0.1"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	GridSizer1->Add(IP, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 5);
-	IP->SetValue( wxString::Format("%s", g_RSS_IP) );
+	GridSizer1->Add(IP, 1, wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
 	Port = new wxTextCtrl(this, ID_TEXTCTRL2, _("8888"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	GridSizer1->Add(Port, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 5);
-	Port->SetValue( wxString::Format("%hu", g_RSS_Port) );
-	// row 4
+	GridSizer1->Add(Port, 1, wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
 	StaticText3 = new wxStaticText(this, ID_STATICTEXT3, _("Channels (100-512)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
 	GridSizer1->Add(StaticText3, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	Channels = new wxSpinCtrl(this, ID_SPINCTRL1, _("100"), wxDefaultPosition, wxDefaultSize, 0, 100, 512, 100, _T("ID_SPINCTRL1"));
-	Channels->SetValue(g_RSS_Channels);
+	Channels = new wxSpinCtrl(this, ID_SPINCTRL1, _T("100"), wxDefaultPosition, wxDefaultSize, 0, 100, 512, 100, _T("ID_SPINCTRL1"));
+	Channels->SetValue(_T("100"));
 	GridSizer1->Add(Channels, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	// row 5
 	StaticText4 = new wxStaticText(this, ID_STATICTEXT4, _("Channel Offset"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
 	GridSizer1->Add(StaticText4, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	Offset = new wxTextCtrl(this, ID_TEXTCTRL3, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	GridSizer1->Add(Offset, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	Offset->SetValue( wxString::Format("%.6f", g_RSS_Offset) );
-	// row 6
+	GridSizer1->Add(Offset, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText5 = new wxStaticText(this, ID_STATICTEXT5, _("Channel Gain"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
 	GridSizer1->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	Gain = new wxTextCtrl(this, ID_TEXTCTRL4, _("1.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	GridSizer1->Add(Gain, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	Gain->SetValue( wxString::Format("%.6f", g_RSS_Gain) );
-	// row 7
+	GridSizer1->Add(Gain, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText6 = new wxStaticText(this, ID_STATICTEXT6, _("Channel Bias"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
 	GridSizer1->Add(StaticText6, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	Bias = new wxTextCtrl(this, ID_TEXTCTRL5, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL5"));
-	GridSizer1->Add(Bias, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	Bias->SetValue( wxString::Format("%.6f", g_RSS_Bias) );
-	// row 8
+	GridSizer1->Add(Bias, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText7 = new wxStaticText(this, ID_STATICTEXT7, _("Minimum Value (clip)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT7"));
 	GridSizer1->Add(StaticText7, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	MinValue = new wxTextCtrl(this, ID_TEXTCTRL6, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
-	GridSizer1->Add(MinValue, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	MinValue->SetValue( wxString::Format("%.6f", g_RSS_MinValue) );
-	// row 9
+	GridSizer1->Add(MinValue, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText8 = new wxStaticText(this, ID_STATICTEXT8, _("Maximum Value (clip)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
 	GridSizer1->Add(StaticText8, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	MaxValue = new wxTextCtrl(this, ID_TEXTCTRL7, _("4096.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL7"));
-	GridSizer1->Add(MaxValue, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	MaxValue->SetValue( wxString::Format("%.6f", g_RSS_MaxValue) );
-	// row 10
+	MaxValue = new wxTextCtrl(this, ID_TEXTCTRL7, _("4095.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL7"));
+	GridSizer1->Add(MaxValue, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText9 = new wxStaticText(this, ID_STATICTEXT9, _("Frequency Offset (GHz)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT9"));
 	GridSizer1->Add(StaticText9, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	FrequencyOffset = new wxTextCtrl(this, ID_TEXTCTRL8, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL8"));
-	GridSizer1->Add(FrequencyOffset, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	FrequencyOffset->SetValue( wxString::Format("%.6f", g_RSS_FrequencyOffset) );
-	// row 11
-	ApplyButton = new wxButton(this, ID_BUTTON2, _("Apply Channel Values"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
+	GridSizer1->Add(FrequencyOffset, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	ApplyButton = new wxButton(this, ID_BUTTON2, _("Apply Values"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
 	GridSizer1->Add(ApplyButton, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	Extension = new wxCheckBox(this, ID_CHECKBOX2, _("Extensions Enable\?"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
-	Extension->SetValue(g_RSS_Extension);
-	GridSizer1->Add(Extension, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    // end
+	Extension = new wxCheckBox(this, ID_CHECKBOX2, _("Extentions Enable\?"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+	Extension->SetValue(false);
+	Extension->Disable();
+	GridSizer1->Add(Extension, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	BoxSizer1->Add(GridSizer1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SetSizer(BoxSizer1);
 	BoxSizer1->Fit(this);
 	BoxSizer1->SetSizeHints(this);
+
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&PopSetupRSS::OnOKButtonClick);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&PopSetupRSS::OnApplyButtonClick);
 	Connect(wxID_ANY,wxEVT_INIT_DIALOG,(wxObjectEventFunction)&PopSetupRSS::OnInit);

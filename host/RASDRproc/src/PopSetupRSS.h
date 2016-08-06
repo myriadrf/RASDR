@@ -35,10 +35,10 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/button.h>
-#include <wx/dialog.h>
 #include <wx/checkbox.h>
 #include <wx/spinctrl.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
 //*)
 
 class PopSetupRSS: public wxDialog
@@ -49,28 +49,28 @@ class PopSetupRSS: public wxDialog
 		//virtual ~PopSetupRSS();
 
 		//(*Declarations(PopSetupRSS)
-		wxButton* OKButton;
-		wxCheckBox* Enable;
-		wxStaticText* StaticText1;
-		wxTextCtrl* IP;
-		wxStaticText* StaticText2;
-		wxTextCtrl* Port;
-		wxStaticText* StaticText3;
-		wxSpinCtrl* Channels;
-		wxStaticText* StaticText4;
-		wxTextCtrl* Offset;
-		wxStaticText* StaticText5;
-		wxTextCtrl* Gain;
-		wxStaticText* StaticText6;
-		wxTextCtrl* Bias;
-		wxStaticText* StaticText7;
-		wxTextCtrl* MinValue;
-		wxStaticText* StaticText8;
-		wxTextCtrl* MaxValue;
 		wxStaticText* StaticText9;
-		wxTextCtrl* FrequencyOffset;
-		wxButton* ApplyButton;
+		wxTextCtrl* Port;
+		wxButton* OKButton;
+		wxStaticText* StaticText2;
 		wxCheckBox* Extension;
+		wxButton* ApplyButton;
+		wxStaticText* StaticText6;
+		wxTextCtrl* IP;
+		wxStaticText* StaticText8;
+		wxStaticText* StaticText1;
+		wxStaticText* StaticText3;
+		wxTextCtrl* FrequencyOffset;
+		wxTextCtrl* Bias;
+		wxStaticText* StaticText5;
+		wxStaticText* StaticText7;
+		wxTextCtrl* MaxValue;
+		wxCheckBox* Enable;
+		wxTextCtrl* Gain;
+		wxSpinCtrl* Channels;
+		wxTextCtrl* Offset;
+		wxTextCtrl* MinValue;
+		wxStaticText* StaticText4;
 		//*)
 
 	protected:
@@ -79,8 +79,8 @@ class PopSetupRSS: public wxDialog
 		static const long ID_BUTTON1;
 		static const long ID_CHECKBOX1;
 		static const long ID_STATICTEXT1;
-		static const long ID_TEXTCTRL1;
 		static const long ID_STATICTEXT2;
+		static const long ID_TEXTCTRL1;
 		static const long ID_TEXTCTRL2;
 		static const long ID_STATICTEXT3;
 		static const long ID_SPINCTRL1;

@@ -788,6 +788,10 @@
 			<Option target="GUIRelease WIN32" />
 		</Unit>
 		<Unit filename="wxsmith/PopList.wxs" />
+		<Unit filename="wxsmith/PopSetupRSS.wxs">
+			<Option target="GUIDebug WIN32" />
+			<Option target="GUIRelease WIN32" />
+		</Unit>
 		<Unit filename="wxsmith/PopTimeSpan.wxs">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
@@ -934,6 +938,7 @@
 					<wxDialog wxs="wxsmith/SeupPulsePeriod.wxs" src="SeupPulsePeriod.cpp" hdr="SeupPulsePeriod.h" fwddecl="0" i18n="0" name="SeupPulsePeriod" language="CPP" />
 					<wxDialog wxs="wxsmith/SetupDMOut.wxs" src="SetupDMOut.cpp" hdr="SetupDMOut.h" fwddecl="0" i18n="0" name="SetupDMOut" language="CPP" />
 					<wxDialog wxs="wxsmith/Setup_Simulator.wxs" src="Setup_Simulator.cpp" hdr="Setup_Simulator.h" fwddecl="0" i18n="0" name="Setup_Simulator" language="CPP" />
+					<wxDialog wxs="wxsmith/PopSetupRSS.wxs" src="PopSetupRSS.cpp" hdr="PopSetupRSS.h" fwddecl="0" i18n="1" name="PopSetupRSS" language="CPP" />
 				</resources>
 			</wxsmith>
 			<DoxyBlocks>
