@@ -47,7 +47,6 @@ class wxFlexGridSizer;
 class wxSpinCtrl;
 class wxBoxSizer;
 class wxButton;
-class wxStaticBoxSizer;
 class wxChoice;
 //*)
 #include <wx/textfile.h>
@@ -121,6 +120,7 @@ class pnlSpectrum: public wxPanel
 		wxStaticText* StaticText10;
 		wxStaticText* StaticText9;
 		wxSpinButton* spinFFTsamples;
+		wxFlexGridSizer* FlexGridSizer4;
 		wxPanel* Panel5;
 		wxToggleButton* PwrRef;
 		OpenGLGraph* oglPWRChart;
@@ -132,10 +132,10 @@ class pnlSpectrum: public wxPanel
 		wxStaticText* StaticText13;
 		wxStaticText* StaticText2;
 		wxCheckBox* chkQchannelEnabled;
-		wxPanel* Panel4;
 		wxButton* FFTRec_btn;
 		wxStaticText* StaticText14;
 		wxChoice* Integration_Time;
+		wxFlexGridSizer* FlexGridSizer10;
 		wxStaticText* StaticText6;
 		wxSplitterWindow* SplitterWindow2;
 		wxSpinCtrl* spinCenterFreq;
@@ -143,13 +143,14 @@ class pnlSpectrum: public wxPanel
 		wxStaticText* StaticText8;
 		wxButton* Apply_btn;
 		wxStaticText* StaticText11;
+		wxPanel* Panel8;
 		wxPanel* Panel1;
 		wxStaticText* lblDataRate;
 		wxStaticText* StaticText1;
-		wxStaticText* StaticText3;
 		wxTextCtrl* txtFFTsamples;
 		wxComboBox* cmbRxFEVGA1;
 		wxPanel* Panel6;
+		wxStaticText* StaticText21;
 		wxPanel* Panel3;
 		wxButton* btnStartCapture;
 		wxComboBox* cmbRxVGA2;
@@ -173,10 +174,13 @@ class pnlSpectrum: public wxPanel
 		wxStaticText* StaticText12;
 		wxPanel* Panel2;
 		OpenGLGraph* ogl_IQscatter;
+		wxBoxSizer* BoxSizer3;
 		wxSplitterWindow* SplitterWindow1;
 		wxCheckBox* chkIchannelEnabled;
 		wxStaticText* StaticText4;
+		wxStaticText* StaticText17;
 		wxCheckBox* chkAverage;
+		wxStaticText* StaticText16;
 		OpenGLGraph* ogl_IQline;
 		wxSpinCtrl* spinSamplingFreq;
 		//*)
@@ -199,19 +203,17 @@ class pnlSpectrum: public wxPanel
 		static const long ID_PANEL7;
 		static const long ID_SPLITTERWINDOW2;
 		static const long ID_GLCANVAS3;
-		static const long ID_BUTTON5;
-		static const long ID_BUTTON6;
 		static const long ID_STATICTEXT12;
 		static const long ID_SPINCTRL1;
 		static const long ID_STATICTEXT13;
 		static const long ID_SPINCTRL2;
+		static const long ID_BUTTON5;
+		static const long ID_BUTTON6;
 		static const long ID_BUTTON4;
-		static const long ID_BUTTON10;
-		static const long ID_TOGGLEBUTTON1;
-		static const long ID_BUTTON8;
 		static const long ID_TEXTCTRL1;
 		static const long ID_STATICTEXT17;
-		static const long ID_PANEL4;
+		static const long ID_BUTTON7;
+		static const long ID_PANEL8;
 		static const long ID_PANEL3;
 		static const long ID_SPLITTERWINDOW1;
 		static const long ID_BUTTON1;
@@ -233,8 +235,12 @@ class pnlSpectrum: public wxPanel
 		static const long ID_COMBOBOX6;
 		static const long ID_STATICTEXT1;
 		static const long ID_COMBOBOX7;
-		static const long ID_STATICTEXT3;
+		static const long ID_STATICTEXT23;
 		static const long ID_BUTTON3;
+		static const long ID_TOGGLEBUTTON1;
+		static const long ID_BUTTON10;
+		static const long ID_STATICTEXT19;
+		static const long ID_STATICTEXT18;
 		static const long ID_GLCANVAS4;
 		static const long ID_CHECKBOX1B;
 		static const long ID_CHECKBOX1C;

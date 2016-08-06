@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxPanel" name="pnlSpectrum">
-		<size>1000,600</size>
+		<size>1100,832</size>
 		<font>
 			<size>10</size>
 			<style>normal</style>
@@ -9,7 +9,7 @@
 			<underlined>0</underlined>
 			<family>swiss</family>
 		</font>
-		<minsize>1000,500</minsize>
+		<minsize>1100,832</minsize>
 		<id_arg>0</id_arg>
 		<style>0</style>
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
@@ -19,10 +19,9 @@
 			<growablerows>1</growablerows>
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
-					<minsize>900,32</minsize>
+					<minsize>1082,32</minsize>
 					<object class="wxCheckBox" name="ID_CHECKBOX3B" variable="chkAutoRestart" member="yes">
 						<label>Auto Restart</label>
-						<checked>0</checked>
 						<pos>780,8</pos>
 					</object>
 					<object class="wxCheckBox" name="ID_CHECKBOX3" variable="chkUpdateGraphs" member="yes">
@@ -66,18 +65,16 @@
 			<object class="sizeritem">
 				<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW1" variable="SplitterWindow1" member="yes">
 					<minsize>150</minsize>
-					<minsize>150,150</minsize>
 					<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW2" variable="SplitterWindow2" member="yes">
 						<sashpos>300</sashpos>
-						<minsize>140</minsize>
+						<minsize>120</minsize>
 						<orientation>vertical</orientation>
-						<minsize>140,140</minsize>
 						<object class="wxPanel" name="ID_PANEL6" variable="Panel6" member="yes">
 							<object class="wxBoxSizer" variable="BoxSizer1" member="no">
 								<object class="sizeritem">
 									<object class="wxGLCanvas" name="ID_GLCANVAS1" subclass="OpenGLGraph" variable="ogl_IQline" member="yes">
 										<mDepthSize>16</mDepthSize>
-										<size>485,120</size>
+										<size>920,160</size>
 									</object>
 									<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 									<border>5</border>
@@ -90,6 +87,7 @@
 								<object class="sizeritem">
 									<object class="wxGLCanvas" name="ID_GLCANVAS2" subclass="OpenGLGraph" variable="ogl_IQscatter" member="yes">
 										<mDepthSize>16</mDepthSize>
+										<size>230,160</size>
 									</object>
 									<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 									<border>5</border>
@@ -99,7 +97,7 @@
 						</object>
 					</object>
 					<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes">
-						<minsize>100,100</minsize>
+						<minsize>1082,300</minsize>
 						<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
 							<cols>1</cols>
 							<rows>2</rows>
@@ -108,111 +106,117 @@
 							<object class="sizeritem">
 								<object class="wxGLCanvas" name="ID_GLCANVAS3" subclass="OpenGLGraph" variable="ogl_FFTline" member="yes">
 									<mDepthSize>16</mDepthSize>
+									<size>-1,300</size>
+									<minsize>-1,300</minsize>
 									<handler function="Onogl_FFTlineLeftDown" entry="EVT_LEFT_DOWN" />
 								</object>
-								<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 								<border>5</border>
 								<option>1</option>
 							</object>
 							<object class="sizeritem">
-								<object class="wxPanel" name="ID_PANEL4" variable="Panel4" member="yes">
-									<size>-1,-1</size>
-									<object class="wxButton" name="ID_BUTTON5" variable="btnAddMarker" member="yes">
-										<label>Add Mkr</label>
-										<pos>356,0</pos>
-										<size>65,23</size>
-										<handler function="OnbtnAddMarkerClick" entry="EVT_BUTTON" />
-									</object>
-									<object class="wxButton" name="ID_BUTTON6" variable="btnRemoveMarker" member="yes">
-										<label>Remove Mkr</label>
-										<pos>424,0</pos>
-										<size>115,23</size>
-										<handler function="OnbtnRemoveMarkerClick" entry="EVT_BUTTON" />
-									</object>
-									<object class="wxStaticText" name="ID_STATICTEXT12" variable="StaticText10" member="yes">
-										<label>Zoom Center (KHz)</label>
-										<pos>0,4</pos>
-									</object>
-									<object class="wxSpinCtrl" name="ID_SPINCTRL1" variable="spinCenterFreq" member="yes">
-										<value>0</value>
-										<min>-32000</min>
-										<max>32000</max>
-										<pos>124,0</pos>
-										<size>72,21</size>
-										<handler function="OnspinCenterFreqChange" entry="EVT_SPINCTRL" />
-									</object>
-									<object class="wxStaticText" name="ID_STATICTEXT13" variable="StaticText11" member="yes">
-										<label>Span (KHz)</label>
-										<pos>199,4</pos>
-									</object>
-									<object class="wxSpinCtrl" name="ID_SPINCTRL2" variable="spinSpanFreq" member="yes">
-										<value>10000</value>
-										<min>1</min>
-										<max>32000</max>
-										<pos>275,0</pos>
-										<size>88,21</size>
-										<handler function="OnspinSpanFreqChange" entry="EVT_SPINCTRL" />
-									</object>
-									<object class="wxButton" name="ID_BUTTON4" variable="FFTRec_btn" member="yes">
-										<label>Record FFT</label>
-										<pos>540,0</pos>
-										<enabled>0</enabled>
-										<handler function="OnRecordFFTClick" entry="EVT_BUTTON" />
-									</object>
-									<object class="wxButton" name="ID_BUTTON10" variable=" RecordPWR" member="yes">
-										<label>Record PWR</label>
-										<pos>850,0</pos>
-										<enabled>0</enabled>
-										<font>
-											<size>12</size>
-											<style>normal</style>
-											<weight>bold</weight>
-											<underlined>0</underlined>
-											<family>swiss</family>
-											<face>Times New Roman</face>
-										</font>
-										<handler function="OnPwrRecordClick" entry="EVT_BUTTON" />
-									</object>
-									<object class="wxToggleButton" name="ID_TOGGLEBUTTON1" variable="PwrRef" member="yes">
-										<label>SetPwrRef</label>
-										<pos>752,0</pos>
-										<size>95,25</size>
-										<enabled>0</enabled>
-										<handler function="OnPwrRefClick" entry="EVT_TOGGLEBUTTON" />
-									</object>
-									<object class="wxButton" name="ID_BUTTON8" variable="MaxHold" member="yes">
-										<label>MaxHoldFFT</label>
-										<pos>955,0</pos>
-										<font>
-											<size>12</size>
-											<style>normal</style>
-											<weight>bold</weight>
-											<underlined>0</underlined>
-											<family>swiss</family>
-											<face>Times New Roman</face>
-										</font>
-										<handler function="OnMaxHoldClick" entry="EVT_BUTTON" />
-									</object>
-									<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="FFTsREC" member="yes">
-										<value>0</value>
-										<pos>635,2</pos>
-										<size>40,23</size>
-									</object>
-									<object class="wxStaticText" name="ID_STATICTEXT17" variable="StaticText15" member="yes">
-										<label>FFTs REC </label>
-										<pos>680,3</pos>
-										<font>
-											<size>11</size>
-											<style>normal</style>
-											<weight>bold</weight>
-											<underlined>0</underlined>
-											<family>swiss</family>
-											<face>Times New Roman</face>
-										</font>
-										<style>wxALIGN_LEFT</style>
+								<object class="wxPanel" name="ID_PANEL8" variable="Panel8" member="yes">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer4" member="yes">
+										<cols>10</cols>
+										<rows>1</rows>
+										<vgap>2</vgap>
+										<hgap>5</hgap>
+										<growablecols>1,3,7</growablecols>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT12" variable="StaticText10" member="yes">
+												<label>Zoom Center (KHz)</label>
+											</object>
+											<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxSpinCtrl" name="ID_SPINCTRL1" variable="spinCenterFreq" member="yes">
+												<value>0</value>
+												<min>-32000</min>
+												<max>32000</max>
+												<handler function="OnspinCenterFreqChange" entry="EVT_SPINCTRL" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT13" variable="StaticText11" member="yes">
+												<label>Span (KHz)</label>
+											</object>
+											<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxSpinCtrl" name="ID_SPINCTRL2" variable="spinSpanFreq" member="yes">
+												<value>10000</value>
+												<min>1</min>
+												<max>32000</max>
+												<handler function="OnspinSpanFreqChange" entry="EVT_SPINCTRL" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON5" variable="btnAddMarker" member="yes">
+												<label>Add Mkr</label>
+												<handler function="OnbtnAddMarkerClick" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON6" variable="btnRemoveMarker" member="yes">
+												<label>Remove Mkr</label>
+												<handler function="OnbtnRemoveMarkerClick" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON4" variable="FFTRec_btn" member="yes">
+												<label>Record FFT</label>
+												<enabled>0</enabled>
+												<handler function="OnRecordFFTClick" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="FFTsREC" member="yes">
+												<value>0</value>
+												<tooltip>Counts number of spectra recorded when recording FFTs</tooltip>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT17" variable="StaticText15" member="yes">
+												<label>nREC</label>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON7" variable="MaxHold" member="yes">
+												<label>MaxHold</label>
+												<handler function="OnMaxHoldClick" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
 									</object>
 								</object>
-								<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 								<border>5</border>
 								<option>1</option>
 							</object>
@@ -225,23 +229,24 @@
 			</object>
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_PANEL2" variable="Panel2" member="yes">
-					<pos>500,10</pos>
-					<size>1000,178</size>
+					<size>1082,200</size>
+					<minsize>1082,200</minsize>
 					<object class="wxPanel" name="ID_PANEL10" variable="Panel9" member="yes">
-						<pos>8,8</pos>
+						<minsize>-1,200</minsize>
 						<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
-							<cols>4</cols>
+							<cols>3</cols>
 							<rows>1</rows>
+							<growablecols>2</growablecols>
 							<object class="sizeritem">
 								<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
 									<cols>1</cols>
-									<rows>7</rows>
+									<rows>5</rows>
 									<object class="sizeritem">
 										<object class="wxButton" name="ID_BUTTON1" variable="btnStartCapture" member="yes">
 											<label>Start capturing samples</label>
 											<handler function="OnbtnStartCaptureClick" entry="EVT_BUTTON" />
 										</object>
-										<flag>wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
 										<border>5</border>
 									</object>
 									<object class="sizeritem">
@@ -249,19 +254,20 @@
 											<label>Stop capturing samples</label>
 											<handler function="OnbtnStopCaptureClick" entry="EVT_BUTTON" />
 										</object>
-										<flag>wxTOP|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<border>5</border>
 										<option>1</option>
 									</object>
 									<object class="sizeritem">
-										<object class="wxFlexGridSizer" variable="FlexGridSizer12" member="no">
-											<cols>3</cols>
+										<object class="wxFlexGridSizer" variable="FlexGridSizer9" member="no">
+											<cols>2</cols>
+											<rows>3</rows>
+											<growablecols>1</growablecols>
 											<object class="sizeritem">
 												<object class="wxCheckBox" name="ID_CHECKBOX1" variable="chkAverage" member="yes">
 													<label>Ave Ovr Frames:</label>
-													<size>133,24</size>
 												</object>
-												<flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>
 											</object>
 											<object class="sizeritem">
@@ -269,242 +275,267 @@
 													<value>4</value>
 													<min>1</min>
 													<max>1000000</max>
-													<size>63,21</size>
 													<handler function="OnspinAvgCountChange" entry="EVT_SPINCTRL" />
 												</object>
-												<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxTOP|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT14" variable="StaticText12" member="yes">
+													<label>Samples/Frame:</label>
+												</object>
+												<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+											</object>
+											<object class="sizeritem">
+												<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
+													<cols>2</cols>
+													<growablecols>1</growablecols>
+													<object class="sizeritem">
+														<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="txtFFTsamples" member="yes">
+															<value>16384</value>
+															<enabled>0</enabled>
+															<style>wxTE_READONLY</style>
+														</object>
+														<flag>wxRIGHT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+													</object>
+													<object class="sizeritem">
+														<object class="wxSpinButton" name="ID_SPINBUTTON3" variable="spinFFTsamples" member="yes">
+															<value>14</value>
+															<min>4</min>
+															<max>14</max>
+															<handler function="OnspinFFTsamplesChange" entry="EVT_SPIN" />
+														</object>
+														<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+													</object>
+												</object>
+												<flag>wxTOP|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT15" variable="StaticText13" member="yes">
+													<label>Sample Rate (MS/S):</label>
+												</object>
+												<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxSpinCtrl" name="ID_SPINCTRL3" variable="spinSamplingFreq" member="yes">
+													<value>10</value>
+													<min>1</min>
+													<max>32</max>
+													<handler function="OnspinSamplingFreqChange1" entry="EVT_SPINCTRL" />
+												</object>
+												<flag>wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>
 												<option>1</option>
 											</object>
 										</object>
-										<flag>wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT14" variable="StaticText12" member="yes">
-											<label>Samps/Frame:</label>
-										</object>
-										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-									</object>
-									<object class="sizeritem">
-										<object class="wxFlexGridSizer" variable="FlexGridSizer9" member="no">
-											<cols>3</cols>
-											<object class="sizeritem">
-												<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="txtFFTsamples" member="yes">
-													<value>16384</value>
-													<size>56,21</size>
-													<enabled>0</enabled>
-													<style>wxTE_READONLY</style>
-												</object>
-												<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
-											</object>
-											<object class="sizeritem">
-												<object class="wxSpinButton" name="ID_SPINBUTTON3" variable="spinFFTsamples" member="yes">
-													<value>14</value>
-													<min>4</min>
-													<max>14</max>
-													<size>17,22</size>
-													<handler function="OnspinFFTsamplesChange" entry="EVT_SPIN" />
-												</object>
-												<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
-											</object>
-										</object>
-										<flag>wxLEFT|wxRIGHT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT15" variable="StaticText13" member="yes">
-											<label>Samp Rate (MS/S):</label>
-										</object>
-										<flag>wxLEFT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxSpinCtrl" name="ID_SPINCTRL3" variable="spinSamplingFreq" member="yes">
-											<value>10</value>
-											<min>1</min>
-											<max>32</max>
-											<handler function="OnspinSamplingFreqChange1" entry="EVT_SPINCTRL" />
-										</object>
-										<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
 										<border>5</border>
 										<option>1</option>
 									</object>
 								</object>
-								<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
-								<border>4</border>
+								<flag>wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
+								<border>5</border>
 								<option>1</option>
 							</object>
 							<object class="sizeritem">
-								<object class="wxStaticBoxSizer" variable="StaticBoxSizer2" member="no">
+								<object class="wxFlexGridSizer" variable="FlexGridSizer13" member="no">
+									<cols>2</cols>
+									<rows>6</rows>
 									<object class="sizeritem">
-										<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
-											<cols>2</cols>
-											<rows>3</rows>
-											<object class="sizeritem">
-												<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
-													<label>Bw (MHz):</label>
-													<size>91,16</size>
-												</object>
-												<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxComboBox" name="ID_COMBOBOX4" variable="cmbRxFilter" member="yes">
-													<content>
-														<item>28</item>
-														<item>20</item>
-														<item>14</item>
-														<item>12</item>
-														<item>10</item>
-														<item>8.75</item>
-														<item>7</item>
-														<item>6</item>
-														<item>5.5</item>
-														<item>5</item>
-														<item>3.84</item>
-														<item>3</item>
-														<item>2.75</item>
-														<item>2.5</item>
-														<item>1.75</item>
-														<item>1.5</item>
-													</content>
-													<selection>4</selection>
-													<size>75,24</size>
-													<handler function="OncmbRxFilterSelected" entry="EVT_COMBOBOX" />
-												</object>
-												<flag>wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
-													<label>RF Ctr Freq (MHz)</label>
-													<size>-1,19</size>
-												</object>
-												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
-													<cols>3</cols>
-													<growablecols>0</growablecols>
-													<object class="sizeritem">
-														<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="txtRxFrequencyMHz" member="yes">
-															<size>75,24</size>
-															<handler function="OntxtRxFrequencyMHzText" entry="EVT_TEXT" />
-															<handler function="OntxtRxFrequencyMHzText" entry="EVT_TEXT_ENTER" />
-														</object>
-														<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-														<border>5</border>
-														<option>1</option>
-													</object>
-												</object>
-												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxStaticText" name="ID_STATICTEXT7" variable="StaticText7" member="yes">
-													<label>VGA1 Gain(dB):</label>
-													<size>-1,13</size>
-												</object>
-												<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxComboBox" name="ID_COMBOBOX5" variable="cmbRxFEVGA1" member="yes">
-													<size>85,24</size>
-													<handler function="OncmbRxFEVGA1Selected" entry="EVT_COMBOBOX" />
-												</object>
-												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText8" member="yes">
-													<label>VGA2 Gain(dB):</label>
-													<size>101,16</size>
-												</object>
-												<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxComboBox" name="ID_COMBOBOX6" variable="cmbRxVGA2" member="yes">
-													<size>91,24</size>
-													<handler function="OncmbRxVGA2Selected" entry="EVT_COMBOBOX" />
-												</object>
-												<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
-													<label>LNA Gain Mode:</label>
-												</object>
-												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxComboBox" name="ID_COMBOBOX7" variable="cmbLNAGainMode" member="yes">
-													<content>
-														<item>Bypass</item>
-														<item>-6 dB</item>
-														<item>Max gain</item>
-													</content>
-													<selection>1</selection>
-													<handler function="OncmbLNAGainModeSelected" entry="EVT_COMBOBOX" />
-												</object>
-												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
-													<label></label>
-												</object>
-												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
-											<object class="sizeritem">
-												<object class="wxButton" name="ID_BUTTON3" variable="Apply_btn" member="yes">
-													<label>APPLY</label>
-													<size>88,23</size>
-													<enabled>0</enabled>
-													<handler function="OnApply_btnClick" entry="EVT_BUTTON" />
-												</object>
-												<flag>wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
-												<border>5</border>
-												<option>1</option>
-											</object>
+										<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
+											<label>BW (MHz):</label>
 										</object>
-										<flag>wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
-										<border>1</border>
+										<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX4" variable="cmbRxFilter" member="yes">
+											<content>
+												<item>28</item>
+												<item>20</item>
+												<item>14</item>
+												<item>12</item>
+												<item>10</item>
+												<item>8.75</item>
+												<item>7</item>
+												<item>6</item>
+												<item>5.5</item>
+												<item>5</item>
+												<item>3.84</item>
+												<item>3</item>
+												<item>2.75</item>
+												<item>2.5</item>
+												<item>1.75</item>
+												<item>1.5</item>
+											</content>
+											<selection>4</selection>
+											<handler function="OncmbRxFilterSelected" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
+											<label>RF Ctr Freq (MHz):</label>
+										</object>
+										<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="txtRxFrequencyMHz" member="yes">
+											<handler function="OntxtRxFrequencyMHzText" entry="EVT_TEXT" />
+											<handler function="OntxtRxFrequencyMHzText" entry="EVT_TEXT_ENTER" />
+										</object>
+										<flag>wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT7" variable="StaticText7" member="yes">
+											<label>VGA1 Gain (dB):</label>
+										</object>
+										<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX5" variable="cmbRxFEVGA1" member="yes">
+											<handler function="OncmbRxFEVGA1Selected" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxTOP|wxLEFT|wxEXPAND|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText8" member="yes">
+											<label>VGA2 Gain (dB):</label>
+										</object>
+										<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX6" variable="cmbRxVGA2" member="yes">
+											<handler function="OncmbRxVGA2Selected" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+											<label>LNA Gain Mode:</label>
+										</object>
+										<flag>wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxComboBox" name="ID_COMBOBOX7" variable="cmbLNAGainMode" member="yes">
+											<content>
+												<item>Bypass</item>
+												<item>Mid gain</item>
+												<item>Max gain</item>
+											</content>
+											<selection>1</selection>
+											<handler function="OncmbLNAGainModeSelected" entry="EVT_COMBOBOX" />
+										</object>
+										<flag>wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT23" variable="StaticText21" member="yes">
+											<label>&lt;spacer&gt;</label>
+											<hidden>1</hidden>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxButton" name="ID_BUTTON3" variable="Apply_btn" member="yes">
+											<label>APPLY</label>
+											<enabled>0</enabled>
+											<handler function="OnApply_btnClick" entry="EVT_BUTTON" />
+										</object>
+										<flag>wxTOP|wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
 										<option>1</option>
 									</object>
 								</object>
-								<flag>wxLEFT|wxRIGHT|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
+								<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 								<border>5</border>
 								<option>1</option>
 							</object>
 							<object class="sizeritem">
 								<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
 									<cols>2</cols>
-									<rows>1</rows>
+									<rows>2</rows>
+									<growablecols>0</growablecols>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="yes">
+											<cols>3</cols>
+											<rows>1</rows>
+											<growablecols>2</growablecols>
+											<growablerows>0</growablerows>
+											<object class="sizeritem">
+												<object class="wxToggleButton" name="ID_TOGGLEBUTTON1" variable="PwrRef" member="yes">
+													<label>SetPwrRef</label>
+													<enabled>0</enabled>
+													<handler function="OnPwrRefClick" entry="EVT_TOGGLEBUTTON" />
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxButton" name="ID_BUTTON10" variable=" RecordPWR" member="yes">
+													<label>Record PWR</label>
+													<enabled>0</enabled>
+													<handler function="OnPwrRecordClick" entry="EVT_BUTTON" />
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT19" variable="StaticText17" member="yes">
+													<label>&lt;spacer&gt;</label>
+													<hidden>1</hidden>
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT18" variable="StaticText16" member="yes">
+											<label>&lt;spacer&gt;</label>
+											<hidden>1</hidden>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
 									<object class="sizeritem">
 										<object class="wxGLCanvas" name="ID_GLCANVAS4" subclass="OpenGLGraph" variable="oglPWRChart" member="yes">
 											<mDepthSize>16</mDepthSize>
 											<pos>-1,-1</pos>
+											<size>400,145</size>
 											<font>
 												<size>12</size>
 												<style>normal</style>
@@ -512,85 +543,83 @@
 												<underlined>0</underlined>
 												<family>swiss</family>
 											</font>
-											<minsize>420,150</minsize>
+											<minsize>400,145</minsize>
 											<style>wxSIMPLE_BORDER</style>
 										</object>
-										<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 										<border>5</border>
 										<option>1</option>
 									</object>
 									<object class="sizeritem">
 										<object class="wxPanel" name="ID_PANEL5" variable="Panel5" member="yes">
-											<object class="wxBoxSizer" variable="BoxSizer3" member="no">
+											<object class="wxBoxSizer" variable="BoxSizer3" member="yes">
 												<orient>wxVERTICAL</orient>
-                                                <object class="sizeritem">
-                                                    <object class="wxCheckBox" name="ID_CHECKBOX1B" variable="chkAutoscalePwrY" member="yes">
-                                                        <label>Autoscale Power Axis</label>
-                                                    </object>
-                                                    <flag>wxALIGN_LEFT|wxALIGN_LEFT</flag>
-                                                    <border>5</border>
-                                                </object>
-                                                <object class="sizeritem">
-                                                    <object class="wxCheckBox" name="ID_CHECKBOX1C" variable="chkAutoscalePwrX" member="yes">
-                                                        <label>Autoscale Time Axis</label>
-                                                    </object>
-                                                    <flag>wxALIGN_LEFT|wxALIGN_LEFT</flag>
-                                                    <border>5</border>
-                                                </object>
-                                                <object class="sizeritem">
-                                                    <object class="wxFlexGridSizer" variable="FlexGridSizer3A" member="no">
-                                                        <cols>2</cols>
-                                                        <rows>2</rows>
-        												<object class="sizeritem">
-        													<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
-        														<label>Span (Min)</label>
-        														<size>90,30</size>
-        													</object>
-        													<flag>wxALL|wxALIGN_TOP|wxALIGN_LEFT</flag>
-        													<border>5</border>
-        													<option>0</option>
-        												</object>
-        												<object class="sizeritem">
-        													<object class="wxSpinCtrl" name="ID_SPINCTRL5" variable="PwrSpan" member="yes">
-        														<size>60,25</size>        														<value>15</value>
-                                                                <value>15</value>
-        														<min>1</min>
-        														<max>1440</max>
-        														<handler function="OnPwrSpanChange" entry="EVT_SPINCTRL" />
-        													</object>
-        													<flag>wxALL|wxALIGN_TOP|wxALIGN_RIGHT</flag>
-        													<border>5</border>
-        													<option>1</option>
-        												</object>
-        												<object class="sizeritem">
-        													<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
-        														<label>Integration Time (Sec)</label>
-        														<size>90,30</size>
-        													</object>
-        													<flag>wxALL|wxALIGN_TOP|wxALIGN_LEFT</flag>
-        													<border>5</border>
-        													<option>0</option>
-        												</object>
-        												<object class="sizeritem">
-        													<object class="wxChoice" name="ID_CHOICE1" variable="Integration_Time" member="yes">
-        														<size>60,25</size>        														<value>15</value>
-        														<content>
-        															<item>1</item>
-        															<item>5</item>
-        															<item>10</item>
-        														</content>
-        														<selection>0</selection>
-        														<handler function="OnIntegration_TimeSelect" entry="EVT_CHOICE" />
-        													</object>
-        													<flag>wxALL|wxALIGN_TOP|wxALIGN_RIGHT</flag>
-        													<border>5</border>
-        													<option>1</option>
-        												</object>
-                                                    </object>
-                                                    <flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-                                                    <border>5</border>
-                                                    <option>1</option>
-                                            	</object>
+												<object class="sizeritem">
+													<object class="wxCheckBox" name="ID_CHECKBOX1B" variable="chkAutoscalePwrY" member="yes">
+														<label>Autoscale Power Axis</label>
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+													<border>5</border>
+												</object>
+												<object class="sizeritem">
+													<object class="wxCheckBox" name="ID_CHECKBOX1C" variable="chkAutoscalePwrX" member="yes">
+														<label>Autoscale Time Axis</label>
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+													<border>5</border>
+												</object>
+												<object class="sizeritem">
+													<object class="wxFlexGridSizer" variable="FlexGridSizer3A" member="no">
+														<cols>2</cols>
+														<rows>2</rows>
+														<object class="sizeritem">
+															<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
+																<label>Span (Min)</label>
+																<size>90,30</size>
+															</object>
+															<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+															<border>5</border>
+														</object>
+														<object class="sizeritem">
+															<object class="wxSpinCtrl" name="ID_SPINCTRL5" variable="PwrSpan" member="yes">
+																<value>15</value>
+																<min>1</min>
+																<max>1440</max>
+																<size>60,25</size>
+																<handler function="OnPwrSpanChange" entry="EVT_SPINCTRL" />
+															</object>
+															<flag>wxALL|wxALIGN_RIGHT|wxALIGN_TOP</flag>
+															<border>5</border>
+															<option>1</option>
+														</object>
+														<object class="sizeritem">
+															<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
+																<label>Integration Time (Sec)</label>
+																<size>90,30</size>
+															</object>
+															<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+															<border>5</border>
+														</object>
+														<object class="sizeritem">
+															<object class="wxChoice" name="ID_CHOICE1" variable="Integration_Time" member="yes">
+																<content>
+																	<item>1</item>
+																	<item>5</item>
+																	<item>10</item>
+																</content>
+																<selection>0</selection>
+																<size>60,25</size>
+																<handler function="OnIntegration_TimeSelect" entry="EVT_CHOICE" />
+															</object>
+															<flag>wxALL|wxALIGN_RIGHT|wxALIGN_TOP</flag>
+															<border>5</border>
+															<option>1</option>
+														</object>
+													</object>
+													<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<option>1</option>
+												</object>
 											</object>
 										</object>
 										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -598,7 +627,7 @@
 										<option>1</option>
 									</object>
 								</object>
-								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<border>5</border>
 								<option>1</option>
 							</object>
