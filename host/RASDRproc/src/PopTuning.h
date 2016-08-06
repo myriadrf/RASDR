@@ -48,21 +48,21 @@ class PopTuning: public wxDialog
 
 		//(*Declarations(PopTuning)
 		wxButton* OKButton;
-		wxButton* CALButton;
-		wxTextCtrl* TextCtrl1;
-		wxStaticText* StaticText1;
-		wxTextCtrl* TextCtrl2;
 		wxStaticText* StaticText2;
+		wxStaticText* StaticText1;
+		wxButton* CALButton;
+		wxTextCtrl* TextCtrl2;
+		wxTextCtrl* TextCtrl1;
 		//*)
 
 	protected:
 
 		//(*Identifiers(PopTuning)
 		static const long ID_BUTTON1;
-		static const long ID_BUTTON2;
 		static const long ID_STATICTEXT1;
-		static const long ID_TEXTCTRL1;
 		static const long ID_STATICTEXT2;
+		static const long ID_BUTTON2;
+		static const long ID_TEXTCTRL1;
 		static const long ID_TEXTCTRL2;
 		//*)
 

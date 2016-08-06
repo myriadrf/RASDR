@@ -39,10 +39,10 @@
 #include "FFTviewerMain.h"
 //(*IdInit(PopTuning)
 const long PopTuning::ID_BUTTON1 = wxNewId();
-const long PopTuning::ID_BUTTON2 = wxNewId();
 const long PopTuning::ID_STATICTEXT1 = wxNewId();
-const long PopTuning::ID_TEXTCTRL1 = wxNewId();
 const long PopTuning::ID_STATICTEXT2 = wxNewId();
+const long PopTuning::ID_BUTTON2 = wxNewId();
+const long PopTuning::ID_TEXTCTRL1 = wxNewId();
 const long PopTuning::ID_TEXTCTRL2 = wxNewId();
 //*)
 
@@ -68,10 +68,10 @@ PopTuning::PopTuning(wxWindow* parent,wxWindowID id)
 	GridSizer1->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	CALButton = new wxButton(this, ID_BUTTON2, _("Use Current Averages"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
 	GridSizer1->Add(CALButton, 1, wxALL|wxALIGN_RIGHT|wxALIGN_BOTTOM, 5);
-	TextCtrl1 = new wxTextCtrl(this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	GridSizer1->Add(TextCtrl1, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	TextCtrl2 = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	GridSizer1->Add(TextCtrl2, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	TextCtrl1 = new wxTextCtrl(this, ID_TEXTCTRL1, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+	GridSizer1->Add(TextCtrl1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	TextCtrl2 = new wxTextCtrl(this, ID_TEXTCTRL2, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+	GridSizer1->Add(TextCtrl2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	BoxSizer1->Add(GridSizer1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SetSizer(BoxSizer1);
 	BoxSizer1->Fit(this);
