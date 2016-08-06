@@ -124,8 +124,9 @@ class pnlSpectrum: public wxPanel
 		wxPanel* Panel5;
 		wxToggleButton* PwrRef;
 		OpenGLGraph* oglPWRChart;
+		wxCheckBox* chkAutoscalePwrX;
 		wxButton*  RecordPWR;
-		wxCheckBox* chkAutoRestart;
+		wxCheckBox* chkAutoscalePwrY;
 		wxCheckBox* chkUpdateGraphs;
 		wxComboBox* cmbLNAGainMode;
 		wxStaticText* StaticText13;
@@ -157,6 +158,7 @@ class pnlSpectrum: public wxPanel
 		wxStaticText* StaticText5;
 		wxSpinCtrl* PwrSpan;
 		wxStaticText* StaticText7;
+		wxCheckBox* chkAutoRestart;
 		wxButton* btnStopCapture;
 		wxPanel* Panel7;
 		wxButton* btnAddMarker;
@@ -175,8 +177,6 @@ class pnlSpectrum: public wxPanel
 		wxCheckBox* chkIchannelEnabled;
 		wxStaticText* StaticText4;
 		wxCheckBox* chkAverage;
-		wxCheckBox* chkAutoscalePwrY;
-		wxCheckBox* chkAutoscalePwrX;
 		OpenGLGraph* ogl_IQline;
 		wxSpinCtrl* spinSamplingFreq;
 		//*)
@@ -217,8 +217,6 @@ class pnlSpectrum: public wxPanel
 		static const long ID_BUTTON1;
 		static const long ID_BUTTON2;
 		static const long ID_CHECKBOX1;
-		static const long ID_CHECKBOX1B;
-		static const long ID_CHECKBOX1C;
 		static const long ID_SPINCTRL4;
 		static const long ID_STATICTEXT14;
 		static const long ID_TEXTCTRL3;
@@ -238,6 +236,8 @@ class pnlSpectrum: public wxPanel
 		static const long ID_STATICTEXT3;
 		static const long ID_BUTTON3;
 		static const long ID_GLCANVAS4;
+		static const long ID_CHECKBOX1B;
+		static const long ID_CHECKBOX1C;
 		static const long ID_STATICTEXT2;
 		static const long ID_SPINCTRL5;
 		static const long ID_STATICTEXT4;
