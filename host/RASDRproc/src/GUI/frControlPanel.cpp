@@ -121,7 +121,7 @@ void frControlPanel::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& 
 	wxFlexGridSizer* FlexGridSizer1;
 
 	Create(parent, wxID_ANY, _("Control panel"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxSTATIC_BORDER, _T("wxID_ANY"));
-	SetClientSize(wxSize(900,650));
+	SetClientSize(wxSize(900,680));
 	SetMinSize(wxSize(900,680));
 	FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);

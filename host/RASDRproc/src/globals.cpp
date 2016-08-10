@@ -91,6 +91,9 @@ float g_DcOffsetI = 0.0;
 float g_DcOffsetQ = 0.0;
 float g_avgI = 0.0;
 float g_avgQ = 0.0;
+bool g_AutoDCOffset = false;        // NB: not sure if we want this in the config file...
+volatile float g_DcErrorI = 0.0;
+volatile float g_DcErrorQ = 0.0;
 int g_UnlimitedAveraging = 0;
 
 // Radio Sky Spectrograph integration

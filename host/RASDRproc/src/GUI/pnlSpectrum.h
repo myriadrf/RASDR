@@ -103,6 +103,7 @@ class pnlSpectrum: public wxPanel
         double m_PwrRefScale;
         const char *m_PwrRefScaleUnits;
         double m_PwrAccum;
+        double m_MseAccum;
         double m_PwrAve;
         int m_PwrAveCount;
 
@@ -135,10 +136,10 @@ class pnlSpectrum: public wxPanel
 		wxButton* FFTRec_btn;
 		wxStaticText* StaticText14;
 		wxChoice* Integration_Time;
-		wxFlexGridSizer* FlexGridSizer10;
 		wxStaticText* StaticText6;
 		wxSplitterWindow* SplitterWindow2;
 		wxSpinCtrl* spinCenterFreq;
+		wxTextCtrl* DCOffsetSkew;
 		wxPanel* Panel9;
 		wxStaticText* StaticText8;
 		wxButton* Apply_btn;
@@ -146,9 +147,11 @@ class pnlSpectrum: public wxPanel
 		wxPanel* Panel8;
 		wxPanel* Panel1;
 		wxStaticText* lblDataRate;
+		wxCheckBox* AutoDCCorrection;
 		wxStaticText* StaticText1;
 		wxTextCtrl* txtFFTsamples;
 		wxComboBox* cmbRxFEVGA1;
+		wxButton* DCOffsetCorrection;
 		wxPanel* Panel6;
 		wxStaticText* StaticText21;
 		wxPanel* Panel3;
@@ -178,9 +181,8 @@ class pnlSpectrum: public wxPanel
 		wxSplitterWindow* SplitterWindow1;
 		wxCheckBox* chkIchannelEnabled;
 		wxStaticText* StaticText4;
-		wxStaticText* StaticText17;
 		wxCheckBox* chkAverage;
-		wxStaticText* StaticText16;
+		wxStaticText* DCOffsetSkewLabel;
 		OpenGLGraph* ogl_IQline;
 		wxSpinCtrl* spinSamplingFreq;
 		//*)
@@ -239,8 +241,10 @@ class pnlSpectrum: public wxPanel
 		static const long ID_BUTTON3;
 		static const long ID_TOGGLEBUTTON1;
 		static const long ID_BUTTON10;
-		static const long ID_STATICTEXT19;
-		static const long ID_STATICTEXT18;
+		static const long ID_BUTTON8;
+		static const long ID_CHECKBOX2;
+		static const long ID_STATICTEXT3;
+		static const long ID_TEXTCTRL4;
 		static const long ID_GLCANVAS4;
 		static const long ID_CHECKBOX1B;
 		static const long ID_CHECKBOX1C;
@@ -403,6 +407,7 @@ class pnlSpectrum: public wxPanel
 		void OntxtFFTsamplesText(wxCommandEvent& event);
 		void OnMaxHoldClick(wxCommandEvent& event);
 		void OnMaxHoldClick1(wxCommandEvent& event);
+		void OnDCOffsetCorrectionClick(wxCommandEvent& event);
 		//*)
 
 		void UpdateGraphs(wxTimerEvent &event);

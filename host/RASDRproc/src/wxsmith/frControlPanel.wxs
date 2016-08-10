@@ -2,7 +2,7 @@
 <wxsmith>
 	<object class="wxFrame" name="frControlPanel">
 		<title>Control panel</title>
-		<size>900,650</size>
+		<size>900,680</size>
 		<minsize>900,680</minsize>
 		<id_arg>0</id_arg>
 		<style>wxDEFAULT_FRAME_STYLE|wxSTATIC_BORDER</style>

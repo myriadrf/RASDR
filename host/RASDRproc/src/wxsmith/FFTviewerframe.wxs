@@ -2,8 +2,8 @@
 <wxsmith>
 	<object class="wxFrame" name="FFTviewerFrame">
 		<title>RASDRproc</title>
-		<size>1100,800</size>
-		<minsize>1100,800</minsize>
+		<size>1186,900</size>
+		<minsize>1186,900</minsize>
 		<id_arg>0</id_arg>
 		<style>wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX</style>
 		<handler function="OnClose" entry="EVT_CLOSE" />
@@ -23,14 +23,6 @@
 						</object>
 						<label>Spectrum</label>
 					</object>
-					<!--
-					<object class="notebookpage">
-						<object class="wxPanel" name="ID_PANEL2" subclass="PulsarPnl" variable="mPulsar" member="yes">
-							<style>0</style>
-						</object>
-						<label>Pulsar</label>
-					</object>
-					-->
 				</object>
 				<flag>wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 				<border>5</border>
@@ -72,12 +64,6 @@
 					<label>Frame Delay</label>
 					<handler function="OnFrameDelaySelected" entry="EVT_MENU" />
 				</object>
-				<!--
-				<object class="wxMenuItem" name="idDsplayTime" variable="DispTime" member="yes">
-					<label>Display Time</label>
-					<handler function="OnDispTimeSelected" entry="EVT_MENU" />
-				</object>
-				-->
 				<object class="wxMenuItem" name="idTuningParameters" variable="MenuItem8B" member="yes">
 					<label>Tuning Parameters</label>
 					<handler function="OnTuningParametersSelected" entry="EVT_MENU" />
@@ -93,29 +79,7 @@
 					<label>Setup Power Output</label>
 					<handler function="OnSetupPWROutSelected" entry="EVT_MENU" />
 				</object>
-				<!--
-				<object class="wxMenu" name="ID_MENUITEM8" variable="MenuItem10" member="yes">
-					<label>Setup Pulse Output</label>
-					<object class="wxMenuItem" name="ID_MENUITEM10" variable="SetupDMOutMenu" member="yes">
-						<label>Setup DM Data Output</label>
-						<handler function="OnSetupDMOutSelected" entry="EVT_MENU" />
-					</object>
-					<object class="wxMenuItem" name="ID_MENUITEM9" variable="MenuItem11" member="yes">
-						<label>Setup Pulse Data Output</label>
-						<handler function="OnSetupPulsePeriodOutSelected" entry="EVT_MENU" />
-					</object>
-				</object>
-				-->
 			</object>
-			<!--
-			<object class="wxMenu" variable="Menu6" member="yes">
-				<label>Simulation</label>
-				<object class="wxMenuItem" name="ID_MENUITEM11" variable="Setup_Sim" member="yes">
-					<label>Setup Simulation</label>
-					<handler function="OnSetup_SimSelected" entry="EVT_MENU" />
-				</object>
-			</object>
-			-->
 			<object class="wxMenu" variable="Menu2" member="no">
 				<label>Help</label>
 				<object class="wxMenuItem" name="idMenuAbout" variable="MenuItem2" member="no">

@@ -113,8 +113,10 @@ const long pnlSpectrum::ID_STATICTEXT23 = wxNewId();
 const long pnlSpectrum::ID_BUTTON3 = wxNewId();
 const long pnlSpectrum::ID_TOGGLEBUTTON1 = wxNewId();
 const long pnlSpectrum::ID_BUTTON10 = wxNewId();
-const long pnlSpectrum::ID_STATICTEXT19 = wxNewId();
-const long pnlSpectrum::ID_STATICTEXT18 = wxNewId();
+const long pnlSpectrum::ID_BUTTON8 = wxNewId();
+const long pnlSpectrum::ID_CHECKBOX2 = wxNewId();
+const long pnlSpectrum::ID_STATICTEXT3 = wxNewId();
+const long pnlSpectrum::ID_TEXTCTRL4 = wxNewId();
 const long pnlSpectrum::ID_GLCANVAS4 = wxNewId();
 const long pnlSpectrum::ID_CHECKBOX1B = wxNewId();
 const long pnlSpectrum::ID_CHECKBOX1C = wxNewId();
@@ -226,6 +228,7 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_PwrRefIsSet = false;
     m_PwrRefOffset = 0;
     m_PwrAccum = 0;
+    m_MseAccum = 0.0;
     m_PwrAveCount = 0;
     m_PwrAve = 0;
     m_PWRRecordCount = 0;
@@ -238,6 +241,7 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
 {
 	//(*Initialize(pnlSpectrum)
+	wxFlexGridSizer* FlexGridSizer10;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxFlexGridSizer* FlexGridSizer9;
@@ -248,10 +252,11 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	wxBoxSizer* BoxSizer1;
 	wxFlexGridSizer* FlexGridSizer13;
 	wxFlexGridSizer* FlexGridSizer3A;
+	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
 
-	Create(parent, wxID_ANY, wxDefaultPosition, wxSize(1100,832), 0, _T("wxID_ANY"));
-	SetMinSize(wxSize(1100,832));
+	Create(parent, wxID_ANY, wxDefaultPosition, wxSize(1186,900), 0, _T("wxID_ANY"));
+	SetMinSize(wxSize(1186,900));
 	wxFont thisFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	SetFont(thisFont);
 	FlexGridSizer1 = new wxFlexGridSizer(3, 1, 0, 0);
@@ -273,9 +278,11 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	StaticText14 = new wxStaticText(Panel1, ID_STATICTEXT16, _("Updates per second:"), wxPoint(550,8), wxDefaultSize, 0, _T("ID_STATICTEXT16"));
 	FlexGridSizer1->Add(Panel1, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW1"));
+	SplitterWindow1->SetMinSize(wxSize(150,150));
 	SplitterWindow1->SetMinimumPaneSize(150);
 	SplitterWindow1->SetSashGravity(0.5);
 	SplitterWindow2 = new wxSplitterWindow(SplitterWindow1, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW2"));
+	SplitterWindow2->SetMinSize(wxSize(120,120));
 	SplitterWindow2->SetMinimumPaneSize(120);
 	SplitterWindow2->SetSashGravity(0.5);
 	Panel6 = new wxPanel(SplitterWindow2, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
@@ -343,6 +350,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FFTRec_btn->Disable();
 	FlexGridSizer4->Add(FFTRec_btn, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FFTsREC = new wxTextCtrl(Panel8, ID_TEXTCTRL1, _("0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+	FFTsREC->Disable();
 	FFTsREC->SetToolTip(_("Counts number of spectra recorded when recording FFTs"));
 	FlexGridSizer4->Add(FFTsREC, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText15 = new wxStaticText(Panel8, ID_STATICTEXT17, _("nREC"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT17"));
@@ -445,22 +453,28 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer7->Add(FlexGridSizer13, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
-	FlexGridSizer10 = new wxFlexGridSizer(1, 3, 0, 0);
+	FlexGridSizer10 = new wxFlexGridSizer(0, 4, 0, 0);
 	FlexGridSizer10->AddGrowableCol(2);
-	FlexGridSizer10->AddGrowableRow(0);
 	PwrRef = new wxToggleButton(Panel9, ID_TOGGLEBUTTON1, _("SetPwrRef"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TOGGLEBUTTON1"));
 	PwrRef->Disable();
 	FlexGridSizer10->Add(PwrRef, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	 RecordPWR = new wxButton(Panel9, ID_BUTTON10, _("Record PWR"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON10"));
 	 RecordPWR->Disable();
 	FlexGridSizer10->Add( RecordPWR, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText17 = new wxStaticText(Panel9, ID_STATICTEXT19, _("<spacer>"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT19"));
-	StaticText17->Hide();
-	FlexGridSizer10->Add(StaticText17, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	DCOffsetCorrection = new wxButton(Panel9, ID_BUTTON8, _("Correct DC Offset"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON8"));
+	FlexGridSizer10->Add(DCOffsetCorrection, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	AutoDCCorrection = new wxCheckBox(Panel9, ID_CHECKBOX2, _("Auto DC\?"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+	AutoDCCorrection->SetValue(false);
+	FlexGridSizer10->Add(AutoDCCorrection, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer3->Add(FlexGridSizer10, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText16 = new wxStaticText(Panel9, ID_STATICTEXT18, _("<spacer>"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT18"));
-	StaticText16->Hide();
-	FlexGridSizer3->Add(StaticText16, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer6 = new wxFlexGridSizer(1, 2, 0, 0);
+	FlexGridSizer6->AddGrowableCol(1);
+	DCOffsetSkewLabel = new wxStaticText(Panel9, ID_STATICTEXT3, _("DC Skew Metric:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	FlexGridSizer6->Add(DCOffsetSkewLabel, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+	DCOffsetSkew = new wxTextCtrl(Panel9, ID_TEXTCTRL4, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+	DCOffsetSkew->SetToolTip(_("Provides a measure of I & Q balance under the current settings.\nThe calculation is the mean-square error of both the I and Q components:\n\nMSE = ((DC_offsetI - avgI)^2 + (DC_offsetQ - avgQ)^2) / 2\n"));
+	FlexGridSizer6->Add(DCOffsetSkew, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer3->Add(FlexGridSizer6, 1, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	int GLCanvasAttributes_4[] = {
 		WX_GL_RGBA,
 		WX_GL_DOUBLEBUFFER,
@@ -530,6 +544,8 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnApply_btnClick);
 	Connect(ID_TOGGLEBUTTON1,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnPwrRefClick);
 	Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnPwrRecordClick);
+	Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnDCOffsetCorrectionClick);
+	Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnchkDCcorrectionClick);
 	Connect(ID_SPINCTRL5,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&pnlSpectrum::OnPwrSpanChange);
 	Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OnIntegration_TimeSelect);
 	//*)
@@ -1111,17 +1127,11 @@ void pnlSpectrum::Initialize()
 {
     GetConfiguration();
     initializeInterfaceValues();
- //   cout << "After InitializeInterfaeValues()" << endl;
-	char ctemp[80];
-//	sprintf(ctemp, "%2.3f", m_TxFreq);
-//	txtTxFrequencyGHz->SetValue(ctemp);
-	sprintf(ctemp, "%.6f", m_RxFreq * 1000);
-	txtRxFrequencyMHz->SetValue(ctemp);
-
+	txtRxFrequencyMHz->SetValue( wxString::Format("%.6f", m_RxFreq * 1000.0) );
+    //AutoDCCorrection->SetValue(g_AutoDCOffset);
 	m_buffersCountMask = spinAvgCount->GetValue();
 
 	initializeGraphs();
-//	cout << "After InitializeGraphs()" << endl;
 	if( LMAL_IsOpen() )
 	{
 		btnStartCapture->Enable(true);
@@ -1132,7 +1142,6 @@ void pnlSpectrum::Initialize()
         btnStartCapture->Enable(false);
         btnStopCapture->Enable(false);
     }
-//    cout << "Exiting Initialize()" << endl;
 }
 
 void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
@@ -1301,7 +1310,8 @@ void pnlSpectrum::OnchkQchannelEnabledClick(wxCommandEvent& event)
 
 void pnlSpectrum::OnchkDCcorrectionClick(wxCommandEvent& event)
 {
-//    LMLL_Testing_SetDCCorrection(chkDCcorrection->GetValue());
+    g_AutoDCOffset = AutoDCCorrection->GetValue();
+//    LMLL_Testing_SetDCCorrection(g_AutoDCOffset);
 }
 //16777216
 /* Disabled 1/7/14
@@ -2294,10 +2304,20 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 //	if(m_time >= 1000)
     {
         double ratio_FPS = (double)m_frames / expect_FPS;
+        double dc_MSE;
 
              if (ratio_FPS > 0.80) { lblFPS->SetLabel( wxString::Format(wxT("%i"), m_frames)); lblFPS->SetBackgroundColour(0xf0f0f0f0); /* default grey */ }
         else if (ratio_FPS > 0.50) { lblFPS->SetLabel( wxString::Format(wxT("%i, @%.1f%%"), m_frames, ratio_FPS*100.0)); lblFPS->SetBackgroundColour(0xf000ffff); /* yellow */ }
         else                       { lblFPS->SetLabel( wxString::Format(wxT("%i << %.0f"), m_frames, expect_FPS)); lblFPS->SetBackgroundColour(0xf00000ff); /* red */ }
+
+        CalculatePwrAve();      // calculate once more for *this* loop
+
+        dc_MSE = m_MseAccum / ( 2.0 * m_PwrAveCount );   // NB: because we didnt divide by two each time
+        DCOffsetSkew->SetValue( wxString::Format("%.1f", dc_MSE) );
+             if (dc_MSE < 5.0 ) DCOffsetSkew->SetBackgroundColour(0xf0f0f0f0); /* default grey */
+        else if (dc_MSE < 10.0) DCOffsetSkew->SetBackgroundColour(0xf000ffff); /* yellow */
+        else                    DCOffsetSkew->SetBackgroundColour(0xf00000ff); /* red */
+        m_MseAccum = 0.0;
 
         UpdatePwrGraph();
         m_frames = 0;
@@ -2471,8 +2491,6 @@ void pnlSpectrum::UpdatePwrGraph()
 {
     if(!g_capturingData) return; // Break loop for close
     // Calculate the average power and clear accumulator
-        m_PwrAccum = m_PwrAccum + g_framepwr;
-        m_PwrAveCount++;
         m_PwrAve = m_PwrAccum / m_PwrAveCount;
 #if defined(CSV_DEBUG)
     // Coherent output with timestamp
@@ -2646,6 +2664,7 @@ void pnlSpectrum::RecordPwrLine(int index, double value)
 void pnlSpectrum::CalculatePwrAve()
 {
         m_PwrAccum = m_PwrAccum + g_framepwr;
+        m_MseAccum = m_MseAccum + g_DcErrorI*g_DcErrorI + g_DcErrorQ*g_DcErrorQ;    // NB: will /2 before display
         m_PwrAveCount++;
 }
 bool pnlSpectrum::IsCapturingData()
@@ -3227,4 +3246,11 @@ void pnlSpectrum :: ResetMaxHold()
         for( int i = 0;i < m_FFTsamplesCount; i++)
             m_FFTMaxAmplitudes[i] = -1;
 
+}
+
+void pnlSpectrum::OnDCOffsetCorrectionClick(wxCommandEvent& event)
+{
+    // apply current averages to DC offset
+    g_DcOffsetI = g_avgI;
+    g_DcOffsetQ = g_avgQ;
 }

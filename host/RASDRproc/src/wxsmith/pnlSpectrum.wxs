@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxPanel" name="pnlSpectrum">
-		<size>1100,832</size>
+		<size>1186,900</size>
 		<font>
 			<size>10</size>
 			<style>normal</style>
@@ -9,7 +9,7 @@
 			<underlined>0</underlined>
 			<family>swiss</family>
 		</font>
-		<minsize>1100,832</minsize>
+		<minsize>1186,900</minsize>
 		<id_arg>0</id_arg>
 		<style>0</style>
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
@@ -65,10 +65,12 @@
 			<object class="sizeritem">
 				<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW1" variable="SplitterWindow1" member="yes">
 					<minsize>150</minsize>
+					<minsize>150,150</minsize>
 					<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW2" variable="SplitterWindow2" member="yes">
 						<sashpos>300</sashpos>
 						<minsize>120</minsize>
 						<orientation>vertical</orientation>
+						<minsize>120,120</minsize>
 						<object class="wxPanel" name="ID_PANEL6" variable="Panel6" member="yes">
 							<object class="wxBoxSizer" variable="BoxSizer1" member="no">
 								<object class="sizeritem">
@@ -191,6 +193,7 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="FFTsREC" member="yes">
 												<value>0</value>
+												<enabled>0</enabled>
 												<tooltip>Counts number of spectra recorded when recording FFTs</tooltip>
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -483,11 +486,9 @@
 									<rows>2</rows>
 									<growablecols>0</growablecols>
 									<object class="sizeritem">
-										<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="yes">
-											<cols>3</cols>
-											<rows>1</rows>
+										<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
+											<cols>4</cols>
 											<growablecols>2</growablecols>
-											<growablerows>0</growablerows>
 											<object class="sizeritem">
 												<object class="wxToggleButton" name="ID_TOGGLEBUTTON1" variable="PwrRef" member="yes">
 													<label>SetPwrRef</label>
@@ -509,9 +510,18 @@
 												<option>1</option>
 											</object>
 											<object class="sizeritem">
-												<object class="wxStaticText" name="ID_STATICTEXT19" variable="StaticText17" member="yes">
-													<label>&lt;spacer&gt;</label>
-													<hidden>1</hidden>
+												<object class="wxButton" name="ID_BUTTON8" variable="DCOffsetCorrection" member="yes">
+													<label>Correct DC Offset</label>
+													<handler function="OnDCOffsetCorrectionClick" entry="EVT_BUTTON" />
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxCheckBox" name="ID_CHECKBOX2" variable="AutoDCCorrection" member="yes">
+													<label>Auto DC?</label>
+													<handler function="OnchkDCcorrectionClick" entry="EVT_CHECKBOX" />
 												</object>
 												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>
@@ -523,11 +533,29 @@
 										<option>1</option>
 									</object>
 									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT18" variable="StaticText16" member="yes">
-											<label>&lt;spacer&gt;</label>
-											<hidden>1</hidden>
+										<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
+											<cols>2</cols>
+											<rows>1</rows>
+											<growablecols>1</growablecols>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT3" variable="DCOffsetSkewLabel" member="yes">
+													<label>DC Skew Metric:</label>
+												</object>
+												<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+											<object class="sizeritem">
+												<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="DCOffsetSkew" member="yes">
+													<value>0.0</value>
+													<tooltip>Provides a measure of I &amp; Q balance under the current settings.&#x0A;The calculation is the mean-square error of both the I and Q components:&#x0A;&#x0A;MSE = ((DC__offsetI - avgI)^2 + (DC__offsetQ - avgQ)^2) / 2&#x0A;</tooltip>
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
 										</object>
-										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
 										<border>5</border>
 										<option>1</option>
 									</object>

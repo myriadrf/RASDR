@@ -799,6 +799,13 @@ bool TestingModule::externalCalculateFFT()
             }
 			g_avgI = avgI;
 			g_avgQ = avgQ;
+			g_DcErrorI = (g_DcOffsetI - g_avgI);
+			g_DcErrorQ = (g_DcOffsetQ - g_avgQ);
+			if (g_AutoDCOffset)
+            {
+                g_DcOffsetI = g_avgI;
+                g_DcOffsetQ = g_avgQ;
+            }
 			g_framepwr = SumVsq * scalefactor * oneOverN ;
 
 //			cout << "Start FFT Calc Ticks : " <<GetTickCount();

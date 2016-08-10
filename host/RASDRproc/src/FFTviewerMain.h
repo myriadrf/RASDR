@@ -110,7 +110,6 @@ class FFTviewerFrame: public wxFrame
 
         //(*Identifiers(FFTviewerFrame)
         static const long ID_PANEL1;
-        static const long ID_PANEL2;
         static const long ID_NOTEBOOK1;
         static const long ID_MENUITEM1;
         static const long ID_MENUITEM2;
@@ -118,40 +117,26 @@ class FFTviewerFrame: public wxFrame
         static const long ID_MENUITEM5;
         static const long ID_MENUITEM6;
         static const long idFrameDelay;
-//        static const long idDsplayTime;
         static const long idTuningParameters;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM7;
-        static const long idRssParameters;
-//        static const long ID_MENUITEM10;
-//        static const long ID_MENUITEM9;
-//        static const long ID_MENUITEM8;
-//        static const long ID_MENUITEM11;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
         //*)
 
         //(*Declarations(FFTviewerFrame)
         wxMenuItem* MenuItem8;
-        wxMenuItem* MenuItem8B;
         wxMenuItem* MenuItem7;
         wxNotebook* Notebook1;
         wxMenuItem* MenuItem5;
+        wxMenuItem* MenuItem8B;
         wxStatusBar* mStatusBar;
         pnlSpectrum* mSpectrum;
         wxMenu* Menu3;
         wxMenuItem* MenuItem4;
-//        PulsarPnl* mPulsar;
-//        wxMenuItem* MenuItem11;
-//        wxMenu* MenuItem10;
-//        wxMenuItem* DispTime;
         wxMenuItem* MenuItem3;
         wxMenuItem* MenuItem6;
-//        wxMenuItem* Setup_Sim;
-//        wxMenuItem* SetupDMOutMenu;
-//        wxMenu* Menu6;
         wxMenuItem* MenuItem9;
-        wxMenuItem* MenuItem9B;
         wxMenu* Menu5;
         wxMenu* Menu4;
         //*)

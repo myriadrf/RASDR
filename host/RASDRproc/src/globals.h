@@ -47,6 +47,9 @@ extern float g_DcOffsetI;
 extern float g_DcOffsetQ;
 extern float g_avgI;
 extern float g_avgQ;
+extern bool g_AutoDCOffset;
+extern volatile float g_DcErrorI;
+extern volatile float g_DcErrorQ;
 extern int g_UnlimitedAveraging;
 
 #define CSV_DEBUG   "RASDRproc-%s.csv"      // filename template to produce .csv output

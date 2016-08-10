@@ -85,7 +85,7 @@ PopTuning::PopTuning(wxWindow* parent,wxWindowID id)
 
 PopTuning::~PopTuning()
 {
-    cout << "~PopTuning()" << endl;
+//    cout << "~PopTuning()" << endl;
 	//(*Destroy(PopTuning)
 	//*)
 }
