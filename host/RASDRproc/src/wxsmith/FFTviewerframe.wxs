@@ -79,6 +79,10 @@
 					<label>Setup Power Output</label>
 					<handler function="OnSetupPWROutSelected" entry="EVT_MENU" />
 				</object>
+				<object class="wxMenuItem" name="idRssParameters" variable="MenuItem10" member="yes">
+					<label>Setup RSS Output</label>
+					<handler function="OnRSSParametersSelected" entry="EVT_MENU" />
+				</object>
 			</object>
 			<object class="wxMenu" variable="Menu2" member="no">
 				<label>Help</label>

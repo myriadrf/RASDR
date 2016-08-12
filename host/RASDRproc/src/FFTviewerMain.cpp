@@ -73,6 +73,7 @@ const long FFTviewerFrame::idFrameDelay = wxNewId();
 const long FFTviewerFrame::idTuningParameters = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM4 = wxNewId();
 const long FFTviewerFrame::ID_MENUITEM7 = wxNewId();
+const long FFTviewerFrame::idRssParameters = wxNewId();
 const long FFTviewerFrame::idMenuAbout = wxNewId();
 const long FFTviewerFrame::ID_STATUSBAR1 = wxNewId();
 //*)
@@ -142,6 +143,8 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Menu5->Append(MenuItem5);
     MenuItem9 = new wxMenuItem(Menu5, ID_MENUITEM7, _("Setup Power Output"), wxEmptyString, wxITEM_NORMAL);
     Menu5->Append(MenuItem9);
+    MenuItem10 = new wxMenuItem(Menu5, idRssParameters, _("Setup RSS Output"), wxEmptyString, wxITEM_NORMAL);
+    Menu5->Append(MenuItem10);
     MenuBar1->Append(Menu5, _("Define Output"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
@@ -167,6 +170,7 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     Connect(idTuningParameters,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnTuningParametersSelected);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupFFTOutSelected);
     Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnSetupPWROutSelected);
+    Connect(idRssParameters,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnRSSParametersSelected);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&FFTviewerFrame::OnAbout);
     Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&FFTviewerFrame::OnClose);
     //*)

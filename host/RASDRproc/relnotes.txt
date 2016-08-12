@@ -1,5 +1,5 @@
-RASDRproc v0.2.3.4 -  Aug 11, 2016
-=================================
+RASDRproc v0.2.3.5 -  Aug 12, 2016
+==================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
 RASDRproc_d.exe is a debug version that opens a DOS console which writes diagnostic data out
@@ -36,7 +36,15 @@ The calibration values are saved along with the other parameters in the RASDR.cf
 
 If necessary, repeat the above procedure to compute new offsets.  Typically, it has not been seen that the offset needs to be corrected continuously, but the offset IS different each time the RASDR2 device is powered up and it does depend on what antenna system and front end electronics are connected to the RASDR RX port, as well as the sampling rate and gain settings.
 
-NEW with v0.2.3.4:  The DC calibration can be made from the front panel.  A measure of the difference between ideal is also calculated and displayed continuously according to the Mean-Square-Error formula.  Also, the option to do automatic (continuous) DC offset calibration that was the only option in RASDRviewer 1.2.2.2 and BELOW is restored with a check-box.
+NEW with v0.2.3.4:  The DC calibration can be made from the front panel.  A measure of the difference between ideal is calculated and displayed continuously according to the Mean-Square-Error formula:
+
+MSE = ((DCOffsetI - avgI)^2 + (DCOffsetQ - avgQ)^2) / 2.0
+
+If the MSE is < 5.0 the display will be gray
+If the MSE is 5.0 < 10.0, the display will be yellow
+If the MSE is > 10.0, the display will be red
+
+The option to do automatic (continuous) DC offset calibration (that was the only option in RASDRviewer 1.2.2.2 and BELOW) is restored with a check-box in RASDRproc v0.2.3.4 and above.
 
 
 Auto Restart:
@@ -69,6 +77,9 @@ These will enforce the spectral outputs to limit values
 - Frequency Offset
 
 This can be used if you are using an upconverter to provide the correct offset frequency so that RSS will display the actual RF frequency instead of the IF frequency that the RASDR unit is tuned to.  NOTE: by rights, this is needed to be known by RASDRproc itself, but so far it was not implemented that way.  In the future this control may move to a different place, but for now it is listed here with the RSS stuff.
+
+There was a regression in v0.2.3.4 in which the RSS control panel settings became unavailable.  This was corrected in v0.2.3.5 (and hopefully from now on). 
+
 
 Known Issues:
 

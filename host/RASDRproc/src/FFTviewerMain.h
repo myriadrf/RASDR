@@ -120,6 +120,7 @@ class FFTviewerFrame: public wxFrame
         static const long idTuningParameters;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM7;
+        static const long idRssParameters;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
         //*)
@@ -134,6 +135,7 @@ class FFTviewerFrame: public wxFrame
         pnlSpectrum* mSpectrum;
         wxMenu* Menu3;
         wxMenuItem* MenuItem4;
+        wxMenuItem* MenuItem10;
         wxMenuItem* MenuItem3;
         wxMenuItem* MenuItem6;
         wxMenuItem* MenuItem9;
