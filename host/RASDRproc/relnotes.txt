@@ -1,4 +1,4 @@
-RASDRproc v0.2.3.3 -  Aug 4, 2016
+RASDRproc v0.2.3.4 -  Aug 11, 2016
 =================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -35,6 +35,8 @@ RASDRproc uses *MANUAL* DC Offset Correction.  The calibration procedure is as f
 The calibration values are saved along with the other parameters in the RASDR.cfg file.
 
 If necessary, repeat the above procedure to compute new offsets.  Typically, it has not been seen that the offset needs to be corrected continuously, but the offset IS different each time the RASDR2 device is powered up and it does depend on what antenna system and front end electronics are connected to the RASDR RX port, as well as the sampling rate and gain settings.
+
+NEW with v0.2.3.4:  The DC calibration can be made from the front panel.  A measure of the difference between ideal is also calculated and displayed continuously according to the Mean-Square-Error formula.  Also, the option to do automatic (continuous) DC offset calibration that was the only option in RASDRviewer 1.2.2.2 and BELOW is restored with a check-box.
 
 
 Auto Restart:
