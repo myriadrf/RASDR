@@ -4,7 +4,7 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION     "0.2.2.1"
+#define SOFTWAREVERSION     "0.2.2.2"
 #define MAX_QUEUE_SZ        512
 #define ATTEMPT_TO_REINIT   1
 
@@ -95,7 +95,8 @@ namespace Streams
 
 #ifdef ATTEMPT_TO_REINIT
             hRestartReq = CreateEvent(NULL, true, false, NULL);        // manual-reset, non-signalled
-            hRestartAck = CreateEvent(NULL, true, true, NULL);         // manual-reset, non-signalled
+            hRestartAck = CreateEvent(NULL, true, true, NULL);         // manual-reset, signalled
+            hRestartMod = CreateEvent(NULL, true, false, NULL);        // manual-reset, non-signalled
             reInitCount = 0;
             reInitExit  = false;
             reInitTimer = new System::Windows::Forms::Timer;
@@ -468,6 +469,7 @@ namespace Streams
 #ifdef ATTEMPT_TO_REINIT
         static HANDLE               hRestartReq;
         static HANDLE               hRestartAck;
+        static HANDLE               hRestartMod;
         static int                  reInitCount;
         static bool                 reInitExit;
 
@@ -635,6 +637,8 @@ namespace Streams
         {
             Decimal db;
             int ab;
+            CCyUSBEndPoint *EndPt = NULL;
+            DWORD wfso;
 
             if (XferThread) {
                 switch (XferThread->ThreadState)
@@ -683,7 +687,8 @@ namespace Streams
                     DeviceComboBox->Enabled     = false;
 
 #ifdef ATTEMPT_TO_REINIT
-                    if (GetEndpoint() == NULL)
+                    EndPt = GetEndpoint();
+                    if (EndPt == NULL)
                     {
                         Display(String::Concat("@Start, No Endpoint - trying again",""));
                         // TODO: once in a while, restart will get a NULL response from GetEndpoint()
@@ -698,6 +703,29 @@ namespace Streams
                         reInitTimer->Interval = 5000;
                         reInitTimer->Start();
                         break;
+                    }
+                    wfso = WaitForSingleObject( hRestartMod, 0 ); // test hRestartMod
+                    if (wfso == WAIT_OBJECT_0 )
+                    {
+                        // http://www.cypress.com/file/74566/download
+                        // https://msdn.microsoft.com/en-us/library/windows/hardware/hh968307(v=vs.85).aspx
+                        StartBtn->Text = "Restart Cancel";
+                        StartBtn->Refresh();
+                        bool bStatus = EndPt->Reset();
+                        Display(String::Concat("@Start, EndPt->Reset()=",bStatus.ToString()));
+                        if (!bStatus)
+                        {
+                            Display(String::Concat("@Start, Reset Failed - Must Unplug USB", ""));
+                            ResetEvent(hRestartReq);
+                            reInitTimer->Enabled = false;
+                            StartBtn->Text = "Restart Failed";
+                            StartBtn->Refresh();
+                            StartBtn->Enabled = false;
+                            break;
+                            // this will stop trying
+                        }
+                        ResetEvent(hRestartMod);
+                        // this will keep trying to start the XferThread()
                     }
                     ResetEvent(hRestartReq);
                     SetEvent(hRestartAck);
@@ -844,6 +872,7 @@ namespace Streams
         void EnforceValidPPX()
         {
             CCyUSBEndPoint *EndPt = GetEndpoint();
+            Decimal db;
 
             // Defaults
             if (SamplesPerFrameBox->SelectedIndex == -1 ) SamplesPerFrameBox->SelectedIndex = 7;
@@ -854,7 +883,8 @@ namespace Streams
 			int BPS = 2 * 2;												// bytes/sample
 			int SPF = Convert::ToInt32(SamplesPerFrameBox->Text);			// samples/frame
 			int SPS = Convert::ToInt32(SampleRateBox->Text) * 1000 * 1000;	// samples/sec
-			int INTEG = Convert::ToInt32(TimeOutBox->Text);					// ms of integration time
+            int INTEG = 1;
+            if (Decimal::TryParse(TimeOutBox->Text, &db)) INTEG = Convert::ToInt32(db); // ms of integration time
 			int bytes_per_sec = (SPS * BPS);
 			double bytes_per_transfer = double(bytes_per_sec) * double(INTEG) / 1000.0;
 			int _ppx = int(bytes_per_transfer / double(EndPt->MaxPktSize));	// packets per transfer
@@ -1027,7 +1057,8 @@ namespace Streams
                 if(i>0) FlushXferLoop(i+1, s);
                 DestroyBuffers(s);
                 // This fault did not appear to be recoverable in tests...
-                ExitXferLoop("Start");
+                wfso = WaitForSingleObject(hRestartReq, 0);
+                ExitXferLoop(wfso == WAIT_OBJECT_0?"Restart Cancel":"Start");
                 return;
             }
 
@@ -1270,8 +1301,10 @@ namespace Streams
                 // https://msdn.microsoft.com/en-us/library/windows/hardware/ff539136(v=vs.85).aspx
                 if (EndPt->NtStatus == 0xC0000001) switch(EndPt->UsbdStatus) {
                 case 0xC0000030:    // USBD_STATUS_ENDPOINT_HALTED
-                    tmp = String::Concat("USBD_STATUS_ENDPOINT_HALTED"," -> ","Unplug USB device");
+                    tmp = String::Concat("USBD_STATUS_ENDPOINT_HALTED"," -> ","Reset Endpoint");
                     Display(tmp);
+                    SetEvent(hRestartMod);
+                    SetEvent(hRestartReq);
                     // all of the recovery methods require calls that are only available in the WDMF
                     break;
                 default:
