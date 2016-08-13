@@ -4,9 +4,9 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION "0.2.2"
-#define MAX_QUEUE_SZ    512
-#define ATTEMPT_TO_REINIT
+#define SOFTWAREVERSION     "0.2.2.1"
+#define MAX_QUEUE_SZ        512
+#define ATTEMPT_TO_REINIT   1
 
 namespace Streams
 {
@@ -404,7 +404,7 @@ namespace Streams
             this->Icon = (__try_cast<System::Drawing::Icon*  >(resources->GetObject(S"$this.Icon")));
             this->Name = S"Form1";
             this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
-			this->Text = String::Concat(S"RASDRstreamer", " v", SOFTWAREVERSION);
+            this->Text = String::Concat(S"RASDRstreamer", " v", SOFTWAREVERSION);
 #ifdef ATTEMPT_TO_REINIT
             this->Text = String::Concat(this->Text, " - ReInit @stall");
 #endif
@@ -1265,6 +1265,18 @@ namespace Streams
                 tmp = String::Concat(tmp, ", NtStatus=", EndPt->NtStatus.ToString("x"));
                 tmp = String::Concat(tmp, ", UsbdStatus=", EndPt->UsbdStatus.ToString("x"));
                 Display(tmp);
+
+                // http://www.cypress.com/file/74566/download
+                // https://msdn.microsoft.com/en-us/library/windows/hardware/ff539136(v=vs.85).aspx
+                if (EndPt->NtStatus == 0xC0000001) switch(EndPt->UsbdStatus) {
+                case 0xC0000030:    // USBD_STATUS_ENDPOINT_HALTED
+                    tmp = String::Concat("USBD_STATUS_ENDPOINT_HALTED"," -> ","Unplug USB device");
+                    Display(tmp);
+                    // all of the recovery methods require calls that are only available in the WDMF
+                    break;
+                default:
+                    break;
+                }
                 return false;
             }
             return true;
