@@ -4,7 +4,7 @@
 #include <stdio.h>
 #undef MessageBox
 
-#define SOFTWAREVERSION     "0.2.2.2"
+#define SOFTWAREVERSION     "0.2.2.3"
 #define MAX_QUEUE_SZ        512
 #define ATTEMPT_TO_REINIT   1
 
@@ -715,14 +715,33 @@ namespace Streams
                         Display(String::Concat("@Start, EndPt->Reset()=",bStatus.ToString()));
                         if (!bStatus)
                         {
-                            Display(String::Concat("@Start, Reset Failed - Must Unplug USB", ""));
-                            ResetEvent(hRestartReq);
-                            reInitTimer->Enabled = false;
-                            StartBtn->Text = "Restart Failed";
-                            StartBtn->Refresh();
-                            StartBtn->Enabled = false;
-                            break;
-                            // this will stop trying
+                            // this is what gave me the idea to do a Reset(), followed by a ReConnect()
+                            // http://www.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.kernextc/USB_er_recov.htm
+                            EndPt = NULL;
+                            bStatus = USBDevice->Reset();
+                            Display(String::Concat("@Start, USBDevice->Reset()=", bStatus.ToString()));
+                            if (bStatus)
+                            {
+                                // success, maybe it works now?
+                                StartBtn->Text = "Stop";
+                            } else {
+                                bStatus = USBDevice->ReConnect();
+                                Display(String::Concat("@Start, USBDevice->ReConnect()=", bStatus.ToString()));
+                                if (bStatus)
+                                {
+                                    // success, maybe it works now?
+                                    StartBtn->Text = "Stop";
+                                } else {
+                                    Display(String::Concat("@Start, Reset Failed - Must Unplug USB", ""));
+                                    ResetEvent(hRestartReq);
+                                    reInitTimer->Enabled = false;
+                                    StartBtn->Text = "Restart Failed";
+                                    StartBtn->Refresh();
+                                    StartBtn->Enabled = false;
+                                    break;
+                                    // this will stop trying
+                                }
+                            }
                         }
                         ResetEvent(hRestartMod);
                         // this will keep trying to start the XferThread()
@@ -1095,10 +1114,10 @@ namespace Streams
                     String *tag = String::Concat("@", i.ToString());
                     Display(String::Concat(tag, " WaitForXfer(,",TimeOut.ToString(),") faults"));
 
-                    int TimeOut2 = TimeOut * 100;
-                    if (!EndPt->WaitForXfer(&s.inOvLap[i], TimeOut2))
-                    {
-                        Display(String::Concat(tag, " WaitForXfer(,", TimeOut2.ToString(), ") faults"));
+                    //int TimeOut2 = TimeOut * 100;
+                    //if (!EndPt->WaitForXfer(&s.inOvLap[i], TimeOut2))
+                    //{
+                    //    Display(String::Concat(tag, " WaitForXfer(,", TimeOut2.ToString(), ") faults"));
 
                         EndPt->Abort();
                         if (EndPt->LastError == ERROR_IO_PENDING)
@@ -1106,7 +1125,7 @@ namespace Streams
                             DWORD wfso = WaitForSingleObject(s.inOvLap[i].hEvent,2000);
                             if (wfso != WAIT_OBJECT_0) Display(String::Concat(tag, "  WFSO=", wfso.ToString("x")));
                         }
-                    }
+                    //}
                 }
 
                 if (EndPt->Attributes == 1) // ISOC Endpoint
