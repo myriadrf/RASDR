@@ -1,4 +1,4 @@
-RASDRproc v0.2.3.5 -  Aug 12, 2016
+RASDRproc v0.2.3.6 -  Aug 29, 2016
 ==================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -53,6 +53,8 @@ RASDR2 devices when used in USB3 on marginal machines exhibit a stall acquiring 
 
 In addition, this version annotates the data rate and frame rate display with a comparision to the expected rates and uses a RED or YELLOW background if the program is not keeping up.  The thresholds are fixed at compile time at the moment.
 
+With v0.2.3.6, some aspects of this have changed.  Users have reported random application crashes and these appear to be related to thread-safety issues which are endemic in the code architecture.  A small amount of safety w/r/t the access to the endpoint data structures and the CyUSB library was put into place, and it seems to have a positive effect upon the liklihood of an application crash when stopping.  I have a low-spec development system in which USB3 operation is extremely marginal, calling for frequent resets of the USB device.
+
 
 Radio Sky Spectrograph Integration:
 
@@ -95,7 +97,7 @@ One very strong driver of this condtion was the use of burst mode transfer for U
 
 5) Sometimes when restarting (or if Auto Restart) is enabled, the program will raise an exception in the CCyUSBEndPoint::FinishDataXfer() as it deletes buffers.  This is when the stop is initiated by a call to LMLL_Testing_StopSdramRead() to stop collecting data from the USB stream.
 
-Debugging this has not illuminated a good explanation for this behavior.
+Debugging this has identified thread safety issues due to concurrent access to the endpoint functions exposed by the CyUSB API.  An attempt at addressing these had been made in v0.2.3.6 and field testing is in progress.
 
 6) If choosing a high sample rate with a lot of integration, please be patient for the FFT spectrum window.  The first spectra will not be available until after the first integration time is complete.  You can estimate the ETA by observing the frame rate and dividing that from the 'average over frames' value.
 
