@@ -59,6 +59,7 @@ public:
 	    return 0;
     };
 	virtual void Close(){};
+	virtual void Reset(){};
 	virtual bool IsOpen(){return false;};
 
 	virtual int SendData(const unsigned char *buffer, int lenght)
@@ -75,12 +76,13 @@ public:
 
 	virtual int BeginDataReading(unsigned char *buffer, long length){ cout << "Beginning ICOnnection" << endl; return -1; };
 	virtual int WaitForReading(int contextHandle, unsigned int timeout_ms){ return 0;};
-	virtual int FinishDataReading(unsigned char *buffer, long &length, int contextHandle){ cout << "Finish IC+onnection" << endl; return 0;}
+	virtual int FinishDataReading(unsigned char *buffer, long length, int contextHandle){ cout << "Finish IC+onnection" << endl; return 0;}
 	virtual void AbortReading(){};
+	virtual void ResetReading(){};
 
 	virtual int BeginDataSending(const unsigned char *buffer, long length){ return -1; };
 	virtual int WaitForSending(int contextHandle, unsigned int timeout_ms){ return 0;};
-	virtual int FinishDataSending(const unsigned char *buffer, long &length, int contextHandle){ return 0;}
+	virtual int FinishDataSending(const unsigned char *buffer, long length, int contextHandle){ return 0;}
 	virtual void AbortSending(){};
 
 	virtual int GetConnectionType() {return portType;};

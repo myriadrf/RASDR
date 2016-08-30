@@ -1802,12 +1802,13 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
             LMLL_Testing_StopSdramRead();
             break;
         case 20:    // +20 to allow the threads to exit/flush before we close the device
-            LMAL_Close();
+            //LMAL_Close();
+            LMLL_Testing_ResetEndpoint();
             break;
             // TODO: it may be best to do these together
         case 21:
-            status = LMAL_SetConnectionType( 1 /*USB*/ );   // NOTE: may be needed after LMAL_Close()
-            if (status) status = LMAL_OpenI(LMAL_CurrentDevice());
+            //status = LMAL_SetConnectionType( 1 /*USB*/ );   // NOTE: may be needed after LMAL_Close()
+            //if (status) status = LMAL_OpenI(LMAL_CurrentDevice());
             break;
         case 23:
             LMLL_Testing_StartSdramRead();

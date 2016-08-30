@@ -2037,7 +2037,7 @@ bool CCyUSBEndPoint::FinishDataXfer(PUCHAR buf, LONG &bufLen, OVERLAPPED *ov, PU
     }
 
     // If a buffer was provided, pass-back the Isoc packet info records
-    if (pktInfos && (bufLen > 0)) {
+    if (pktInfos && (bufLen > 0) && pTransfer->IsoPacketLength) {
         ZeroMemory(pktInfos, pTransfer->IsoPacketLength);
         PUCHAR pktPtr = pXmitBuf + pTransfer->IsoPacketOffset;
         memcpy(pktInfos, pktPtr, pTransfer->IsoPacketLength);

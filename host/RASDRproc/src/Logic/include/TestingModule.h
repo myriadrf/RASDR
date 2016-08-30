@@ -69,6 +69,7 @@ public:
 
 	void StartSdramRead();
 	void StopSdramRead();
+	void ResetEndpoint();
 
     static void *ReadDataThread(void *ptrTestingModule);
 	void ReadData();

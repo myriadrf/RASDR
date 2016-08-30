@@ -989,6 +989,7 @@ CTR_6002DR2_API bool LMLL_Testing_CalculateFFT();
 
 CTR_6002DR2_API void LMLL_Testing_StartSdramRead();
 CTR_6002DR2_API void LMLL_Testing_StopSdramRead();
+CTR_6002DR2_API void LMLL_Testing_ResetEndpoint();
 CTR_6002DR2_API void LMLL_Testing_GetStatusInfo(unsigned long &bytesPs, unsigned int &failures);
 
 CTR_6002DR2_API void LMLL_Testing_FPGAResetOn();

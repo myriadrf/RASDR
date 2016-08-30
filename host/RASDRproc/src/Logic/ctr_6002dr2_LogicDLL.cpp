@@ -7867,6 +7867,16 @@ CTR_6002DR2_API void LMLL_Testing_StopSdramRead()
 {
 	getMainModule()->getTesting()->StopSdramRead();
 }
+/**
+	@ingroup Testing
+	@brief Resets the endpoint after a stall
+	StopSdramRead() must have been called (i.e. not taking data) or
+	the function will have no effect.
+*/
+CTR_6002DR2_API void LMLL_Testing_ResetEndpoint()
+{
+	getMainModule()->getTesting()->ResetEndpoint();
+}
 
 /**
 	@ingroup Testing

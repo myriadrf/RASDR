@@ -254,7 +254,7 @@ void TestingModule::StopSdramRead()
 
         // http://pubs.opengroup.org/onlinepubs/9699919799/functions/pthread_join.html
         r = pthread_join(readThreadID, &status);
-        if(r) printf("::StopSdramRead pthread_join(readThreadID,status=%p)=%d (%s)\n", status, r, strerror(r));
+        /*if(r)*/ printf("::StopSdramRead pthread_join(readThreadID,status=%p)=%d (%s)\n", status, r, strerror(r));
         if(transmitActive)
         {
             if (m_svr > 0) socket_close(m_svr); // if thread is in accept()
@@ -268,6 +268,21 @@ void TestingModule::StopSdramRead()
         m_fftFIFO->unblock();
         m_fftAvgFIFO->unblock();
     }
+}
+
+/**
+	@brief Reset endpoint for reading when stall occurs
+ */
+void TestingModule::ResetEndpoint()
+{
+	// disable data receiving and wait for other thread to exit
+	if(readingData)
+    {
+        printf("::ResetEndpoint still reading data - call StopSdramRead() first\n");
+        return;
+    }
+    device->ResetReading();
+    device->Reset();
 }
 
 /**
@@ -340,15 +355,14 @@ void TestingModule::ReadData()
 	t1_info = GetTickCount();
 	while (readingData)
 	{
-		// Reset this each time through because FinishDataReading may modify it
-		rLen = len;
 		if(!device->WaitForReading(contexts[i], 1000))
 		{
 			//device->AbortReading();
 			m_bufferFailures++;
 		}
 		// Must always call FinishDataXfer to release memory of contexts[i]
-		if (device->FinishDataReading(m_Buffers[i], rLen, contexts[i]))
+		rLen = device->FinishDataReading(m_Buffers[i], len, contexts[i]);
+		if (rLen == len)
   		{
 			packetReceived++;
 			t2 = GetTickCount();
@@ -356,9 +370,11 @@ void TestingModule::ReadData()
 		}
 		else
 		{
+            cout << "::ReadData @loop buf[" << i << "] rlen != len " << rLen << "," << len << endl;
 			m_bufferFailures++;
 		}
 
+        // BUG: this code does not really handle rLen >= len
 		if (rLen >= len) //start splitting buffer into IQ samples
 		{
 			rLen = len;
@@ -435,9 +451,9 @@ void TestingModule::ReadData()
 	// Wait for all the queued requests to be canceled
 	for(int j=0; j<QueueSize; j++)
 	{
-		rLen = len;
 		device->WaitForReading(contexts[i], 20);
-		device->FinishDataReading(m_Buffers[i], rLen, contexts[i]);
+		rLen = device->FinishDataReading(m_Buffers[i], len, contexts[i]);
+		if (rLen != len) cout << "::ReadData @cleanup buf[" << i << "] rlen != len " << rLen << "," << len << endl;
 		delete[] m_Buffers[i];
 		i = (i + 1) & iQueueSizeMask;
 	}
@@ -528,15 +544,14 @@ void TestingModule::ReadData_DigiRed()
     long iq_select_errors_secondary = 0;
 	while (readingData)
 	{
-		// Reset this each time through because FinishDataReading may modify it
-		rLen = len;
 		if(!device->WaitForReading(contexts[i], 100))
 		{
 			//device->AbortReading();
 			m_bufferFailures++;
 		}
 		// Must always call FinishDataXfer to release memory of contexts[i]
-		if (device->FinishDataReading(m_Buffers[i], rLen, contexts[i]))
+		rLen = device->FinishDataReading(m_Buffers[i], len, contexts[i]);
+		if (rLen == len)
   		{
 			packetReceived++;
 			t2 = GetTickCount();
@@ -553,9 +568,11 @@ void TestingModule::ReadData_DigiRed()
 		}
 		else
 		{
+            cout << "::ReadData @loop buf[" << i << "] rlen != len " << rLen << "," << len << endl;
 			m_bufferFailures++;
 		}
 
+        // BUG: this doesn't really handle rLen>len
 		if (rLen >= len) //start splitting buffer into IQ samples
 		{
 			rLen = len;
@@ -678,9 +695,9 @@ void TestingModule::ReadData_DigiRed()
 	// Wait for all the queued requests to be canceled
 	for(int j=0; j<QueueSize; ++j)
 	{
-		rLen = len;
 		device->WaitForReading(contexts[i], 20);
-		device->FinishDataReading(m_Buffers[i], rLen, contexts[i]);
+		rLen = device->FinishDataReading(m_Buffers[i], len, contexts[i]);
+		if (rLen != len) cout << "::ReadData @cleanup buf[" << i << "] rlen != len " << rLen << "," << len << endl;
 		delete[] m_Buffers[i];
 		i = (i + 1) & iQueueSizeMask;
 	}

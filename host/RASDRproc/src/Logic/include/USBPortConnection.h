@@ -64,7 +64,7 @@ public:
 	{
 		#ifdef WIN32
 		inOvLap = new OVERLAPPED;
-		inOvLap->hEvent = CreateEvent(NULL, false, false, NULL);
+		inOvLap->hEvent = CreateEvent(NULL, true, false, NULL);    // manual-reset, non-signalled
 		context = NULL;
 		#else
 		transfer = libusb_alloc_transfer(64);
@@ -82,7 +82,7 @@ public:
 		libusb_free_transfer(transfer);
 		#endif
 	}
-	bool used;
+	volatile long used;  // NB: needs to be long to be able to use InterlockedExchange()
 	#ifdef WIN32
 	PUCHAR context;
 	OVERLAPPED *inOvLap;
@@ -104,6 +104,7 @@ public:
 	int Open();
 	int Open(unsigned index);
 	void Close();
+	void Reset();
 	bool IsOpen();
 
 	int SendData(const unsigned char *buffer, int length);
@@ -111,12 +112,13 @@ public:
 
 	int BeginDataReading(unsigned char *buffer, long length);
 	int WaitForReading(int contextHandle, unsigned int timeout_ms);
-	int FinishDataReading(unsigned char *buffer, long &length, int contextHandle);
+	int FinishDataReading(unsigned char *buffer, long length, int contextHandle);
 	void AbortReading();
+	void ResetReading();
 
 	int BeginDataSending(unsigned char *buffer, long length);
 	int WaitForSending(int contextHandle, unsigned int timeout_ms);
-	int FinishDataSending(unsigned char *buffer, long &length, int contextHandle);
+	int FinishDataSending(unsigned char *buffer, long length, int contextHandle);
 	void AbortSending();
 
 	int GetConnectionType();

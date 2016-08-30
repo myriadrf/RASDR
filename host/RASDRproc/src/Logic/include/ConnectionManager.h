@@ -74,9 +74,10 @@ public:
 	~ConnectionManager();
 	int Initialize();
 	void DevicesChanged();
-	int Open();
-	int Open(unsigned int i);
-	int Close();
+	int Open(bool locked=false);
+	int Open(unsigned int i,bool locked=false);
+	int Close(bool locked=false);
+	void Reset();
 	bool IsOpen();
 	bool SetConnectionType(enumPortType Type);
 
@@ -96,12 +97,13 @@ public:
 
     int BeginDataReading(unsigned char *buffer, long length);
 	int WaitForReading(int contextHandle, unsigned int timeout_ms);
-	int FinishDataReading(unsigned char *buffer, long &length, int contextHandle);
+	int FinishDataReading(unsigned char *buffer, long length, int contextHandle);
 	void AbortReading();
+	void ResetReading();
 
     int BeginDataSending(const unsigned char *buffer, long length);
 	int WaitForSending(int contextHandle, unsigned int timeout_ms);
-	int FinishDataSending(const unsigned char *buffer, long &length, int contextHandle);
+	int FinishDataSending(const unsigned char *buffer, long length, int contextHandle);
 	void AbortSending();
 
 	int GetConnectionType();

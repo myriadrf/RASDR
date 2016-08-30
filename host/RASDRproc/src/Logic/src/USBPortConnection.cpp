@@ -20,6 +20,20 @@
 
 #endif
 
+//#include <assert.h>   // this would crash the program
+#if 0                   // TODO: ongoing debug
+void __assert(bool A, const char *TA, const char *F, int L)
+{
+    if(!A)
+    {
+        cout << "Assertion Failed: " << TA << " @" << F << "(" << L << ")" << endl;
+    }
+}
+#define assert(A)   __assert((A),#A,__FILE__,__LINE__)
+#else
+#define assert(A)       // disconnect - it actually happens quite a bit...
+#endif
+
 #define HW_DIGIRED "DigiRed"
 #define HW_DIGIGREEN "DigiGreen"
 
@@ -119,18 +133,18 @@ int USBPortConnection::Open()
 int USBPortConnection::Open(unsigned index)
 {
 #ifdef WIN32
-	unsigned short vID;
-	unsigned short pID;
-	wstring m_hardwareDesc = L"";
-	int devicesFound = 0;
-	if( index < USBDevicePrimary->DeviceCount())
-	{
-		if(USBDevicePrimary->Open(index))
-		{
+    unsigned short vID;
+    unsigned short pID;
+    wstring m_hardwareDesc = L"";
+    int devicesFound = 0;
+    if( index < USBDevicePrimary->DeviceCount())
+    {
+        if(USBDevicePrimary->Open(index))
+        {
 
-			vID = USBDevicePrimary->VendorID;
-			pID = USBDevicePrimary->ProductID;
-			switch (vID) {
+            vID = USBDevicePrimary->VendorID;
+            pID = USBDevicePrimary->ProductID;
+            switch (vID) {
             case 0X1D50: //SARA VID
                 if(pID != 0X6099) { //SARA Rx PID
                         cout << "Invalid Driver" << endl;
@@ -148,7 +162,7 @@ int USBPortConnection::Open(unsigned index)
             default: {
                 cout << "Invalid Driver" << endl;
                 return(0); }
-			}
+            }
 /*
 			//check if vendor and product ID matches
 //			if( vID != 1204 )
@@ -278,8 +292,8 @@ int USBPortConnection::Open(unsigned index)
                 return true;
             }
             return false;
-		} //successfully opened device
-	} //if has devices
+        } //successfully opened device
+    } //if has devices
     return 0;
 #else
     int usbDeviceCount = libusb_get_device_list(ctx, &devs);;
@@ -323,14 +337,24 @@ int USBPortConnection::Open(unsigned index)
 void USBPortConnection::Close()
 {
     #ifdef WIN32
-	USBDevicePrimary->Close();
-	InEndPt = NULL;
-	OutEndPt = NULL;
+    USBDevicePrimary->Close();
+    InEndPt = NULL;
+    OutEndPt = NULL;
     #else
     int r = libusb_release_interface(dev_handle, 0);
     libusb_close(dev_handle);
     #endif
     isConnected = false;
+}
+
+/**
+	@brief Closes communication to device.
+*/
+void USBPortConnection::Reset()
+{
+    #ifdef WIN32
+    USBDevicePrimary->Reset();
+    #endif
 }
 
 /**
@@ -427,18 +451,18 @@ int USBPortConnection::ReadData(unsigned char *buffer, int bytesRead)
 */
 void callback_libusbtransfer(libusb_transfer *trans)
 {
-	USBTransferContext *context = reinterpret_cast<USBTransferContext*>(trans->user_data);
-	switch(trans->status)
-	{
+    USBTransferContext *context = reinterpret_cast<USBTransferContext*>(trans->user_data);
+    switch(trans->status)
+    {
     case LIBUSB_TRANSFER_CANCELLED:
         //printf("Transfer canceled\n" );
         break;
     case LIBUSB_TRANSFER_COMPLETED:
         if(trans->actual_length == context->bytesExpected)
-		{
-			context->bytesXfered = trans->actual_length;
-			context->done = true;
-		}
+        {
+            context->bytesXfered = trans->actual_length;
+            context->done = true;
+        }
         break;
     case LIBUSB_TRANSFER_ERROR:
         //printf("TRANSFER ERRRO\n");
@@ -451,7 +475,7 @@ void callback_libusbtransfer(libusb_transfer *trans)
         //printf("transfer overflow\n");
 
         break;
-	}
+    }
 }
 #endif
 
@@ -464,31 +488,32 @@ void callback_libusbtransfer(libusb_transfer *trans)
 int USBPortConnection::BeginDataReading(unsigned char *buffer, long length)
 {
     int i = 0;
-	unsigned int Timeout = 1000;
-	bool contextFound = false;
-	//find not used context
+    unsigned int Timeout = 1000;
+    long used = 1;
+    // NB: the non-WIN32 build is broken now...
+    //find not used context
     for(i = 0; i<USB_MAX_CONTEXTS; i++)
     {
-        if(!contexts[i].used)
-        {
-            contextFound = true;
-            break;
-        }
+        used = InterlockedCompareExchange(&(contexts[i].used),1,0);
+        if(!used) break;
     }
-    if(!contextFound)
+    if(used)
         return -1;
-    contexts[i].used = true;
     #ifdef WIN32
     if(InEndPt)
+    {
+        assert(WaitForSingleObject(contexts[i].inOvLap->hEvent,0)==WAIT_TIMEOUT);
+        ResetEvent(contexts[i].inOvLap->hEvent);
         contexts[i].context = InEndPt->BeginDataXfer(buffer, length, contexts[i].inOvLap);
-	return i;
+    }
+    return i;
     #else
     libusb_transfer *tr = contexts[i].transfer;
     libusb_set_iso_packet_lengths(contexts[i].transfer, 512*64);
-	libusb_fill_bulk_transfer(tr, dev_handle, 0x86, buffer, length, callback_libusbtransfer, &contexts[i], Timeout);
-	contexts[i].done = false;
-	contexts[i].bytesXfered = 0;
-	contexts[i].bytesExpected = length;
+    libusb_fill_bulk_transfer(tr, dev_handle, 0x86, buffer, length, callback_libusbtransfer, &contexts[i], Timeout);
+    contexts[i].done = false;
+    contexts[i].bytesXfered = 0;
+    contexts[i].bytesExpected = length;
     libusb_submit_transfer(tr);
     #endif // WIN32
     return i;
@@ -502,24 +527,24 @@ int USBPortConnection::BeginDataReading(unsigned char *buffer, long length)
 */
 int USBPortConnection::WaitForReading(int contextHandle, unsigned int timeout_ms)
 {
-    if( contexts[contextHandle].used == true )
+    if( contexts[contextHandle].used )
     {
     #ifdef WIN32
-	int status = 0;
-	if(InEndPt)
+    bool status = false;
+    if(InEndPt)
         status = InEndPt->WaitForXfer(contexts[contextHandle].inOvLap, timeout_ms);
-	return status;
+    return status ? 1 : 0;
     #else
-	unsigned long t1, t2;
-	t2 = t1 = GetTickCount();
+    unsigned long t1, t2;
+    t2 = t1 = GetTickCount();
     while(contexts[contextHandle].bytesXfered < contexts[contextHandle].bytesExpected && (t2 - t1) < timeout_ms)
-	{
-		usleep(1000);
-		libusb_handle_events(ctx);
-		t2 = GetTickCount();
-	}
-	if((t2-t1) > timeout_ms)
-		return 0;
+    {
+        usleep(1000);
+        libusb_handle_events(ctx);
+        t2 = GetTickCount();
+    }
+    if((t2-t1) > timeout_ms)
+        return 0;
     return 1;
     #endif
     }
@@ -534,23 +559,27 @@ int USBPortConnection::WaitForReading(int contextHandle, unsigned int timeout_ms
 	@param contextHandle handle of which context to finish
 	@return false failure, true success
 */
-int USBPortConnection::FinishDataReading(unsigned char *buffer, long &length, int contextHandle)
+int USBPortConnection::FinishDataReading(unsigned char *buffer, long length, int contextHandle)
 {
-    if( contexts[contextHandle].used == true)
+    if( InterlockedExchange(&(contexts[contextHandle].used),0) )
     {
     #ifdef WIN32
-    int status;
-    if(InEndPt)
-        status = InEndPt->FinishDataXfer(buffer, length, contexts[contextHandle].inOvLap, contexts[contextHandle].context);
-    contexts[contextHandle].used = false;
-    return status;
+    bool status = false;
+    long len = length;
+    if(InEndPt && len > 0)
+    {
+        status = InEndPt->FinishDataXfer(buffer, len, contexts[contextHandle].inOvLap, contexts[contextHandle].context);
+        assert(WaitForSingleObject(contexts[contextHandle].inOvLap->hEvent,0)==WAIT_OBJECT_0);
+    }
+    ResetEvent(contexts[contextHandle].inOvLap->hEvent);
+    return len;
     #else
     //memset(buffer, 0, length);
     libusb_transfer *tr = contexts[contextHandle].transfer;
-	memcpy(buffer, tr->buffer, contexts[contextHandle].bytesXfered);
-	length = contexts[contextHandle].bytesXfered;
-	contexts[contextHandle].used = false;
-	return length;
+    memcpy(buffer, tr->buffer, contexts[contextHandle].bytesXfered);
+    length = contexts[contextHandle].bytesXfered;
+    contexts[contextHandle].used = false;
+    return length;
     #endif
     }
     else
@@ -563,9 +592,20 @@ int USBPortConnection::FinishDataReading(unsigned char *buffer, long &length, in
 void USBPortConnection::AbortReading()
 {
 #ifdef WIN32
-	InEndPt->Abort();
+    InEndPt->Abort();
 #endif
 }
+
+/**
+	@brief Reset reading endpoint
+*/
+void USBPortConnection::ResetReading()
+{
+#ifdef WIN32
+    InEndPt->Reset();
+#endif
+}
+
 
 /**
 	@brief Starts asynchronous data Sending to board
@@ -576,31 +616,32 @@ void USBPortConnection::AbortReading()
 int USBPortConnection::BeginDataSending(unsigned char *buffer, long length)
 {
     int i = 0;
-	unsigned int Timeout = 1000;
-	//find not used context
-	bool contextFound = false;
-     for(i = 0; i<USB_MAX_CONTEXTS; i++)
+    unsigned int Timeout = 1000;
+    //find not used context
+    long used = 1;
+    // NB: the non-WIN32 build is broken now...
+    for(i = 0; i<USB_MAX_CONTEXTS; i++)
     {
-        if(!contextsToSend[i].used)
-        {
-            contextFound = true;
-            break;
-        }
+        used = InterlockedCompareExchange(&(contextsToSend[i].used),1,0);
+        if(!used) break;
     }
-    if(!contextFound)
+    if(used)
         return -1;
-    contextsToSend[i].used = true;
     #ifdef WIN32
     if(OutEndPt)
+    {
+        assert(WaitForSingleObject(contextsToSend[i].inOvLap->hEvent,0)==WAIT_TIMEOUT);
+        ResetEvent(contextsToSend[i].inOvLap->hEvent);
         contextsToSend[i].context = OutEndPt->BeginDataXfer(buffer, length, contextsToSend[i].inOvLap);
-	return i;
+    }
+    return i;
     #else
     libusb_transfer *tr = contexts[i].transfer;
     libusb_set_iso_packet_lengths(contexts[i].transfer, 512*64);
-	libusb_fill_bulk_transfer(tr, dev_handle, 0x86, buffer, length, callback_libusbtransfer, &contexts[i], Timeout);
-	contexts[i].done = false;
-	contexts[i].bytesXfered = 0;
-	contexts[i].bytesExpected = length;
+    libusb_fill_bulk_transfer(tr, dev_handle, 0x86, buffer, length, callback_libusbtransfer, &contexts[i], Timeout);
+    contexts[i].done = false;
+    contexts[i].bytesXfered = 0;
+    contexts[i].bytesExpected = length;
     libusb_submit_transfer(tr);
     #endif // WIN32
     return i;
@@ -614,24 +655,24 @@ int USBPortConnection::BeginDataSending(unsigned char *buffer, long length)
 */
 int USBPortConnection::WaitForSending(int contextHandle, unsigned int timeout_ms)
 {
-    if( contextsToSend[contextHandle].used == true )
+    if( contextsToSend[contextHandle].used )
     {
     #ifdef WIN32
-	int status = 0;
-	if(OutEndPt)
+    int status = 0;
+    if(OutEndPt)
         status = OutEndPt->WaitForXfer(contextsToSend[contextHandle].inOvLap, timeout_ms);
-	return status;
+    return status;
     #else
-	unsigned long t1, t2;
-	t2 = t1 = GetTickCount();
+    unsigned long t1, t2;
+    t2 = t1 = GetTickCount();
     while(contextsToSend[contextHandle].bytesXfered < contextsToSend[contextHandle].bytesExpected && (t2 - t1) < timeout_ms)
-	{
-		usleep(1000);
-		libusb_handle_events(ctx);
-		t2 = GetTickCount();
-	}
-	if((t2-t1) > timeout_ms)
-		return 0;
+    {
+        usleep(1000);
+        libusb_handle_events(ctx);
+        t2 = GetTickCount();
+    }
+    if((t2-t1) > timeout_ms)
+        return 0;
     return 1;
     #endif
     }
@@ -646,23 +687,27 @@ int USBPortConnection::WaitForSending(int contextHandle, unsigned int timeout_ms
 	@param contextHandle handle of which context to finish
 	@return false failure, true success
 */
-int USBPortConnection::FinishDataSending(unsigned char *buffer, long &length, int contextHandle)
+int USBPortConnection::FinishDataSending(unsigned char *buffer, long length, int contextHandle)
 {
-    if( contextsToSend[contextHandle].used == true)
+    if( InterlockedExchange(&(contextsToSend[contextHandle].used),0) )
     {
     #ifdef WIN32
-	int status = 0;
-	if(OutEndPt)
-        status = OutEndPt->FinishDataXfer(buffer, length, contextsToSend[contextHandle].inOvLap, contextsToSend[contextHandle].context);
-    contextsToSend[contextHandle].used = false;
-    return length;
+    bool status = false;
+    long len = length;
+    if(OutEndPt && len > 0)
+    {
+        status = OutEndPt->FinishDataXfer(buffer, len, contextsToSend[contextHandle].inOvLap, contextsToSend[contextHandle].context);
+        assert(WaitForSingleObject(contextsToSend[contextHandle].inOvLap->hEvent,0)==WAIT_OBJECT_0);
+    }
+    ResetEvent(contextsToSend[contextHandle].inOvLap->hEvent);
+    return len;
     #else
     //memset(buffer, 0, length);
     libusb_transfer *tr = contextsToSend[contextHandle].transfer;
-	memcpy(buffer, tr->buffer, contextsToSend[contextHandle].bytesXfered);
-	length = contextsToSend[contextHandle].bytesXfered;
-	contextsToSend[contextHandle].used = false;
-	return length;
+    memcpy(buffer, tr->buffer, contextsToSend[contextHandle].bytesXfered);
+    length = contextsToSend[contextHandle].bytesXfered;
+    contextsToSend[contextHandle].used = false;
+    return length;
     #endif
     }
     else
@@ -675,7 +720,7 @@ int USBPortConnection::FinishDataSending(unsigned char *buffer, long &length, in
 void USBPortConnection::AbortSending()
 {
 #ifdef WIN32
-	OutEndPt->Abort();
+    OutEndPt->Abort();
 #endif
 }
 
@@ -702,14 +747,14 @@ int USBPortConnection::CurrentDevice()
 */
 string USBPortConnection::DeviceName()
 {
-	#ifdef WIN32
-	string name;
-	char tempName [256];
-	//memcpy(&tempName, &USBDevicePrimary->DeviceName, 256);
-	for(int i=0; i<256; ++i)
-	{
-		tempName[i] = USBDevicePrimary->DeviceName[i];
-	}
+    #ifdef WIN32
+    string name;
+    char tempName [256];
+    //memcpy(&tempName, &USBDevicePrimary->DeviceName, 256);
+    for(int i=0; i<256; ++i)
+    {
+        tempName[i] = USBDevicePrimary->DeviceName[i];
+    }
     name = tempName;
     return name;
     #else
@@ -771,15 +816,19 @@ void USBPortConnection::FindAllUSBDevices()
             {
                 unsigned char tbuf[64];
                 long len = 64;
+                char *sn = (char *)&tbuf[2];
                 memset(tbuf, 0, len);
                 tbuf[0] = CMD_GET_INFO;
                 SendData(tbuf, len);
                 ReadData(tbuf, len);
 
                 if(tbuf[0] == 1)
-                    name.append( " (Transmitter)" );
+                    name.append( " (Transmitter) " );
                 else
-                    name.append( " (Receiver)" );
+                    name.append( " (Receiver) " );
+                //tbuf[2..9] contain the SN
+                tbuf[10] = '\0';    // ensure NUL
+                name.append( sn, 8 );
             }
             m_deviceNames.push_back(name);
         }

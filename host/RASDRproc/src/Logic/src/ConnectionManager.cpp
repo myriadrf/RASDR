@@ -42,13 +42,40 @@
 #define USB_BUFFER_LENGTH 64
 using namespace std;
 
+#if 0
+void _pthread_mutex_init(pthread_mutex_t *m, const pthread_mutexattr_t *a, const char *file, int line)
+{
+    cout << "pthread_mutex_init(" << std::hex << m << ",) @" << file << "(" << std::dec << line << ")" << endl;
+    pthread_mutex_init(m,a);
+}
+void _pthread_mutex_lock(pthread_mutex_t *m, const char *file, int line)
+{
+    cout << "pthread_mutex_lock(" << std::hex << m << ") @" << file << "(" << std::dec << line << ")" << endl;
+    pthread_mutex_lock(m);
+}
+void _pthread_mutex_unlock(pthread_mutex_t *m, const char *file, int line)
+{
+    cout << "pthread_mutex_unlock(" << std::hex << m << ") @" << file << "(" << std::dec << line << ")" << endl;
+    pthread_mutex_unlock(m);
+}
+void _pthread_mutex_destroy(pthread_mutex_t *m, const char *file, int line)
+{
+    cout << "pthread_mutex_destroy(" << std::hex << m << ") @" << file << "(" << std::dec << line << ")" << endl;
+    pthread_mutex_destroy(m);
+}
+#define pthread_mutex_init(M,A)  _pthread_mutex_init(M,A, __FILE__,__LINE__)
+#define pthread_mutex_lock(M)    _pthread_mutex_lock(M,   __FILE__,__LINE__)
+#define pthread_mutex_unlock(M)  _pthread_mutex_unlock(M, __FILE__,__LINE__)
+#define pthread_mutex_destroy(M) _pthread_mutex_destroy(M,__FILE__,__LINE__)
+#endif  /* Mutex Debug */
+
 /**
 	@brief Setups available connection types.
 	@param pMainModule Pointer to main module;
 */
 ConnectionManager::ConnectionManager(Main_Module *pMainModule = NULL)
 {
-    pthread_mutex_init(&CriticalSection, NULL);
+	pthread_mutex_init(&CriticalSection, NULL);
 	chipConnected = false;
 	pMain = pMainModule;
 	port = new IConnection();
@@ -65,7 +92,11 @@ ConnectionManager::~ConnectionManager()
 {
 	for(int i=0; i<connectionPorts.size(); i++)
 		delete connectionPorts[i];
-    pthread_mutex_destroy(&CriticalSection);
+	connectionPorts.clear();
+	chipConnected = false;
+	pMain = NULL;
+	delete port;
+	pthread_mutex_destroy(&CriticalSection);
 }
 
 /**
@@ -73,18 +104,17 @@ ConnectionManager::~ConnectionManager()
 */
 void ConnectionManager::DevicesChanged()
 {
+	pthread_mutex_lock(&CriticalSection);
 	if(port->GetConnectionType() == -1)
 	{
-		Open();
+		Open(true);
 		//set to false to indicate that there was no previously connected chip
 		chipConnected = false;
 	}
 	else
-    {
-        port->DevicesChanged();
-    }
-
-
+	{
+		port->DevicesChanged();
+	}
 	if(chipConnected == false && port->IsOpen() )
 	{
 		pMain->UpdateInterface(SHOW_LOG_MESSAGE, "Chip has been connected");
@@ -100,6 +130,7 @@ void ConnectionManager::DevicesChanged()
 		chipConnected = false;
 		pMain->UpdateVerRevMask();
 	}
+	pthread_mutex_unlock(&CriticalSection);
 }
 
 /**
@@ -116,18 +147,21 @@ int ConnectionManager::Initialize()
 	@brief Automatically finds connected chip and opens connection to it.
 	@return 1 - success, 0 - failure.
 */
-int ConnectionManager::Open()
+int ConnectionManager::Open(bool locked)
 {
-	Close();
+	if( !locked ) pthread_mutex_lock(&CriticalSection);
+	Close(true);
 	for(int i=0; i<connectionPorts.size(); i++)
 	{
 		if( connectionPorts[i]->Open() )
 		{
 			port = connectionPorts[i];
 			chipConnected = true;
+			if( !locked ) pthread_mutex_unlock(&CriticalSection);
 			return 1;
 		}
 	}
+	if( !locked ) pthread_mutex_unlock(&CriticalSection);
 	return 0;
 }
 
@@ -136,14 +170,17 @@ int ConnectionManager::Open()
 	@param i Index of device.
 	@return 1 - success, 0 -failure.
 */
-int ConnectionManager::Open(unsigned int i)
+int ConnectionManager::Open(unsigned int i, bool locked)
 {
-	Close();
+	if( !locked ) pthread_mutex_lock(&CriticalSection);
+	Close(true);
 	if( i < port->DeviceCount() )
 	{
 		chipConnected = port->Open(i);
+		if( !locked ) pthread_mutex_unlock(&CriticalSection);
 		return chipConnected;
 	}
+	if( !locked ) pthread_mutex_unlock(&CriticalSection);
 	return 0;
 }
 
@@ -151,11 +188,23 @@ int ConnectionManager::Open(unsigned int i)
 	@brief Close opened port.
 	@return 0 - success.
 */
-int ConnectionManager::Close()
+int ConnectionManager::Close(bool locked)
 {
+	if( !locked ) pthread_mutex_lock(&CriticalSection);
 	chipConnected = false;
 	port->Close();
+	if( !locked ) pthread_mutex_unlock(&CriticalSection);
 	return 0;
+}
+
+/**
+	@brief Reset port.
+*/
+void ConnectionManager::Reset()
+{
+	pthread_mutex_lock(&CriticalSection);
+	port->Reset();
+	pthread_mutex_unlock(&CriticalSection);
 }
 
 /**
@@ -164,7 +213,11 @@ int ConnectionManager::Close()
 */
 bool ConnectionManager::IsOpen()
 {
-	return port->IsOpen();
+	bool status;
+	pthread_mutex_lock(&CriticalSection);
+	status = port->IsOpen();
+	pthread_mutex_unlock(&CriticalSection);
+	return status;
 }
 
 /**
@@ -174,13 +227,16 @@ bool ConnectionManager::IsOpen()
 */
 bool ConnectionManager::SetConnectionType(enumPortType Type)
 {
+	bool status = false;
+	pthread_mutex_lock(&CriticalSection);
 	if(Type < connectionPorts.size())
 	{
 		port = connectionPorts[Type];
 		chipConnected = port->Open();
-		return true;
+		status = true;
 	}
-	return false;
+	pthread_mutex_unlock(&CriticalSection);
+	return status;
 }
 
 /**
@@ -188,11 +244,12 @@ bool ConnectionManager::SetConnectionType(enumPortType Type)
 */
 void ConnectionManager::SPI_Rst()
 {
-    pthread_mutex_lock(&CriticalSection);
 	unsigned char buf = 0x10;
 	bool rez;
 	unsigned char Buf[USB_BUFFER_LENGTH];
+
 	memset(Buf, 0, USB_BUFFER_LENGTH);
+	pthread_mutex_lock(&CriticalSection);
 	if (port->GetConnectionType() == COM_PORT)
 	{
 		rez = port->SendData(&buf, 1);
@@ -200,7 +257,7 @@ void ConnectionManager::SPI_Rst()
 	else if (port->GetConnectionType() == USB_PORT)
 	{
 		//Reset of LMS6002D is controlled via FPGA
-  		Buf[0] = CMD_LMS_RESET;
+		Buf[0] = CMD_LMS_RESET;
 		Buf[1] = SC18IS602_ADDR;
 		Buf[2] = 2;
 		Buf[4] = 0x00;  //LMS Reset is Active
@@ -217,11 +274,12 @@ void ConnectionManager::SPI_Rst()
 */
 void ConnectionManager::SPI_RstAct()
 {
-    pthread_mutex_lock(&CriticalSection);
 	unsigned char buf = 0x11;
 	bool rez;
 	unsigned char Buf[USB_BUFFER_LENGTH];
+
 	memset(Buf, 0, USB_BUFFER_LENGTH);
+	pthread_mutex_lock(&CriticalSection);
 	if (port->GetConnectionType() == COM_PORT)
 	{
 		rez = port->SendData(&buf, 1);
@@ -244,11 +302,12 @@ void ConnectionManager::SPI_RstAct()
 */
 void ConnectionManager::SPI_RstInact()
 {
-    pthread_mutex_lock(&CriticalSection);
 	unsigned char buf = 0x12;
 	bool rez;
 	unsigned char Buf[USB_BUFFER_LENGTH];
+
 	memset(Buf, 0, USB_BUFFER_LENGTH);
+	pthread_mutex_lock(&CriticalSection);
 	if (port->GetConnectionType() == COM_PORT)
 	{
 		rez = port->SendData(&buf, 1);
@@ -276,9 +335,9 @@ bool ConnectionManager::SPI_Read(sPrData *pPD)
 	unsigned char *buf = new unsigned char[CONNECTION_BUFFER_SIZE];
 	unsigned char *inBuf = new unsigned char[CONNECTION_BUFFER_SIZE];
 	int bytesRead = pPD->iToR;
-
 	bool rez;
 	int itmp = 0;
+
 	memset(buf, 0, CONNECTION_BUFFER_SIZE);
 	memset(inBuf, 0, CONNECTION_BUFFER_SIZE);
 
@@ -290,7 +349,7 @@ bool ConnectionManager::SPI_Read(sPrData *pPD)
 	};
 
 	// Write commands
-	rez = ReadData(buf, pPD->iToR, inBuf, bytesRead);
+	rez = ReadData(buf, pPD->iToR, inBuf, bytesRead);   // NB: ReadData is mutex protected
 
 	// Read Data from Chip
 	for (int j = 0; j < pPD->iToR && j < bytesRead; j++)
@@ -300,7 +359,6 @@ bool ConnectionManager::SPI_Read(sPrData *pPD)
 
 	delete[]buf;
 	delete[]inBuf;
-
 	return rez;
 }
 
@@ -312,16 +370,15 @@ bool ConnectionManager::SPI_Read(sPrData *pPD)
 char ConnectionManager::SPI_Read_OneByte(const unsigned char Command)
 {
 	unsigned char *buf = new unsigned char[CONNECTION_BUFFER_SIZE];
-    int bytesRead = 1;
-
+	int bytesRead = 1;
 	bool rez;
 	char cRez;
+
 	memset(buf, 0x0, CONNECTION_BUFFER_SIZE);
-
-	rez = ReadData(&Command, 1, buf, bytesRead);
+	rez = ReadData(&Command, 1, buf, bytesRead);    // NB: ReadData is mutex protected
 	cRez = buf[0];
-	delete[]buf;
 
+	delete[]buf;
 	return cRez;
 }
 
@@ -333,7 +390,6 @@ bool ConnectionManager::SPI_Write(sPrData *pPD)
 {
 	int bytesToSend = 2 * pPD->iToW;
 	unsigned char *buf = new unsigned char[bytesToSend];
-
 	bool rez;
 	int ind = 0;
 
@@ -345,7 +401,8 @@ bool ConnectionManager::SPI_Write(sPrData *pPD)
 		ind++;
 	};
 
-	rez = SendData(buf, bytesToSend);
+	rez = SendData(buf, bytesToSend);   // NB: SendData is mutex protected
+
 	delete[]buf;
 	return rez;
 }
@@ -356,12 +413,12 @@ bool ConnectionManager::SPI_Write(sPrData *pPD)
 */
 void ConnectionManager::SPI_Wr_ADF(sPrData *pPD)
 {
-    pthread_mutex_lock(&CriticalSection);
     unsigned char *buf = new unsigned char[64];
     memset(buf, 0, 64);
     bool rez;
     int ind = 0;
 
+    pthread_mutex_lock(&CriticalSection);
     if(port->GetConnectionType() == 0)
     {
         buf[0] = 0xAD;
@@ -388,8 +445,8 @@ void ConnectionManager::SPI_Wr_ADF(sPrData *pPD)
         rez = port->SendData(buf, 64);
         rez = port->ReadData(buf, 64);
     }
-    delete[] buf;
     pthread_mutex_unlock(&CriticalSection);
+    delete[] buf;
 };
 
 /**
@@ -399,14 +456,18 @@ void ConnectionManager::SPI_Wr_ADF(sPrData *pPD)
 */
 int ConnectionManager::SendData(const unsigned char *buffer, int &length)
 {
-    pthread_mutex_lock(&CriticalSection);
 	int rez = 0;
 	unsigned char outBuffer[CONNECTION_BUFFER_SIZE];
-	memset(outBuffer, 0, CONNECTION_BUFFER_SIZE);
 	int bytesToWrite = length;
 	int bytesWritten = 0;
+
+	memset(outBuffer, 0, CONNECTION_BUFFER_SIZE);
+	pthread_mutex_lock(&CriticalSection);
 	if(port == NULL)
+	{
+		pthread_mutex_unlock(&CriticalSection);
 		return 0;
+	}
 	if (port->GetConnectionType() == COM_PORT)
 	{
 		outBuffer[0] = 0x30;
@@ -434,10 +495,10 @@ int ConnectionManager::SendData(const unsigned char *buffer, int &length)
 		}
 		rez = port->SendData(outBuffer, USB_BUFFER_LENGTH);
 		if(!rez) // if sending failed
-        {
-            pthread_mutex_unlock(&CriticalSection);
-            return 0;
-        }
+		{
+			pthread_mutex_unlock(&CriticalSection);
+			return 0;
+		}
 		// after writing, chip sends back empty buffer
 		int bytesReadback = port->ReadData(outBuffer, USB_BUFFER_LENGTH);
 	}
@@ -455,15 +516,19 @@ int ConnectionManager::SendData(const unsigned char *buffer, int &length)
 */
 int ConnectionManager::ReadData(const unsigned char *readCommands, int cmdCount, unsigned char *readBuffer, int &bytesToRead)
 {
-    pthread_mutex_lock(&CriticalSection);
 	unsigned char outBuffer[CONNECTION_BUFFER_SIZE];
-	memset(outBuffer, 0, CONNECTION_BUFFER_SIZE);
 	unsigned char *recBuffer = new unsigned char[CONNECTION_BUFFER_SIZE];
-	memset(recBuffer, 0, CONNECTION_BUFFER_SIZE);
-
 	int rez = false;
+
+	memset(recBuffer, 0, CONNECTION_BUFFER_SIZE);
+	memset(outBuffer, 0, CONNECTION_BUFFER_SIZE);
+
+	pthread_mutex_lock(&CriticalSection);
 	if(port == NULL)
+	{
+		pthread_mutex_unlock(&CriticalSection);
 		return 0;
+	}
 	if (port->GetConnectionType() == COM_PORT) // if USB selected
 	{
 		// Construct write (uC->Chip) commands
@@ -473,17 +538,17 @@ int ConnectionManager::ReadData(const unsigned char *readCommands, int cmdCount,
 		// Write commands
 		rez = port->SendData(outBuffer, cmdCount+1);
 		if(rez == 0)
-        {
-            pthread_mutex_unlock(&CriticalSection);
+		{
+			pthread_mutex_unlock(&CriticalSection);
 			return 0;
-        }
+		}
 
 		rez = port->ReadData(recBuffer, bytesToRead);
 		if(rez == 0)
-        {
-            pthread_mutex_unlock(&CriticalSection);
+		{
+			pthread_mutex_unlock(&CriticalSection);
 			return 0;
-        }
+		}
 	}
 	else if (port->GetConnectionType() == USB_PORT) // if USB selected
 	{
@@ -505,17 +570,17 @@ int ConnectionManager::ReadData(const unsigned char *readCommands, int cmdCount,
 		}
 		rez = port->SendData(outBuffer, USB_BUFFER_LENGTH);
 		if(!rez) // if sending failed
-        {
-            pthread_mutex_unlock(&CriticalSection);
+		{
+			pthread_mutex_unlock(&CriticalSection);
 			return 0;
-        }
+		}
 
 		rez = port->ReadData(outBuffer, USB_BUFFER_LENGTH);
 		if(!rez) // if reading failed
-        {
-            pthread_mutex_unlock(&CriticalSection);
+		{
+			pthread_mutex_unlock(&CriticalSection);
 			return 0;
-        }
+		}
 
 		for(int j=0; j<USB_BUFFER_LENGTH; j++)
 		{
@@ -527,9 +592,8 @@ int ConnectionManager::ReadData(const unsigned char *readCommands, int cmdCount,
 	{
 		readBuffer[i] = recBuffer[i];
 	}
-
-	delete[]recBuffer;
 	pthread_mutex_unlock(&CriticalSection);
+	delete[]recBuffer;
 	return rez;
 }
 
@@ -541,8 +605,9 @@ int ConnectionManager::ReadData(const unsigned char *readCommands, int cmdCount,
 */
 int ConnectionManager::SendDataDirectly(const unsigned char *buffer, long &length)
 {
-    pthread_mutex_lock(&CriticalSection);
-	int status = port->SendData(buffer, length);
+	int status;
+	pthread_mutex_lock(&CriticalSection);
+	status = port->SendData(buffer, length);
 	pthread_mutex_unlock(&CriticalSection);
 	return status;
 }
@@ -555,8 +620,9 @@ int ConnectionManager::SendDataDirectly(const unsigned char *buffer, long &lengt
 */
 int ConnectionManager::ReadDataDirectly(unsigned char *buffer, long &bytesRead)
 {
-    pthread_mutex_lock(&CriticalSection);
-	int status = port->ReadData(buffer, bytesRead);
+	int status;
+	pthread_mutex_lock(&CriticalSection);
+	status = port->ReadData(buffer, bytesRead);
 	pthread_mutex_unlock(&CriticalSection);
 	return status;
 }
@@ -569,7 +635,11 @@ int ConnectionManager::ReadDataDirectly(unsigned char *buffer, long &bytesRead)
 */
 int ConnectionManager::BeginDataReading(unsigned char *buffer, long length)
 {
-    return port->BeginDataReading(buffer, length);
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->BeginDataReading(buffer, length);
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 /**
     @brief Blocks until data is received or set number of milliseconds have passed.
@@ -579,7 +649,11 @@ int ConnectionManager::BeginDataReading(unsigned char *buffer, long length)
 */
 int ConnectionManager::WaitForReading(int contextHandle, unsigned int timeout_ms)
 {
-    return port->WaitForReading(contextHandle, timeout_ms);
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->WaitForReading(contextHandle, timeout_ms);
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 /**
     @brief Finished asynchronous data reading.
@@ -588,17 +662,33 @@ int ConnectionManager::WaitForReading(int contextHandle, unsigned int timeout_ms
     @param contextHandle context handle returned by BeginDataReading()
     @return received data length
 */
-int ConnectionManager::FinishDataReading(unsigned char *buffer, long &length, int contextHandle)
+int ConnectionManager::FinishDataReading(unsigned char *buffer, long length, int contextHandle)
 {
-    return port->FinishDataReading(buffer, length, contextHandle);
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->FinishDataReading(buffer, length, contextHandle);
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 
 /**
-	@brief Aborts reading operations
+    @brief Aborts reading operations
 */
 void ConnectionManager::AbortReading()
 {
-	port->AbortReading();
+    pthread_mutex_lock(&CriticalSection);
+    port->AbortReading();
+    pthread_mutex_unlock(&CriticalSection);
+}
+
+/**
+    @brief Reset reading endpoint
+*/
+void ConnectionManager::ResetReading()
+{
+    pthread_mutex_lock(&CriticalSection);
+    port->ResetReading();
+    pthread_mutex_unlock(&CriticalSection);
 }
 
 /**
@@ -609,7 +699,11 @@ void ConnectionManager::AbortReading()
 */
 int ConnectionManager::BeginDataSending(const unsigned char *buffer, long length)
 {
-    return port->BeginDataSending(buffer, length);
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->BeginDataSending(buffer, length);
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 /**
     @brief Blocks until data is received or set number of miliseconds have passed.
@@ -619,7 +713,11 @@ int ConnectionManager::BeginDataSending(const unsigned char *buffer, long length
 */
 int ConnectionManager::WaitForSending(int contextHandle, unsigned int timeout_ms)
 {
-    return port->WaitForSending(contextHandle, timeout_ms);
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->WaitForSending(contextHandle, timeout_ms);
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 /**
     @brief Finished asynchronous data sending.
@@ -628,98 +726,120 @@ int ConnectionManager::WaitForSending(int contextHandle, unsigned int timeout_ms
     @param contextHandle context handle returned by BeginDataReading()
     @return received data length
 */
-int ConnectionManager::FinishDataSending(const unsigned char *buffer, long &length, int contextHandle)
+int ConnectionManager::FinishDataSending(const unsigned char *buffer, long length, int contextHandle)
 {
-    return port->FinishDataSending(buffer, length, contextHandle);
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->FinishDataSending(buffer, length, contextHandle);
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 
 /**
-	@brief Aborts sending operations
+    @brief Aborts sending operations
 */
 void ConnectionManager::AbortSending()
 {
-	port->AbortSending();
+    pthread_mutex_lock(&CriticalSection);
+    port->AbortSending();
+    pthread_mutex_unlock(&CriticalSection);
 }
 
 /**
-	@return connection type.
+    @return connection type.
 */
 int ConnectionManager::GetConnectionType()
 {
-	return port->GetConnectionType();
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->GetConnectionType();
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 
 /**
-	Returns Currently used port index in the port list.
-	@return Port index.
+    Returns Currently used port index in the port list.
+    @return Port index.
 */
 int ConnectionManager::CurrentDevice()
 {
-	return port->CurrentDevice();
+    int status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->CurrentDevice();
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 
 /**
-	@brief Returns vector of connected devices names.
-	@return devices names list
+    @brief Returns vector of connected devices names.
+    @return devices names list
 */
 vector<string> ConnectionManager::GetDeviceList()
 {
-	return port->GetDeviceList();
+    vector<string> status;
+    pthread_mutex_lock(&CriticalSection);
+    status = port->GetDeviceList();
+    pthread_mutex_unlock(&CriticalSection);
+    return status;
 }
 
 /**
-	Loads connection settings from configuration file.
+    Loads connection settings from configuration file.
 */
 int ConnectionManager::LoadSettings(string configFilename)
 {
-	return 0;
+    return 0;
 }
 
 /**
-	Saves connection settings to configuration file
+    Saves connection settings to configuration file
 */
 int ConnectionManager::SaveSettings(string configFilename)
 {
-	return 0;
+    return 0;
 }
 
 int ConnectionManager::SetCustomParameter(string paramName, void *value)
 {
-	port->SetCustomParameter(paramName, value);
-	return 0;
+    pthread_mutex_lock(&CriticalSection);
+    port->SetCustomParameter(paramName, value);
+    pthread_mutex_unlock(&CriticalSection);
+    return 0;
 }
 
 int ConnectionManager::GetCustomParameter(string paramName, void *value)
 {
-	port->GetCustomParameter(paramName, value);
-	return 0;
+    pthread_mutex_lock(&CriticalSection);
+    port->GetCustomParameter(paramName, value);
+    pthread_mutex_unlock(&CriticalSection);
+    return 0;
 }
 
 void ConnectionManager::SetBrdLNA(char Code)
 {
-    pthread_mutex_lock(&CriticalSection);
 	unsigned char Buf[USB_BUFFER_LENGTH];
 	bool rez;
 	memset(Buf, 0, USB_BUFFER_LENGTH);
 
+	pthread_mutex_lock(&CriticalSection);
 	if(port->GetConnectionType() == USB_PORT)   //if USB selected
 	{
-  		Buf[0] = CMD_SET_LNA;
+		Buf[0] = CMD_SET_LNA;
 		Buf[1] = 0x0;
 		Buf[2] = 1;
 		switch(Code)
 		{
 			case 1:
-				Buf[4] = 0x03;
+				Buf[4] = 0x03;  // Band V, LNA1, 0.3-2.8Ghz, 3.5dB NF
 				break;
 			case 2:
-				Buf[4] = 0x01;
+				Buf[4] = 0x01;  // Band XI, LNA2, 1.5-3.8GHz, 5.5dB NF
 				break;
 			case 3:
-				Buf[4] = 0x00;
+				Buf[4] = 0x00;  // Broadband, LNA3, 0.3-3.0GHz, 10dB NF
 				break;
 			default:
-				Buf[4] = 0x03;
+				Buf[4] = 0x02;  // 50ohm termination
 				break;
 		}
 
@@ -732,10 +852,10 @@ void ConnectionManager::SetBrdLNA(char Code)
 
 void ConnectionManager::SetBrdPA(char Code)
 {
-    pthread_mutex_lock(&CriticalSection);
 	unsigned char Buf[USB_BUFFER_LENGTH];
 	memset(Buf, 0, USB_BUFFER_LENGTH);
 
+	pthread_mutex_lock(&CriticalSection);
 	if( port->GetConnectionType() == USB_PORT)   //if USB selected
 	{
 		Buf[0] = CMD_SET_PA;

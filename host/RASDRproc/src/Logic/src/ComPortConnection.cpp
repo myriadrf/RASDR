@@ -371,13 +371,13 @@ int ComPortConnection::Open(const char *comName, int baudrate)
 	m_osROverlap.InternalHigh = 0;
 	m_osROverlap.Offset = 0;
 	m_osROverlap.OffsetHigh = 0;
-	m_osROverlap.hEvent = CreateEvent(NULL, false, false, NULL);
+	m_osROverlap.hEvent = CreateEvent(NULL, false, false, NULL);    // auto-reset, non-signalled
 
 	m_osWOverlap.Internal = 0;
 	m_osWOverlap.InternalHigh = 0;
 	m_osWOverlap.Offset = 0;
 	m_osWOverlap.OffsetHigh = 0;
-	m_osWOverlap.hEvent = CreateEvent(NULL, false, false, NULL);
+	m_osWOverlap.hEvent = CreateEvent(NULL, false, false, NULL);    // auto-reset, non-signalled
 
 	// Initialize DSB structure
 	memset(&m_dcbCommPort, 0, sizeof(m_dcbCommPort));
