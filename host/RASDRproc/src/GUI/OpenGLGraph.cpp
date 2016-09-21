@@ -44,6 +44,7 @@
 #include "GL/glu.h"
 #include "GLFont.h"
 #include "StaticFontHeader.h"
+#include "GUIUtils.h"   // for ShowMessage()
 using namespace std;
 
 #define OGL_REDRAW_ENABLED 0
@@ -115,21 +116,22 @@ OpenGLGraph::~OpenGLGraph()
 
 void OpenGLGraph::Initialize(int width, int height)
 {
+    GLenum e = glewInit();
+    if(e)
+    {
+        wxString Str;
+        Str.Format("OpenGLGraph::Initialize(%d,%d): glewInit() FAILS\n",width,height);
+        Str.Append(glewGetErrorString(e));
+        ShowMessage(Str);
+        exit(1);
+    }
     char tempc[256];
-	GLenum err = glewInit();
-//	cout << "OpenGLGraph Initialize" << endl;
-	if (GLEW_OK != err)
-	{
-		sprintf(tempc, "GLEW ERROR %s", glewGetErrorString(err));
-//		cout << tempc << endl;
-	}
+
     glEnable( GL_TEXTURE_2D );
 	glAlphaFunc(GL_GEQUAL, 0.3);
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
 
 	glClearColor(settings.backgroundColor.red, settings.backgroundColor.green,
 				settings.backgroundColor.blue, settings.backgroundColor.alpha);

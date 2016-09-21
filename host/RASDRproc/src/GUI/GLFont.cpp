@@ -34,6 +34,7 @@
 #include <sstream>
 #include <string.h>
 #include <vector>
+#include <iostream>
 using namespace std;
 
 GLFont::GLFont() : m_texID(0), m_vboID(0), m_glyphCount(256)
@@ -73,7 +74,13 @@ GLFont::~GLFont()
 */
 bool GLFont::load(const char* file)
 {
-    glewInit();
+    GLenum e = glewInit();
+    if(e)
+    {
+        cout << "GLFont::load(" << file << "): glewInit() FAILS" << endl
+             << glewGetErrorString(e) << endl << std::flush;
+        return false;
+    }
     fstream in;
     in.open(file, ios::in | ios::binary);
     char header[13];
@@ -165,7 +172,13 @@ bool GLFont::load(const char* file)
 
 bool GLFont::loadFromArray(const char* array, unsigned int size)
 {
-    glewInit();
+    GLenum e = glewInit();
+    if(e)
+    {
+        cout << "GLFont::loadFromArray(," << size << "): glewInit() FAILS" << endl
+             << glewGetErrorString(e) << endl << std::flush;
+        return false;
+    }
     stringstream in;
     in.str( string(array, size));
     char header[13];
