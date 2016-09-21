@@ -65,7 +65,7 @@ class FFTviewerFrame: public wxFrame
         FFTviewerFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~FFTviewerFrame();
 
-        static void UpdateInterface(int code, char *param);
+        static void UpdateInterface(int code, const char *param);
         void ShowChipVerRevMask(char ver, char rev, char mask);
         void PrintStatus(const char *msg);
         string DelayStr;

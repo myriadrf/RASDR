@@ -444,7 +444,7 @@ return;
 	@param code update code
 	@param *param additional params for code
 */
-void FFTviewerFrame::UpdateInterface(int code, char* param)
+void FFTviewerFrame::UpdateInterface(int code, const char* param)
 {
 	if(frmFFTMainWindow)
 	{
@@ -480,8 +480,15 @@ void FFTviewerFrame::UpdateInterface(int code, char* param)
 
 void FFTviewerFrame::ShowChipVerRevMask(char ver, char rev, char mask)
 {
+    char sn[512], *p;
+    memset(sn, 0, 512);
+    LMAL_DeviceName(sn, LMAL_CurrentDevice());
+    p = strrchr(sn,'-');    // "nnn-nnnnn"
+    if(p) p -= 3;
+    else { sprintf(sn,"UNKNOWN"); p = sn; }
+
 	char str[176];
-	sprintf(str, "Chip - ver: %i rev: %i mask: %i", ver, rev, mask);
+	sprintf(str, "Chip - ver:%i.%i.%i, Board - S/N:%s", ver, rev, mask, p);
 	mStatusBar->SetStatusText(str, 1);
 }
 
@@ -495,6 +502,10 @@ void FFTviewerFrame::PrintStatus(const char *msg)
 	{
 		mStatusBar->SetStatusText(msg, 2);
 	}
+	else
+    {
+        mStatusBar->SetStatusText("", 2);
+    }
 }
 
 void FFTviewerFrame::OnMenuItem7Selected(wxCommandEvent& event)
