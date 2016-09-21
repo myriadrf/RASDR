@@ -64,7 +64,7 @@ class rss:
         return to an index to the rest of the bytes
         that are actual data.
         '''
-        d =str(self.data[0:100],'ascii', 'ignore') #guess that metadata is in first 100 bytes
+        d = self.data[0:100].decode('ascii','ignore') #guess that metadata is in first 100 bytes
         i = d.find('|')
         center_frequency = float(d[1:i])
     
