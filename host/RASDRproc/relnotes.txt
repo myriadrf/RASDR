@@ -1,4 +1,4 @@
-RASDRproc v0.2.3.6 -  Aug 29, 2016
+RASDRproc v0.2.3.7 -  Sep 21, 2016
 ==================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -56,6 +56,15 @@ In addition, this version annotates the data rate and frame rate display with a 
 With v0.2.3.6, some aspects of this have changed.  Users have reported random application crashes and these appear to be related to thread-safety issues which are endemic in the code architecture.  A small amount of safety w/r/t the access to the endpoint data structures and the CyUSB library was put into place, and it seems to have a positive effect upon the liklihood of an application crash when stopping.  I have a low-spec development system in which USB3 operation is extremely marginal, calling for frequent resets of the USB device.
 
 
+Gain, Bandwidth and LNA Selection:
+
+With v0.2.3.7, some aspects of this have changed.  Changing gain values for the VGA and LNA as well as the LPF filter bandwidth now takes place immediately upon selection.  I.e. it is not required to 'Apply' which would cause an acquisition stop, configure and acquisition start cycle.  The only setting that requires an 'Apply' is the changing of the 'RF Ctr Freq' (and that is only due to more complex GUI issues than any actual restriction in the LMS6002D).  The 'Apply' button has been moved and renamed to be near the entry field.
+
+Further, with v0.2.3.7, the ability to select which LNA port is active on the LMS6002D chip is available.  However, testing has shown that LNA1 is the only viable port; LNA3 does not appear to provide a useful response in tests conducted at 408MHz (even though it *should*).  Additionally, the RX->LNA switching that is available on the DigiRed board is now exposed.  This means that the user can disconnect the LMS6002D from the RX input to measure internal system behavior.  NOTE: it does not provide a 50ohm input to the LNA, rather it provides a Hi-Z.  This is the way that the circuit is wired on the DigiRed, and identifies an area of inprovement in the next design.
+
+The bottom row status is updated to provide additional details on the specification of the input selected.
+
+
 Radio Sky Spectrograph Integration:
 
 This version supports a TCP/IP connection to allow Radio Sky Spectrograph to manage the display of a waterfall.  The protocol is described here:
@@ -104,3 +113,7 @@ Debugging this has identified thread safety issues due to concurrent access to t
 7) When using FFT plot markers, the font is not a fixed-width font, and so when there is a '1' displayed, the string shifts around and is distracting.  Need to figure out how to create and use a fixed-width font instead.  Some references:
 https://www.opengl.org/archives/resources/features/fontsurvey/#tmt
 http://diyhpl.us/~bryan/irc/darpa/avm/meta/meta/QRG/code-library/lisp/opengl/_devel/glfont2/glfont.htm
+
+8) If attempting to run RASDRproc on a machine via remote desktop, it can fail due to an OpenGL context not being available.  With v0.2.3.7, hopefully this will result in an informative message.  There should not be a reason why an OpenGL application cannot operate the same regardless of whether it is started on the console or via a remote desktop connection.  If the application is *already running*, there seems to be no problem with operating over remote desktop...
+
+9) LNA3 (which is now available to be used) does not seem to provide any meaningful response in the system.
