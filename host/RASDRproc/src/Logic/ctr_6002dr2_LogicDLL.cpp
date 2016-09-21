@@ -85,7 +85,7 @@ extern "C"
 	@param pCallbackFunction pointer to static function that takes two parameters:
 	integer as update code, and pointer to char array as additional parameters for that code.
 */
-CTR_6002DR2_API void LMAL_MainSetCallbackInterfaceUpdate(void (*pCallbackFunction)(int, char*) )
+CTR_6002DR2_API void LMAL_MainSetCallbackInterfaceUpdate(void (*pCallbackFunction)(int, const char*) )
 {
 //    cout << "Enter LML_MainSetCallback" << endl;
 	getMainModule()->updateInterfaceCallback = pCallbackFunction;
@@ -5680,6 +5680,35 @@ CTR_6002DR2_API void LMLL_RxFESetActiveLNA(int index)
 
 /**
 	@ingroup RxFE
+	@brief Switches what input is provided to the Rx front end
+	@param index value index from the list
+	- 0 : disconnected (50ohm termination on RX port, Hi-Z to LNAx)
+	- 1 : Band V, LNA1, 0.3-2.8Ghz, 3.5dB NF
+	- 2 : Band XI, LNA2, 1.5-3.8GHz, 5.5dB NF
+	- 3 : Broadband, LNA3, 0.3-3.0GHz, 10dB NF
+*/
+CTR_6002DR2_API void LMLL_RxFESelectInput(int index)
+{
+	getMainModule()->getRxFe()->CustSet_BoardLNA(index);
+}
+
+/**
+	@ingroup RxFE
+	@brief Interrogate what selection the Rx front end is set to
+	@param address of a character pointer to receive a description of the index
+	@return index value index from the list
+	- 0 : disconnected (50ohm termination on RX port, Hi-Z to LNAx)
+	- 1 : Band V, LNA1, 0.3-2.8Ghz, 3.5dB NF
+	- 2 : Band XI, LNA2, 1.5-3.8GHz, 5.5dB NF
+	- 3 : Broadband, LNA3, 0.3-3.0GHz, 10dB NF
+*/
+CTR_6002DR2_API int LMLL_RxFEQueryInput(const char **description)
+{
+    return (int)getMainModule()->getSerPort()->GetBrdLNA(description);
+}
+
+/**
+	@ingroup RxFE
 	@brief Enables or disables RxFE LNA
 	@param on LNA power on state
 */
@@ -7835,7 +7864,7 @@ CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize
 	@ingroup Testing
 	@brief Sets callback function for FFT window
 */
-CTR_6002DR2_API void LMLL_Testing_SetCallbackUpdateInterface(void (*pCallbackFunction)(int, char *))
+CTR_6002DR2_API void LMLL_Testing_SetCallbackUpdateInterface(void (*pCallbackFunction)(int, const char *))
 {
 	getMainModule()->getTesting()->updateInterfaceCallback = pCallbackFunction;
 }

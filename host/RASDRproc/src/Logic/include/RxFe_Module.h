@@ -68,6 +68,7 @@ class RxFe_Module
 	void RT_SetTestMask(char Mask);
 
 	void CustSet_ActiveLNA(int ind);
+	void CustSet_BoardLNA(int ind);
 	void PowerOn(bool on);
 	void LNAPowerOn(bool on);
 	void CustSet_cmbRDLINT_LNA_RXFE(int Ind);

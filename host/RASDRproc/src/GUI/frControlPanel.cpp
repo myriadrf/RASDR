@@ -536,7 +536,7 @@ void __fastcall frControlPanel::CMAutoDownload(TMessage &Message)
 // ----------------------------------------------------------------------------
 // Writes to the log
 // ----------------------------------------------------------------------------
-void frControlPanel::slLogMesg(char *msg)
+void frControlPanel::slLogMesg(const char *msg)
 {
 	lbMsgs->AppendText(msg);
 	lbMsgs->AppendText("\n");
@@ -775,7 +775,7 @@ void frControlPanel::UpdateVerRevMask()
 	sbMain->SetStatusText(Str, 1);
 }
 // ---------------------------------------------------------------------------
-void frControlPanel::UpdateInterface(int code, char *opt_Msg)
+void frControlPanel::UpdateInterface(int code, const char *opt_Msg)
 {
 	if(frmMain)
 	{

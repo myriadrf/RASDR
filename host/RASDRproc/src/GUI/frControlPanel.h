@@ -89,9 +89,9 @@ class frControlPanel: public wxFrame
         void mnuReadRVF_hexClick(wxCommandEvent& event);
         void mnuReadRVF_rfifClick(wxCommandEvent& event);
 
-        void slLogMesg(char *msg);
+        void slLogMesg(const char *msg);
         void slLogMesg(int num);
-        static void UpdateInterface(int code, char *opt_Msg);
+        static void UpdateInterface(int code, const char *opt_Msg);
         static int UpdateMessageLog();
         static void ReceivePopUpMessage(char *msg);
         static void ReceiveLogMessage(char *msg);

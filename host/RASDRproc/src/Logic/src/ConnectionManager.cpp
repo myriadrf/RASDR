@@ -74,6 +74,7 @@ void _pthread_mutex_destroy(pthread_mutex_t *m, const char *file, int line)
 	@param pMainModule Pointer to main module;
 */
 ConnectionManager::ConnectionManager(Main_Module *pMainModule = NULL)
+    : m_BrdLNA(0)
 {
 	pthread_mutex_init(&CriticalSection, NULL);
 	chipConnected = false;
@@ -815,6 +816,19 @@ int ConnectionManager::GetCustomParameter(string paramName, void *value)
     return 0;
 }
 
+static const char *_BrdLNA[] = {
+    "disconnected (50ohm termination on RX port, Hi-Z to LNAx)",    // 0=disconnect
+    "Band V, LNA1, 0.3-2.8Ghz, 3.5dB NF",                           // 1=LNA1
+    "Band XI, LNA2, 1.5-3.8GHz, 5.5dB NF",                          // 2=LNA2
+    "Broadband, LNA3, 0.3-3.0GHz, 10dB NF"                          // 3=LNA3
+};
+
+char ConnectionManager::GetBrdLNA(const char **description)
+{
+    if( description ) *description = _BrdLNA[m_BrdLNA & 0x3];
+    return m_BrdLNA;
+}
+
 void ConnectionManager::SetBrdLNA(char Code)
 {
 	unsigned char Buf[USB_BUFFER_LENGTH];
@@ -824,6 +838,8 @@ void ConnectionManager::SetBrdLNA(char Code)
 	pthread_mutex_lock(&CriticalSection);
 	if(port->GetConnectionType() == USB_PORT)   //if USB selected
 	{
+	    const char *tag = "";
+
 		Buf[0] = CMD_SET_LNA;
 		Buf[1] = 0x0;
 		Buf[2] = 1;
@@ -831,17 +847,26 @@ void ConnectionManager::SetBrdLNA(char Code)
 		{
 			case 1:
 				Buf[4] = 0x03;  // Band V, LNA1, 0.3-2.8Ghz, 3.5dB NF
+				tag = _BrdLNA[Code];
 				break;
 			case 2:
 				Buf[4] = 0x01;  // Band XI, LNA2, 1.5-3.8GHz, 5.5dB NF
+				tag = _BrdLNA[Code];
 				break;
 			case 3:
 				Buf[4] = 0x00;  // Broadband, LNA3, 0.3-3.0GHz, 10dB NF
+				tag = _BrdLNA[Code];
 				break;
 			default:
+			    Code = 0;
 				Buf[4] = 0x02;  // 50ohm termination
+				tag = _BrdLNA[Code];
 				break;
 		}
+		m_BrdLNA = Code;
+
+		cout << "::SetBrdLNA(" << (int)Code << ") " << tag << endl;
+		pMain->UpdateInterface(SHOW_LOG_MESSAGE, tag);
 
 		long length = USB_BUFFER_LENGTH;
 		port->SendData(Buf, length);

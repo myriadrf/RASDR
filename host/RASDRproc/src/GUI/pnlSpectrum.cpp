@@ -101,7 +101,7 @@ const long pnlSpectrum::ID_STATICTEXT15 = wxNewId();
 const long pnlSpectrum::ID_SPINCTRL3 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT5 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX4 = wxNewId();
-const long pnlSpectrum::ID_STATICTEXT6 = wxNewId();
+const long pnlSpectrum::ID_BUTTON3 = wxNewId();
 const long pnlSpectrum::ID_TEXTCTRL2 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT7 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX5 = wxNewId();
@@ -109,8 +109,12 @@ const long pnlSpectrum::ID_STATICTEXT8 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX6 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT1 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX7 = wxNewId();
-const long pnlSpectrum::ID_STATICTEXT23 = wxNewId();
-const long pnlSpectrum::ID_BUTTON3 = wxNewId();
+const long pnlSpectrum::ID_STATICTEXT18 = wxNewId();
+const long pnlSpectrum::ID_COMBOBOX1 = wxNewId();
+const long pnlSpectrum::ID_STATICTEXT6 = wxNewId();
+const long pnlSpectrum::ID_COMBOBOX2 = wxNewId();
+const long pnlSpectrum::ID_STATICTEXT19 = wxNewId();
+const long pnlSpectrum::ID_STATICTEXT20 = wxNewId();
 const long pnlSpectrum::ID_TOGGLEBUTTON1 = wxNewId();
 const long pnlSpectrum::ID_BUTTON10 = wxNewId();
 const long pnlSpectrum::ID_BUTTON8 = wxNewId();
@@ -425,8 +429,9 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	cmbRxFilter->Append(_("1.75"));
 	cmbRxFilter->Append(_("1.5"));
 	FlexGridSizer13->Add(cmbRxFilter, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText6 = new wxStaticText(Panel9, ID_STATICTEXT6, _("RF Ctr Freq (MHz):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
-	FlexGridSizer13->Add(StaticText6, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+	Apply_btn = new wxButton(Panel9, ID_BUTTON3, _("RF Ctr Freq (MHz):"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
+	Apply_btn->Disable();
+	FlexGridSizer13->Add(Apply_btn, 1, wxTOP|wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	txtRxFrequencyMHz = new wxTextCtrl(Panel9, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	FlexGridSizer13->Add(txtRxFrequencyMHz, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText7 = new wxStaticText(Panel9, ID_STATICTEXT7, _("VGA1 Gain (dB):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT7"));
@@ -444,12 +449,26 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	cmbLNAGainMode->SetSelection( cmbLNAGainMode->Append(_("Mid gain")) );
 	cmbLNAGainMode->Append(_("Max gain"));
 	FlexGridSizer13->Add(cmbLNAGainMode, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText21 = new wxStaticText(Panel9, ID_STATICTEXT23, _("<spacer>"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT23"));
-	StaticText21->Hide();
-	FlexGridSizer13->Add(StaticText21, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	Apply_btn = new wxButton(Panel9, ID_BUTTON3, _("APPLY"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
-	Apply_btn->Disable();
-	FlexGridSizer13->Add(Apply_btn, 1, wxTOP|wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText3 = new wxStaticText(Panel9, ID_STATICTEXT18, _("LNA Selection:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT18"));
+	FlexGridSizer13->Add(StaticText3, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+	cmbLNASelection = new wxComboBox(Panel9, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_COMBOBOX1"));
+	cmbLNASelection->SetSelection( cmbLNASelection->Append(_("disconnect")) );
+	cmbLNASelection->Append(_("LNA1"));
+	cmbLNASelection->Append(_("LNA2"));
+	cmbLNASelection->Append(_("LNA3"));
+	FlexGridSizer13->Add(cmbLNASelection, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText6 = new wxStaticText(Panel9, ID_STATICTEXT6, _("RX Switch:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+	FlexGridSizer13->Add(StaticText6, 1, wxTOP|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+	cmbRFInputSelection = new wxComboBox(Panel9, ID_COMBOBOX2, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_COMBOBOX2"));
+	cmbRFInputSelection->SetSelection( cmbRFInputSelection->Append(_("RX->50o,Z->LNAx")) );
+	cmbRFInputSelection->Append(_("RX->LNA1"));
+	cmbRFInputSelection->Append(_("RX->LNA2"));
+	cmbRFInputSelection->Append(_("RX->LNA3"));
+	FlexGridSizer13->Add(cmbRFInputSelection, 1, wxTOP|wxBOTTOM|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	StaticText16 = new wxStaticText(Panel9, ID_STATICTEXT19, wxEmptyString, wxDefaultPosition, wxSize(0,1), 0, _T("ID_STATICTEXT19"));
+	FlexGridSizer13->Add(StaticText16, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText17 = new wxStaticText(Panel9, ID_STATICTEXT20, _("."), wxDefaultPosition, wxSize(0,0), 0, _T("ID_STATICTEXT20"));
+	FlexGridSizer13->Add(StaticText17, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer7->Add(FlexGridSizer13, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
@@ -536,12 +555,14 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	Connect(ID_SPINBUTTON3,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&pnlSpectrum::OnspinFFTsamplesChange);
 	Connect(ID_SPINCTRL3,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&pnlSpectrum::OnspinSamplingFreqChange1);
 	Connect(ID_COMBOBOX4,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRxFilterSelected);
+	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnApply_btnClick);
 	Connect(ID_TEXTCTRL2,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&pnlSpectrum::OntxtRxFrequencyMHzText);
 	Connect(ID_TEXTCTRL2,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&pnlSpectrum::OntxtRxFrequencyMHzText);
 	Connect(ID_COMBOBOX5,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRxFEVGA1Selected);
 	Connect(ID_COMBOBOX6,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRxVGA2Selected);
 	Connect(ID_COMBOBOX7,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbLNAGainModeSelected);
-	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnApply_btnClick);
+	Connect(ID_COMBOBOX1,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbLNASelectionSelected);
+	Connect(ID_COMBOBOX2,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRFInputSelectionSelected);
 	Connect(ID_TOGGLEBUTTON1,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnPwrRefClick);
 	Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnPwrRecordClick);
 	Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnDCOffsetCorrectionClick);
@@ -1126,6 +1147,13 @@ void pnlSpectrum::GetConfiguration()
 void pnlSpectrum::Initialize()
 {
     GetConfiguration();
+    // TODO: Initialize to default LNA1 (as it was hardcoded before)
+    //       But probably desire to put this into the configuration file
+    cmbLNASelection->SetSelection(1);
+    //LMLL_RxFESetActiveLNA(1);
+    cmbRFInputSelection->SetSelection(1);
+    //LMLL_RxFESelectInput(1);
+
     initializeInterfaceValues();
 	txtRxFrequencyMHz->SetValue( wxString::Format("%.6f", m_RxFreq * 1000.0) );
     //AutoDCCorrection->SetValue(g_AutoDCOffset);
@@ -1229,6 +1257,9 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
         generateFFTxaxis(samprate/1e6);
     }
     changeSamplingFrequency(samprate/1e6);
+    // Select RX input and Active LNA
+    LMLL_RxFESetActiveLNA(cmbLNASelection->GetSelection());
+    LMLL_RxFESelectInput(cmbRFInputSelection->GetSelection());
     //Set the LNA gain
     LMLL_RxFESetG_LNA_RXFE(cmbLNAGainMode->GetSelection());
     //SEt VGA1 gain
@@ -1454,7 +1485,8 @@ void pnlSpectrum::changeSamplingFrequency(float samplingFrequency)
 
 void pnlSpectrum::OncmbRxFilterSelected(wxCommandEvent& event)
 {
-    Apply_btn->Enable(true);
+    LMLL_RxLPFSetLpfBw(cmbRxFilter->GetSelection()); // Index matches table for all items
+    //Apply_btn->Enable(true);
 }
 
 /*void pnlSpectrum::OncmbTxVGA1Selected(wxCommandEvent& event)
@@ -1469,17 +1501,20 @@ void pnlSpectrum::OncmbRxFilterSelected(wxCommandEvent& event)
 
 void pnlSpectrum::OncmbRxFEVGA1Selected(wxCommandEvent& event)
 {
-    Apply_btn->Enable(true);
+    LMLL_RxFESetRFB_TIA_RXFE(cmbRxFEVGA1->GetSelection());
+    //Apply_btn->Enable(true);
 }
 
 void pnlSpectrum::OncmbRxVGA2Selected(wxCommandEvent& event)
 {
-    Apply_btn->Enable(true);
+    LMLL_RxVGA2SetVga2G_u(cmbRxVGA2->GetSelection());
+    //Apply_btn->Enable(true);
 }
 
 void pnlSpectrum::OncmbLNAGainModeSelected(wxCommandEvent& event)
 {
-    Apply_btn->Enable(true);
+    LMLL_RxFESetG_LNA_RXFE(cmbLNAGainMode->GetSelection());
+    //Apply_btn->Enable(true);
 }
 
 /**
@@ -2223,6 +2258,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         if( m_fftxaxisValues[i] > m_FFTChartCenter + (m_FFTChartSpan/2) ) idx.max = i;
                     }
 
+                    // FIXME: must manage the validation of m_FFTFileClassPtr better
                     if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
                         if(g_FFTDataSource == 0) {
                             sprintf(outbuf,"%.4f,\0",value);
@@ -2232,6 +2268,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                             m_FFTFileClassPtr->Write(outbuf); }
                     }
                 }
+                // FIXME: must manage the validation of m_FFTFileClassPtr better
                 if(g_FFTfileRecording && m_FFTFileClassPtr != NULL && m_FFTCounter >= g_FFTframeSkip) {
                     m_FFTFileClassPtr->Write("\r\n",2);
                     m_FFTCounter = 0;
@@ -3254,4 +3291,16 @@ void pnlSpectrum::OnDCOffsetCorrectionClick(wxCommandEvent& event)
     // apply current averages to DC offset
     g_DcOffsetI = g_avgI;
     g_DcOffsetQ = g_avgQ;
+}
+
+void pnlSpectrum::OncmbLNASelectionSelected(wxCommandEvent& event)
+{
+    LMLL_RxFESetActiveLNA(cmbLNASelection->GetSelection());
+    //Apply_btn->Enable(true);
+}
+
+void pnlSpectrum::OncmbRFInputSelectionSelected(wxCommandEvent& event)
+{
+    LMLL_RxFESelectInput(cmbRFInputSelection->GetSelection());
+    //Apply_btn->Enable(true);
 }

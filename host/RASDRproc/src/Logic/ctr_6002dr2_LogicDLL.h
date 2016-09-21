@@ -97,7 +97,7 @@ CTR_6002DR2_API void LMAL_RxFE_LNAPowerOn(bool on);
 CTR_6002DR2_API void LMAL_RxVGA2_PowerOn(bool on);
 
 // Main Module
-CTR_6002DR2_API void LMAL_MainSetCallbackInterfaceUpdate(void (*pCallbackFunction)(int, char *) );
+CTR_6002DR2_API void LMAL_MainSetCallbackInterfaceUpdate(void (*pCallbackFunction)(int, const char *) );
 CTR_6002DR2_API void LMAL_MainFileNewExecute();
 CTR_6002DR2_API void LMAL_MainFileSaveAs(char* link);
 CTR_6002DR2_API void LMAL_MainFileSave();
@@ -720,6 +720,8 @@ CTR_6002DR2_API void LMLL_RxVGA2GetDCCalibrationData(int &calibVal, int &lockPat
 CTR_6002DR2_API char LMLL_RxFEGetAddr();
 
 CTR_6002DR2_API void LMLL_RxFESetActiveLNA(int ind);
+CTR_6002DR2_API void LMLL_RxFESelectInput(int ind);
+CTR_6002DR2_API int LMLL_RxFEQueryInput(const char **description=NULL);
 
 CTR_6002DR2_API void LMLL_RxFESetDecode(int index);
 CTR_6002DR2_API int LMLL_RxFEGetDecode();
@@ -984,7 +986,7 @@ CTR_6002DR2_API void LMLL_ADF_SendConfig();
 //==============================================================================
 CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize, int &itemsLeft);
 CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize, float *FFTdataY, int &FFTsize, int &itemsLeft);
-CTR_6002DR2_API void LMLL_Testing_SetCallbackUpdateInterface(void (*pCallbackFunction)(int, char *));
+CTR_6002DR2_API void LMLL_Testing_SetCallbackUpdateInterface(void (*pCallbackFunction)(int, const char *));
 CTR_6002DR2_API bool LMLL_Testing_CalculateFFT();
 
 CTR_6002DR2_API void LMLL_Testing_StartSdramRead();

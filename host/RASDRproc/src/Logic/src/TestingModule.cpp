@@ -1121,7 +1121,7 @@ void TestingModule::printHex(char *src, int size)
 /**
 	@brief Calls interface update callback function with given code and additional parameters.
  */
-void TestingModule::UpdateInterface(int code, char *param)
+void TestingModule::UpdateInterface(int code, const char *param)
 {
 	if (updateInterfaceCallback)
 		updateInterfaceCallback(code, param);
@@ -1164,7 +1164,7 @@ void TestingModule::ShowMessage(string str)
 void TestingModule::writeLog(string msg, int importance)
 {
 	if (importance < 5)
-		UpdateInterface(SHOW_TESTING_LOG_MESSAGE, (char*)msg.c_str());
+		UpdateInterface(SHOW_TESTING_LOG_MESSAGE, msg.c_str());
 }
 /**
 	@brief Enables DC correction

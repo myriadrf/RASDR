@@ -119,8 +119,8 @@ public:
 	static DWORD WINAPI WinMessagePump(void *param);
 	#endif
 
-	void (*updateInterfaceCallback)(int, char *);
-	void UpdateInterface(int code, char *opt_Msg);
+	void (*updateInterfaceCallback)(int, const char *);
+	void UpdateInterface(int code, const char *opt_Msg);
 
 	Main_Module();
 	~Main_Module();

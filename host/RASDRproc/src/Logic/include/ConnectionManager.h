@@ -120,7 +120,13 @@ public:
 	/// Gets custom parameter from connection port
 	int GetCustomParameter(string paramName, void *value);
 
+    /// Sets input analog signal path
 	void SetBrdLNA(char code);
+
+	/// Gets input analog signal path
+	char GetBrdLNA(const char **description=NULL);
+
+	/// Sets output power amplifier path
 	void SetBrdPA(char code);
 
 	void WriteToADF(const unsigned char *buffer, long length);
@@ -136,6 +142,9 @@ protected:
 	Main_Module *pMain;
 	/// shows if chip is connected.
 	bool chipConnected;
+
+	/// holds selected input analog signal path
+	char m_BrdLNA;
 
 	pthread_mutex_t CriticalSection;
 };

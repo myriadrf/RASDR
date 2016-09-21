@@ -1954,12 +1954,17 @@ sprintf(Sect, "%i", (int)m_cMAddr);
 //---------------------------------------------------------------------------
 // Functions for customer mode interface
 //---------------------------------------------------------------------------
+void RxFe_Module::CustSet_BoardLNA(int ind)
+{
+  pMainModule->getSerPort()->SetBrdLNA((char)ind);
+};
+
 void RxFe_Module::CustSet_ActiveLNA(int ind)
 {
   m_bAllowSend = false;
   cmbLNASEL_RXFE.itemIndex = ind;
   m_bAllowSend = true;
-  pMainModule->getSerPort()->SetBrdLNA(ind);
+  // split out to CustSet_BoardLNA(): pMainModule->getSerPort()->SetBrdLNA(ind);
 
   MakeData(0x80); pMainModule->CMAutoDownload(m_cMAddr);
 };

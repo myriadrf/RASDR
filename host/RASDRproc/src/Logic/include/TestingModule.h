@@ -84,8 +84,8 @@ public:
 	void TransmitSpectra_RSS();
 	void TransmitSpectra_RSSx();
 
-	void UpdateInterface(int code, char *param);
-	void (*updateInterfaceCallback)(int ,char *);
+	void UpdateInterface(int code, const char *param);
+	void (*updateInterfaceCallback)(int , const char *);
 
     void SetConnectionManager( ConnectionManager *mng);
     ConnectionManager* GetConnectionManager();

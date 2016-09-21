@@ -126,6 +126,7 @@ class pnlSpectrum: public wxPanel
 		wxToggleButton* PwrRef;
 		OpenGLGraph* oglPWRChart;
 		wxCheckBox* chkAutoscalePwrX;
+		wxComboBox* cmbRFInputSelection;
 		wxButton*  RecordPWR;
 		wxCheckBox* chkAutoscalePwrY;
 		wxCheckBox* chkUpdateGraphs;
@@ -149,11 +150,11 @@ class pnlSpectrum: public wxPanel
 		wxStaticText* lblDataRate;
 		wxCheckBox* AutoDCCorrection;
 		wxStaticText* StaticText1;
+		wxStaticText* StaticText3;
 		wxTextCtrl* txtFFTsamples;
 		wxComboBox* cmbRxFEVGA1;
 		wxButton* DCOffsetCorrection;
 		wxPanel* Panel6;
-		wxStaticText* StaticText21;
 		wxPanel* Panel3;
 		wxButton* btnStartCapture;
 		wxComboBox* cmbRxVGA2;
@@ -168,6 +169,7 @@ class pnlSpectrum: public wxPanel
 		wxButton* btnAddMarker;
 		wxButton* btnRemoveMarker;
 		OpenGLGraph* ogl_FFTline;
+		wxComboBox* cmbLNASelection;
 		wxButton* MaxHold;
 		wxStaticText* lblFPS;
 		wxComboBox* cmbRxFilter;
@@ -181,8 +183,10 @@ class pnlSpectrum: public wxPanel
 		wxSplitterWindow* SplitterWindow1;
 		wxCheckBox* chkIchannelEnabled;
 		wxStaticText* StaticText4;
+		wxStaticText* StaticText17;
 		wxCheckBox* chkAverage;
 		wxStaticText* DCOffsetSkewLabel;
+		wxStaticText* StaticText16;
 		OpenGLGraph* ogl_IQline;
 		wxSpinCtrl* spinSamplingFreq;
 		//*)
@@ -229,7 +233,7 @@ class pnlSpectrum: public wxPanel
 		static const long ID_SPINCTRL3;
 		static const long ID_STATICTEXT5;
 		static const long ID_COMBOBOX4;
-		static const long ID_STATICTEXT6;
+		static const long ID_BUTTON3;
 		static const long ID_TEXTCTRL2;
 		static const long ID_STATICTEXT7;
 		static const long ID_COMBOBOX5;
@@ -237,8 +241,12 @@ class pnlSpectrum: public wxPanel
 		static const long ID_COMBOBOX6;
 		static const long ID_STATICTEXT1;
 		static const long ID_COMBOBOX7;
-		static const long ID_STATICTEXT23;
-		static const long ID_BUTTON3;
+		static const long ID_STATICTEXT18;
+		static const long ID_COMBOBOX1;
+		static const long ID_STATICTEXT6;
+		static const long ID_COMBOBOX2;
+		static const long ID_STATICTEXT19;
+		static const long ID_STATICTEXT20;
 		static const long ID_TOGGLEBUTTON1;
 		static const long ID_BUTTON10;
 		static const long ID_BUTTON8;
@@ -408,6 +416,8 @@ class pnlSpectrum: public wxPanel
 		void OnMaxHoldClick(wxCommandEvent& event);
 		void OnMaxHoldClick1(wxCommandEvent& event);
 		void OnDCOffsetCorrectionClick(wxCommandEvent& event);
+		void OncmbLNASelectionSelected(wxCommandEvent& event);
+		void OncmbRFInputSelectionSelected(wxCommandEvent& event);
 		//*)
 
 		void UpdateGraphs(wxTimerEvent &event);

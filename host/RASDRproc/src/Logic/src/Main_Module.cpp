@@ -922,7 +922,7 @@ void Main_Module::slLogMesg(int num)
 		break;
 	};
 	slLogMesg(message.c_str());
-	//UpdateInterface(SHOW_LOG_MESSAGE, (char *) message.c_str());
+	//UpdateInterface(SHOW_LOG_MESSAGE, message.c_str());
 };
 
 /**
@@ -931,7 +931,7 @@ void Main_Module::slLogMesg(int num)
 void Main_Module::slLogMesg(const char *msg)
 {
 	messagesLog.AddLine(msg);
-	UpdateInterface(SHOW_LOG_MESSAGE, (char *)msg);
+	//UpdateInterface(SHOW_LOG_MESSAGE, msg);
 }
 /**
 	Sets name of the current project.
@@ -1159,21 +1159,25 @@ void Main_Module::SetLnaChain(int iChain)
 	switch (iChain)
 	{
 	case 0:
+		m_RxFeModule->CustSet_BoardLNA(0);
 		m_RxFeModule->CustSet_ActiveLNA(0);
 		m_RxPLLModule->CustSet_ActiveLOBuff(0);
 		break;
 
 	case 1:
+		m_RxFeModule->CustSet_BoardLNA(1);
 		m_RxFeModule->CustSet_ActiveLNA(1);
 		m_RxPLLModule->CustSet_ActiveLOBuff(1);
 		break;
 
 	case 2:
+		m_RxFeModule->CustSet_BoardLNA(2);
 		m_RxFeModule->CustSet_ActiveLNA(2);
 		m_RxPLLModule->CustSet_ActiveLOBuff(2);
 		break;
 
 	case 3:
+		m_RxFeModule->CustSet_BoardLNA(3);
 		m_RxFeModule->CustSet_ActiveLNA(3);
 		m_RxPLLModule->CustSet_ActiveLOBuff(3);
 		break;
@@ -2746,7 +2750,7 @@ void Main_Module::UpdateVerRevMask()
 void Main_Module::ShowMessage(string msg)
 {
 	if(updateInterfaceCallback)
-		UpdateInterface(SHOW_POPUP_MESSAGE, (char*)msg.c_str());
+		UpdateInterface(SHOW_POPUP_MESSAGE, msg.c_str());
 }
 
 /**
@@ -2762,7 +2766,7 @@ CUARFCN* Main_Module::getUARFCNdata()
 	@param code Code of the event that happened.
 	@param opt_Msg Optional c-string message to pass together with code, used for warning and log messages.
 */
-void Main_Module::UpdateInterface(int code, char *opt_Msg)
+void Main_Module::UpdateInterface(int code, const char *opt_Msg)
 {
 	if(updateInterfaceCallback && code != 0)
 		updateInterfaceCallback(code, opt_Msg);
