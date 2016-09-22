@@ -232,8 +232,21 @@ bool GLFont::loadFromArray(const char* array, unsigned int size)
     unsigned char *bitmap = new unsigned char[texWidth*texHeight];
     in.read((char*)bitmap, texWidth*texHeight);
 
+    // FIXME: this code crashes when starting RASDRproc on a remote desktop connection
+    // https://www.opengl.org/wiki/Common_Mistakes
+    // http://stackoverflow.com/questions/14179497/is-it-necessary-to-call-glenablegl-texture-before-using-textures-in-opengl-2-1
+    // http://stackoverflow.com/questions/23128894/glactivetexture-throws-gl-invalid-enum
+    //
+    // WIERD: even after all this, I still get a SEGV...
+    try {
     glEnable( GL_TEXTURE_2D );
     glActiveTexture(GL_TEXTURE0);
+    } catch(...) {
+        cout << "GLFont::loadFromArray(," << size << "): glEnable/glActiveTexture() throws execption" << endl
+             << glewGetErrorString(e) << endl << std::flush;
+        return false;
+    }
+
     if( m_texID > 0)
         glDeleteTextures(1, &m_texID);
     glGenTextures(1, &m_texID);
