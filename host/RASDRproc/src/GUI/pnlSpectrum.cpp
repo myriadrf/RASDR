@@ -1316,7 +1316,7 @@ void pnlSpectrum::OnbtnStartCaptureClick(wxCommandEvent& event)
 {
     wxCommandEvent dummy;
     OnApply_btnClick(dummy);
-    Integration_Time->Enable(FALSE);
+    //Integration_Time->Enable(FALSE);
     StartCapturing();
 }
 
@@ -1325,7 +1325,7 @@ void pnlSpectrum::OnbtnStartCaptureClick(wxCommandEvent& event)
 */
 void pnlSpectrum::OnbtnStopCaptureClick(wxCommandEvent& event)
 {
-    Integration_Time->Enable(TRUE);
+    //Integration_Time->Enable(TRUE);
     StopCapturing();
 }
 
@@ -1682,13 +1682,15 @@ void pnlSpectrum::StartCapturing()
 	PwrRef->Enable(true);
 
 	spinFFTsamples->Enable(false);
-	//spinSamplingFreq->Enable(false);
+	spinSamplingFreq->Enable(false);
+    Integration_Time->Enable(false);
+
 
     m_dtLastRestart = m_dtLastRestart.UNow();
     // clear the power array on each start
     for(int i = 0; i < g_MaxPwrSpanSec; i++)
     {
-        PwrcountXaxis[i] = i;
+        PwrcountXaxis[i] = i*m_PwrIntTime;
         m_PWRvalues[i] = -FLT_MAX;
     }
     // call AssignValues() with the full size here, once to avoid alot of reallocations in the main loop
@@ -1718,6 +1720,7 @@ void pnlSpectrum::StopCapturing()
 	PwrRef->Enable(false);
 	spinFFTsamples->Enable(true);
 	spinSamplingFreq->Enable(true);
+	Integration_Time->Enable(true);
 	g_capturingData = false;
     EnableFFTRecord(false);
     EnablePWRRecord(false);
@@ -2441,7 +2444,7 @@ void pnlSpectrum::SetPwrRescaleX()
 #endif
 
     for(i=_begin;i<g_MaxPwrSpanSec;i++) m_PWRvalues[i] = -FLT_MAX;
-    for(v=PwrcountXaxis[m_Index-1]+1,i=_begin;i<g_MaxPwrSpanSec;i++,v++) PwrcountXaxis[i] = v;
+    for(v=PwrcountXaxis[m_Index-1]+1,i=_begin;i<g_MaxPwrSpanSec;i++,v++) PwrcountXaxis[i] = v*m_PwrIntTime;
     m_Index = _begin;
     // call AssignValues() with the full size here, once to avoid alot of reallocations in the main loop
     oglPWRChart->series[0]->AssignValues(PwrcountXaxis, m_PWRvalues, g_MaxPwrSpanSec);
