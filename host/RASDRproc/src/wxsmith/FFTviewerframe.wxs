@@ -2,8 +2,8 @@
 <wxsmith>
 	<object class="wxFrame" name="FFTviewerFrame">
 		<title>RASDRproc</title>
-		<size>1186,900</size>
-		<minsize>1186,900</minsize>
+		<size>1200,900</size>
+		<minsize>1200,900</minsize>
 		<id_arg>0</id_arg>
 		<style>wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX</style>
 		<handler function="OnClose" entry="EVT_CLOSE" />

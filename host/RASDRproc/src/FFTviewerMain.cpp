@@ -106,8 +106,8 @@ FFTviewerFrame::FFTviewerFrame(wxWindow* parent,wxWindowID id) :
     wxMenu* Menu2;
 
     Create(parent, wxID_ANY, _("RASDRproc"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX, _T("wxID_ANY"));
-    SetClientSize(wxSize(1186,900));
-    SetMinSize(wxSize(1186,900));
+    SetClientSize(wxSize(1200,900));
+    SetMinSize(wxSize(1200,900));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
     FlexGridSizer1->AddGrowableRow(0);

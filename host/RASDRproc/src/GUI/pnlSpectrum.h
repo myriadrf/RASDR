@@ -119,6 +119,7 @@ class pnlSpectrum: public wxPanel
         void ResetMaxHold();
 		//(*Declarations(pnlSpectrum)
 		wxStaticText* StaticText10;
+		wxStaticText* txtOkToChange;
 		wxStaticText* StaticText9;
 		wxSpinButton* spinFFTsamples;
 		wxFlexGridSizer* FlexGridSizer4;
@@ -145,6 +146,7 @@ class pnlSpectrum: public wxPanel
 		wxStaticText* StaticText8;
 		wxButton* Apply_btn;
 		wxStaticText* StaticText11;
+		wxStaticText* StaticText18;
 		wxPanel* Panel8;
 		wxPanel* Panel1;
 		wxStaticText* lblDataRate;
@@ -231,10 +233,10 @@ class pnlSpectrum: public wxPanel
 		static const long ID_SPINBUTTON3;
 		static const long ID_STATICTEXT15;
 		static const long ID_SPINCTRL3;
+		static const long ID_STATICTEXT21;
+		static const long ID_TEXTCTRL2;
 		static const long ID_STATICTEXT5;
 		static const long ID_COMBOBOX4;
-		static const long ID_BUTTON3;
-		static const long ID_TEXTCTRL2;
 		static const long ID_STATICTEXT7;
 		static const long ID_COMBOBOX5;
 		static const long ID_STATICTEXT8;
@@ -245,6 +247,8 @@ class pnlSpectrum: public wxPanel
 		static const long ID_COMBOBOX1;
 		static const long ID_STATICTEXT6;
 		static const long ID_COMBOBOX2;
+		static const long ID_BUTTON3;
+		static const long ID_STATICTEXT23;
 		static const long ID_STATICTEXT19;
 		static const long ID_STATICTEXT20;
 		static const long ID_TOGGLEBUTTON1;

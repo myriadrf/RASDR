@@ -99,10 +99,10 @@ const long pnlSpectrum::ID_TEXTCTRL3 = wxNewId();
 const long pnlSpectrum::ID_SPINBUTTON3 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT15 = wxNewId();
 const long pnlSpectrum::ID_SPINCTRL3 = wxNewId();
+const long pnlSpectrum::ID_STATICTEXT21 = wxNewId();
+const long pnlSpectrum::ID_TEXTCTRL2 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT5 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX4 = wxNewId();
-const long pnlSpectrum::ID_BUTTON3 = wxNewId();
-const long pnlSpectrum::ID_TEXTCTRL2 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT7 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX5 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT8 = wxNewId();
@@ -113,6 +113,8 @@ const long pnlSpectrum::ID_STATICTEXT18 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX1 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT6 = wxNewId();
 const long pnlSpectrum::ID_COMBOBOX2 = wxNewId();
+const long pnlSpectrum::ID_BUTTON3 = wxNewId();
+const long pnlSpectrum::ID_STATICTEXT23 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT19 = wxNewId();
 const long pnlSpectrum::ID_STATICTEXT20 = wxNewId();
 const long pnlSpectrum::ID_TOGGLEBUTTON1 = wxNewId();
@@ -259,15 +261,15 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
 
-	Create(parent, wxID_ANY, wxDefaultPosition, wxSize(1186,900), 0, _T("wxID_ANY"));
-	SetMinSize(wxSize(1186,900));
+	Create(parent, wxID_ANY, wxDefaultPosition, wxSize(1200,900), 0, _T("wxID_ANY"));
+	SetMinSize(wxSize(1200,900));
 	wxFont thisFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	SetFont(thisFont);
 	FlexGridSizer1 = new wxFlexGridSizer(3, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(1);
 	Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	Panel1->SetMinSize(wxSize(1082,32));
+	Panel1->SetMinSize(wxSize(1200,32));
 	chkAutoRestart = new wxCheckBox(Panel1, ID_CHECKBOX3B, _("Auto Restart"), wxPoint(780,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3B"));
 	chkAutoRestart->SetValue(false);
 	chkUpdateGraphs = new wxCheckBox(Panel1, ID_CHECKBOX3, _("Update graphs"), wxPoint(25,8), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
@@ -370,10 +372,10 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer2->SetSizeHints(Panel3);
 	SplitterWindow1->SplitHorizontally(SplitterWindow2, Panel3);
 	FlexGridSizer1->Add(SplitterWindow1, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	Panel2 = new wxPanel(this, ID_PANEL2, wxDefaultPosition, wxSize(1082,200), wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-	Panel2->SetMinSize(wxSize(1082,200));
+	Panel2 = new wxPanel(this, ID_PANEL2, wxDefaultPosition, wxSize(1182,210), wxTAB_TRAVERSAL, _T("ID_PANEL2"));
+	Panel2->SetMinSize(wxSize(1200,210));
 	Panel9 = new wxPanel(Panel2, ID_PANEL10, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL10"));
-	Panel9->SetMinSize(wxSize(-1,200));
+	Panel9->SetMinSize(wxSize(-1,210));
 	FlexGridSizer7 = new wxFlexGridSizer(1, 3, 0, 0);
 	FlexGridSizer7->AddGrowableCol(2);
 	FlexGridSizer8 = new wxFlexGridSizer(5, 1, 0, 0);
@@ -388,6 +390,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer9->Add(chkAverage, 0, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	spinAvgCount = new wxSpinCtrl(Panel9, ID_SPINCTRL4, _T("4"), wxDefaultPosition, wxDefaultSize, 0, 1, 1000000, 4, _T("ID_SPINCTRL4"));
 	spinAvgCount->SetValue(_T("4"));
+	spinAvgCount->SetToolTip(_("This controls the amount of spectra that are averaged together before displayed or recorded.  Increasing the averaging has the effect of reducing the variance of the noise.  It cannot increase the signal to noise ratio because it is performed *incoherently*."));
 	FlexGridSizer9->Add(spinAvgCount, 1, wxTOP|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText12 = new wxStaticText(Panel9, ID_STATICTEXT14, _("Samples/Frame:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT14"));
 	FlexGridSizer9->Add(StaticText12, 0, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
@@ -395,7 +398,8 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer5->AddGrowableCol(1);
 	txtFFTsamples = new wxTextCtrl(Panel9, ID_TEXTCTRL3, _("16384"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	txtFFTsamples->Disable();
-	FlexGridSizer5->Add(txtFFTsamples, 0, wxRIGHT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
+	txtFFTsamples->SetToolTip(_("This is the number of samples for each FFT.  This affects the resolution of the power spectral density plot.  The resolution is given by the relation:\n\nFbin = Fsample / FFT samples\n\nSo, for example, with a 2MSPS and a 2048-pt FFT selection, each frequency point represents the energy contained in 976.5625 Hz.  There is a tradeoff between increasing sampling rate and FFT size; both cost more CPU time to perform, so increasing them means that you process a fewer percentage of the received data."));
+	FlexGridSizer5->Add(txtFFTsamples, 0, wxTOP|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
 	spinFFTsamples = new wxSpinButton(Panel9, ID_SPINBUTTON3, wxDefaultPosition, wxDefaultSize, wxSP_VERTICAL|wxSP_ARROW_KEYS, _T("ID_SPINBUTTON3"));
 	spinFFTsamples->SetValue(14);
 	spinFFTsamples->SetRange(4, 14);
@@ -405,7 +409,13 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer9->Add(StaticText13, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	spinSamplingFreq = new wxSpinCtrl(Panel9, ID_SPINCTRL3, _T("10"), wxDefaultPosition, wxDefaultSize, 0, 1, 32, 10, _T("ID_SPINCTRL3"));
 	spinSamplingFreq->SetValue(_T("10"));
+	spinSamplingFreq->SetToolTip(_("This is the sample rate to use.  Because the RASDR is a quadrature sampling receiver (two ADCs), the sample rate is the same as the Nyquist rate.  This produces a better result than sampling with one ADC at twice the highest frequency.  Currently, only integral sample rates are supported.  1 MSPS is allowed, but since the smallest filter bandwidth is 1.5MHz, leads to aliasing of half the spectrum, so care must be taken with this setting.\n\nMaximum rates depend on the USB bus speed:\nUSB1.1:  not recommended (too many dropped frames)\nUSB2.0: 10MSPS ~ 39062 MB/sec\nUSB3.0: 32MSPS ~ 125000 MB/sec\n\n"));
 	FlexGridSizer9->Add(spinSamplingFreq, 1, wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText18 = new wxStaticText(Panel9, ID_STATICTEXT21, _("RF Ctr Freq (MHz):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT21"));
+	FlexGridSizer9->Add(StaticText18, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+	txtRxFrequencyMHz = new wxTextCtrl(Panel9, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+	txtRxFrequencyMHz->SetToolTip(_("Enter the frequency in MHz you would like the receiver to tune to.\nThis frequency will become the center offset frequency at 0.0 KHz."));
+	FlexGridSizer9->Add(txtRxFrequencyMHz, 1, wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer8->Add(FlexGridSizer9, 1, wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer7->Add(FlexGridSizer8, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
 	FlexGridSizer13 = new wxFlexGridSizer(6, 2, 0, 0);
@@ -428,19 +438,17 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	cmbRxFilter->Append(_("2.5"));
 	cmbRxFilter->Append(_("1.75"));
 	cmbRxFilter->Append(_("1.5"));
+	cmbRxFilter->SetToolTip(_("The RASDR supports several discrete settings for the filter bandwidth.  The general recommendation is to select a value at 75% or 85% of the sample rate.  This is because the filter requires some amount of transition between the passband and the stopband."));
 	FlexGridSizer13->Add(cmbRxFilter, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	Apply_btn = new wxButton(Panel9, ID_BUTTON3, _("RF Ctr Freq (MHz):"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
-	Apply_btn->Disable();
-	FlexGridSizer13->Add(Apply_btn, 1, wxTOP|wxLEFT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	txtRxFrequencyMHz = new wxTextCtrl(Panel9, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer13->Add(txtRxFrequencyMHz, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText7 = new wxStaticText(Panel9, ID_STATICTEXT7, _("VGA1 Gain (dB):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT7"));
 	FlexGridSizer13->Add(StaticText7, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	cmbRxFEVGA1 = new wxComboBox(Panel9, ID_COMBOBOX5, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_COMBOBOX5"));
+	cmbRxFEVGA1->SetToolTip(_("This is the gain of the Variable Gain Amplifier #1, which is immediately after the Mixer.  See below for the path:\n\nRX -> LNAx -> MIXER -> VGA1 -> LPF -> VGA2 -> ADC -> samples\n\nThe recommendation for the LMS6002D is to prefer gain settings as follows:  LNAx, VGA1, VGA2.  However, some empirical investigation have shown lowering the gain of VGA1 relative to VGA2 can provide better sensitivity with lower background noise.  Some experimentation on the part of the user\'s application should be performed."));
 	FlexGridSizer13->Add(cmbRxFEVGA1, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText8 = new wxStaticText(Panel9, ID_STATICTEXT8, _("VGA2 Gain (dB):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
 	FlexGridSizer13->Add(StaticText8, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	cmbRxVGA2 = new wxComboBox(Panel9, ID_COMBOBOX6, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_COMBOBOX6"));
+	cmbRxVGA2->SetToolTip(_("This is the gain of the Variable Gain Amplifier #2, which is immediately after the Low Pass Filter.  See below for the path:\n\nRX -> LNAx -> MIXER -> VGA1 -> LPF -> VGA2 -> ADC -> samples\n\nThe recommendation for the LMS6002D is to prefer gain settings as follows:  LNAx, VGA1, VGA2.  However, some empirical investigation have shown that setting a VGA2 gain of 9dB provides better sensitivity with lower background noise.  Some experimentation on the part of the user\'s application should be performed."));
 	FlexGridSizer13->Add(cmbRxVGA2, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText1 = new wxStaticText(Panel9, ID_STATICTEXT1, _("LNA Gain Mode:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
 	FlexGridSizer13->Add(StaticText1, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
@@ -448,6 +456,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	cmbLNAGainMode->Append(_("Bypass"));
 	cmbLNAGainMode->SetSelection( cmbLNAGainMode->Append(_("Mid gain")) );
 	cmbLNAGainMode->Append(_("Max gain"));
+	cmbLNAGainMode->SetToolTip(_("This is the gain of the Low Noise Amplifier, which is the first gain stage in the RASDR device.  See below for the path:\n\nRX -> LNAx -> MIXER -> VGA1 -> LPF -> VGA2 -> ADC -> samples\n\nThe recommendation for the LMS6002D is to prefer gain settings as follows:  LNAx, VGA1, VGA2."));
 	FlexGridSizer13->Add(cmbLNAGainMode, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText3 = new wxStaticText(Panel9, ID_STATICTEXT18, _("LNA Selection:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT18"));
 	FlexGridSizer13->Add(StaticText3, 1, wxTOP|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
@@ -456,6 +465,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	cmbLNASelection->Append(_("LNA1"));
 	cmbLNASelection->Append(_("LNA2"));
 	cmbLNASelection->Append(_("LNA3"));
+	cmbLNASelection->SetToolTip(_("Activate one of three LNAs available:\n\nLNA1: 0.3-2.8Ghz, 3.5dB NF\nLNA2: 1.5-3.8GHz, 5.5dB NF\nLNA3: 0.3-3.0GHz, 10dB NF\n\nIn practice, only LNA1 has been observed to be functional.  Near 400MHz, LNA3 does not transmit enough of a signal to be differentiated from the background."));
 	FlexGridSizer13->Add(cmbLNASelection, 1, wxTOP|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText6 = new wxStaticText(Panel9, ID_STATICTEXT6, _("RX Switch:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
 	FlexGridSizer13->Add(StaticText6, 1, wxTOP|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
@@ -464,7 +474,15 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	cmbRFInputSelection->Append(_("RX->LNA1"));
 	cmbRFInputSelection->Append(_("RX->LNA2"));
 	cmbRFInputSelection->Append(_("RX->LNA3"));
+	cmbRFInputSelection->SetToolTip(_("This control is provided because it is available on the RASDR2 hardware.  It allows the user to route the RX signal through one of three matching networks and a disconnected state.  The disconnected state drives a 50ohm load *TO* the RX port, while it presents a high impedance view to the LNAx selected above."));
 	FlexGridSizer13->Add(cmbRFInputSelection, 1, wxTOP|wxBOTTOM|wxLEFT|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	Apply_btn = new wxButton(Panel9, ID_BUTTON3, _("Apply"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
+	Apply_btn->Disable();
+	Apply_btn->Hide();
+	FlexGridSizer13->Add(Apply_btn, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	txtOkToChange = new wxStaticText(Panel9, ID_STATICTEXT23, _("OK to change"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT23"));
+	txtOkToChange->Disable();
+	FlexGridSizer13->Add(txtOkToChange, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText16 = new wxStaticText(Panel9, ID_STATICTEXT19, wxEmptyString, wxDefaultPosition, wxSize(0,1), 0, _T("ID_STATICTEXT19"));
 	FlexGridSizer13->Add(StaticText16, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText17 = new wxStaticText(Panel9, ID_STATICTEXT20, _("."), wxDefaultPosition, wxSize(0,0), 0, _T("ID_STATICTEXT20"));
@@ -554,15 +572,15 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	Connect(ID_SPINCTRL4,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&pnlSpectrum::OnspinAvgCountChange);
 	Connect(ID_SPINBUTTON3,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&pnlSpectrum::OnspinFFTsamplesChange);
 	Connect(ID_SPINCTRL3,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&pnlSpectrum::OnspinSamplingFreqChange1);
-	Connect(ID_COMBOBOX4,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRxFilterSelected);
-	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnApply_btnClick);
 	Connect(ID_TEXTCTRL2,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&pnlSpectrum::OntxtRxFrequencyMHzText);
 	Connect(ID_TEXTCTRL2,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&pnlSpectrum::OntxtRxFrequencyMHzText);
+	Connect(ID_COMBOBOX4,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRxFilterSelected);
 	Connect(ID_COMBOBOX5,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRxFEVGA1Selected);
 	Connect(ID_COMBOBOX6,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRxVGA2Selected);
 	Connect(ID_COMBOBOX7,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbLNAGainModeSelected);
 	Connect(ID_COMBOBOX1,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbLNASelectionSelected);
 	Connect(ID_COMBOBOX2,wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&pnlSpectrum::OncmbRFInputSelectionSelected);
+	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnApply_btnClick);
 	Connect(ID_TOGGLEBUTTON1,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnPwrRefClick);
 	Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnPwrRecordClick);
 	Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&pnlSpectrum::OnDCOffsetCorrectionClick);
@@ -1048,7 +1066,8 @@ void pnlSpectrum::GetConfiguration()
                 if(line == 9) {
                     m_FFTsamplesCount = twotoN(atoi(inbuf));
                     spinFFTsamples->SetValue(atoi(inbuf));
-                    txtFFTsamples->SetValue(wxString::Format("%i",m_FFTsamplesCount));}
+                    txtFFTsamples->SetValue(wxString::Format("%i",m_FFTsamplesCount));
+                    txtFFTsamples->Enable(true);}
                 if(line == 10) {spinSamplingFreq->SetValue(atoi(inbuf));
                                 changeSamplingFrequency(atoi(inbuf)); }
  //                               m_samplingFrequency = atoi(inbuf);
@@ -1113,6 +1132,7 @@ void pnlSpectrum::GetConfiguration()
                 m_FFTsamplesCount = twotoN(11);
                 spinFFTsamples->SetValue( 11 );
                 txtFFTsamples->SetValue(wxString::Format("%i",m_FFTsamplesCount));
+                txtFFTsamples->Enable(true);
             cout << 2 << endl;                  // if(line == 10)
                 spinSamplingFreq->SetValue( 2 );
                 changeSamplingFrequency(2);
@@ -1683,8 +1703,10 @@ void pnlSpectrum::StartCapturing()
 
 	spinFFTsamples->Enable(false);
 	spinSamplingFreq->Enable(false);
-    Integration_Time->Enable(false);
-
+	txtFFTsamples->Enable(false);
+	txtRxFrequencyMHz->Enable(false);
+	Integration_Time->Enable(false);
+	txtOkToChange->Enable(true);
 
     m_dtLastRestart = m_dtLastRestart.UNow();
     // clear the power array on each start
@@ -1720,7 +1742,10 @@ void pnlSpectrum::StopCapturing()
 	PwrRef->Enable(false);
 	spinFFTsamples->Enable(true);
 	spinSamplingFreq->Enable(true);
+	txtFFTsamples->Enable(true);
+	txtRxFrequencyMHz->Enable(true);
 	Integration_Time->Enable(true);
+	txtOkToChange->Enable(false);
 	g_capturingData = false;
     EnableFFTRecord(false);
     EnablePWRRecord(false);
