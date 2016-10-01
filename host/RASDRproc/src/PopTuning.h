@@ -47,23 +47,28 @@ class PopTuning: public wxDialog
 		virtual ~PopTuning();
 
 		//(*Declarations(PopTuning)
+		wxTextCtrl* TextDCOffsetQ;
 		wxButton* OKButton;
 		wxStaticText* StaticText2;
-		wxStaticText* StaticText1;
 		wxButton* CALButton;
-		wxTextCtrl* TextCtrl2;
-		wxTextCtrl* TextCtrl1;
+		wxBoxSizer* BoxSizer1;
+		wxTextCtrl* TextDCOffsetI;
+		wxStaticText* StaticText4;
+		wxButton* ZEROButton;
+		wxTextCtrl* txtNotice;
 		//*)
 
 	protected:
 
 		//(*Identifiers(PopTuning)
-		static const long ID_BUTTON1;
-		static const long ID_STATICTEXT1;
+		static const long ID_TEXTCTRL3;
+		static const long ID_BUTTON3;
 		static const long ID_STATICTEXT2;
+		static const long ID_STATICTEXT4;
 		static const long ID_BUTTON2;
 		static const long ID_TEXTCTRL1;
 		static const long ID_TEXTCTRL2;
+		static const long ID_BUTTON1;
 		//*)
 
 	private:
@@ -72,6 +77,9 @@ class PopTuning: public wxDialog
 		void OnInit(wxInitDialogEvent& event);
 		void OnCALButtonClick(wxCommandEvent& event);
 		void OnOKButtonClick(wxCommandEvent& event);
+		void OnZEROButtonClick(wxCommandEvent& event);
+		void OnTextDCOffsetITextEnter(wxCommandEvent& event);
+		void OnTextDCOffsetQTextEnter(wxCommandEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()
