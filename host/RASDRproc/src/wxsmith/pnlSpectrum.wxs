@@ -623,7 +623,7 @@
 											<object class="sizeritem">
 												<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="DCOffsetSkew" member="yes">
 													<value>0.0</value>
-													<tooltip>Provides a measure of I &amp; Q balance under the current settings.&#x0A;The calculation is the mean-square error of both the I and Q components:&#x0A;&#x0A;MSE = ((DC__offsetI - avgI)^2 + (DC__offsetQ - avgQ)^2) / 2&#x0A;</tooltip>
+													<tooltip>Provides a measure of I &amp; Q balance under the current settings.&#x0A;The calculation is the mean-square error of both the I and Q components:&#x0A;&#x0A;MSE = ((DC__offsetI - avgI)^2 + (DC__offsetQ - avgQ)^2) / 2&#x0A;&#x0A;The background color of this field is designed to alert the operator when the DC offset for either I or Q is greater than some percentage of the ADC max scale value.  This percentage is provided in parentheis, and the background will take on the following colors:&#x0A;&#x0A;&lt;5%:       normal off-white&#x0A;5%-10%: yellow&#x0A;&gt;10%:      red&#x0A;</tooltip>
 												</object>
 												<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>

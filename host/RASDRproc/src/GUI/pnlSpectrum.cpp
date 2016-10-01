@@ -509,7 +509,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	DCOffsetSkewLabel = new wxStaticText(Panel9, ID_STATICTEXT3, _("DC Skew Metric:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
 	FlexGridSizer6->Add(DCOffsetSkewLabel, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	DCOffsetSkew = new wxTextCtrl(Panel9, ID_TEXTCTRL4, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	DCOffsetSkew->SetToolTip(_("Provides a measure of I & Q balance under the current settings.\nThe calculation is the mean-square error of both the I and Q components:\n\nMSE = ((DC_offsetI - avgI)^2 + (DC_offsetQ - avgQ)^2) / 2\n"));
+	DCOffsetSkew->SetToolTip(_("Provides a measure of I & Q balance under the current settings.\nThe calculation is the mean-square error of both the I and Q components:\n\nMSE = ((DC_offsetI - avgI)^2 + (DC_offsetQ - avgQ)^2) / 2\n\nThe background color of this field is designed to alert the operator when the DC offset for either I or Q is greater than some percentage of the ADC max scale value.  This percentage is provided in parentheis, and the background will take on the following colors:\n\n<5%:       normal off-white\n5%-10%: yellow\n>10%:      red\n"));
 	FlexGridSizer6->Add(DCOffsetSkew, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer3->Add(FlexGridSizer6, 1, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	int GLCanvasAttributes_4[] = {
@@ -2371,6 +2371,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
     {
         double ratio_FPS = (double)m_frames / expect_FPS;
         double dc_MSE;
+        float dc_I = (float)fabs(g_DcOffsetI) / g_MaxADC;
+        float dc_Q = (float)fabs(g_DcOffsetQ) / g_MaxADC;
+        float dc_PCT = (dc_I > dc_Q) ? dc_I*100.0 : dc_Q*100.0;
 
              if (ratio_FPS > 0.80) { lblFPS->SetLabel( wxString::Format(wxT("%i"), m_frames)); lblFPS->SetBackgroundColour(0xf0f0f0f0); /* default grey */ }
         else if (ratio_FPS > 0.50) { lblFPS->SetLabel( wxString::Format(wxT("%i, @%.1f%%"), m_frames, ratio_FPS*100.0)); lblFPS->SetBackgroundColour(0xf000ffff); /* yellow */ }
@@ -2379,9 +2382,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
         CalculatePwrAve();      // calculate once more for *this* loop
 
         dc_MSE = m_MseAccum / ( 2.0 * m_PwrAveCount );   // NB: because we didnt divide by two each time
-        DCOffsetSkew->SetValue( wxString::Format("%.1f", dc_MSE) );
-             if (dc_MSE < 5.0 ) DCOffsetSkew->SetBackgroundColour(0xf0f0f0f0); /* default grey */
-        else if (dc_MSE < 10.0) DCOffsetSkew->SetBackgroundColour(0xf000ffff); /* yellow */
+        DCOffsetSkew->SetValue( wxString::Format("%.1f (%.1f%%)", dc_MSE, dc_PCT) );
+             if (dc_PCT < 5.0 ) DCOffsetSkew->SetBackgroundColour(0xf0f0f0f0); /* default grey */
+        else if (dc_PCT < 10.0) DCOffsetSkew->SetBackgroundColour(0xf000ffff); /* yellow */
         else                    DCOffsetSkew->SetBackgroundColour(0xf00000ff); /* red */
         m_MseAccum = 0.0;
 

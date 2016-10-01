@@ -95,6 +95,7 @@ bool g_AutoDCOffset = false;        // NB: not sure if we want this in the confi
 volatile float g_DcErrorI = 0.0;
 volatile float g_DcErrorQ = 0.0;
 int g_UnlimitedAveraging = 0;
+float g_MaxADC = (float)((1<<(12-1))-1);    // LMS6002D (signed 12-bit ADC) maximum positive value
 
 // Radio Sky Spectrograph integration
 char g_RSS_IP[1024] = { "127.0.0.1" };
