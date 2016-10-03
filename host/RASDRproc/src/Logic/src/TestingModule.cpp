@@ -846,7 +846,7 @@ bool TestingModule::externalCalculateFFT()
                 double ifreq2 = m_fftCalcOut[itmp][0] * m_fftCalcOut[itmp][0];
                 double qfreq2 = m_fftCalcOut[itmp][1] * m_fftCalcOut[itmp][1];
 				itmp = FFTsamples / 2 + f;
-				fftPkt.amplitudes[f] = (ifreq2 + qfreq2) * g_integrationGain;
+				fftPkt.amplitudes[f] = (ifreq2 + qfreq2); // * g_integrationGain;
 			}
 
 			// positive frequencies
@@ -855,7 +855,7 @@ bool TestingModule::externalCalculateFFT()
 			{
                 double ifreq2 = m_fftCalcOut[f][0] * m_fftCalcOut[f][0];
                 double qfreq2 = m_fftCalcOut[f][1] * m_fftCalcOut[f][1];
-				fftPkt.amplitudes[f + lim - 1] = (ifreq2 + qfreq2) * g_integrationGain;
+				fftPkt.amplitudes[f + lim - 1] = (ifreq2 + qfreq2); // * g_integrationGain;
 			}
 
 			//samples used for current FFT
