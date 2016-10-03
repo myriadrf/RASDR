@@ -35,7 +35,7 @@
 
 #define BACKGROUND_SUBTRACT         0x01    // subtract background
 #define BACKGROUND_DISPLAY          0x02    // display background on overlay screen
-#define BACKGROUND_ABOVE_REFERENCE  0x04    // render signal above/below reference signal
+//#define BACKGROUND_SPARE1         0x04
 //#define BACKGROUND_SPARE2         0x08
 #define BACKGROUND_REFERENCE_MEAN   0x10    // background reference is mean value
 #define BACKGROUND_REFERENCE_MEDIAN 0x20    // background reference is median value

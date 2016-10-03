@@ -1998,7 +1998,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     wxSprintf(outbuf,"%s (Reference %s%s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
                         backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Subtraction Enabled" : "Display Reference Only",
                         tag,
-                        backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE ? " Applied" : " Calculated Only",
+                        " Calculated Only",
                         ref, min, max, sum);
                     cout << "Background " << outbuf << endl;
 #endif  // _DEBUG
@@ -2205,7 +2205,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     wxSprintf(outbuf,"%s (Frame Averaged, Reference %s%s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
                         backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Subtraction Enabled" : "Display Reference Only",
                         tag,
-                        backgroundDebugCfg & BACKGROUND_ABOVE_REFERENCE ? " Applied" : " Calculated Only",
+                        " Calculated Only",
                         ref, min, max, sum);
                     cout << "Background " << outbuf << endl;
 #endif  // _DEBUG
