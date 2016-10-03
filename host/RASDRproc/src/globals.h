@@ -36,12 +36,13 @@
 #define BACKGROUND_SUBTRACT         0x01    // subtract background
 #define BACKGROUND_DISPLAY          0x02    // display background on overlay screen
 #define BACKGROUND_ABOVE_REFERENCE  0x04    // render signal above/below reference signal
-#define BACKGROUND_VECTOR           0x08    // treat the background subtraction as a vector (on) or a scalar (off)
+//#define BACKGROUND_SPARE2         0x08
 #define BACKGROUND_REFERENCE_MEAN   0x10    // background reference is mean value
 #define BACKGROUND_REFERENCE_MEDIAN 0x20    // background reference is median value
 #define BACKGROUND_REFERENCE_HISTO  0x40    // background reference by peak histogram value
-#define BACKGROUND_DEBUG            0x27    // default value if no configuration file present (non-zero enables system)
-extern int g_backgroundDebugCfg;
+#define BACKGROUND_REFERENCE_VECTOR 0x80    // treat the background subtraction as a vector
+#define BACKGROUND_DEBUG_DEFAULT    0x27    // default value if no configuration file present (non-zero enables system)
+extern volatile int g_backgroundDebugCfg;
 extern float g_integrationGain;
 extern float g_DcOffsetI;
 extern float g_DcOffsetQ;
@@ -50,7 +51,7 @@ extern float g_avgQ;
 extern bool g_AutoDCOffset;
 extern volatile float g_DcErrorI;
 extern volatile float g_DcErrorQ;
-extern int g_UnlimitedAveraging;
+extern volatile int g_UnlimitedAveraging;
 extern float g_MaxADC;
 
 #define CSV_DEBUG   "RASDRproc-%s.csv"      // filename template to produce .csv output
@@ -59,6 +60,9 @@ extern float g_MaxADC;
 extern int g_frame_delay;
 extern int g_closedelay;
 extern double g_framepwr;
+extern bool g_PwrRefIsSet;
+extern double g_PwrRefOffset;
+extern double g_PwrAccum;
 //extern float g_DisplayTimeSpan;
 //extern int g_DisplayFrames;
 extern int g_PwrSpanSec;

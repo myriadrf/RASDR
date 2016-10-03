@@ -97,12 +97,9 @@ class pnlSpectrum: public wxPanel
 
         bool IsCapturingData();
         bool m_capturingData;
-        bool m_PwrRefIsSet;
-        bool m_backgroundSubtract;
-        double m_PwrRefOffset;
+        bool m_backgroundCalculated;
         double m_PwrRefScale;
         const char *m_PwrRefScaleUnits;
-        double m_PwrAccum;
         double m_MseAccum;
         double m_PwrAve;
         int m_PwrAveCount;
@@ -296,11 +293,8 @@ class pnlSpectrum: public wxPanel
         float *m_FFTfrequencies;
         float *m_FFTamplitudes;
         float *m_FFTbackground;
-// NB: use of the define would require include of ..\globals.h
-//#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
         float *m_FFTbackgroundAvg;
         float *m_FFTbackgroundDb;
-//#endif
         float *m_FFTMaxAmplitudes;
         float *m_PWRvalues;
         float m_PwrMax;

@@ -38,6 +38,9 @@ int g_closedelay  = 0;// This is used in debug mode on closing by slowing proces
 double g_framepwr; // Used to return the frame power from the testing module
 //float g_DisplayTimeSpan = 30;
 //int g_DisplayFrames = 3600;
+bool g_PwrRefIsSet = false;
+double g_PwrRefOffset = 0.0;
+double g_PwrAccum = 0.0;
 int g_PwrSpanSec = 900; // Default (15 Min)X Span being Displayed on Power Chart
 int g_MaxPwrSpanSec = 86400; // Max X Span & Storage Size
 float g_framesPerMin = 1260; // Estimated
@@ -85,7 +88,7 @@ float g_Sim_Period = 714.5;
 float g_Sim_Factor = 1.0001;
 
 // background subtraction
-int g_backgroundDebugCfg = 0x27;    // see globals.h for code
+volatile int g_backgroundDebugCfg = 0x27;    // see globals.h for code
 float g_integrationGain = 1.0;
 float g_DcOffsetI = 0.0;
 float g_DcOffsetQ = 0.0;
@@ -94,7 +97,7 @@ float g_avgQ = 0.0;
 bool g_AutoDCOffset = false;        // NB: not sure if we want this in the config file...
 volatile float g_DcErrorI = 0.0;
 volatile float g_DcErrorQ = 0.0;
-int g_UnlimitedAveraging = 0;
+volatile int g_UnlimitedAveraging = 0;
 float g_MaxADC = (float)((1<<(12-1))-1);    // LMS6002D (signed 12-bit ADC) maximum positive value
 
 // Radio Sky Spectrograph integration
