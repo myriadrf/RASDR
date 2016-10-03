@@ -650,7 +650,6 @@ bool FFTviewerFrame::SaveConfiguration()
             m_CFG_FileClassPtr->Write(newline);
  /*           m_CFG_FileClassPtr->Write(g_FFTfileName);
             m_CFG_FileClassPtr->Write(newline); */
-#if defined(BACKGROUND_DEBUG) && BACKGROUND_DEBUG
             wxSnprintf(outbuf,_N,"%-14d // Background Subtraction Code (bit encoded, try 71, bit0=en)",g_backgroundDebugCfg);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
@@ -666,7 +665,6 @@ bool FFTviewerFrame::SaveConfiguration()
             wxSnprintf(outbuf,_N,"%-14d // Unlimited Averaging (0=no, 1=yes)", g_UnlimitedAveraging);
             m_CFG_FileClassPtr->Write(outbuf);
             m_CFG_FileClassPtr->Write(newline);
-#endif // defined
             // RSS Integration
             wxSnprintf(outbuf,_N,"%-14s // RSS Server IP",g_RSS_IP);
             m_CFG_FileClassPtr->Write(outbuf);
