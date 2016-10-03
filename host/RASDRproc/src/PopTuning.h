@@ -35,6 +35,8 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
 //*)
@@ -44,14 +46,23 @@ class PopTuning: public wxDialog
 	public:
 
 		PopTuning(wxWindow* parent,wxWindowID id=wxID_ANY);
-		virtual ~PopTuning();
+		//virtual ~PopTuning();
 
 		//(*Declarations(PopTuning)
 		wxTextCtrl* TextDCOffsetQ;
 		wxButton* OKButton;
+		wxCheckBox* chkEnable;
+		wxCheckBox* chkUnlimited;
 		wxStaticText* StaticText2;
+		wxCheckBox* chkDisplay;
+		wxStaticText* StaticText1;
+		wxStaticText* StaticText3;
 		wxButton* CALButton;
+		wxButton* btnReference;
 		wxBoxSizer* BoxSizer1;
+		wxTextCtrl* TextIntegrationGain;
+		wxCheckBox* chkDBFS;
+		wxChoice* choiceMethod;
 		wxTextCtrl* TextDCOffsetI;
 		wxStaticText* StaticText4;
 		wxButton* ZEROButton;
@@ -68,10 +79,21 @@ class PopTuning: public wxDialog
 		static const long ID_BUTTON2;
 		static const long ID_TEXTCTRL1;
 		static const long ID_TEXTCTRL2;
+		static const long ID_CHECKBOX5;
+		static const long ID_CHECKBOX3;
+		static const long ID_CHECKBOX1;
+		static const long ID_CHECKBOX2;
+		static const long ID_STATICTEXT1;
+		static const long ID_CHOICE1;
+		static const long ID_STATICTEXT3;
+		static const long ID_TEXTCTRL4;
+		static const long ID_BUTTON4;
 		static const long ID_BUTTON1;
 		//*)
 
 	private:
+
+        bool old_PwrRefIsSet;
 
 		//(*Handlers(PopTuning)
 		void OnInit(wxInitDialogEvent& event);
@@ -80,6 +102,11 @@ class PopTuning: public wxDialog
 		void OnZEROButtonClick(wxCommandEvent& event);
 		void OnTextDCOffsetITextEnter(wxCommandEvent& event);
 		void OnTextDCOffsetQTextEnter(wxCommandEvent& event);
+		void OnBackgroundChkButtonClick(wxCommandEvent& event);
+		void OnTextIntegrationGainEnter(wxCommandEvent& event);
+		void OnchoiceMethodSelect(wxCommandEvent& event);
+		void OnbtnReferenceClick(wxCommandEvent& event);
+		void OnClose(wxCloseEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()
