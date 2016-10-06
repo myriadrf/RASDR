@@ -1904,6 +1904,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 
 	if(averageFFT != true)
 	{
+	    // FIXME: update graphs should not affect whether or not we process data...
         if(chkUpdateGraphs->GetValue() == true)
         {
             //calculate FFT
@@ -1919,6 +1920,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                                           m_FFTdataSize,
                                           fftsLeft );
 
+                // FIXME: this section (and the one below) are now identical and can be factored out
                 if( g_PwrRefIsSet && not m_backgroundCalculated) {
                     float min = g_MaxADC;       // 12-bit ADC max value
                     float max = 0.0;
@@ -1971,8 +1973,14 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
                         tag = "MEAN";
                     }
+                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
+                    {
+                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
+                        tag = "VECTOR";
+                    }
                     else
                         g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+                    // compute background reference vector
                     if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
                     {
                         memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
@@ -1995,10 +2003,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     sum = (sum <= 0.0) ? -370.0 : 10.0 * log10( sum );
                     ref = g_Statistics_g_FFTbackgroundReferenceLevel;
                     ref = (ref <= 0.0) ? -370.0 : 10.0 * log10( ref );
-                    wxSprintf(outbuf,"%s (Reference %s%s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
+                    wxSprintf(outbuf,"%s (Reference %s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
                         backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Subtraction Enabled" : "Display Reference Only",
                         tag,
-                        " Calculated Only",
                         ref, min, max, sum);
                     cout << "Background " << outbuf << endl;
 #endif  // _DEBUG
@@ -2044,7 +2051,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 
                 idx = { 0, m_FFTdataSize-1 };
 
-                //convert FFT results to dB
+                //convert FFT results to dB (in place)
                 for(int i=0; i<m_FFTdataSize; i++)
                 {
                     float value;
@@ -2092,6 +2099,8 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 	else //  averaging
 	{
 	    expect_FPS = expect_FPS / (double)m_buffersCountMask;
+
+	    // FIXME: update graphs should not affect whether or not we process data...
         if(chkUpdateGraphs->GetValue() == true)
         {
             calculated = LMLL_Testing_CalculateFFT();
@@ -2123,9 +2132,10 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     bufferPos = (bufferPos + 1) % m_buffersCountMask;
                 }
                 for(int j=0; j<m_FFTsamplesCount; ++j)
-                    m_FFTamplitudesBuffer[m_buffersCount][j] = m_FFTamplitudesBuffer[m_buffersCount][j] * oneOverBuffersCountMask;
+                    m_FFTamplitudes[j] = m_FFTamplitudesBuffer[m_buffersCount][j] * oneOverBuffersCountMask;
 #endif // 0
 
+                // FIXME: this section (and the one above) are now identical and can be factored out
                 if( g_PwrRefIsSet && not m_backgroundCalculated) {
                     float min = g_MaxADC;       // 12-bit ADC max value
                     float max = 0.0;
@@ -2134,7 +2144,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     const char *tag = "NONE";
 
                     // smoothing background spectrogram
-                    memcpy(m_FFTbackgroundAvg,m_FFTamplitudesBuffer[m_buffersCount],m_FFTdataSize*sizeof(float));
+                    memcpy(m_FFTbackgroundAvg,m_FFTamplitudes,m_FFTdataSize*sizeof(float));
                     if( !(backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR) )
                         for(int i=3; i<m_FFTdataSize-3;i++)
                             // apply 7pt smoothing function on background
@@ -2178,8 +2188,14 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                         g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
                         tag = "MEAN";
                     }
+                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
+                    {
+                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
+                        tag = "VECTOR";
+                    }
                     else
                         g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+                    // compute background reference vector
                     if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
                     {
                         memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
@@ -2202,10 +2218,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                     sum = (sum <= 0.0) ? -370.0 : 10.0 * log10( sum );
                     ref = g_Statistics_g_FFTbackgroundReferenceLevel;
                     ref = (ref <= 0.0) ? -370.0 : 10.0 * log10( ref );
-                    wxSprintf(outbuf,"%s (Frame Averaged, Reference %s%s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
+                    wxSprintf(outbuf,"%s (Frame Averaged, Reference %s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
                         backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Subtraction Enabled" : "Display Reference Only",
                         tag,
-                        " Calculated Only",
                         ref, min, max, sum);
                     cout << "Background " << outbuf << endl;
 #endif  // _DEBUG
@@ -2242,11 +2257,10 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 
                 idx = { 0, m_FFTdataSize-1 };
 
-                //convert to dB
+                //convert FFT results to dB (in place)
                 for(int i=0; i<m_FFTdataSize; i++)
                 {
                     float value;
-                    m_FFTamplitudes[i]  = m_FFTamplitudesBuffer[m_buffersCount][i];
                     m_FFTamplitudes[i] -= m_FFTbackground[i];
                     m_FFTamplitudes[i] *= g_integrationGain;
                     m_FFTamplitudes[i]  = (m_FFTamplitudes[i] > 0.0) ? 10.0 * log10( m_FFTamplitudes[i] ) : -370.0;  // NB: I^2+Q^2 (w/o sqrt)
