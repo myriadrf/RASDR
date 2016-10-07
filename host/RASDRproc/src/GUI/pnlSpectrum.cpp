@@ -2023,29 +2023,24 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                 if(g_FFTfileRecording && m_FFTCounter == 0) {
                     int ms = dt.UNow().GetMillisecond();
                     wxSprintf(outbuf,".%03d",ms);
-                    if(g_FFTFileType == 0) {
-                            if(g_FFT_TimeStandard == 0) {
+                    if(g_FFTFileType == 0 && g_FFT_TimeStandard == 0) {
                                     m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
-                                    m_FFTFileClassPtr->Write(outbuf);}
-                            else {
- // Bug fix 5/24                                   m_FileClassPtr->Write(dt.Now().ToUTC().FormatTime().c_str());
+                                    m_FFTFileClassPtr->Write(outbuf);
+                    } else if(g_FFTFileType == 0 && g_FFT_TimeStandard == 1) {
                                     m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
                                     wxSprintf(outbuf,".%03d",ms);
                                     m_FFTFileClassPtr->Write(outbuf);
                                     m_FFTFileClassPtr->Write("Z");
-                                    }
-                    }
-                    else {
-                            if(g_FFT_TimeStandard == 0){
+                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 0) {
                                 m_FFTFileClassPtr->Write(dt.Now().FormatISOCombined().c_str());
                                 wxSprintf(outbuf,".%03d",ms);
-                                m_FFTFileClassPtr->Write(outbuf);}
-                            else{
+                                m_FFTFileClassPtr->Write(outbuf);
+                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 1) {
                                 m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
                                 wxSprintf(outbuf,".%03d",ms);
                                 m_FFTFileClassPtr->Write(outbuf);
-                                m_FFTFileClassPtr->Write("Z"); }
-                            }
+                                m_FFTFileClassPtr->Write("Z");
+                    }
                     m_FFTFileClassPtr->Write(",");
                 }
 
@@ -2236,22 +2231,23 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                 if(g_FFTfileRecording && m_FFTCounter == 0) {
                     int ms = dt.UNow().GetMillisecond();
                     wxSprintf(outbuf,".%03d",ms);
-                    if(g_FFT_TimeStandard == 0 && g_FFTFileType == 0){
+                    if(g_FFTFileType == 0 && g_FFT_TimeStandard == 0) {
                         m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
-                        m_FFTFileClassPtr->Write(outbuf); }
-                    if(g_FFT_TimeStandard == 0 && g_FFTFileType == 1) {
-                        m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
-                        m_FFTFileClassPtr->Write(outbuf);}
-                    if(g_FFT_TimeStandard == 1 && g_FFTFileType == 0) {
+                        m_FFTFileClassPtr->Write(outbuf);
+                    } else if(g_FFTFileType == 0 && g_FFT_TimeStandard == 1) {
                         m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
                         wxSprintf(outbuf,".%03d",ms);
                         m_FFTFileClassPtr->Write(outbuf);
-                        m_FFTFileClassPtr->Write("Z"); }
-                    if(g_FFT_TimeStandard == 1 && g_FFTFileType == 1) {
+                        m_FFTFileClassPtr->Write("Z");
+                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 0) {
+                        m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
+                        m_FFTFileClassPtr->Write(outbuf);
+                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 1) {
                         m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
                         wxSprintf(outbuf,".%03d",ms);
                         m_FFTFileClassPtr->Write(outbuf);
-                        m_FFTFileClassPtr->Write("Z"); }
+                        m_FFTFileClassPtr->Write("Z");
+                    }
                     m_FFTFileClassPtr->Write(",");
                 }
 
