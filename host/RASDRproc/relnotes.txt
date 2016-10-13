@@ -1,4 +1,4 @@
-RASDRproc v0.2.3.7 -  Sep 21, 2016
+RASDRproc v0.2.3.8 - WORK IN PROGRESS
 ==================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -26,9 +26,9 @@ When you close the program, the last set of parameters used will be written to t
 
 DC Offset Correction:
 
-RASDRproc uses *MANUAL* DC Offset Correction.  The calibration procedure is as follows:
+RASDRproc employs *post* acquisition DC Offset Correction.  The calibration procedure is as follows:
 
-1) Setup the desired acquisition parameters and start data collection.  While collecting data, connect a 50ohm load to the RX of the receiver.
+1) Setup the desired acquisition parameters and start data collection.  While collecting data, connect a 50ohm load to the RX of the receiver.  With v0.2.3.7+, you may also select the RX input to 'disconnect'.  While this is not a 50ohm load (rather a High-Z) it can still be useful for adjusting the DC offset. 
 
 2) From the 'Performance Parameters' menu, select 'Tuning Parameters'.  This brings up a pop-up window where an I and Q offset is able to be entered.  While data is being collected, press the 'Use Current Averages' and observe that the values are updated. Then, press 'OK Accept Values' and see that the DC offset correction is applied.
 
@@ -40,11 +40,15 @@ NEW with v0.2.3.4:  The DC calibration can be made from the front panel.  A meas
 
 MSE = ((DCOffsetI - avgI)^2 + (DCOffsetQ - avgQ)^2) / 2.0
 
-If the MSE is < 5.0 the display will be gray
-If the MSE is 5.0 < 10.0, the display will be yellow
-If the MSE is > 10.0, the display will be red
+CHANGED with v0.2.3.8:  Added a measure of the %-difference from the maximum ADC value that the DC offset is set to.  The background color of the skew metric is now as follows:
+
+If the PERCENT is < 5.0 the display will be gray
+If the PERCENT is 5.0 < 10.0, the display will be yellow
+If the PERCENT is > 10.0, the display will be red
 
 The option to do automatic (continuous) DC offset calibration (that was the only option in RASDRviewer 1.2.2.2 and BELOW) is restored with a check-box in RASDRproc v0.2.3.4 and above.
+
+NOTE: there is a DC offset adjustment that is performed on the LMS chip as part of tuning, but currently it is an open-loop procedure that is does not produce optimal result.  Future revisions may address this issue.
 
 
 Auto Restart:
@@ -92,6 +96,50 @@ This can be used if you are using an upconverter to provide the correct offset f
 There was a regression in v0.2.3.4 in which the RSS control panel settings became unavailable.  This was corrected in v0.2.3.5 (and hopefully from now on). 
 
 
+Background Subtraction:
+
+RASDRproc has had the ability to perform live background subtraction on incoming spectral data.  However, this capability was not fully fleshed out until v0.2.3.8, when several adjustments were made including the exposure of the configuration settings to the Tuning Parameters dialog.
+
+To access the controls, from the 'Performance Parameters' menu, select 'Tuning Parameters'.  This brings up a pop-up window and there are two sections that affect the background subtraction:  'Spectral Averaging' and 'Spectral Background Subtraction'.  Both of these are dynamic in that they can be applied while data collection is active.
+
+>> Spectral Averaging
+
+The two controls here are 'Unlimited Averaging' and 'Reference to ADC Full Scale'.  Both of these features are not yet implemented.
+
+>> Spectral Background Subtraction
+
+In this section there are the following controls:
+
+- Enable
+
+This is used to activate the subtraction of a background level present at the time that the 'SetPwrRef' button is pressed on the main panel.  For testing convenience, a button 'Set Reference' is also provided on the pop-up window to allow adjustments while viewing the response on the main panel.  If this box is checked, then the spectral plot will will display the result of this equasion:
+
+PWR[f] = 10 * log10( (AVG(I[f]^2 + Q[f]^2) - REF[f]) * G )
+
+Where I[f], Q[f] are the normalized FFT outputs.  G is the 'Integration Gain' which is adjustable on the panel.  REF[f] is obtained at the time the 'SetPwrRef' or 'Set Reference' buttons are pressed.  It is computed according to the method control described below.
+
+Please note, that the code does not perform the SQRT of the I,Q data as part of the averaging.  It incorporates the SQRT by using a 10* instead of 20* for the power spectral density calculation.
+
+Also note, the current version of RASDRproc operates as if a rectangular window is applied to the time domain data prior to computing the FFT.  I.e. no windowing function is applied and no overlap of the FFT samples are performed.  Future versions may address this issue.
+
+- Visible
+
+This control determines whether or not the in-use background level is displayed or not.  If ticked, the current background waveform will be overlaid on the spectral plot in green.
+
+- Method
+
+This drop-down box determines the algorithm used to compute the REF[f] vector.  There are four possible choices, described below:
+
+    Mean:  This computes the mean value of the AVG(I[f]^2 + Q[f]^2) vector.  Typically, this selection tends to over estimate the background due to the contributions of the DC imbalance.  This is a scalar background, so that each element of REF[f] is set to this scalar value and so is applied equally to all the frequencies.
+    Median:  This computes the median value of the AVG(I[f]^2 + Q[f]^2) vector.  Typically, this selection estimates the background level very well, but depends on a flat baseline.  It is not sensitive to the DC imbalance.  Again, this is a scalar background, so that each element of REF[f] is set to this scalar value and so is applied equally to all the frequencies.
+    Histogram:  This computes a histogram of the of the 10 * log10( AVG(I[f]^2 + Q[f]^2) ) vector converted to integers.  It is operated on the logarithm scale to reduce the range of values that are used.  Following the selection, the reference level is recalculated to the linear value that matches the AVG() vector.  Typically, this selection slightly under-estimates the background level, but depends on a flat baseline.  It is not sensitive to the DC imbalance.  Again, this is a scalar background, so that each element of REF[f] is set to this scalar value and so is applied equally to all the frequencies.
+    Vector:  This setting uses the AVG(I[f]^2 + Q[f]^2) vector as the background directly.
+
+- Integration Gain
+
+This allows an adjustment to the 'G' parameter in the equasion for computing the power spectral density.  The intent is to provide a weighting factor to the residual energy remaining after the background is removed.
+
+
 Known Issues:
 
 1) The program will give an ugly dialog box if it cannot find its settings file 'RASDR.cfg', but will create a new one when the program exits.
@@ -117,3 +165,5 @@ http://diyhpl.us/~bryan/irc/darpa/avm/meta/meta/QRG/code-library/lisp/opengl/_de
 8) If attempting to run RASDRproc on a machine via remote desktop, it can fail due to an OpenGL context not being available.  With v0.2.3.7, hopefully this will result in an informative message.  There should not be a reason why an OpenGL application cannot operate the same regardless of whether it is started on the console or via a remote desktop connection.  If the application is *already running*, there seems to be no problem with operating over remote desktop...
 
 9) LNA3 (which is now available to be used) does not seem to provide any meaningful response in the system.
+
+10) When subtracting backround, the 'Mean' algorithm over-estimates the background.  This leads to a situation in which a negative residual remains after removal of the baseline.  This will appear as a minimum value (-370.0) on the spectral plot.  Some experimentation is required when attempting to make use of the background subtraction feature.
