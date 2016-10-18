@@ -1,0 +1,37 @@
+Procedure for tuning RASDR with a calibrated noise source
+=========================================================
+
+0. Connect Noise Source to RX input on RASDR, but do not power it on
+1. Start RASDRproc with no RASDR.cfg in the folder where the .exe is
+2. Select Ctr Frequency, BW of interest
+3. Set Samples/Frame = 256
+4. Set RX Switch to 'RX->50o,Z->LNAx'
+5. Set VGA2 Gain to '0'
+5. Start capture
+6. Observe the value under Frames per Second (it will show a value of X << N)
+7. Set the averaging criteria to the nearest integer of the ratio (N/X)
+  a. In my case it is 245
+8. Press Correct DC Offset
+9. Wait for the spectrum to stabilize
+10. Add a marker and set it along the baseline somewhere, observe its value
+  a. For example: -19.2dB
+11. Open 'Define Output->Setup RSS Output'
+  a. Set channels = 256, Set Channel Bias to the inverse of the value observed in step 10, rounded up.
+  b. In this example: 20.0
+  c. Set Enable
+  d. Press OK/Close
+12. Stop capture and start it again
+13. Press Set PWR Reference
+14. Adjust VGA2 Gain until the marker value reaches/slightly exceeds the value observed in step 10
+  a. In my case it was 9dB
+15. Press Correct DC Offset
+16. Wait for the spectrum to stabilize
+17. Set RX Switch to RX->LNA1
+18. Set Autoscale PWR Axis and Time Axis, Span (min) to 1
+19. Connect RSS Spectrograph to RASDR
+20. Wait 1min
+21. Power on the noise source, observe power graph level rises in proportion to expected noise power in band
+  a. in my case, @1420MHz, my noise source is cal to 15.75dB(1420MHz) ENR at 25C, I observe a +10dB rise in the spectrum level with a +12uW rise in the ADC level.
+
+TODO:
+  Identify which parameters need to be adjusted in the PWR and SPECTRUM gain processing to correctly calibrate the PWR and spectral vertical scales.
