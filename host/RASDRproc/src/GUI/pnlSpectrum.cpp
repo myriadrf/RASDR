@@ -1902,406 +1902,222 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
         int max;
     } idx;
 
-	if(averageFFT != true)
-	{
-	    // FIXME: update graphs should not affect whether or not we process data...
-        if(chkUpdateGraphs->GetValue() == true)
-        {
-            //calculate FFT
-            calculated = LMLL_Testing_CalculateFFT();
-            //if FFT has been calculated
-            if(calculated)
+    //calculate FFT
+    calculated = LMLL_Testing_CalculateFFT();
+    if( calculated )
+    {
+        float oneOverBuffersCountMask = 1.0;
+        switch( averageFFT ) {
+        default:
+        case 0:
+            //not averaging, take only one result
+            LMLL_Testing_GetFFTData(  m_IchannelData,
+                                      m_QchannelData,
+                                      m_IQdataSize,
+                                      m_FFTamplitudes,  // NB: I^2+Q^2 (w/o sqrt)
+                                      m_FFTdataSize,
+                                      fftsLeft );
+            break;
+        case 1:
+            oneOverBuffersCountMask = 1.0/(float)m_buffersCountMask;
+            expect_FPS = expect_FPS * oneOverBuffersCountMask;
+
+            //takes one FFT results and add it to averaging buffer
+            LMLL_Testing_GetFFTData(  m_IchannelData,
+                                      m_QchannelData,
+                                      m_IQdataSize,
+                                      m_FFTamplitudesBuffer[bufferPos],   // NB: I^2+Q^2 (w/o sqrt)
+                                      m_FFTdataSize,
+                                      fftsLeft);
+
+            // update acquisition buffer position index
+            bufferPos = (bufferPos + 1) % m_buffersCountMask;
+
+            for(int j=0; j<m_FFTsamplesCount; ++j)
+                m_FFTamplitudesBuffer[m_buffersCount][j] = 0.0;
+
+            // calculate average by keeping a circular buffer and *re-calculating* at each iteration
+            for(int i=0; i<m_buffersCountMask; ++i)
             {
-                //not averaging, take only one result
-                LMLL_Testing_GetFFTData(  m_IchannelData,
-                                          m_QchannelData,
-                                          m_IQdataSize,
-                                          m_FFTamplitudes,  // NB: I^2+Q^2 (w/o sqrt)
-                                          m_FFTdataSize,
-                                          fftsLeft );
-
-                // FIXME: this section (and the one below) are now identical and can be factored out
-                if( g_PwrRefIsSet && not m_backgroundCalculated) {
-                    float min = g_MaxADC;       // 12-bit ADC max value
-                    float max = 0.0;
-                    float sum = 0.0;
-                    float ref = -370.0;         // reference level selected in dB
-                    const char *tag = "NONE";
-
-                    // smoothing background spectrogram
-                    memcpy(m_FFTbackgroundAvg,m_FFTamplitudes,m_FFTdataSize*sizeof(float));
-                    if( !(backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR) )
-                        for(int i=3; i<m_FFTdataSize-3;i++)
-                            // apply 7pt smoothing function on background
-                            // do not apply smoothing if we are using the reference vector
-                            // TODO: make parametric
-                            m_FFTbackgroundAvg[i] = (
-                                                     m_FFTbackgroundAvg[i-3] +
-                                                     m_FFTbackgroundAvg[i-2] +
-                                                     m_FFTbackgroundAvg[i-1] +
-                                                     m_FFTbackgroundAvg[i]   +
-                                                     m_FFTbackgroundAvg[i+1] +
-                                                     m_FFTbackgroundAvg[i+2] +
-                                                     m_FFTbackgroundAvg[i+3] +
-                                                     0.0) / 7.0;
-                    // computing statistics on background spectrogram
-                    for(int i=0; i<m_FFTdataSize; i++) {
-                        m_FFTMaxAmplitudes[i] = -370.0;
-                        if( m_FFTbackgroundAvg[i] < min ) min = m_FFTbackgroundAvg[i];
-                        if( m_FFTbackgroundAvg[i] > max ) max = m_FFTbackgroundAvg[i];
-                                                         sum += m_FFTbackgroundAvg[i];
-                    }
-                    if( backgroundDebugCfg & BACKGROUND_REFERENCE_MEDIAN )
-                    {
-                        float scratch[m_FFTdataSize];
-                        extern float quick_select(float arr[], int n);
-                        memcpy(scratch,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
-                        g_Statistics_g_FFTbackgroundReferenceLevel = quick_select(scratch, m_FFTdataSize);
-                        tag = "MEDIAN";
-                    }
-                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_HISTO )
-                    {
-                        extern float histogram_select(float arr[], int n);
-                        for(int i=0; i<m_FFTdataSize; i++)
-                            m_FFTbackgroundDb[i] = (m_FFTbackgroundAvg[i] > 0.0) ? 10.0 * log10( m_FFTbackgroundAvg[i] ) : -370.0;
-                        ref = histogram_select(m_FFTbackgroundDb,m_FFTdataSize);
-                        g_Statistics_g_FFTbackgroundReferenceLevel = pow(10.0,ref/10.0);
-                        tag = "HISTOGRAM";
-                    }
-                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_MEAN )
-                    {
-                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
-                        tag = "MEAN";
-                    }
-                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
-                    {
-                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
-                        tag = "VECTOR";
-                    }
-                    else
-                        g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
-                    // compute background reference vector
-                    if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
-                    {
-                        memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
-                    } else {
-                        for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = g_Statistics_g_FFTbackgroundReferenceLevel;
-                    }
-                    for(int i=0; i<m_FFTdataSize; i++)
-                        m_FFTbackgroundDb[i] = (m_FFTbackground[i] > 0.0) ? 10.0 * log10( m_FFTbackground[i] ) : -370.0;
-                    // after the background reference vector is computed, if we are not subtracting, clear the array
-                    if( !(backgroundDebugCfg & BACKGROUND_SUBTRACT) )
-                    {
-                        for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
-                    }
-                    m_backgroundCalculated = true;
-#ifdef _DEBUG
-                    // convert statistics to dB for logging
-                    min = (min <= 0.0) ? -370.0 : 10.0 * log10( min );
-                    max = (max <= 0.0) ? -370.0 : 10.0 * log10( max );
-                    sum = sum / (float)m_FFTdataSize;
-                    sum = (sum <= 0.0) ? -370.0 : 10.0 * log10( sum );
-                    ref = g_Statistics_g_FFTbackgroundReferenceLevel;
-                    ref = (ref <= 0.0) ? -370.0 : 10.0 * log10( ref );
-                    wxSprintf(outbuf,"%s (Reference %s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
-                        backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Subtraction Enabled" : "Display Reference Only",
-                        tag,
-                        ref, min, max, sum);
-                    cout << "Background " << outbuf << endl;
-#endif  // _DEBUG
-                } else if( not g_PwrRefIsSet && m_backgroundCalculated) {
-                    // subtracting, but set power reference just cleared
-                    m_backgroundCalculated = false;
-                    g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
-                    for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
-#ifdef _DEBUG
-                    cout << "Background Reference Disabled" << endl;
-#endif  // _DEBUG
-                }
-
-                // Write Time Stamp to file
-                if(g_FFTfileRecording && m_FFTCounter == 0) {
-                    int ms = dt.UNow().GetMillisecond();
-                    wxSprintf(outbuf,".%03d",ms);
-                    if(g_FFTFileType == 0 && g_FFT_TimeStandard == 0) {
-                                    m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
-                                    m_FFTFileClassPtr->Write(outbuf);
-                    } else if(g_FFTFileType == 0 && g_FFT_TimeStandard == 1) {
-                                    m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
-                                    wxSprintf(outbuf,".%03d",ms);
-                                    m_FFTFileClassPtr->Write(outbuf);
-                                    m_FFTFileClassPtr->Write("Z");
-                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 0) {
-                                m_FFTFileClassPtr->Write(dt.Now().FormatISOCombined().c_str());
-                                wxSprintf(outbuf,".%03d",ms);
-                                m_FFTFileClassPtr->Write(outbuf);
-                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 1) {
-                                m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
-                                wxSprintf(outbuf,".%03d",ms);
-                                m_FFTFileClassPtr->Write(outbuf);
-                                m_FFTFileClassPtr->Write("Z");
-                    }
-                    m_FFTFileClassPtr->Write(",");
-                }
-
-                idx = { 0, m_FFTdataSize-1 };
-
-                //convert FFT results to dB (in place)
-                for(int i=0; i<m_FFTdataSize; i++)
-                {
-                    float value;
-                    m_FFTamplitudes[i] -= m_FFTbackground[i];
-                    m_FFTamplitudes[i] *= g_integrationGain;
-                    m_FFTamplitudes[i]  = (m_FFTamplitudes[i] > 0.0) ? 10.0 * log10( m_FFTamplitudes[i] ) : -370.0;  // NB: I^2+Q^2 (w/o sqrt)
-// BUG: RASDRviewer 1.2.2.1 would skip this point if the amplitude was too low
-                    if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
-                        m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
-                    value = m_MaxHold ? m_FFTMaxAmplitudes[i] : m_FFTamplitudes[i];
-
-                    // NB: factored up, as I need the min/max indices later
-                    if (g_FFTDataSource == 1)
-                    {
-                        if( m_fftxaxisValues[i] < m_FFTChartCenter - (m_FFTChartSpan/2) ) idx.min = i;
-                        if( m_fftxaxisValues[i] > m_FFTChartCenter + (m_FFTChartSpan/2) ) idx.max = i;
-                    }
-                    if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
-                        if(g_FFTDataSource == 0) {
-                            sprintf(outbuf,"%.4f,\0",value);
-                            m_FFTFileClassPtr->Write(outbuf); }
-                        else if(g_FFTDataSource == 1 && i >= idx.min && i <= idx.max) {
-                            sprintf(outbuf,"%.4f,\0",value);
-                            m_FFTFileClassPtr->Write(outbuf); }
-                    }
-                }
-                if(g_FFTfileRecording && m_FFTFileClassPtr != NULL && m_FFTCounter >= g_FFTframeSkip) {
-                    m_FFTFileClassPtr->Write("\r\n",2);
-                    m_FFTCounter = 0;
-                    m_FFTsRecorded++;
-                    sprintf(outbuf,"%d",m_FFTsRecorded);
-                    FFTsREC->SetValue(outbuf);
-                    if(m_FFTsRecorded >= g_FFTframesOut)
-                        OnRecordFFTClick(dummy);
-                }
-                else if(g_FFTfileRecording) m_FFTCounter++;
-
-                // write FFT spectra to FIFO
-                LMLL_Testing_SetFFTSpectra(
-                    &m_FFTamplitudes[idx.min], &m_fftxaxisValues[idx.min],
-                    idx.max - idx.min, m_RxFreq );
-            }
-        }
-	}
-	else //  averaging
-	{
-	    expect_FPS = expect_FPS / (double)m_buffersCountMask;
-
-	    // FIXME: update graphs should not affect whether or not we process data...
-        if(chkUpdateGraphs->GetValue() == true)
-        {
-            calculated = LMLL_Testing_CalculateFFT();
-            if(calculated)
-            {
-                float oneOverBuffersCountMask = 1.0/(float)m_buffersCountMask;
-
-                //takes one FFT results and add it to averaging buffer
-                LMLL_Testing_GetFFTData(m_IchannelData,
-                                        m_QchannelData,
-                                        m_IQdataSize,
-                                        m_FFTamplitudesBuffer[bufferPos],   // NB: I^2+Q^2 (w/o sqrt)
-                                        m_FFTdataSize,
-                                        fftsLeft);
-
-                // update acquisition buffer position index
+                for(int j=0; j<m_FFTsamplesCount; ++j)
+                    m_FFTamplitudesBuffer[m_buffersCount][j] += m_FFTamplitudesBuffer[bufferPos][j];
                 bufferPos = (bufferPos + 1) % m_buffersCountMask;
+            }
+            for(int j=0; j<m_FFTsamplesCount; ++j)
+                m_FFTamplitudes[j] = m_FFTamplitudesBuffer[m_buffersCount][j] * oneOverBuffersCountMask;
 
-                for(int j=0; j<m_FFTsamplesCount; ++j)
-                    m_FFTamplitudesBuffer[m_buffersCount][j] = 0.0;
+            break;
+        }
 
-#if 0   // new averaging method...
-#else
-                // calculate average by keeping a circular buffer and *re-calculating* at each iteration
-                for(int i=0; i<m_buffersCountMask; ++i)
-                {
-                    for(int j=0; j<m_FFTsamplesCount; ++j)
-                        m_FFTamplitudesBuffer[m_buffersCount][j] += m_FFTamplitudesBuffer[bufferPos][j];
-                    bufferPos = (bufferPos + 1) % m_buffersCountMask;
-                }
-                for(int j=0; j<m_FFTsamplesCount; ++j)
-                    m_FFTamplitudes[j] = m_FFTamplitudesBuffer[m_buffersCount][j] * oneOverBuffersCountMask;
-#endif // 0
+        // manage background reference
+        if( g_PwrRefIsSet && not m_backgroundCalculated ) {
+            float min = g_MaxADC;       // 12-bit ADC max value
+            float max = 0.0;
+            float sum = 0.0;
+            float ref = -370.0;         // reference level selected in dB
+            const char *tag = "NONE";
 
-                // FIXME: this section (and the one above) are now identical and can be factored out
-                if( g_PwrRefIsSet && not m_backgroundCalculated) {
-                    float min = g_MaxADC;       // 12-bit ADC max value
-                    float max = 0.0;
-                    float sum = 0.0;
-                    float ref = -370.0;         // reference level selected in dB
-                    const char *tag = "NONE";
-
-                    // smoothing background spectrogram
-                    memcpy(m_FFTbackgroundAvg,m_FFTamplitudes,m_FFTdataSize*sizeof(float));
-                    if( !(backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR) )
-                        for(int i=3; i<m_FFTdataSize-3;i++)
-                            // apply 7pt smoothing function on background
-                            // do not apply smoothing if we are using the reference vector
-                            // TODO: make parametric
-                            m_FFTbackgroundAvg[i] = (
-                                                     m_FFTbackgroundAvg[i-3] +
-                                                     m_FFTbackgroundAvg[i-2] +
-                                                     m_FFTbackgroundAvg[i-1] +
-                                                     m_FFTbackgroundAvg[i]   +
-                                                     m_FFTbackgroundAvg[i+1] +
-                                                     m_FFTbackgroundAvg[i+2] +
-                                                     m_FFTbackgroundAvg[i+3] +
-                                                     0.0) / 7.0;
-                    // computing statistics on background spectrogram
-                    for(int i=0; i<m_FFTdataSize; i++) {
-                        m_FFTMaxAmplitudes[i] = -370.0;
-                        if( m_FFTbackgroundAvg[i] < min ) min = m_FFTbackgroundAvg[i];
-                        if( m_FFTbackgroundAvg[i] > max ) max = m_FFTbackgroundAvg[i];
-                                                         sum += m_FFTbackgroundAvg[i];
-                    }
-                    if( backgroundDebugCfg & BACKGROUND_REFERENCE_MEDIAN)
-                    {
-                        float scratch[m_FFTdataSize];
-                        extern float quick_select(float arr[], int n);
-                        memcpy(scratch,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
-                        g_Statistics_g_FFTbackgroundReferenceLevel = quick_select(scratch, m_FFTdataSize);
-                        tag = "MEDIAN";
-                    }
-                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_HISTO )
-                    {
-                        extern float histogram_select(float arr[], int n);
-                        for(int i=0; i<m_FFTdataSize; i++)
-                            m_FFTbackgroundDb[i] = (m_FFTbackgroundAvg[i] > 0.0) ? 10.0 * log10( m_FFTbackgroundAvg[i] ) : -370.0;
-                        ref = histogram_select(m_FFTbackgroundDb,m_FFTdataSize);
-                        g_Statistics_g_FFTbackgroundReferenceLevel = pow(10.0,ref/10.0);
-                        tag = "HISTOGRAM";
-                    }
-                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_MEAN)
-                    {
-                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
-                        tag = "MEAN";
-                    }
-                    else if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
-                    {
-                        g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
-                        tag = "VECTOR";
-                    }
-                    else
-                        g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
-                    // compute background reference vector
-                    if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
-                    {
-                        memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
-                    } else {
-                        for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = g_Statistics_g_FFTbackgroundReferenceLevel;
-                    }
-                    for(int i=0; i<m_FFTdataSize; i++)
-                        m_FFTbackgroundDb[i] = (m_FFTbackground[i] > 0.0) ? 10.0 * log10( m_FFTbackground[i] ) : -370.0;
-                    // after the background reference vector is computed, if we are not subtracting, clear the array
-                    if( !(backgroundDebugCfg & BACKGROUND_SUBTRACT) )
-                    {
-                        for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
-                    }
-                    m_backgroundCalculated = true;
-#ifdef _DEBUG
-                    // convert statistics do dB for logging
-                    min = (min <= 0.0) ? -370.0 : 10.0 * log10( min );
-                    max = (max <= 0.0) ? -370.0 : 10.0 * log10( max );
-                    sum = sum / (float)m_FFTdataSize;
-                    sum = (sum <= 0.0) ? -370.0 : 10.0 * log10( sum );
-                    ref = g_Statistics_g_FFTbackgroundReferenceLevel;
-                    ref = (ref <= 0.0) ? -370.0 : 10.0 * log10( ref );
-                    wxSprintf(outbuf,"%s (Frame Averaged, Reference %s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
-                        backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Subtraction Enabled" : "Display Reference Only",
-                        tag,
-                        ref, min, max, sum);
-                    cout << "Background " << outbuf << endl;
-#endif  // _DEBUG
-                } else if( not g_PwrRefIsSet && m_backgroundCalculated) {
-                    // subtracting, but set power reference just cleared
-                    m_backgroundCalculated = false;
-                    g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
-                    for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
-                    cout << "Background Reference Disabled" << endl;
-                }
-
-                // Write Time Stamp to file
-                if(g_FFTfileRecording && m_FFTCounter == 0) {
-                    int ms = dt.UNow().GetMillisecond();
-                    wxSprintf(outbuf,".%03d",ms);
-                    if(g_FFTFileType == 0 && g_FFT_TimeStandard == 0) {
-                        m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
-                        m_FFTFileClassPtr->Write(outbuf);
-                    } else if(g_FFTFileType == 0 && g_FFT_TimeStandard == 1) {
-                        m_FFTFileClassPtr->Write(dt.UNow().ToUTC().FormatISOCombined().c_str());
-                        wxSprintf(outbuf,".%03d",ms);
-                        m_FFTFileClassPtr->Write(outbuf);
-                        m_FFTFileClassPtr->Write("Z");
-                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 0) {
-                        m_FFTFileClassPtr->Write(dt.Now().FormatTime().c_str());
-                        m_FFTFileClassPtr->Write(outbuf);
-                    } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 1) {
-                        m_FFTFileClassPtr->Write(dt.Now().ToUTC().FormatISOCombined().c_str());
-                        wxSprintf(outbuf,".%03d",ms);
-                        m_FFTFileClassPtr->Write(outbuf);
-                        m_FFTFileClassPtr->Write("Z");
-                    }
-                    m_FFTFileClassPtr->Write(",");
-                }
-
-                idx = { 0, m_FFTdataSize-1 };
-
-                //convert FFT results to dB (in place)
+            // smoothing background spectrogram
+            memcpy(m_FFTbackgroundAvg,m_FFTamplitudes,m_FFTdataSize*sizeof(float));
+            if( !(backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR) )
+                for(int i=3; i<m_FFTdataSize-3;i++)
+                    // apply 7pt smoothing function on background
+                    // do not apply smoothing if we are using the reference vector
+                    // TODO: make parametric
+                    m_FFTbackgroundAvg[i] = (
+                                             m_FFTbackgroundAvg[i-3] +
+                                             m_FFTbackgroundAvg[i-2] +
+                                             m_FFTbackgroundAvg[i-1] +
+                                             m_FFTbackgroundAvg[i]   +
+                                             m_FFTbackgroundAvg[i+1] +
+                                             m_FFTbackgroundAvg[i+2] +
+                                             m_FFTbackgroundAvg[i+3] +
+                                             0.0) / 7.0;
+            // computing statistics on background spectrogram
+            for(int i=0; i<m_FFTdataSize; i++) {
+                m_FFTMaxAmplitudes[i] = -370.0;
+                if( m_FFTbackgroundAvg[i] < min ) min = m_FFTbackgroundAvg[i];
+                if( m_FFTbackgroundAvg[i] > max ) max = m_FFTbackgroundAvg[i];
+                                                 sum += m_FFTbackgroundAvg[i];
+            }
+            if( backgroundDebugCfg & BACKGROUND_REFERENCE_MEDIAN )
+            {
+                float scratch[m_FFTdataSize];
+                extern float quick_select(float arr[], int n);
+                memcpy(scratch,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+                g_Statistics_g_FFTbackgroundReferenceLevel = quick_select(scratch, m_FFTdataSize);
+                tag = "MEDIAN";
+            }
+            else if( backgroundDebugCfg & BACKGROUND_REFERENCE_HISTO )
+            {
+                extern float histogram_select(float arr[], int n);
                 for(int i=0; i<m_FFTdataSize; i++)
-                {
-                    float value;
-                    m_FFTamplitudes[i] -= m_FFTbackground[i];
-                    m_FFTamplitudes[i] *= g_integrationGain;
-                    m_FFTamplitudes[i]  = (m_FFTamplitudes[i] > 0.0) ? 10.0 * log10( m_FFTamplitudes[i] ) : -370.0;  // NB: I^2+Q^2 (w/o sqrt)
-// BUG: RASDRviewer 1.2.2.1 would skip this point if the amplitude was too low
-                    if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
-                        m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
-                    value = m_MaxHold ? m_FFTMaxAmplitudes[i] : m_FFTamplitudes[i];
+                    m_FFTbackgroundDb[i] = (m_FFTbackgroundAvg[i] > 0.0) ? 10.0 * log10( m_FFTbackgroundAvg[i] ) : -370.0;
+                ref = histogram_select(m_FFTbackgroundDb,m_FFTdataSize);
+                g_Statistics_g_FFTbackgroundReferenceLevel = pow(10.0,ref/10.0);
+                tag = "HISTOGRAM";
+            }
+            else if( backgroundDebugCfg & BACKGROUND_REFERENCE_MEAN )
+            {
+                g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
+                tag = "MEAN";
+            }
+            else if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
+            {
+                g_Statistics_g_FFTbackgroundReferenceLevel = sum / (float)m_FFTdataSize;
+                tag = "VECTOR";
+            }
+            else
+                g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+            // compute background reference vector
+            if( backgroundDebugCfg & BACKGROUND_REFERENCE_VECTOR )
+            {
+                memcpy(m_FFTbackground,m_FFTbackgroundAvg,m_FFTdataSize*sizeof(float));
+            } else {
+                for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = g_Statistics_g_FFTbackgroundReferenceLevel;
+            }
+            for(int i=0; i<m_FFTdataSize; i++)
+                m_FFTbackgroundDb[i] = (m_FFTbackground[i] > 0.0) ? 10.0 * log10( m_FFTbackground[i] ) : -370.0;
+            // after the background reference vector is computed, if we are not subtracting, clear the array
+            if( !(backgroundDebugCfg & BACKGROUND_SUBTRACT) )
+            {
+                for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
+            }
+            m_backgroundCalculated = true;
+#ifdef _DEBUG
+            // convert statistics to dB for logging
+            min = (min <= 0.0) ? -370.0 : 10.0 * log10( min );
+            max = (max <= 0.0) ? -370.0 : 10.0 * log10( max );
+            sum = sum / (float)m_FFTdataSize;
+            sum = (sum <= 0.0) ? -370.0 : 10.0 * log10( sum );
+            ref = g_Statistics_g_FFTbackgroundReferenceLevel;
+            ref = (ref <= 0.0) ? -370.0 : 10.0 * log10( ref );
+            wxSprintf(outbuf,"%s (Reference %s %0.3f dB) statistics(min/max/mean in dB):%0.3f/%0.3f/%0.3f",
+                backgroundDebugCfg & BACKGROUND_SUBTRACT ? "Subtraction Enabled" : "Display Reference Only",
+                tag,
+                ref, min, max, sum);
+            cout << "Background " << outbuf << endl;
+#endif  // _DEBUG
+        } else if( not g_PwrRefIsSet && m_backgroundCalculated) {   // NB: calculated doesn't matter here
+            // subtracting, but set power reference just cleared
+            m_backgroundCalculated = false;
+            g_Statistics_g_FFTbackgroundReferenceLevel = 0.0;
+            for(int i=0; i<m_FFTdataSize; i++) m_FFTbackground[i] = 0.0;
+#ifdef _DEBUG
+            cout << "Background Reference Disabled" << endl;
+#endif  // _DEBUG
+        }
 
-                    // NB: factored up, as I need the min/max indices later
-                    if (g_FFTDataSource == 1)
-                    {
-                        if( m_fftxaxisValues[i] < m_FFTChartCenter - (m_FFTChartSpan/2) ) idx.min = i;
-                        if( m_fftxaxisValues[i] > m_FFTChartCenter + (m_FFTChartSpan/2) ) idx.max = i;
-                    }
+        // Write Time Stamp to file
+        if(g_FFTfileRecording && m_FFTCounter == 0) {
+            wxDateTime ts = (g_FFT_TimeStandard == 0) ? dt.Now() : dt.UNow();
+            wxSprintf(outbuf,".%03d",ts.GetMillisecond());
+            if(g_FFTFileType == 0 && g_FFT_TimeStandard == 0) {
+                m_FFTFileClassPtr->Write(ts.FormatTime().c_str());
+                m_FFTFileClassPtr->Write(outbuf);
+            } else if(g_FFTFileType == 0 && g_FFT_TimeStandard == 1) {
+                m_FFTFileClassPtr->Write(ts.ToUTC().FormatISOCombined().c_str());
+                m_FFTFileClassPtr->Write(outbuf);
+                m_FFTFileClassPtr->Write("Z");
+            } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 0) {
+                m_FFTFileClassPtr->Write(ts.FormatISOCombined().c_str());
+                m_FFTFileClassPtr->Write(outbuf);
+            } else if(g_FFTFileType == 1 && g_FFT_TimeStandard == 1) {
+                m_FFTFileClassPtr->Write(ts.ToUTC().FormatISOCombined().c_str());
+                m_FFTFileClassPtr->Write(outbuf);
+                m_FFTFileClassPtr->Write("Z");
+            }
+            m_FFTFileClassPtr->Write(",");
+        }
 
-                    // FIXME: must manage the validation of m_FFTFileClassPtr better
-                    if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
-                        if(g_FFTDataSource == 0) {
-                            sprintf(outbuf,"%.4f,\0",value);
-                            m_FFTFileClassPtr->Write(outbuf); }
-                        else if(g_FFTDataSource == 1 && i >= idx.min && i <= idx.max) {
-                            sprintf(outbuf,"%.4f,\0",value);
-                            m_FFTFileClassPtr->Write(outbuf); }
-                    }
-                }
-                // FIXME: must manage the validation of m_FFTFileClassPtr better
-                if(g_FFTfileRecording && m_FFTFileClassPtr != NULL && m_FFTCounter >= g_FFTframeSkip) {
-                    m_FFTFileClassPtr->Write("\r\n",2);
-                    m_FFTCounter = 0;
-                    m_FFTsRecorded++;
-                    sprintf(outbuf,"%d",m_FFTsRecorded);
-                    FFTsREC->SetValue(outbuf);
-                    if(m_FFTsRecorded >= g_FFTframesOut)
-                        OnRecordFFTClick(dummy);
-                }
-                else if(g_FFTfileRecording) m_FFTCounter++;
+        idx = { 0, m_FFTdataSize-1 };
 
-                // write FFT spectra to FIFO
-                LMLL_Testing_SetFFTSpectra(
-                    &m_FFTamplitudes[idx.min], &m_fftxaxisValues[idx.min],
-                    idx.max - idx.min, m_RxFreq );
+        //convert FFT results to dB (in place)
+        for(int i=0; i<m_FFTdataSize; i++)
+        {
+            float value;
+            m_FFTamplitudes[i] -= m_FFTbackground[i];
+            m_FFTamplitudes[i] *= g_integrationGain;
+            m_FFTamplitudes[i]  = (m_FFTamplitudes[i] > 0.0) ? 10.0 * log10( m_FFTamplitudes[i] ) : -370.0;  // NB: I^2+Q^2 (w/o sqrt)
+            // BUG: RASDRviewer 1.2.2.1 would skip this point if the amplitude was too low
+            if(m_FFTamplitudes[i] >= m_FFTMaxAmplitudes[i])
+                m_FFTMaxAmplitudes[i] = m_FFTamplitudes[i];
+            value = m_MaxHold ? m_FFTMaxAmplitudes[i] : m_FFTamplitudes[i];
 
+            // NB: factored up, as I need the min/max indices later
+            if (g_FFTDataSource == 1)
+            {
+                if( m_fftxaxisValues[i] < m_FFTChartCenter - (m_FFTChartSpan/2) ) idx.min = i;
+                if( m_fftxaxisValues[i] > m_FFTChartCenter + (m_FFTChartSpan/2) ) idx.max = i;
+            }
+
+            // FIXME: must manage the validation of m_FFTFileClassPtr better
+            if(g_FFTfileRecording && m_FFTCounter >= g_FFTframeSkip){
+                if(g_FFTDataSource == 0) {
+                    sprintf(outbuf,"%.4f,\0",value);
+                    m_FFTFileClassPtr->Write(outbuf); }
+                else if(g_FFTDataSource == 1 && i >= idx.min && i <= idx.max) {
+                    sprintf(outbuf,"%.4f,\0",value);
+                    m_FFTFileClassPtr->Write(outbuf); }
             }
         }
-	}
+        // FIXME: must manage the validation of m_FFTFileClassPtr better
+        if(g_FFTfileRecording && m_FFTFileClassPtr != NULL && m_FFTCounter >= g_FFTframeSkip) {
+            m_FFTFileClassPtr->Write("\r\n",2);
+            m_FFTCounter = 0;
+            m_FFTsRecorded++;
+            sprintf(outbuf,"%d",m_FFTsRecorded);
+            FFTsREC->SetValue(outbuf);
+            if(m_FFTsRecorded >= g_FFTframesOut)
+                OnRecordFFTClick(dummy);
+        }
+        else if(g_FFTfileRecording) m_FFTCounter++;
+
+        // write FFT spectra to FIFO
+        LMLL_Testing_SetFFTSpectra(
+            &m_FFTamplitudes[idx.min], &m_fftxaxisValues[idx.min],
+            idx.max - idx.min, m_RxFreq );
+    }
 
     //unsigned long rate = 1;
 	unsigned long dataRateBps = 0;
@@ -2351,7 +2167,6 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 	++m_frames;
 	m_time = GetTickCount()-m_lastUpdate;
 	if(m_time >= 1000 * m_PwrIntTime)
-//	if(m_time >= 1000)
     {
         double ratio_FPS = (double)m_frames / expect_FPS;
         double dc_MSE;
@@ -2372,13 +2187,13 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
         else                    DCOffsetSkew->SetBackgroundColour(0xf00000ff); /* red */
         m_MseAccum = 0.0;
 
+        //if(chkUpdateGraphs->GetValue() == true)
         UpdatePwrGraph();
         m_frames = 0;
         m_time = 0;
         m_lastUpdate = GetTickCount();
     }
     else CalculatePwrAve();
-//	m_lastUpdate = GetTickCount();
     m_updating = false;
 }
 
