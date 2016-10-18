@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from StringIO import StringIO
 
-DEF_VERSION = '1.2.2.5-dev'     # x.y.z.* to match RASDRviewer version
+DEF_VERSION = '1.2.2.6-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -15,6 +15,20 @@ DEF_DT_VAR  = 0.1           # percentage of avg frame time to trap 'SKIPPED' fra
 DEF_STATS_FORMAT=['%.6f','%.3f','%.4f','%.4f','%.4f','%.6f','%.6f',]
 DEF_STATS_DELIM=','
 DEF_STATS_HEADER='timestamp,deltaT (sec),minimum,maximum,average,standard-deviation,variance'
+
+# http://stackoverflow.com/questions/16867347/step-by-step-debugging-with-ipython
+# https://github.com/ipython/ipython/wiki/Cookbook%3a-Updating-code-for-use-with-IPython-0.11-and-later
+def ipsh():
+    from IPython.frontend.terminal.embed import InteractiveShellEmbed
+    from IPython.config.loader import Config
+    import inspect
+    ipshell = InteractiveShellEmbed(config=Config(), 
+        banner1='*** STOP\nCTRL-D to exit', exit_msg='Resume...')
+    frame = inspect.currentframe().f_back
+    msg   = 'Stopped at {0.f_code.co_filename} at line {0.f_lineno}'.format(frame)
+    # Go back one level! 
+    # This is needed because the call to ipshell is inside the function ipsh()
+    ipshell(msg,stack_depth=2)
 
 def excel2dt(et):
     # http://stackoverflow.com/questions/1703505/excel-date-to-unix-timestamp
@@ -131,7 +145,8 @@ def open_spectrum_file(filename,opts):
 
         f=open(filename,'r')
         ## first line: key-value pairs
-        key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str',comments='\\')
+        buf = f.readline()
+        key=np.genfromtxt(StringIO(buf.replace('\\','/')),delimiter=opts.delimiter,dtype='str',comments='\\')
         if len(np.atleast_1d(key)) < 2:
             raise Exception('unable to parse %s -- check first line'%filename)
         ds=key[4].replace('"','') if len(key) > 4 else '00/00/00'
@@ -214,7 +229,19 @@ def read_spectrum_array(obj):
 ##        data = data[1:,1:]
 ##    else:
     freq = obj['freq']
-    data = np.genfromtxt(f,delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
+    try:
+        plumb = f.tell()
+        data = np.genfromtxt(f,delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
+    except ValueError, e:
+        # oops, malformed file may contain 'garbage' lines at the end...
+        log = logging.getLogger(__name__)
+        log.warning('Malformed file that may contain extra lines at the end.  Recovering...')
+        f.seek(plumb)
+##        if opts.debug:
+##            ipsh()
+        data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
+        for i in range(len(obj['time'])-1):
+            data = np.vstack((data,np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')))
     return data         # spectral information in colums 1..N-2 (last column is junk)
 
 def generate_spectrum_plots(filename,opts):
@@ -626,6 +653,8 @@ if __name__ == '__main__':
         help='Dump statistical information to a file in comma-separated-values format, default=%default')
     p.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
         help='Verbose')
+    p.add_option('--debug', dest='debug', action='store_true', default=False,
+        help='Drop into ipython shell at predefined point(s) to debug the script')
     p.add_option('-g', '--gui', dest='gui', action='store_true', default=False,
         help='Create interactive PLOTS')
     p.add_option('-s', '--smooth', dest='smooth', type='int', metavar='N', default=0,
@@ -678,3 +707,4 @@ if __name__ == '__main__':
                 show()
         except Exception, e:
             logger.error('generate_spectrum_plots', exc_info=True)
+            exit(1)
