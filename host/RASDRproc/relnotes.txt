@@ -1,4 +1,4 @@
-RASDRproc v0.2.3.8 - WORK IN PROGRESS
+RASDRproc v0.2.3.8 -  Oct 22, 2016
 ==================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -140,6 +140,11 @@ This drop-down box determines the algorithm used to compute the REF[f] vector.  
 This allows an adjustment to the 'G' parameter in the equasion for computing the power spectral density.  The intent is to provide a weighting factor to the residual energy remaining after the background is removed.
 
 
+Update plots:
+
+As of v0.2.3.8, the 'Update Plots' checkbox at the top left of the UI window operates correctly.  Previously, if this was unchecked, no FFTs were performed and not output was produced.  This has been fixed; FFTs and output (particularly to RSS) continue to be produced although the spectral and time domain plots no longer update.  On marginal computer systems this increases the frame rate considerably.  It is recommended for unattended data collection.
+
+
 Known Issues:
 
 1) The program will give an ugly dialog box if it cannot find its settings file 'RASDR.cfg', but will create a new one when the program exits.
@@ -154,7 +159,7 @@ One very strong driver of this condtion was the use of burst mode transfer for U
 
 5) Sometimes when restarting (or if Auto Restart) is enabled, the program will raise an exception in the CCyUSBEndPoint::FinishDataXfer() as it deletes buffers.  This is when the stop is initiated by a call to LMLL_Testing_StopSdramRead() to stop collecting data from the USB stream.
 
-Debugging this has identified thread safety issues due to concurrent access to the endpoint functions exposed by the CyUSB API.  An attempt at addressing these had been made in v0.2.3.6 and field testing is in progress.
+Debugging this has identified thread safety issues due to concurrent access to the endpoint functions exposed by the CyUSB API.  An attempt at addressing these had been made in v0.2.3.6 and field testing is in progress.  With v0.2.3.8 a STOP/START no longer de-allocates buffers; buffers are only de-allocated if the FFT parameters are changed.
 
 6) If choosing a high sample rate with a lot of integration, please be patient for the FFT spectrum window.  The first spectra will not be available until after the first integration time is complete.  You can estimate the ETA by observing the frame rate and dividing that from the 'average over frames' value.
 
