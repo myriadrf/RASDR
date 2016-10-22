@@ -274,7 +274,7 @@ class pnlSpectrum: public wxPanel
         float *m_fftxaxisValues;
         void disableDCComparators();
         void initializeInterfaceValues();
-		void allocateMemory(unsigned int samples);
+		bool allocateMemory(int samples);
         void freeMemory();
 //        void SuffixFFTFileName();
 //        void SuffixPWRFileName();
@@ -308,9 +308,9 @@ class pnlSpectrum: public wxPanel
         int m_curPwrX_min;
         int m_curPwrX_span;
         int m_curPwrX_ctr;
-        int m_curYstep;
-        float *m_YSPan;
-        float *m_YCent;
+//        int m_curYstep;
+//        float *m_YSPan;
+//        float *m_YCent;
         bool m_PlottingLow;
         bool m_ADFInitialized;
 

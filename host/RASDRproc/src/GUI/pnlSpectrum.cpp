@@ -144,7 +144,7 @@ BEGIN_EVENT_TABLE(pnlSpectrum,wxPanel)
 END_EVENT_TABLE()
 
 pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size, int style, wxString str) :
-    m_buffersCount(1024),
+    m_buffersCount(1024), m_IQdataSize(0),
     m_IchannelData(NULL), m_QchannelData(NULL), m_FFTfrequencies(NULL), m_FFTamplitudes(NULL), m_FFTbackground(NULL),
     m_FFTMaxAmplitudes(NULL), m_PWRvalues(NULL), m_FFTamplitudesBuffer(NULL),
     m_FFTFileClassPtr(NULL), m_PWRFileClassPtr(NULL), m_CFG_File(NULL),
@@ -213,10 +213,9 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 
     //parameters for FFT results averaging
 	m_buffersCountMask = m_buffersCount;
-	m_FFTamplitudesBuffer = NULL;
 
-	allocateMemory(m_FFTsamplesCount);
-    generateFFTxaxis(spinSamplingFreq->GetValue());
+//	allocateMemory(m_FFTsamplesCount);
+//    generateFFTxaxis(spinSamplingFreq->GetValue());
 
     m_updateTimer = new wxTimer(this, GRAPH_UPDATE_MESSAGE_ID);
     m_firststart = true;
@@ -236,7 +235,6 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_PWRRecordAccum = 0;
     m_FFTChartCenter = 0;
     m_FFTChartSpan = 10000;
-//    cout << "Exiting pnlSpectrum Constructor" << endl;
 }
 
 void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
@@ -898,76 +896,49 @@ void pnlSpectrum::initializeGraphs()
 	@brief Allocates memory for FFT samples and FFT data
 	@param samples number of FFT samples
 */
-void pnlSpectrum::allocateMemory(unsigned int samples)
+bool pnlSpectrum::allocateMemory(int samples)
 {
+    int i;
+    if( m_IQdataSize == samples ) return false;   // no change means no reinit
+    freeMemory();                                 // clear existing buffers
 	m_IQdataSize = samples;
 	m_FFTdataSize = samples-1;
-	if(m_IchannelData)
-		delete []m_IchannelData;
 	m_IchannelData = new float[samples];
-
-	if(m_QchannelData)
-		delete []m_QchannelData;
 	m_QchannelData = new float[samples];
-
-	if(m_FFTfrequencies)
-		delete []m_FFTfrequencies;
 	m_FFTfrequencies = new float[samples];
-
-	if(m_FFTamplitudes)
-		delete []m_FFTamplitudes;
 	m_FFTamplitudes = new float[samples];
-
-	if(m_FFTbackground)
-		delete []m_FFTbackground;
 	m_FFTbackground = new float[samples];
-	for(int i;i<samples;i++) m_FFTbackground[i] = 0.0;
-
-	if(m_FFTbackgroundAvg)
-		delete []m_FFTbackgroundAvg;
+	for(i=0;i<samples;i++) m_FFTbackground[i] = 0.0;
 	m_FFTbackgroundAvg = new float[samples];
-	for(int i;i<samples;i++) m_FFTbackgroundAvg[i] = 0.0;
-
-	if(m_FFTbackgroundDb)
-		delete []m_FFTbackgroundDb;
+	for(i=0;i<samples;i++) m_FFTbackgroundAvg[i] = 0.0;
 	m_FFTbackgroundDb = new float[samples];
-	for(int i;i<samples;i++) m_FFTbackgroundDb[i] = -370.0;
-
-	if(m_FFTMaxAmplitudes)
-		delete []m_FFTMaxAmplitudes;
+	for(i=0;i<samples;i++) m_FFTbackgroundDb[i] = -370.0;
 	m_FFTMaxAmplitudes = new float[samples];
-
-	if(m_PWRvalues)
-        delete []m_PWRvalues;
     m_PWRvalues = new float[g_MaxPwrSpanSec];
-
-    // Initialize data to very large negative values
-    for(int i = 0; i < g_MaxPwrSpanSec; i++) m_PWRvalues[i] = -FLT_MAX;
-    m_Index = 0;
-
+    for(i=0; i < g_MaxPwrSpanSec; i++) m_PWRvalues[i] = -FLT_MAX;
 	m_FFTamplitudesBuffer = new float*[m_buffersCount+1];
-	for(int i=0; i<m_buffersCount+1; i++)
+	for(i=0; i<m_buffersCount+1; i++)
 		m_FFTamplitudesBuffer[i] = new float[m_FFTsamplesCount];
 	bufferPos = 0;
-	m_YCent = new float[7];
-	m_YCent[0] = 2.5;
-	m_YCent[1] = 5;
-	m_YCent[2] = 7.5;
-	m_YCent[3] = 15;
-	m_YCent[4] = 37.5;
-	m_YCent[5] = 75;
-	m_YCent[6] = 150;
-	m_YSPan = new float[7];
-	m_YSPan[0] = 5;
-	m_YSPan[1] = 10;
-	m_YSPan[2] = 15;
-	m_YSPan[3] = 30;
-	m_YSPan[4] = 75;
-	m_YSPan[5] = 150;
-	m_YSPan[6] = 300;
-	m_curYstep = 6;
-	//Set spansec to saved configuration
-	PwrSpan->SetValue(g_PwrSpanSec/60);
+// These are completely unused
+//	m_YCent = new float[7];
+//	m_YCent[0] = 2.5;
+//	m_YCent[1] = 5;
+//	m_YCent[2] = 7.5;
+//	m_YCent[3] = 15;
+//	m_YCent[4] = 37.5;
+//	m_YCent[5] = 75;
+//	m_YCent[6] = 150;
+//	m_YSPan = new float[7];
+//	m_YSPan[0] = 5;
+//	m_YSPan[1] = 10;
+//	m_YSPan[2] = 15;
+//	m_YSPan[3] = 30;
+//	m_YSPan[4] = 75;
+//	m_YSPan[5] = 150;
+//	m_YSPan[6] = 300;
+//	m_curYstep = 6;
+    return true;
 }
 
 /**
@@ -1015,11 +986,9 @@ void pnlSpectrum::freeMemory()
 
     if(m_FFTamplitudesBuffer)
     {
-        for(int i=0; i<m_buffersCount; ++i)
+        for(int i=0; i<m_buffersCount+1; i++)
             delete []m_FFTamplitudesBuffer[i];
-// BUG: already deleted aove
-//        delete []m_FFTamplitudes;
-//        delete []m_FFTMaxAmplitudes;
+        delete []m_FFTamplitudesBuffer;
     }
     m_FFTamplitudesBuffer = NULL;
 }
@@ -1160,7 +1129,7 @@ void pnlSpectrum::Initialize()
 
     initializeInterfaceValues();
 	txtRxFrequencyMHz->SetValue( wxString::Format("%.6f", m_RxFreq * 1000.0) );
-    //AutoDCCorrection->SetValue(g_AutoDCOffset);
+	PwrSpan->SetValue(g_PwrSpanSec/60);
 	m_buffersCountMask = spinAvgCount->GetValue();
 
 	initializeGraphs();
@@ -1257,7 +1226,16 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
     }
     if(LMLL_Testing_SetFFTSamplesCount(m_FFTsamplesCount))
     {
-        allocateMemory(m_FFTsamplesCount);
+        if( allocateMemory(m_FFTsamplesCount) )
+        // if buffers got reallocated, then we have
+        // got to turn off the background subtraction
+        {
+            g_PwrRefIsSet = false;
+            g_PwrRefOffset = 0.0;
+            g_PwrAccum = 0.0;
+            PwrRef->SetLabel("SetPWRRef");
+            PwrRef->SetValue(false);
+        }
         generateFFTxaxis(samprate/1e6);
     }
     changeSamplingFrequency(samprate/1e6);
@@ -1321,6 +1299,7 @@ void pnlSpectrum::OnbtnStartCaptureClick(wxCommandEvent& event)
     wxCommandEvent dummy;
     OnApply_btnClick(dummy);
     //Integration_Time->Enable(FALSE);
+    m_Index = 0;    // begin total power plot at t=0
     StartCapturing();
 }
 
@@ -1817,11 +1796,12 @@ void pnlSpectrum::OnspinFFTsamplesChange(wxSpinEvent& event)
     m_FFTsamplesCount = twotoN(power);
     if(ogl_IQline) ogl_IQline->SetDisplayArea(0, m_FFTsamplesCount, -2048, 2048);
     txtFFTsamples->SetValue( wxString::Format("%i", m_FFTsamplesCount));
-    if(LMLL_Testing_SetFFTSamplesCount(m_FFTsamplesCount))
-    {
-        allocateMemory(m_FFTsamplesCount);
-        generateFFTxaxis((unsigned long)m_samplingFrequency);
-    }
+// NB: this gets done when we start capture and we ensure we cannot change FFT samples on the fly...
+//    if(LMLL_Testing_SetFFTSamplesCount(m_FFTsamplesCount))
+//    {
+//        allocateMemory(m_FFTsamplesCount);
+//        generateFFTxaxis((unsigned long)m_samplingFrequency);
+//    }
 }
 
 /**
@@ -2914,6 +2894,8 @@ bool pnlSpectrum::OpenFFTfile()
                 sprintf(outbuf,"To Record %d Frames Every %d-th Frame\0",g_FFTframesOut, g_FFTframeSkip);
                 cout << outbuf << endl;
 #endif
+#if 0       // remove code to forcibly minimize FFT samples in FFTFileType=0 (Excel)
+/*
                 if(g_FFTFileType == 0 && m_FFTsamplesCount > 128){ //Set Max Samps/FRame for Excel
                     int fftsamples = 128;
                     txtFFTsamples->SetValue( wxString::Format("%i", fftsamples));
@@ -2923,7 +2905,7 @@ bool pnlSpectrum::OpenFFTfile()
                         m_FFTsamplesCount = fftsamples;
  //                       generateFFTxaxis((unsigned long)m_samplingFrequency);
                         generateFFTxaxis(m_samplingFrequency / 1e6);
-                        allocateMemory(m_FFTsamplesCount);
+ //                       allocateMemory(m_FFTsamplesCount);
                     }
                 }
                 //if(g_PendingRestartCapture) { //Toggle to Place in effect
@@ -2931,6 +2913,8 @@ bool pnlSpectrum::OpenFFTfile()
                 //        OnbtnStartCaptureClick(dummy);
                 //        g_PendingRestartCapture = false;
                 //        }
+*/
+#endif
                 m_FFTFileClassPtr->Write(g_FFTfileName ,wxStrlen((g_FFTfileName)));
                 m_FFTFileClassPtr->Write(",,,Created,");
                 if(g_FFT_TimeStandard == 0) m_FFTFileClassPtr->Write(dt.Now().FormatDate().c_str()); //Local Time
