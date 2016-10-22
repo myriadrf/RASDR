@@ -20,7 +20,8 @@
     <p>
     <table>
         <tr><th>Filename</th><th><a href="md5sum.txt">MD5 sum</a></th><th>Date Posted</th><th>Description</th></tr>
-        <tr><td><a href="RASDRproc-v0.2.3.5.zip">RASDRproc-v0.2.3.5.zip</a></td><td>c861419c87c676e7aef70885a1ce0c79</td><td>|<font color="red">2016_08_13</font>|</td><td>Support for Radio Sky Spectrograph</td></tr>
+        <tr><td><a href="RASDRproc-v0.2.3.5.zip">RASDRproc-v0.2.3.5.zip</a></td><td>c861419c87c676e7aef70885a1ce0c79</td><td>|2016_08_13|</td><td>Support for Radio Sky Spectrograph</td></tr>
+        <tr><td><a href="RASDRproc-v0.2.3.8.zip">RASDRproc-v0.2.3.8.zip</a></td><td>c29601423cf01d12350f8993b55b70f5</td><td>|<font color="red">2016_10_22</font>|</td><td>UI and Control Panel Enhancements</td></tr>
     </table>
     </p>
  
@@ -30,7 +31,7 @@
     <ul>
         <li>RASDRproc-v0.2.3.5</li>
         <ol><li>Integrates with Jim Sky's <a href="http://cygnusa.blogspot.com/2015/07/how-to-talk-to-radio-sky-spectrograph.html">Radio Sky Spectrograph</a></li>
-            <li>Adds DC offset correction and control on the front panel</li>
+            <li>Adds DC offset correction and control on the front panel.</li>
             <li>Fixes some quirky behavior with FFT spectrum markers and displays their relative position correctly.</li>
         </ol>
         <br />
@@ -46,7 +47,24 @@
                 <td><img src="https://cloud.githubusercontent.com/assets/4209021/17643405/4adeda44-6137-11e6-90bf-007f26f36d9b.png" alt="DC Correction on front panel" height="142" width="339"></td>
             </tr>
         </table>
-	</ul>
+        <li>RASDRproc-v0.2.3.8</li>
+        <ol><li>UI and Control Panel Enhancements</li>
+            <li>Adds control of RX input selector on the front panel.</li>
+            <li>Provides immediate control over as many parameters as possible without going thru a stop/start cycle.  Those that are not allowed to be changed without a stop/start are greyed out.  If you can change it, the effect occurs immediately.</li>
+            <li>Background subtraction controls are available in the Performance Parameters->Tuning Parameters.</li>
+            <li>Update graphs actually works correctly now; processing and file/RSS output continue even though UI display does not update.  This can lead to significant more data processing on low-spec systems.</li>
+            <li>Interprets RASDR serial number and provides tooltip information for many selections.</li>
+            <li>Enhancements to auto-restart which helps low-spec systems keep taking data and not glitch.</li>
+        </ol>
+        <br />
+        <table>
+            <tr><th>3</th><th>4A</th><th>4B</th></tr>
+            <tr><td><img src="rasdrproc-v0.2.3.8-tuning.png" alt="RASDRproc Tuning Parameters" height="130" width="148"></td>
+                <td><img src="rasdrproc-1420.3-to-go-with-take2.png" alt="RASDRproc Noise Source Response" height="174" width="225"></td>
+                <td><img src="rss-1420.3-noise-off-integrated-on-take2.png" alt="RSS Noise Source Response" height="258" width="225"></td>
+            </tr>
+        </table>
+    </ul>
     </p>
 
     <br />
