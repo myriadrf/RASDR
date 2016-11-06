@@ -361,7 +361,7 @@ private:
 	eOGLGActionState m_actionState;
 
     bool viewChanged;
-	bool initialized;
+	volatile bool initialized;
 	sRect<float> initialDisplayArea;
 	sRect<int> m_MouseCoord;
 	float m_lastSpanX;

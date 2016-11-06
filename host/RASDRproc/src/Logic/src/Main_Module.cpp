@@ -23,6 +23,15 @@
 	DWORD threadID;
 	HANDLE threadHandle;
 #endif
+
+//#include <assert.h>     // for trapping glewInit() issues
+static void _assertion_failure(const char *tag, const char *file, const int line)
+{
+    std::cerr << file << "(" << line << "): Assertion Failure: " << tag << std::endl << std::flush;
+}
+#undef assert
+#define assert(A)   if(!(A)) _assertion_failure(#A,__FILE__,__LINE__)
+
 // ---------------------------------------------------------------------
 using namespace std;
 

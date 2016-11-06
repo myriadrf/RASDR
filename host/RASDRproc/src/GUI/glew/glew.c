@@ -37,6 +37,9 @@
 #  include <GL/glxew.h>
 #endif
 
+volatile long g_glewInitialized = 0;
+GLenum g_glewInit_return = (GLenum)0;
+
 /*
  * Define glewGetContext and related helper macros.
  */
@@ -12664,7 +12667,7 @@ extern GLenum GLEWAPIENTRY wglewContextInit (void);
 extern GLenum GLEWAPIENTRY glxewContextInit (void);
 #endif /* _WIN32 */
 
-GLenum GLEWAPIENTRY glewInit (void)
+GLenum GLEWAPIENTRY __glewInit (void)
 {
   GLenum r;
   r = glewContextInit();

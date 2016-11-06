@@ -46,7 +46,7 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
-#include "assert.h"
+//#include "assert.h"
 #include "iniParser.h"
 using namespace std;
 

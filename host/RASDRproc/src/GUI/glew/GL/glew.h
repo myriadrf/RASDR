@@ -4,24 +4,24 @@
 ** Copyright (C) 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>
 ** Copyright (C) 2002, Lev Povalahev
 ** All rights reserved.
-** 
-** Redistribution and use in source and binary forms, with or without 
+**
+** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions are met:
-** 
-** * Redistributions of source code must retain the above copyright notice, 
+**
+** * Redistributions of source code must retain the above copyright notice,
 **   this list of conditions and the following disclaimer.
-** * Redistributions in binary form must reproduce the above copyright notice, 
-**   this list of conditions and the following disclaimer in the documentation 
+** * Redistributions in binary form must reproduce the above copyright notice,
+**   this list of conditions and the following disclaimer in the documentation
 **   and/or other materials provided with the distribution.
-** * The name of the author may be used to endorse or promote products 
+** * The name of the author may be used to endorse or promote products
 **   derived from this software without specific prior written permission.
 **
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ** IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-** ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-** LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-** CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+** ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+** LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+** CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 ** SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 ** INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 ** CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
@@ -55,7 +55,7 @@
 
 /*
 ** Copyright (c) 2007 The Khronos Group Inc.
-** 
+**
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
 ** "Materials"), to deal in the Materials without restriction, including
@@ -63,10 +63,10 @@
 ** distribute, sublicense, and/or sell copies of the Materials, and to
 ** permit persons to whom the Materials are furnished to do so, subject to
 ** the following conditions:
-** 
+**
 ** The above copyright notice and this permission notice shall be included
 ** in all copies or substantial portions of the Materials.
-** 
+**
 ** THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 ** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 ** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -249,6 +249,17 @@ typedef _W64 int ptrdiff_t;
 #endif
 
 #endif /* _WIN32 */
+
+//#include <assert.h>     // for trapping glewInit() issues
+#include <stdio.h>
+inline void _assertion_failure(const char *tag, const char *file, const int line)
+{
+    //std::cerr << file << "(" << line << "): Assertion Failure: " << tag << std::endl << std::flush;
+    fprintf(stderr,"%s(%d): Assertion Failure: %s\n", file, line, tag);
+    fflush(stderr);
+}
+#undef assert
+#define assert(A)   if(!(A)) _assertion_failure(#A,__FILE__,__LINE__)
 
 #ifdef __cplusplus
 extern "C" {
@@ -17078,7 +17089,7 @@ typedef struct GLEWContextStruct GLEWContext;
 GLEWAPI GLenum GLEWAPIENTRY glewContextInit (GLEWContext *ctx);
 GLEWAPI GLboolean GLEWAPIENTRY glewContextIsSupported (const GLEWContext *ctx, const char *name);
 
-#define glewInit() glewContextInit(glewGetContext())
+//#define glewInit() glewContextInit(glewGetContext())
 #define glewIsSupported(x) glewContextIsSupported(glewGetContext(), x)
 #define glewIsExtensionSupported(x) glewIsSupported(x)
 
@@ -17091,7 +17102,7 @@ GLEWAPI GLboolean GLEWAPIENTRY glewContextIsSupported (const GLEWContext *ctx, c
 
 #else /* GLEW_MX */
 
-GLEWAPI GLenum GLEWAPIENTRY glewInit (void);
+GLEWAPI GLenum GLEWAPIENTRY __glewInit (void);
 GLEWAPI GLboolean GLEWAPIENTRY glewIsSupported (const char *name);
 #define glewIsExtensionSupported(x) glewIsSupported(x)
 
@@ -17099,6 +17110,41 @@ GLEWAPI GLboolean GLEWAPIENTRY glewIsSupported (const char *name);
 #define GLEW_GET_FUN(x) x
 
 #endif /* GLEW_MX */
+
+// https://www.opengl.org/wiki/Common_Mistakes
+// http://stackoverflow.com/questions/14179497/is-it-necessary-to-call-glenablegl-texture-before-using-textures-in-opengl-2-1
+// http://stackoverflow.com/questions/23128894/glactivetexture-throws-gl-invalid-enum
+// http://stackoverflow.com/questions/23688566/glcreateshader-fails-over-remote-connection
+
+extern volatile long g_glewInitialized;
+extern GLenum g_glewInit_return;
+
+inline GLEWAPI GLenum GLEWAPIENTRY _glewInit(void)
+{
+    //assert( g_glewInitialized == 0 );    // NB: InterlockedIncrement is a windows.h thing...
+    if( g_glewInitialized ) return g_glewInit_return;
+
+#ifdef GLEW_MX
+    g_glewInit_return = glewContextInit(glewGetContext());
+#else
+    g_glewInit_return = __glewInit();
+#endif /* GLEW_MX */
+
+    //assert( g_glewInit_return != 0 );
+    if( g_glewInit_return == 0 ) return 0;
+    g_glewInitialized = 1;
+
+    assert(glActiveTexture);
+    assert(glGenBuffers);
+    assert(glBindBuffer);
+    assert(glBufferData);
+    assert(glGenBuffersARB);
+    assert(glBindBufferARB);
+    assert(glBufferDataARB);
+
+    return g_glewInit_return;
+}
+#define glewInit() _glewInit()
 
 GLEWAPI GLboolean glewExperimental;
 GLEWAPI GLboolean GLEWAPIENTRY glewGetExtension (const char *name);

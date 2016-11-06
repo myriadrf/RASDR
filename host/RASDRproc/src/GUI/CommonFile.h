@@ -43,7 +43,7 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
-#include "assert.h"
+//#include "assert.h"
 using namespace std;
 
 #define RegistryString "Software\\ctr_6002d\\Settings"

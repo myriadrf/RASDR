@@ -20,19 +20,14 @@
 
 #endif
 
-//#include <assert.h>   // this would crash the program
-#if 0                   // TODO: ongoing debug
-void __assert(bool A, const char *TA, const char *F, int L)
+//#include <assert.h>     // for trapping glewInit() issues
+static void _assertion_failure(const char *tag, const char *file, const int line)
 {
-    if(!A)
-    {
-        cout << "Assertion Failed: " << TA << " @" << F << "(" << L << ")" << endl;
-    }
+    std::cerr << file << "(" << line << "): Assertion Failure: " << tag << std::endl << std::flush;
 }
-#define assert(A)   __assert((A),#A,__FILE__,__LINE__)
-#else
-#define assert(A)       // disconnect - it actually happens quite a bit...
-#endif
+#undef assert
+//#define assert(A)       // disconnect - it actually happens quite a bit...
+#define assert(A)   if(!(A)) _assertion_failure(#A,__FILE__,__LINE__)
 
 #define HW_DIGIRED "DigiRed"
 #define HW_DIGIGREEN "DigiGreen"
