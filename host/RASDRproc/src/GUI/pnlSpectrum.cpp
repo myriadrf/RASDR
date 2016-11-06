@@ -1645,6 +1645,7 @@ void pnlSpectrum::StartCapturing()
     LMLL_TopSetPwrSoftRx(true);
     LMLL_Testing_StartSdramRead();
     g_capturingData = true;
+    m_lastUpdate = GetTickCount();  // BUG: this prevented power plot updates
 //    PwrSpan->Enable(false);
     if(g_FFTfileIsDefined) EnableFFTRecord(true);
     if(g_PWRfileIsDefined) EnablePWRRecord(true);
