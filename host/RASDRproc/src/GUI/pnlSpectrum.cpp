@@ -150,6 +150,7 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_FFTFileClassPtr(NULL), m_PWRFileClassPtr(NULL), m_CFG_File(NULL),
     m_capturingData(false), m_backgroundCalculated(false)
     , m_FFTbackgroundAvg(NULL), m_FFTbackgroundDb(NULL)
+    , m_graphsInitialized(false)
 //#if defined(CSV_DEBUG)
     , m_CSVFileClassPtr(NULL)
 //#endif CSV_DEBUG
@@ -208,7 +209,9 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 
     BuildContent(parent,id,pos,size);
     m_FFTsamplesCount = twotoN(spinFFTsamples->GetValue());
-    if(ogl_IQline) ogl_IQline->SetDisplayArea(0, m_FFTsamplesCount, -2048, 2048);
+    // BUG: this nevet gets called because ogl_IQline is created
+    // in ::BuildContent() which has *NOT* been invoked here in the constructor.
+    //if(ogl_IQline) ogl_IQline->SetDisplayArea(0, m_FFTsamplesCount, -2048, 2048);
     m_samplingFrequency = 1;
 
     //parameters for FFT results averaging
@@ -822,12 +825,55 @@ int pnlSpectrum::twotoN(int N)
 */
 void pnlSpectrum::initializeGraphs()
 {
+    // BUG: The problem is that when this routine is called the
+    // OpenGL subsystem has not been initialized and we get a version
+    // readback of 0.0.  It doesn't help to call glewInit(), that
+    // routine only does a partial initialization.  Unfortunately,
+    // we cannot enable VBOs unless we are running OpenGL 3.0+
+    //
+    // All this because I want to make RASDRproc work even across
+    // a Remote Desktop Connection (RDP).  And I *CAN*, but I need
+    // to do two things:
+    //   1) define glewExperimental = GL_TRUE before calling glewInit()
+    //   2) do not use VBO unless OpenGL 3.0+ is present.
+    //
+    // At first, I moved the call to ::initializeGraphs() into the ::StartCapturing()
+    // but if we do that, then we destroy any settings the user had defined.
+    //
+    // So I moved it into ::OnApply_btnClick().  Hah!  But at the point that is called
+    // the OpenGL system is not fully initialized.  Ugh. what a F*-ing nightmare bunch
+    // of spaghetti code.  I'll be so happy when I'm rid of it.
+    //
+    // Anyway, the VBO is dynamically used each time the graphs are rendered, so
+    // we can call initialized graphs in StartCapturing() *AND* in ::OnApply_btnClick()
+    // and so we can have our cake and eat it too.
+    if (m_graphsInitialized)
+    {
+        bool useVBO = false;
+        GLint major = 0;
+        GLint minor = 0;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+        if(major >= 3) useVBO = true;
+        std::cout << "OpenGL " << major << "." << minor
+                  << ", useVBO=" << useVBO << std::endl;
+        if (useVBO)
+        {
+            ogl_IQline->settings.useVBO = true;
+            ogl_IQscatter->settings.useVBO = true;
+            oglPWRChart->settings.useVBO = true;
+            ogl_FFTline->settings.useVBO = true;
+        }
+        return;
+    }
+    m_graphsInitialized = true;
+
     if(ogl_IQline)
 	{
-	    ogl_IQline->settings.useVBO = true;
+        ogl_IQline->settings.useVBO = false;
         ogl_IQline->AddSeries();
         ogl_IQline->AddSeries();
-        ogl_IQline->SetInitialDisplayArea(0, g_MaxFFTbins, -2048, 2048);
+        ogl_IQline->SetInitialDisplayArea(0, m_FFTsamplesCount, -2048, 2048);
         ogl_IQline->settings.marginLeft = 80;
         ogl_IQline->settings.marginBottom = 35;
         ogl_IQline->settings.title = "IQ samples";
@@ -836,7 +882,7 @@ void pnlSpectrum::initializeGraphs()
 	}
 	if(ogl_IQscatter)
     {
-        ogl_IQscatter->settings.useVBO = true;
+        ogl_IQscatter->settings.useVBO = false;
         ogl_IQscatter->AddSeries();
         ogl_IQscatter->SetInitialDisplayArea(-2048, 2048, -2048, 2048);
         ogl_IQscatter->SetDrawingMode(GLG_POINTS);
@@ -856,7 +902,7 @@ void pnlSpectrum::initializeGraphs()
         // if it has been lost due to zooming around.
         m_PwrMax = 10.0 * m_PwrRefScale;    // 10 mW (absolute max is 200mW/+23dBM)
         m_PwrMin = 0.0;
-        oglPWRChart->settings.useVBO = true;
+        oglPWRChart->settings.useVBO = false;
         oglPWRChart->AddSeries();
         oglPWRChart->series[0]->color = 0xFF0000FF; //Red initially
         oglPWRChart->SetInitialDisplayArea(0, g_PwrSpanSec, m_PwrMin, m_PwrMax);  // xmin,xmax,ymin,ymax
@@ -874,7 +920,7 @@ void pnlSpectrum::initializeGraphs()
     }
     if(ogl_FFTline)
     {
-        ogl_FFTline->settings.useVBO = true;
+        ogl_FFTline->settings.useVBO = false;
         ogl_FFTline->AddSeries();
         ogl_FFTline->AddSeries();   // for background
         ogl_FFTline->SetDrawingMode(GLG_LINE);
@@ -1132,7 +1178,10 @@ void pnlSpectrum::Initialize()
 	PwrSpan->SetValue(g_PwrSpanSec/60);
 	m_buffersCountMask = spinAvgCount->GetValue();
 
-	initializeGraphs();
+    // BUG: wierd.  initializeGraphs gets called once to setup a variety
+    // of ogl_ objects.  We don't need them until we start graphing operations.
+    // so really, we only need to init them just before we start capture...
+	//initializeGraphs();
 	if( LMAL_IsOpen() )
 	{
 		btnStartCapture->Enable(true);
@@ -1216,6 +1265,10 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
     LMLL_BoardSetClockInversion(2,0); // Clock2 No Inversion
     LMLL_BoardSetClockOutputFormat(2,3); // Clock 2 Both on
     LMLL_BoardConfigureSi5356A(); // Boots Chip to activate Values
+
+    // Lets call initializeGraphs here (and also in StartCapturing()) so
+    // that the configurations we do to the ogl_FFTline object will stick
+    initializeGraphs();
 
     ogl_FFTline->SetCenterFrequency(m_RxFreq*1e3);  // in MHz (same units as X axis)
     if (m_samplingFrequency != samprate/1e6)
@@ -1640,6 +1693,7 @@ void pnlSpectrum::OnSpinButton2ChangeDown(wxSpinEvent& event)
 */
 void pnlSpectrum::StartCapturing()
 {
+    initializeGraphs();
     changeSamplingFrequency((spinSamplingFreq->GetValue()));
  //   LMLL_TopSetPwrSoftTx(true);
     LMLL_TopSetPwrSoftRx(true);

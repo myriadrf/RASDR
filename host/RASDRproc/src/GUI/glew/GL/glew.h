@@ -17111,6 +17111,11 @@ GLEWAPI GLboolean GLEWAPIENTRY glewIsSupported (const char *name);
 
 #endif /* GLEW_MX */
 
+GLEWAPI GLboolean glewExperimental;
+GLEWAPI GLboolean GLEWAPIENTRY glewGetExtension (const char *name);
+GLEWAPI const GLubyte * GLEWAPIENTRY glewGetErrorString (GLenum error);
+GLEWAPI const GLubyte * GLEWAPIENTRY glewGetString (GLenum name);
+
 // https://www.opengl.org/wiki/Common_Mistakes
 // http://stackoverflow.com/questions/14179497/is-it-necessary-to-call-glenablegl-texture-before-using-textures-in-opengl-2-1
 // http://stackoverflow.com/questions/23128894/glactivetexture-throws-gl-invalid-enum
@@ -17121,35 +17126,30 @@ extern GLenum g_glewInit_return;
 
 inline GLEWAPI GLenum GLEWAPIENTRY _glewInit(void)
 {
-    //assert( g_glewInitialized == 0 );    // NB: InterlockedIncrement is a windows.h thing...
-    if( g_glewInitialized ) return g_glewInit_return;
-
+    extern long __stdcall InterlockedExchange(long volatile *,long);   // glew.h doesn't include winbase.h
+    if( InterlockedExchange(&g_glewInitialized,1)==0 )
+    {
+        // http://stackoverflow.com/questions/12736691/glbindbuffer-crash-vbo-implementation-with-glew
+        glewExperimental = GL_TRUE;
 #ifdef GLEW_MX
-    g_glewInit_return = glewContextInit(glewGetContext());
+        g_glewInit_return = glewContextInit(glewGetContext());
 #else
-    g_glewInit_return = __glewInit();
+        g_glewInit_return = __glewInit();
 #endif /* GLEW_MX */
 
-    //assert( g_glewInit_return != 0 );
-    if( g_glewInit_return == 0 ) return 0;
-    g_glewInitialized = 1;
+        if( g_glewInit_return == 0 ) return 0;
 
-    assert(glActiveTexture);
-    assert(glGenBuffers);
-    assert(glBindBuffer);
-    assert(glBufferData);
-    assert(glGenBuffersARB);
-    assert(glBindBufferARB);
-    assert(glBufferDataARB);
-
+        assert(glActiveTexture);
+        assert(glGenBuffers);
+        assert(glBindBuffer);
+        assert(glBufferData);
+        assert(glGenBuffersARB);
+        assert(glBindBufferARB);
+        assert(glBufferDataARB);
+    }
     return g_glewInit_return;
 }
 #define glewInit() _glewInit()
-
-GLEWAPI GLboolean glewExperimental;
-GLEWAPI GLboolean GLEWAPIENTRY glewGetExtension (const char *name);
-GLEWAPI const GLubyte * GLEWAPIENTRY glewGetErrorString (GLenum error);
-GLEWAPI const GLubyte * GLEWAPIENTRY glewGetString (GLenum name);
 
 #ifdef __cplusplus
 }

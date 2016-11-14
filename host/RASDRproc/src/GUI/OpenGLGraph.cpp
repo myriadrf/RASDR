@@ -63,7 +63,7 @@ GLG_settings::GLG_settings() :
 	marginTop(25), marginBottom(25), marginLeft(50), marginRight(20),
 	dataViewBackgroundColor(0xf0f0f0ff), backgroundColor(0xffffffff), titlesColor(0x000000ff),
 	dataViewPerimeterColor(0x00ff00ff),
-	gridColor(0xD0D0D0ff), graphType(GLG_LINE), useVBO(true),
+	gridColor(0xD0D0D0ff), graphType(GLG_LINE), useVBO(false),  // NB: default to false unless initialized OK
 	gridXlines(4), gridYlines(4),
 	gridXprec(0), gridYprec(0),
 	gridValuesHeight(14),

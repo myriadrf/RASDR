@@ -238,8 +238,19 @@ bool GLFont::loadFromArray(const char* array, unsigned int size)
     // http://stackoverflow.com/questions/23128894/glactivetexture-throws-gl-invalid-enum
     // http://stackoverflow.com/questions/23688566/glcreateshader-fails-over-remote-connection
     //
-    // WIERD: even after all this, I still get a SEGV...
-
+    // I fixed this with information I got from these two links:
+    // http://stackoverflow.com/questions/12736691/glbindbuffer-crash-vbo-implementation-with-glew
+    // http://gamedev.stackexchange.com/questions/31505/what-opengl-versions-to-learn-and-or-use
+    {
+        // Get OpenGL information
+        GLint major = 0;
+        GLint minor = 0;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+        //std::cout << "OpenGL " << major << "." << minor
+        //          << ", GL_RENDERER=" << glGetString(GL_RENDERER) << std::endl;
+        if (major < 3) return false;  // prevent SEGV in glActiveTexture when running over RDP
+    }
     glEnable( GL_TEXTURE_2D );
     glActiveTexture(GL_TEXTURE0);
     if( m_texID > 0)

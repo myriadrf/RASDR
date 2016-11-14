@@ -269,6 +269,7 @@ class pnlSpectrum: public wxPanel
 	private:
 
 	    void initializeGraphs();
+	    bool m_graphsInitialized;
 		void generateFFTxaxis(float samplingFrequency);
 		void changeSamplingFrequency(float samplingFrequency);
         float *m_fftxaxisValues;
