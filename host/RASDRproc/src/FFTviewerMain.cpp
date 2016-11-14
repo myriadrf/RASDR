@@ -252,8 +252,20 @@ void FFTviewerFrame::OnAbout(wxCommandEvent& event)
     msg.Append(AutoVersion::MONTH);
     msg.Append("-");
     msg.Append(AutoVersion::DATE);
+    // Get OpenGL information
+    GLint major = 0;
+    GLint minor = 0;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+    msg.Append("\nOpenGL ");
+    msg.Append((char)('0'+major),1);
+    msg.Append('.',1);
+    msg.Append((char)('0'+minor),1);
+    msg.Append(" - ");
+    msg.Append(glGetString(GL_RENDERER));
+    //std::cout << msg << std::endl;
     wxMessageDialog* dlg;
-    dlg = new wxMessageDialog(this, msg, _("Welcome to..."));
+    dlg = new wxMessageDialog(this, msg, _("About RASDRproc"));
     dlg->ShowModal();
     delete dlg;
 }
