@@ -618,9 +618,44 @@ def dump_spectrum_info(filename,opts):
     if opts.statistics:
         np.savetxt(opts.statistics,sts,fmt=DEF_STATS_FORMAT,delimiter=DEF_STATS_DELIM,header=DEF_STATS_HEADER,comments='')
 
+# Refactored to make argument parsing separate so as to provide a GUI option
+def execute(opts):
+    args = opts.file
+
+    logging.basicConfig(format='%(message)s',level=logging.DEBUG)
+    if args==[]:
+        logging.getLogger(__name__).critical('Please specify a filename. Run with the -h flag to see all options.')
+    else:
+        # logging boilerplate (screen+log file)
+        logger = logging.getLogger(__name__)
+        x,y,name = args[0].replace('\\','/').rpartition('/')
+        name,x,ext = name.rpartition('.')
+        handler = logging.FileHandler(name+'.log')
+        formatter = logging.Formatter('%(levelname)s:%(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.DEBUG if opts.verbose else logging.INFO)
+        try:
+            if opts.gui:
+                from platform import system
+                if not opts.matplotlib_use and system().startswith('Windows'):
+                    from matplotlib import use
+                    use('wxagg')
+                    opts.matplotlib_use = True
+            if opts.info:
+                dump_spectrum_info(args[0],opts)
+            else:
+                generate_spectrum_plots(args[0],opts)
+            if opts.gui:
+                from pylab import show
+                print('=== Display interactive graphs ===')
+                show()
+        except Exception, e:
+            logger.error('generate_spectrum_plots', exc_info=True)
+            exit(1)
+
 if __name__ == '__main__':
     import argparse
-                    
     p = argparse.ArgumentParser(
         description='Post-Process RASDRviewer/RASDRproc spectrum data output files')
     p.add_argument(      "--version", action='version', version='%(prog)s '+DEF_VERSION)
@@ -680,36 +715,4 @@ if __name__ == '__main__':
     p.add_argument(      "file", nargs='*')
 
     opts = p.parse_args(sys.argv[1:])
-    args = opts.file
-
-    logging.basicConfig(format='%(message)s',level=logging.DEBUG)
-    if args==[]:
-        logging.getLogger(__name__).critical('Please specify a filename. Run with the -h flag to see all options.')
-    else:
-        # logging boilerplate (screen+log file)
-        logger = logging.getLogger(__name__)
-        x,y,name = args[0].replace('\\','/').rpartition('/')
-        name,x,ext = name.rpartition('.')
-        handler = logging.FileHandler(name+'.log')
-        formatter = logging.Formatter('%(levelname)s:%(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.DEBUG if opts.verbose else logging.INFO)
-        try:
-            if opts.gui:
-                from platform import system
-                if not opts.matplotlib_use and system().startswith('Windows'):
-                    from matplotlib import use
-                    use('wxagg')
-                    opts.matplotlib_use = True
-            if opts.info:
-                dump_spectrum_info(args[0],opts)
-            else:
-                generate_spectrum_plots(args[0],opts)
-            if opts.gui:
-                from pylab import show
-                print('=== Display interactive graphs ===')
-                show()
-        except Exception, e:
-            logger.error('generate_spectrum_plots', exc_info=True)
-            exit(1)
+    execute(opts)
