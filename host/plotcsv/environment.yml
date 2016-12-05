@@ -1,0 +1,32 @@
+name: rasdr
+channels: !!python/tuple
+- defaults
+dependencies:
+- cycler=0.10.0=py27_0
+- freetype=2.5.5=1
+- icu=54.1=0
+- libpng=1.6.22=0
+- matplotlib=1.5.3=np111py27_1
+- mkl=11.3.3=0
+- numpy=1.11.2=py27_0
+- openssl=1.0.2j=0
+- pip=9.0.1=py27_0
+- pyparsing=2.1.4=py27_0
+- pyqt=5.6.0=py27_0
+- python=2.7.12=1
+- python-dateutil=2.6.0=py27_0
+- python.app=1.2=py27_4
+- pytz=2016.7=py27_0
+- qt=5.6.0=0
+- readline=6.2=2
+- setuptools=27.2.0=py27_0
+- sip=4.18=py27_0
+- six=1.10.0=py27_0
+- sqlite=3.13.0=0
+- tk=8.5.18=0
+- wheel=0.29.0=py27_0
+- wxpython=3.0=py27_0
+- zlib=1.2.8=3
+- pip:
+  - gooey==0.9.2.3
+  - wxpython-common==3.0.0.0
