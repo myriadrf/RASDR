@@ -45,6 +45,7 @@
 #include "GLFont.h"
 #include "StaticFontHeader.h"
 #include "GUIUtils.h"   // for ShowMessage()
+
 using namespace std;
 
 #define OGL_REDRAW_ENABLED 0
@@ -139,7 +140,9 @@ void OpenGLGraph::Initialize(int width, int height)
 
 	Resize(width, height);
 	settings.fontSize = 10;
-
+	dbTriggerCheck = false;
+    db_trigger_set = -999.0;
+    dbRecordTrigger = false;
 	viewChanged = true;
 	initialized = true;
 
@@ -582,6 +585,7 @@ void OpenGLGraph::CalculateGrid()
 */
 void OpenGLGraph::Draw()
 {
+    //printf("marker 1 db %.3f\n", obtainMarkerFrequency());
     if(!pthread_mutex_trylock(&mutex_canDraw))
 	{
 
@@ -1048,6 +1052,18 @@ int OpenGLGraph::LineHeight()
 }
 
 /**
+   @brief obtain the frequencies of the markers.
+   For now, just return the frequency of the first marker.
+   0 if there are no markers
+**/
+float OpenGLGraph::obtainMarkerFrequency() {
+   if (markers.size()==0) {
+       return 0.0;
+   }
+   return series[0]->valuesX[markers[0].dataValueIndex] + m_fcenter;
+}
+
+/**
 	@brief Add marker at selected pixel
 	@param posX mouse x coordinate in graph window
 	@param size added marker size
@@ -1114,7 +1130,8 @@ void OpenGLGraph::RemoveMarker()
 */
 void OpenGLGraph::DrawMarkers()
 {
-    if(series.size() <= 0)
+    //printf("Draw markers %d\n ",series.size());
+    if (series[0]->size == 0)
         return;
 
 	if(markersEnabled && series[0]->size > 0 && series[0] != NULL)
@@ -1195,6 +1212,17 @@ void OpenGLGraph::DrawMarkers()
 			int wid =  textScale*TextWidthInPixels(text);
 			//glPrint(posX, posY, 0, textScale, "%s", text);
 			glRenderText(posX, posY, 0, textScale*m_font->lineHeight(), 0x00000000, "%s", text);
+		}
+		if (dbTriggerCheck && markers.size() > 0) {
+            float db = series[0]->valuesY[markers[0].dataValueIndex];
+            if (db_trigger_set < -900) {
+                db_trigger_set = db;
+            }
+            //printf("db_trigger_set %.1f db %.1f\n",db_trigger_set,db);
+            if (db-db_trigger_set >= db_trigger_delta) {
+                dbRecordTrigger = true;
+                db_trigger_set = 999; //don't set dbRecordTrigger again, otherwise the record button would be toggled
+            }
 		}
 	}
 }

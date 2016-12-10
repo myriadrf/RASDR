@@ -264,6 +264,7 @@ class pnlSpectrum: public wxPanel
 		static const long ID_PANEL5;
 		static const long ID_PANEL10;
 		static const long ID_PANEL2;
+		static const long ID_DB_TRIGGER;
 		//*)
 
 	private:

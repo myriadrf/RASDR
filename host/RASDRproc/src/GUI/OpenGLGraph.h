@@ -328,12 +328,17 @@ public:
 	void OnMouseUp(int mouseButton, int X, int Y);
 	void OnMouseMove(int X, int Y);
 	void ResetView();
-
+    float obtainMarkerFrequency();
 	void AddMarker(int posX, float size, int& more);
 	void MoveMarker(int markerID, int posX);
 	void RemoveMarker();
 
 	bool markersEnabled;
+	bool dbTriggerCheck;
+	/* db threshold met? */
+	bool dbRecordTrigger;
+	float db_trigger_delta;
+	float db_trigger_set; //original db level for frequency at marker 1
 
     char* printUnits(int value, const char *units);
     char m_ctemp[100];

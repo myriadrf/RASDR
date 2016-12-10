@@ -43,6 +43,7 @@
 #define MAX_THRESH 800.0 //uW
 //#include <math.h>
 
+#include "MyFrame.h"
 //(*InternalHeaders(pnlSpectrum)
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -133,6 +134,7 @@ const long pnlSpectrum::ID_CHOICE1 = wxNewId();
 const long pnlSpectrum::ID_PANEL5 = wxNewId();
 const long pnlSpectrum::ID_PANEL10 = wxNewId();
 const long pnlSpectrum::ID_PANEL2 = wxNewId();
+const long pnlSpectrum::ID_DB_TRIGGER = wxNewId();
 //*)
 
 const int pnlSpectrum::GRAPH_UPDATE_MESSAGE_ID = 100000;
@@ -253,6 +255,9 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	wxFlexGridSizer* FlexGridSizer3A;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
+
+    MyFrame* powerFrame = new MyFrame("Power",wxPoint(-1,-1),wxSize(480,480));
+    powerFrame->SetMinSize(wxSize(480,480));
 
 	Create(parent, wxID_ANY, wxDefaultPosition, wxSize(1200,900), 0, _T("wxID_ANY"));
 	SetMinSize(wxSize(1200,900));
@@ -511,11 +516,25 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 		WX_GL_DEPTH_SIZE,      16,
 		WX_GL_STENCIL_SIZE,    0,
 		0, 0 };
-	oglPWRChart = new OpenGLGraph(Panel9, ID_GLCANVAS4, wxPoint(-1,-1), wxSize(400,145), wxSIMPLE_BORDER, _T("ID_GLCANVAS4"), GLCanvasAttributes_4);
-	oglPWRChart->SetMinSize(wxSize(400,145));
+
+
+    wxPanel* powerPanel = powerFrame->GetPanel();
+
+	oglPWRChart = new OpenGLGraph(powerPanel, ID_GLCANVAS4, wxPoint(0,0), wxSize(400,400), wxSIMPLE_BORDER, _T("ID_GLCANVAS4"), GLCanvasAttributes_4);
+	oglPWRChart->SetMinSize(wxSize(400,400));
 	wxFont oglPWRChartFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	oglPWRChart->SetFont(oglPWRChartFont);
-	FlexGridSizer3->Add(oglPWRChart, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+
+    wxBoxSizer* boxSizerPower= new wxBoxSizer(wxHORIZONTAL);
+
+	boxSizerPower->Add(oglPWRChart, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	powerPanel->SetSizer(boxSizerPower);
+	boxSizerPower->Fit(powerPanel);
+	boxSizerPower->SetSizeHints(powerPanel);
+	powerFrame->Refresh();
+    powerFrame->Show(true);
+
+	//FlexGridSizer3->Add(oglPWRChart, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	Panel5 = new wxPanel(Panel9, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
 	BoxSizer3 = new wxBoxSizer(wxVERTICAL);
 	chkAutoscalePwrY = new wxCheckBox(Panel5, ID_CHECKBOX1B, _("Autoscale Power Axis"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1B"));
@@ -542,7 +561,7 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	BoxSizer3->Fit(Panel5);
 	BoxSizer3->SetSizeHints(Panel5);
 	FlexGridSizer3->Add(Panel5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(FlexGridSizer3, 1, wxALIGN_LEFT|wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(FlexGridSizer3, 1, wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	Panel9->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(Panel9);
 	FlexGridSizer7->SetSizeHints(Panel9);
@@ -584,6 +603,8 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	//Additional events
 	Connect(ID_SPINCTRL3,wxEVT_TEXT,(wxObjectEventFunction)&pnlSpectrum::OnspinSamplingFreqChange);
     Connect(GRAPH_UPDATE_MESSAGE_ID,wxEVT_TIMER,(wxObjectEventFunction)&pnlSpectrum::UpdateGraphs);
+    Connect(ID_DB_TRIGGER,wxEVT_TEXT,(wxObjectEventFunction)&pnlSpectrum::OnRecordFFTClick);
+
     // http://stackoverflow.com/questions/9097180/wxspinctrl-not-generating-events
     //Connect(ID_SPINCTRL2,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&pnlSpectrum::OnspinSpanFreqChange);
 
@@ -2139,13 +2160,28 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
             ogl_FFTline->series[1]->color = 0xF0F0F0FF; // background
             // keep existing series as is (which just changes their color)
         }
+        /* The SetupFFTout widget will set the global g_dbTrigger to > -900 when user enables amplitude change triggered recording */
+        if (g_dbTrigger > -900) {
+            ogl_FFTline->dbTriggerCheck = true;
+            ogl_FFTline->db_trigger_delta = g_dbTrigger;
+            printf("set ogl_FFTline->db_trigger_delta %.1f\n",g_dbTrigger);
+            g_dbTrigger = -999;
+        }
 		ogl_FFTline->Refresh();
 		ogl_IQscatter->Refresh();
 		ogl_IQline->Refresh();
 //		oglPWRChart->Refresh();
 	}
+	if (ogl_FFTline->dbRecordTrigger) { //"push" the record button
+        wxCommandEvent evt(wxEVT_TEXT);
+        evt.SetId(ID_DB_TRIGGER);
+        ogl_FFTline->dbRecordTrigger = false;
+        wxPostEvent(this,evt);
+	}
+
 	++m_frames;
 	m_time = GetTickCount()-m_lastUpdate;
+
 	if(m_time >= 1000 * m_PwrIntTime)
     {
         double ratio_FPS = (double)m_frames / expect_FPS;
@@ -2609,8 +2645,10 @@ void pnlSpectrum::OnButton2Click(wxCommandEvent& event)
 
 void pnlSpectrum::OnRecordFFTClick(wxCommandEvent& event)
 {
-    FFTRec_btn->Enable(false); // Avoid Key Bounce
+    FFTRec_btn->Enable(false);           // Avoid Key Bounce
+
     if(!g_FFTfileRecording) {
+        ogl_FFTline->dbTriggerCheck = false; //we want to record now, so stop doing the amplitude trigger check
         bool success = OpenFFTfile();
         if( success ) {
             char outbuf[80];
@@ -2647,7 +2685,8 @@ void pnlSpectrum::OnRecordFFTClick(wxCommandEvent& event)
 
 
 void pnlSpectrum::OnStopFFTRecClick(wxCommandEvent& event)
-{ /*
+{
+    /*
 
     g_FFTfileRecording = false;
     cout << "FFT Recording Stoped" << endl;
