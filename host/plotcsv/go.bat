@@ -52,6 +52,8 @@
 @REM define files
 @set FOREGROUND="FFTOut-2msps-500avg-srh77ca.csv"
 @set BACKGROUND=automatic
+@set OPTIONS=--smooth=5 --fcenter=407.5
 
-%PLOTCSV% %FOREGROUND% -a 120 --info
-%PLOTCSV% %FOREGROUND% -a 120 --background=%BACKGROUND% --smooth=5 --fcenter=407.5 -g
+%PLOTCSV% %FOREGROUND% %OPTIONS% -a 120 --info
+%PLOTCSV% %FOREGROUND% %OPTIONS% -a 120 --background=%BACKGROUND% -g
+@pause
