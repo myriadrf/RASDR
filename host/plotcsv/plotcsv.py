@@ -3,9 +3,9 @@ import sys
 import datetime
 import logging
 import numpy as np
-from StringIO import StringIO
+from io import BytesIO
 
-DEF_VERSION = '1.2.2.7-dev'     # x.y.z.* to match RASDRviewer version
+DEF_VERSION = '1.2.2.8-dev'     # x.y.z.* to match RASDRviewer version
 DEF_DELIM   = ','
 DEF_AVERAGE = 1
 DEF_CALIB   = 0.0           # Paul uses (0.73278^2)/2000 as Qstep^2/ADC impedance
@@ -68,7 +68,7 @@ def open_spectrum_file(filename,opts):
         # http://stackoverflow.com/questions/698223/how-can-i-parse-a-time-string-containing-milliseconds-in-it-with-python
 
         f=open(filename,'r')
-        key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+        key=np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter,dtype='str')
         if len(np.atleast_1d(key)) < 2:
             raise Exception('unable to parse %s -- check first line'%filename)
         ds=key[4].replace('"','') if len(key) > 4 else '00/00/00'
@@ -85,7 +85,7 @@ def open_spectrum_file(filename,opts):
         ## RASDRViewer 1.1.1, Paul "adds" a specifier to the 2nd line and moves the rest of the lines down
         if opts.format.startswith('1.1.') or opts.format.startswith('1.2.'):
             dumplines = dumplines + 1
-            key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+            key=np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter,dtype='str')
             if len(np.atleast_1d(key)) < 2:
                 tag = str(key).lower()
             else:
@@ -97,7 +97,7 @@ def open_spectrum_file(filename,opts):
                     fscale = 1000.0
         ## second/third/fourth line: frequency bin information
         dumplines = dumplines + 1
-        freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
+        freq=np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter,dtype='float')
         if len(np.atleast_1d(freq)) < 2:
             raise Exception('unable to parse %s -- check frequency plan'%filename)
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
@@ -126,7 +126,7 @@ def open_spectrum_file(filename,opts):
 ##    elif opts.datetime:
 ##        # this is the "Excel-datetime" .csv format (proposed for RASDRviewer_W_1_0_4, but not implemented)
 ##        f=open(filename,'r')
-##        freq = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
+##        freq = np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter,dtype='float')
 ##        t=np.genfromtxt(f,delimiter=opts.delimiter,usecols=[0],dtype='float')
 ##        time = []
 ##        for i in range(len(t)):
@@ -145,8 +145,8 @@ def open_spectrum_file(filename,opts):
 
         f=open(filename,'r')
         ## first line: key-value pairs
-        buf = f.readline()
-        key=np.genfromtxt(StringIO(buf.replace('\\','/')),delimiter=opts.delimiter,dtype='str',comments='\\')
+        buf = f.readline().replace('\\','/')
+        key=np.genfromtxt(BytesIO(bytes(buf)),delimiter=opts.delimiter,dtype='str',comments='\\')
         if len(np.atleast_1d(key)) < 2:
             raise Exception('unable to parse %s -- check first line'%filename)
         ds=key[4].replace('"','') if len(key) > 4 else '00/00/00'
@@ -163,7 +163,8 @@ def open_spectrum_file(filename,opts):
         ## RASDRViewer 1.1.1, Paul "adds" a specifier to the 2nd line and moves the rest of the lines down
         if opts.format.startswith('1.1.') or opts.format.startswith('1.2.'):
             dumplines = dumplines + 1
-            key=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='str')
+            buf=f.readline()
+            key=np.genfromtxt(BytesIO(bytes(buf)),delimiter=opts.delimiter,dtype='str')
             if len(np.atleast_1d(key)) < 2:
                 tag = str(key).lower()
             else:
@@ -175,7 +176,7 @@ def open_spectrum_file(filename,opts):
                     fscale = 1000.0
         ## second/third/fourth line: frequency bin information
         dumplines = dumplines + 1
-        freq=np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,dtype='float')
+        freq=np.genfromtxt(BytesIO(bytes(f.readline())),delimiter=opts.delimiter,dtype='float')
         if len(np.atleast_1d(freq)) < 2:
             raise Exception('unable to parse %s -- check frequency plan'%filename)
         freq=freq[1:]           # remove the 1st column, as it is a 'nan' when interpreted as a 'float'
@@ -214,11 +215,11 @@ def read_spectrum_line(obj):
     opts = obj['opts']
     f    = obj['file']
 ##    if opts.datetime:
-##        data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter)
+##        data = np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter)
 ##        data = data[1:]
 ##    else:
     freq = obj['freq']
-    data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
+    data = np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
     return data         # spectral information in colums 1..N-2 (last column is junk)
 
 def read_spectrum_array(obj):
@@ -232,16 +233,16 @@ def read_spectrum_array(obj):
     try:
         plumb = f.tell()
         data = np.genfromtxt(f,delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
-    except ValueError, e:
+    except ValueError as e:
         # oops, malformed file may contain 'garbage' lines at the end...
         log = logging.getLogger(__name__)
         log.warning('Malformed file that may contain extra lines at the end.  Recovering...')
         f.seek(plumb)
 ##        if opts.debug:
 ##            ipsh()
-        data = np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
+        data = np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')
         for i in range(len(obj['time'])-1):
-            data = np.vstack((data,np.genfromtxt(StringIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')))
+            data = np.vstack((data,np.genfromtxt(BytesIO(f.readline()),delimiter=opts.delimiter,usecols=range(1,freq.shape[0]+1),dtype='float')))
     return data         # spectral information in colums 1..N-2 (last column is junk)
 
 def generate_spectrum_plots(filename,opts):
@@ -650,9 +651,9 @@ def execute(opts):
                 from pylab import show
                 print('=== Display interactive graphs ===')
                 show()
-        except Exception, e:
+        except Exception as e:
             logger.error('generate_spectrum_plots', exc_info=True)
-            exit(1)
+            sys.exit(1)
 
 if __name__ == '__main__':
     import argparse
