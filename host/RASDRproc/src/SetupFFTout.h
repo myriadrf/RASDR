@@ -71,6 +71,8 @@ class SetupFFTout: public wxDialog
 		wxCheckBox* OverwriteChk;
 		//*)
 
+        void SetMarker1DbLevel(float db);
+
 	protected:
 
 		//(*Identifiers(SetupFFTout)
@@ -91,6 +93,8 @@ class SetupFFTout: public wxDialog
 		static const long ID_BUTTON1;
 		static const long ID_BUTTON2;
 		//*)
+
+        float marker1Db;
 
 	private:
 
