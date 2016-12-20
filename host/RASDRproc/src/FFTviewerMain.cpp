@@ -726,6 +726,15 @@ void FFTviewerFrame::OnMenuItemSaveConfigSelected(wxCommandEvent& event)
 void FFTviewerFrame::OnSetupFFTOutSelected(wxCommandEvent& event)
 {
     SetupFFTout dialog(this);
+    double db = 999.0;
+    /* obtain the dB level for marker 1 and pass to SetupFFTout */
+    if (mSpectrum) {
+        db = mSpectrum->ogl_FFTline->GetMarker1Db();
+        if (db < -900) {  //marker 1 is not set if < -900
+            db = 999;  //so set it to an impoossibly high baseline for triggering
+        }
+    }
+    dialog.SetMarker1DbLevel(db);
     dialog.ShowModal();
     if(g_FFTfileSetup) {
             if(mSpectrum) {
