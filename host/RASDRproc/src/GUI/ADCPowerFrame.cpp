@@ -3,12 +3,12 @@
     #include <wx/wx.h>
 #endif
 
-class MyFrame: public wxFrame
+class ADCPowerFrame: public wxFrame
 
 {
 
  public:
-  MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
+  ADCPowerFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
   void OnExit(wxCommandEvent& event);
   void OnAbout(wxCommandEvent& event);
   void OnHello(wxCommandEvent& event);
@@ -24,7 +24,7 @@ enum
 {
     ID_Hello = 1
 };
-MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
+ADCPowerFrame::ADCPowerFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
         : wxFrame(NULL, wxID_ANY, title, pos, size)
 {
     wxMenu *menuFile = new wxMenu;
@@ -47,23 +47,24 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     //sizer->SetSizeHints(this);
 }
 
-wxSizer* MyFrame::GetSizer() {
+wxSizer* ADCPowerFrame::GetSizer() {
     return sizer;
 }
 
-wxPanel* MyFrame::GetPanel() {
+wxPanel* ADCPowerFrame::GetPanel() {
     return panel;
 }
-void MyFrame::OnExit(wxCommandEvent& event)
+void ADCPowerFrame::OnExit(wxCommandEvent& event)
 {
     Close( true );
+    Destroy();
 }
-void MyFrame::OnAbout(wxCommandEvent& event)
+void ADCPowerFrame::OnAbout(wxCommandEvent& event)
 {
     wxMessageBox( "This is a wxWidgets' Hello world sample",
                   "About Hello World", wxOK | wxICON_INFORMATION );
 }
-void MyFrame::OnHello(wxCommandEvent& event)
+void ADCPowerFrame::OnHello(wxCommandEvent& event)
 {
     wxLogMessage("Hello world from wxWidgets!");
 }

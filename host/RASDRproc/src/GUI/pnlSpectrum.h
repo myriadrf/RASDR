@@ -269,6 +269,16 @@ class pnlSpectrum: public wxPanel
 
 	private:
 
+	    void checkDbTrigger();
+        bool dbTriggerCheck;
+	    /* db threshold met? */
+	    bool dbRecordTrigger;
+	    float db_trigger_delta;
+	    float db_trigger_set;
+	    char **fftTriggerBuffer; //circular buffer preserve last n minutes of FFT output to write once if trigger occurs
+        int TRIGGER_BUFFER_SIZE = 64; //16384;
+        int trigger_buffer_index;
+
 	    void initializeGraphs();
 		void generateFFTxaxis(float samplingFrequency);
 		void changeSamplingFrequency(float samplingFrequency);
@@ -300,6 +310,9 @@ class pnlSpectrum: public wxPanel
         float *m_PWRvalues;
         float m_PwrMax;
         float m_PwrMin;
+        bool powerFrameDetached;
+
+
 
         float *samplesXaxis;
         float *PwrcountXaxis;

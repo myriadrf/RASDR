@@ -333,12 +333,10 @@ public:
 	void MoveMarker(int markerID, int posX);
 	void RemoveMarker();
 
+	double GetMarker1Db();
+
 	bool markersEnabled;
-	bool dbTriggerCheck;
-	/* db threshold met? */
-	bool dbRecordTrigger;
-	float db_trigger_delta;
-	float db_trigger_set; //original db level for frequency at marker 1
+	 //original db level for frequency at marker 1
 
     char* printUnits(int value, const char *units);
     char m_ctemp[100];
@@ -397,6 +395,7 @@ private:
 	int m_selectedMarker;
 	int m_maxMarkers;
 	int clickedOnMarker(int X, int Y);
+
 	float m_fcenter;
 
 	GLuint gridVBOid;

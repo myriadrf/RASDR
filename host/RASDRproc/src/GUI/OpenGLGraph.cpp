@@ -140,9 +140,7 @@ void OpenGLGraph::Initialize(int width, int height)
 
 	Resize(width, height);
 	settings.fontSize = 10;
-	dbTriggerCheck = false;
-    db_trigger_set = -999.0;
-    dbRecordTrigger = false;
+
 	viewChanged = true;
 	initialized = true;
 
@@ -1213,18 +1211,17 @@ void OpenGLGraph::DrawMarkers()
 			//glPrint(posX, posY, 0, textScale, "%s", text);
 			glRenderText(posX, posY, 0, textScale*m_font->lineHeight(), 0x00000000, "%s", text);
 		}
-		if (dbTriggerCheck && markers.size() > 0) {
-            float db = series[0]->valuesY[markers[0].dataValueIndex];
-            if (db_trigger_set < -900) {
-                db_trigger_set = db;
-            }
-            //printf("db_trigger_set %.1f db %.1f\n",db_trigger_set,db);
-            if (db-db_trigger_set >= db_trigger_delta) {
-                dbRecordTrigger = true;
-                db_trigger_set = 999; //don't set dbRecordTrigger again, otherwise the record button would be toggled
-            }
-		}
+
 	}
+}
+/*
+   Return level/db for marker 1 (index 0).  If not created, return -999.
+*/
+double OpenGLGraph::GetMarker1Db() {
+    if (markers.size() > 0) {
+       return series[0]->valuesY[markers[0].dataValueIndex];
+    }
+    return -999.0;
 }
 
 /**

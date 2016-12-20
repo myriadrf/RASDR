@@ -43,7 +43,7 @@
 #define MAX_THRESH 800.0 //uW
 //#include <math.h>
 
-#include "MyFrame.h"
+#include "ADCPowerFrame.h"
 //(*InternalHeaders(pnlSpectrum)
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -140,6 +140,7 @@ const long pnlSpectrum::ID_DB_TRIGGER = wxNewId();
 const int pnlSpectrum::GRAPH_UPDATE_MESSAGE_ID = 100000;
 //const int pnlSpectrum::FFT_FILE_OK_BTN_MESSAGE_ID = 100001;
 
+ADCPowerFrame* powerFrame;
 BEGIN_EVENT_TABLE(pnlSpectrum,wxPanel)
 	//(*EventTable(pnlSpectrum)
 	//*)
@@ -256,8 +257,9 @@ void pnlSpectrum::BuildContent(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
 
-    MyFrame* powerFrame = new MyFrame("Power",wxPoint(-1,-1),wxSize(480,480));
+    powerFrame = new ADCPowerFrame("Power",wxPoint(-1,-1),wxSize(480,480));
     powerFrame->SetMinSize(wxSize(480,480));
+    powerFrameDetached = true;
 
 	Create(parent, wxID_ANY, wxDefaultPosition, wxSize(1200,900), 0, _T("wxID_ANY"));
 	SetMinSize(wxSize(1200,900));
@@ -696,6 +698,11 @@ void pnlSpectrum::shutdown()
             Sleep(g_closedelay);}
 	}
 
+if (powerFrameDetached) {
+        wxCommandEvent dummy;
+        powerFrame->OnExit(dummy);
+}
+
 if(ogl_FFTline != NULL) {
     ogl_FFTline -> Destroy();
     ogl_FFTline = NULL;
@@ -941,6 +948,9 @@ bool pnlSpectrum::allocateMemory(int samples)
 	for(i=0; i<m_buffersCount+1; i++)
 		m_FFTamplitudesBuffer[i] = new float[m_FFTsamplesCount];
 	bufferPos = 0;
+
+	fftTriggerBuffer = new char*[16636];
+	trigger_buffer_index = 0;
 // These are completely unused
 //	m_YCent = new float[7];
 //	m_YCent[0] = 2.5;
@@ -1885,6 +1895,8 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
     if(g_FFTfileSetup || g_PWRfileSetup) return; // Break Loop for file open
     m_updating = true;
     char outbuf[80];
+    char outbufTrigger[1024]; //represent the whole line which we'll store in the circular buffer
+
     wxCommandEvent dummy;
 	int fftsLeft = 0; // FFT results left in queue
 	int backgroundDebugCfg = g_backgroundDebugCfg;  // take value once
@@ -2049,6 +2061,16 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 #endif  // _DEBUG
         }
 
+        if (dbTriggerCheck && !g_FFTfileRecording) {
+            fftTriggerBuffer[trigger_buffer_index++] = outbufTrigger;
+            wxDateTime ts = (g_FFT_TimeStandard == 0) ? dt.Now() : dt.UNow();
+            wxSprintf(outbufTrigger,".%03d\0",ts.GetMillisecond());
+            if (trigger_buffer_index > TRIGGER_BUFFER_SIZE) {
+                trigger_buffer_index = 0;  //+1 is oldest
+                //cout << "trigger buffer rotated back to 0 " << fftTriggerBuffer[0]<< endl;
+            }
+            //cout << "ts " << outbufTrigger<< endl;
+        }
         // Write Time Stamp to file
         if(g_FFTfileRecording && m_FFTCounter == 0) {
             wxDateTime ts = (g_FFT_TimeStandard == 0) ? dt.Now() : dt.UNow();
@@ -2162,9 +2184,9 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
         }
         /* The SetupFFTout widget will set the global g_dbTrigger to > -900 when user enables amplitude change triggered recording */
         if (g_dbTrigger > -900) {
-            ogl_FFTline->dbTriggerCheck = true;
-            ogl_FFTline->db_trigger_delta = g_dbTrigger;
-            printf("set ogl_FFTline->db_trigger_delta %.1f\n",g_dbTrigger);
+            dbTriggerCheck = true;
+            db_trigger_delta = g_dbTrigger;
+            printf("db_trigger_delta %.1f\n",db_trigger_delta);
             g_dbTrigger = -999;
         }
 		ogl_FFTline->Refresh();
@@ -2172,10 +2194,13 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 		ogl_IQline->Refresh();
 //		oglPWRChart->Refresh();
 	}
-	if (ogl_FFTline->dbRecordTrigger) { //"push" the record button
+	checkDbTrigger();
+
+	if (dbRecordTrigger) { //"push" the record button
+        dbRecordTrigger = false;
         wxCommandEvent evt(wxEVT_TEXT);
         evt.SetId(ID_DB_TRIGGER);
-        ogl_FFTline->dbRecordTrigger = false;
+        //ogl_FFTline->dbRecordTrigger = false;
         wxPostEvent(this,evt);
 	}
 
@@ -2213,6 +2238,26 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
     m_updating = false;
 }
 
+//void pnlSpectrum::updateTriggerBuffer() {
+
+
+//}
+
+void pnlSpectrum::checkDbTrigger() {
+    if (dbTriggerCheck) {
+        double db = ogl_FFTline->GetMarker1Db();
+        if (db_trigger_set < -900) {
+            db_trigger_set = db;
+        }
+        //printf("db_trigger_set %.1f db %.1f\n",db_trigger_set,db);
+        if (db-db_trigger_set >= db_trigger_delta) {
+            dbRecordTrigger = true;
+            db_trigger_set = -999; //don't set dbRecordTrigger again, otherwise the record button would be toggled
+            dbTriggerCheck = false;
+            g_dbTrigger = false;
+        }
+    }
+}
 // Autoscale the PWR plot X-axis
 void pnlSpectrum::SetPwrRangeX()
 {
@@ -2648,7 +2693,6 @@ void pnlSpectrum::OnRecordFFTClick(wxCommandEvent& event)
     FFTRec_btn->Enable(false);           // Avoid Key Bounce
 
     if(!g_FFTfileRecording) {
-        ogl_FFTline->dbTriggerCheck = false; //we want to record now, so stop doing the amplitude trigger check
         bool success = OpenFFTfile();
         if( success ) {
             char outbuf[80];

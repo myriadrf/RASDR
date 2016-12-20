@@ -67,6 +67,7 @@ double dbTrigger;
 SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
 {
     dbTrigger = -999.0;  // negative value <= -900 means off
+    wxString marker1DbStr = wxString::Format(wxT("Marker 1 amplitude %.1f"),marker1Db);
 	//(*Initialize(SetupFFTout)
 	wxFlexGridSizer* FlexGridSizer4;
 	wxGridBagSizer* GridBagSizer1;
@@ -173,7 +174,7 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	wxFont ComboBox1Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	ComboBox1->SetFont(ComboBox1Font);
 	FlexGridSizer6->Add(ComboBox1, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("Marker 1 Change"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, marker1DbStr, wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
 	wxFont StaticText2Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	StaticText2->SetFont(StaticText2Font);
 	FlexGridSizer6->Add(StaticText2, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
@@ -299,7 +300,7 @@ void SetupFFTout::OnOverwriteChkClick(wxCommandEvent& event)
 
 void SetupFFTout::OnFrameSkipChange(wxSpinEvent& event)
 {
-    g_FFTframeSkip = FrameSkip->GetValue();//FFTsToRec = new wxSpinCtrl(this, ID_SPINCTRL1, _T("64"), wxDefaultPosition, wxSize(82,21), 0, 1, 10000, 64, _T("ID_SPINCTRL1"));
+    //g_FFTframeSkip = FrameSkip->GetValue();//FFTsToRec = new wxSpinCtrl(this, ID_SPINCTRL1, _T("64"), wxDefaultPosition, wxSize(82,21), 0, 1, 10000, 64, _T("ID_SPINCTRL1"));
 	//FFTsToRec->SetValue(_T("64"));//FrameSkip->GetValue();
 }
 
@@ -338,4 +339,15 @@ void SetupFFTout::OnRadioButton2Select1(wxCommandEvent& event)
 
 void SetupFFTout::OnRadioButton3Select(wxCommandEvent& event)
 {
+}
+
+void SetupFFTout::SetMarker1DbLevel(float db) {
+    marker1Db = db;
+    wxString marker1DbStr;
+    marker1DbStr = wxString::Format(wxT("Marker 1 amplitude %.1f dB"),marker1Db);
+    if (db > 900) { //if marker 1 not set yet, so disable trigger on amplitude option
+        RadioButton2->Disable();
+        marker1DbStr = wxString("Marker 1 not yet set");
+    }
+    StaticText2->SetLabel(marker1DbStr);
 }
