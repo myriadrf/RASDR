@@ -332,6 +332,8 @@ public:
 	void AddMarker(int posX, float size, int& more);
 	void MoveMarker(int markerID, int posX);
 	void RemoveMarker();
+    float obtainMarkerFrequency(int markerID=0);
+    float obtainMarkerLevel(int markerID=0);
 
 	bool markersEnabled;
 

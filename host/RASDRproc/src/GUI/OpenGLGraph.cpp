@@ -1048,6 +1048,36 @@ int OpenGLGraph::LineHeight()
 }
 
 /**
+	@brief obtain the frequencies of the markers.
+	@param markerID index of marker to be queried
+	@returns
+		- non-zero value: current frequency of marker
+		- 0.0: marker is not placed
+*/
+float OpenGLGraph::obtainMarkerFrequency(int markerID)
+{
+	if (series.size()<1 || markers.size()<(markerID+1)) {
+		return 0.0;
+	}
+	return series[0]->valuesX[markers[markerID].dataValueIndex] + m_fcenter;
+}
+
+/**
+	@brief obtain the level in dB for the marker
+	@param markerID index of marker to be queried
+	@returns
+		- value: current signal level of marker
+		- -999.0: marker is not placed
+*/
+float OpenGLGraph::obtainMarkerLevel(int markerID)
+{
+	if (series.size()<1 || markers.size()<(markerID+1)) {
+		return -999.0;
+    }
+    return series[0]->valuesY[markers[markerID].dataValueIndex];
+}
+
+/**
 	@brief Add marker at selected pixel
 	@param posX mouse x coordinate in graph window
 	@param size added marker size

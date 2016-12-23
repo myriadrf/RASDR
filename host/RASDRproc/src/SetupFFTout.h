@@ -39,6 +39,7 @@
 #include <wx/filepicker.h>
 #include <wx/spinctrl.h>
 #include <wx/radiobut.h>
+#include <wx/gbsizer.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/combobox.h>
@@ -56,49 +57,44 @@ class SetupFFTout: public wxDialog
 		wxRadioButton* RadioButton1;
 		wxRadioBox* DataSource;
 		wxFilePickerCtrl* OutputFile;
+		wxSpinCtrl* SpinCtrl1;
 		wxStaticText* StaticText2;
 		wxRadioButton* RadioButton2;
-		wxStaticText* StaticText6;
+		wxButton* Button1;
 		wxStaticText* StaticText1;
-		wxStaticText* StaticText3;
-		wxRadioButton* RadioButton3;
-		wxButton* Cancel;
+		wxButton* Button2;
 		wxRadioBox* TimeStandard;
 		wxRadioBox* FileType;
-		wxStaticText* StaticText5;
-		wxSpinCtrl* FrameSkip;
 		wxSpinCtrl* FFTsToRec;
 		wxComboBox* ComboBox1;
-		wxComboBox* ComboBox2;
 		wxStaticText* StaticText4;
-		wxButton* FFTfileOKbtn;
 		wxCheckBox* OverwriteChk;
 		//*)
+
+        void SetMarker1DbLevel(float db);
 
 	protected:
 
 		//(*Identifiers(SetupFFTout)
 		static const long ID_RADIOBOX1;
-		static const long ID_RADIOBOX2;
-		static const long ID_RADIOBOX3;
 		static const long ID_RADIOBOX4;
-		static const long ID_STATICTEXT1;
+		static const long ID_RADIOBOX3;
+		static const long ID_RADIOBOX2;
+		static const long ID_RADIOBUTTON2;
+		static const long ID_RADIOBUTTON1;
 		static const long ID_FILEPICKERCTRL1;
 		static const long ID_CHECKBOX1;
-		static const long ID_RADIOBUTTON1;
-		static const long ID_RADIOBUTTON2;
-		static const long ID_RADIOBUTTON3;
-		static const long ID_STATICTEXT2;
-		static const long ID_COMBOBOX1;
-		static const long ID_COMBOBOX2;
-		static const long ID_STATICTEXT3;
 		static const long ID_SPINCTRL1;
 		static const long ID_STATICTEXT4;
-		static const long ID_STATICTEXT5;
 		static const long ID_SPINCTRL2;
-		static const long ID_STATICTEXT6;
+		static const long ID_STATICTEXT1;
+		static const long ID_COMBOBOX1;
+		static const long ID_STATICTEXT2;
+		static const long ID_BUTTON1;
 		static const long ID_BUTTON2;
 		//*)
+
+        float marker1Db;
 
 	private:
 
@@ -118,6 +114,9 @@ class SetupFFTout: public wxDialog
 		void OnNumbFilesSelect(wxCommandEvent& event);
 		void OnTimeStandardSelect(wxCommandEvent& event);
 		void OnDataSourceSelect(wxCommandEvent& event);
+		void OnRadioButton2Select(wxCommandEvent& event);
+		void OnRadioButton2Select1(wxCommandEvent& event);
+		void OnRadioButton3Select(wxCommandEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()

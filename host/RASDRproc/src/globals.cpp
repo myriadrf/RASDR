@@ -70,6 +70,7 @@ int g_PWRTimeStandard = 0; // 0 = Local Time 1 = UT
 bool g_PendingRestartCapture = false;
 bool g_capturingData = false;
 int g_PwrRecordRate = 30; // Default
+float g_dbTrigger = -999; // < -900 = no trigger
 //long ID_FFTOKBUTTON = wxID_OK;
 int g_MaxFFTbins = 16384;   // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
 int g_FFTDataSource = 0;
