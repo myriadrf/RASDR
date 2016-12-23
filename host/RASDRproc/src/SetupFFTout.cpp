@@ -175,6 +175,9 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	wxFont ComboBox1Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	ComboBox1->SetFont(ComboBox1Font);
 	FlexGridSizer6->Add(ComboBox1, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+// BUG: this prevents the marker string from being dynamically updated upon the opening of the panel
+// BEWARE: If you open the .wxs file, it will *REWRITE* this session with the setup of the .wxs file...
+//	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("Marker 1 Change"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
 	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, marker1DbStr, wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
 	wxFont StaticText2Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	StaticText2->SetFont(StaticText2Font);
