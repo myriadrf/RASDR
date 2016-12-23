@@ -94,8 +94,6 @@ class SetupFFTout: public wxDialog
 		static const long ID_BUTTON2;
 		//*)
 
-        float marker1Db;
-
 	private:
 
 		//(*Handlers(SetupFFTout)

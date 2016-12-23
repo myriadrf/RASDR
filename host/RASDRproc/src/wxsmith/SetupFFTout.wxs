@@ -115,6 +115,7 @@
 								<object class="wxRadioButton" name="ID_RADIOBUTTON2" variable="RadioButton2" member="yes">
 									<label>Trigger on Amplitude Change</label>
 									<size>241,28</size>
+									<enabled>0</enabled>
 									<font>
 										<size>12</size>
 										<style>normal</style>

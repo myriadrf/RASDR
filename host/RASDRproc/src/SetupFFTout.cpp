@@ -65,7 +65,6 @@ END_EVENT_TABLE()
 
 SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
 {
-    wxString marker1DbStr = wxString::Format(wxT("Marker 1 amplitude %.1f"),marker1Db);
 	//(*Initialize(SetupFFTout)
 	wxFlexGridSizer* FlexGridSizer4;
 	wxGridBagSizer* GridBagSizer1;
@@ -120,6 +119,7 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	GridBagSizer1->Add(NumbFiles, wxGBPosition(0, 0), wxDefaultSpan, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	FlexGridSizer3 = new wxFlexGridSizer(0, 3, 0, 0);
 	RadioButton2 = new wxRadioButton(this, ID_RADIOBUTTON2, _("Trigger on Amplitude Change"), wxDefaultPosition, wxSize(241,28), 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
+	RadioButton2->Disable();
 	wxFont RadioButton2Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	RadioButton2->SetFont(RadioButton2Font);
 	FlexGridSizer3->Add(RadioButton2, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
@@ -130,9 +130,6 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	FlexGridSizer3->Add(RadioButton1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	GridBagSizer1->Add(FlexGridSizer3, wxGBPosition(6, 0), wxDefaultSpan, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("File Output"));
-// BUG: this prevented the user's entry from persisting in a session
-// BEWARE: If you open the .wxs file, it will *REWRITE* this session with the setup of the .wxs file...
-//	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, wxEmptyString, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_FFTfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	wxFont OutputFileFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	OutputFile->SetFont(OutputFileFont);
@@ -175,10 +172,7 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	wxFont ComboBox1Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	ComboBox1->SetFont(ComboBox1Font);
 	FlexGridSizer6->Add(ComboBox1, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-// BUG: this prevents the marker string from being dynamically updated upon the opening of the panel
-// BEWARE: If you open the .wxs file, it will *REWRITE* this session with the setup of the .wxs file...
-//	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("Marker 1 Change"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, marker1DbStr, wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("Marker 1 Change"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
 	wxFont StaticText2Font(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	StaticText2->SetFont(StaticText2Font);
 	FlexGridSizer6->Add(StaticText2, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
@@ -226,6 +220,9 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 /* DO NOT ERASE THESE COMMENT CODE LINES.  Every time wxSmith pens SetupFFTout.wxs, they are lost in the init code above. argh.
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&SetupFFTout::OnFFTfileOKbtnClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&SetupFFTout::OnCancelClick);
+
+//	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, wxEmptyString, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
+	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_FFTfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 */
 
 SetupFFTout::~SetupFFTout()
@@ -345,9 +342,7 @@ void SetupFFTout::OnRadioButton3Select(wxCommandEvent& event)
 
 void SetupFFTout::SetMarker1DbLevel(float db)
 {
-    wxString marker1DbStr;
-    marker1Db = db;
-    marker1DbStr = wxString::Format(wxT("Marker 1 amplitude %.1f dB"),marker1Db);
+    wxString marker1DbStr = wxString::Format(wxT("Marker 1 amplitude %.1f dB"),db);
     if (db > 900) { //if marker 1 not set yet, so disable trigger on amplitude option
         RadioButton2->Disable();
         marker1DbStr = wxString("Marker 1 not yet set");
