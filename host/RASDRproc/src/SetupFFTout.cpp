@@ -132,7 +132,10 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	FlexGridSizer3->Add(RadioButton1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	GridBagSizer1->Add(FlexGridSizer3, wxGBPosition(6, 0), wxDefaultSpan, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("File Output"));
-	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, wxEmptyString, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
+// BUG: this prevented the user's entry from persisting in a session
+// BEWARE: If you open the .wxs file, it will *REWRITE* this session with the setup of the .wxs file...
+//	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, wxEmptyString, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
+	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_FFTfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	wxFont OutputFileFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	OutputFile->SetFont(OutputFileFont);
 	StaticBoxSizer1->Add(OutputFile, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
