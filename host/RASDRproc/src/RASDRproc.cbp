@@ -252,7 +252,7 @@
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
 		</Unit>
-		<Unit filename="GUI/MyFrame.cpp" />
+		<Unit filename="GUI/ADCPowerFrame.cpp" />
 		<Unit filename="GUI/OpenGLGraph.cpp">
 			<Option target="GUIDebug WIN32" />
 			<Option target="GUIRelease WIN32" />
