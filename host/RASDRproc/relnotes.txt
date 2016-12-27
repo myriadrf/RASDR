@@ -1,4 +1,4 @@
-RASDRproc v0.2.3.8 -  Oct 22, 2016
+RASDRproc v0.2.5.2 -  Dec 27, 2016
 ==================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -95,6 +95,38 @@ This can be used if you are using an upconverter to provide the correct offset f
 
 There was a regression in v0.2.3.4 in which the RSS control panel settings became unavailable.  This was corrected in v0.2.3.5 (and hopefully from now on). 
 
+NEW with v0.2.5.2:  The "Extended RSS" protocol is implemented as described here:
+https://github.com/myriadrf/RASDR/issues/16
+
+In a nutshell, the RASDRproc program acts as a TCP server and listens for a connection on the port defined by the 'Setup RSS Output' as described above.  Configure your external program to connect to this IP:PORT combination.  Upon a connection, RASDRproc accepts the connection and sends an 1024-byte ASCII string as a response.  The response will be key value combinations separated by the "|" character.
+
+The following keys will be provided:
+    [CenterFrequencyHertz] The tuned center frequency in Hz
+    [BandwidthHertz] The bandwidth of the observation in Hz
+    [OffsetHertz] The offset frequency (in case an LNB or up/down converter is used with the receiver)
+    [NumberOfChannels] The number of frequency bins that will be provided for each scan line
+
+The following keys may be provided:
+    [IntegrationTimeSec] The amount of integration in seconds that will be used for each scan line
+    [GainDb] The total amount of receiver gain used
+    [NotesString] An ASCII string provided by the program to describe the observation (excluding the "|" character).
+
+For example:
+    CenterFrequencyHertz 21000000|BandwidthHertz 5000000|OffsetHertz 0|NumberOfChannels 2048|
+
+This would tell your program that the center frequency of the observation is 21 MHz. The bandwidth is 5 MHz, so the display will run from 21 + 2.5 to 21 - 2.5 MHz, or 18.5 MHz to 23.5 MHz. There is no offset so no frequency converter is used. Finally, NumberOfChannels denotes the number of channels that will be reported for each of the spectrum scans. There is no predefined limit on the number of channels, but the number is limited to a 4-byte unsigned integer. The connection block will be a fixed-size of 1024 bytes. Each of these parameters is separated by the pipe symbol "|". The parameter string will end with a CRLF. There may be trailing NUL to complete the 1024-byte connection block description.
+
+Following this, a constant stream of binary data will be provided. It is not necessary to interpret the connection block (above) as the binary stream will self-describe itself. It will consist of the following binary data elements (equivalent to a binary-version of the rtl-power specification) ***in Network Byte Order***:
+    [timestamp] IEEE-754 8-byte double representing the seconds since January 1, 1970 (the Unix Epoch)
+    [hz_low] IEEE-754 4-byte float representing the center frequency of the lowest frequency bin
+    [hz_high] IEEE-754 4-byte float representing the center frequency of the highest frequency bin
+    [hz_step] IEEE-754 4-byte float representing the difference between two adjacent frequency bins
+    [samples] A 4-byte unsigned integer representing the number of samples used to integrate each frequency bin
+    [channels] A 4-byte unsigned integer representing the number of frequency bins to follow
+    [db-values] IEEE-754 4-byte float * channels (as given in the header above)
+
+At the moment, as with the Radio-Sky-Spectrograph version, any changes to the acquisition parameters will close the socket, requiring a re-connection.  Subsequent edits will eliminate this need and simply update the stream header dynamically.  If new metadata is desired, disconnect and re-connect to obtain it.
+
 
 Background Subtraction:
 
@@ -168,6 +200,9 @@ https://www.opengl.org/archives/resources/features/fontsurvey/#tmt
 http://diyhpl.us/~bryan/irc/darpa/avm/meta/meta/QRG/code-library/lisp/opengl/_devel/glfont2/glfont.htm
 
 8) If attempting to run RASDRproc on a machine via remote desktop, it can fail due to an OpenGL context not being available.  With v0.2.3.7, hopefully this will result in an informative message.  There should not be a reason why an OpenGL application cannot operate the same regardless of whether it is started on the console or via a remote desktop connection.  If the application is *already running*, there seems to be no problem with operating over remote desktop...
+
+UPDATE: this issue has been characterized and is due to the use of Vertex Buffer Object in a way that is incompatible with the OpenGL system that is exposed to the application when it is launched under remote desktop.  It is interesting that once an appliation is running, a remote desktop connection can be made and it silently switches without incident; it is only at application start that the code is has an issue.  A branch to investigate and characterize this has been made and the fruits of its labor will eventually make it into the master release branch:
+https://github.com/myriadrf/RASDR/compare/proj_ogl
 
 9) LNA3 (which is now available to be used) does not seem to provide any meaningful response in the system.
 
