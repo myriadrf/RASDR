@@ -7803,11 +7803,12 @@ CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize
 	@param FFTsize represents the number of points in the FFTdataY and FFTdataX arrays
 	@param FCenter represents the center frequency of the array
 */
-CTR_6002DR2_API void LMLL_Testing_SetFFTSpectra(float *FFTdataY, float *FFTdataX, int FFTsize, float FCenter)
+CTR_6002DR2_API void LMLL_Testing_SetFFTSpectra(float *FFTdataY, float *FFTdataX, int FFTsize, float FCenter, double timestamp)
 {
     FFTAvgPacket avgPkt(FFTsize,FCenter,g_RSS_FrequencyOffset);
     memcpy(avgPkt.amplitudes,FFTdataY,sizeof(float)*FFTsize);
     memcpy(avgPkt.offset_frequencies,FFTdataX,sizeof(float)*FFTsize);
+    avgPkt.timestamp = timestamp;
     getMainModule()->getTesting()->m_fftAvgFIFO->push(&avgPkt);
 }
 

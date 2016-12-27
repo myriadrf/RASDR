@@ -128,7 +128,7 @@ struct FFTAvgPacket
 {
 public:
 	FFTAvgPacket(unsigned int packetSize, float c=0.0, float o=0.0)
-        : used(false), size(packetSize), fcenter(c), foffset(o)
+        : used(false), size(packetSize), fcenter(c), foffset(o), timestamp(0.0)
 	{
 	    offset_frequencies = new float[packetSize];
 	    amplitudes = new float[packetSize];
@@ -152,6 +152,7 @@ public:
 		this->used = obj.used;
 		this->fcenter = obj.fcenter;
 		this->foffset = obj.foffset;
+		this->timestamp = obj.timestamp;
 		obj.used = true;
 		return *this;
 	}
@@ -162,6 +163,7 @@ public:
 	float *amplitudes;          // in dB
 	float fcenter;              // In GHz
 	float foffset;              // In GHz
+	double timestamp;           // UTC seconds since 1 January 1970 (Unix EPOCH)
 };
 
 #endif

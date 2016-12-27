@@ -1891,6 +1891,8 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
     if( calculated )
     {
         float oneOverBuffersCountMask = 1.0;
+        wxDateTime _ts = dt.UNow();  // TODO: timestamp to pass through sample/FFT fifos
+
         switch( averageFFT ) {
         default:
         case 0:
@@ -1913,6 +1915,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                                       m_FFTamplitudesBuffer[bufferPos],   // NB: I^2+Q^2 (w/o sqrt)
                                       m_FFTdataSize,
                                       fftsLeft);
+                                      // TODO: timestamp to be extracted here
 
             // update acquisition buffer position index
             bufferPos = (bufferPos + 1) % m_buffersCountMask;
@@ -2034,7 +2037,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 
         // Write Time Stamp to file
         if(g_FFTfileRecording && m_FFTCounter == 0) {
-            wxDateTime ts = (g_FFT_TimeStandard == 0) ? dt.Now() : dt.UNow();
+            wxDateTime ts = (g_FFT_TimeStandard == 0) ? dt.Now() : _ts; // localtime vs UTC
             wxSprintf(outbuf,".%03d",ts.GetMillisecond());
             if(g_FFTFileType == 0 && g_FFT_TimeStandard == 0) {
                 m_FFTFileClassPtr->Write(ts.FormatTime().c_str());
@@ -2098,9 +2101,10 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
         else if(g_FFTfileRecording) m_FFTCounter++;
 
         // write FFT spectra to FIFO
+        double timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
         LMLL_Testing_SetFFTSpectra(
             &m_FFTamplitudes[idx.min], &m_fftxaxisValues[idx.min],
-            idx.max - idx.min, m_RxFreq );
+            idx.max - idx.min, m_RxFreq, timestamp );
     }
 
     //unsigned long rate = 1;

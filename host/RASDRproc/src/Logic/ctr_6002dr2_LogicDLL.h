@@ -1005,7 +1005,7 @@ CTR_6002DR2_API void LMLL_Testing_SetDCCorrection(bool on);
 CTR_6002DR2_API bool LMLL_Testing_SetFFTSamplesCount(unsigned int samplesCount);
 
 // Support for RSS Integration
-CTR_6002DR2_API void LMLL_Testing_SetFFTSpectra(float *FFTdataY, float *FFTdataX, int FFTsize, float FCenter);
+CTR_6002DR2_API void LMLL_Testing_SetFFTSpectra(float *FFTdataY, float *FFTdataX, int FFTsize, float FCenter, double timestamp);
 
 //==============================================================================
 // end of Testing Module
