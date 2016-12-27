@@ -1021,7 +1021,9 @@ void pnlSpectrum::GetConfiguration()
                 if(line == 5) m_RxVGA2Sel = atoi(inbuf);
                 if(line == 6) cmbLNAGainMode->SetSelection(atoi(inbuf));
                 if(line == 7) chkAverage->SetValue(atoi(inbuf));
-                if(line == 8) spinAvgCount->SetValue(atoi(inbuf));
+                if(line == 8) {
+                    g_FFTavgCount = atoi(inbuf);
+                    spinAvgCount->SetValue(g_FFTavgCount); }
                 if(line == 9) {
                     m_FFTsamplesCount = twotoN(atoi(inbuf));
                     spinFFTsamples->SetValue(atoi(inbuf));
@@ -1083,7 +1085,8 @@ void pnlSpectrum::GetConfiguration()
             cout << 1 << endl;                  // if(line == 7)
                 chkAverage->SetValue( 1 );
             cout << 1 << endl;                  // if(line == 8)
-                spinAvgCount->SetValue( 1 );
+                g_FFTavgCount = 1;
+                spinAvgCount->SetValue( g_FFTavgCount );
             cout << 11 << endl;                 // if(line == 9)
                 m_FFTsamplesCount = twotoN(11);
                 spinFFTsamples->SetValue( 11 );
@@ -1131,7 +1134,7 @@ void pnlSpectrum::Initialize()
     initializeInterfaceValues();
 	txtRxFrequencyMHz->SetValue( wxString::Format("%.6f", m_RxFreq * 1000.0) );
 	PwrSpan->SetValue(g_PwrSpanSec/60);
-	m_buffersCountMask = spinAvgCount->GetValue();
+    m_buffersCountMask = g_FFTavgCount = spinAvgCount->GetValue();
 
 	initializeGraphs();
 	if( LMAL_IsOpen() )
@@ -1651,11 +1654,11 @@ void pnlSpectrum::StartCapturing()
     if(g_PWRfileIsDefined) EnablePWRRecord(true);
 
     if(spinAvgCount->GetValue() < m_buffersCount)
-        m_buffersCountMask = spinAvgCount->GetValue();
+        m_buffersCountMask = g_FFTavgCount = spinAvgCount->GetValue();
     else
     {
         spinAvgCount->SetValue(m_buffersCount);
-        m_buffersCountMask = m_buffersCount;
+        m_buffersCountMask = g_FFTavgCount = m_buffersCount;
     }
 
     int interval = 15; // mSec
@@ -2533,6 +2536,7 @@ void pnlSpectrum::OnspinAvgCountChange(wxSpinEvent& event)
             m_buffersCountMask = m_buffersCount;
             spinAvgCount->SetValue(m_buffersCount);
         }
+        g_FFTavgCount = m_buffersCountMask;
     }
 }
 

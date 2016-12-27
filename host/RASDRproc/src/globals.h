@@ -84,6 +84,7 @@ extern bool g_OverwritePWRfile;
 extern bool g_PWRfileIsDefined;
 extern int g_FFTframeSkip;
 extern int g_FFTframesOut;
+extern int g_FFTavgCount;
 extern int g_FFTFileType;
 extern int g_PWRFileType;
 extern int g_NumbFFTFiles;

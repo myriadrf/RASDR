@@ -61,6 +61,7 @@ bool g_OverwritePWRfile = false;
 bool g_PWRfileIsDefined = false;
 int g_FFTframeSkip = 5;
 int g_FFTframesOut = 64;
+int g_FFTavgCount = 1;
 int g_FFTFileType = 1; // 0 = .csv for excel 1 = General
 int g_PWRFileType = 0; // 0 = .csv for excel 1 = General
 int g_NumbFFTFiles = 2; // 1 = single 2 = multiple suffixed
