@@ -94,7 +94,6 @@ PopSetupRSS::PopSetupRSS(wxWindow* parent,wxWindowID id)
 	GridSizer1->Add(StaticText10, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	Extension = new wxCheckBox(this, ID_CHECKBOX2, _("Extentions Enable\?"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
 	Extension->SetValue(false);
-	Extension->Disable();
 	GridSizer1->Add(Extension, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Server IP"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
 	GridSizer1->Add(StaticText1, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
@@ -104,8 +103,8 @@ PopSetupRSS::PopSetupRSS(wxWindow* parent,wxWindowID id)
 	GridSizer1->Add(IP, 1, wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 9);
 	Port = new wxTextCtrl(this, ID_TEXTCTRL2, _("8888"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	GridSizer1->Add(Port, 1, wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 9);
-	StaticText3 = new wxStaticText(this, ID_STATICTEXT3, _("Channels (100-512)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-	GridSizer1->Add(StaticText3, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+	ChannelsLabel = new wxStaticText(this, ID_STATICTEXT3, _("Channels (100-512)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	GridSizer1->Add(ChannelsLabel, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	Channels = new wxSpinCtrl(this, ID_SPINCTRL1, _T("100"), wxDefaultPosition, wxDefaultSize, 0, 100, 512, 100, _T("ID_SPINCTRL1"));
 	Channels->SetValue(_T("100"));
 	GridSizer1->Add(Channels, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
@@ -149,6 +148,7 @@ PopSetupRSS::PopSetupRSS(wxWindow* parent,wxWindowID id)
 	BoxSizer1->SetSizeHints(this);
 
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&PopSetupRSS::OnOKButtonClick);
+	Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&PopSetupRSS::OnExtensionClick);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&PopSetupRSS::OnApplyButtonClick);
 	Connect(wxID_ANY,wxEVT_INIT_DIALOG,(wxObjectEventFunction)&PopSetupRSS::OnInit);
 	//*)
@@ -169,7 +169,6 @@ void PopSetupRSS::OnInit(wxInitDialogEvent& event)
 //    cout << "PopSetupRSS::OnInit()" << endl;
 	IP->SetValue( wxString::Format("%s", g_RSS_IP) );
 	Port->SetValue( wxString::Format("%hu", g_RSS_Port) );
-	Channels->SetValue( g_RSS_Channels );
 	Enable->SetValue(g_RSS_Enable);
 	Offset->SetValue( wxString::Format("%.6f", g_RSS_Offset) );
 	Gain->SetValue( wxString::Format("%.6f", g_RSS_Gain) );
@@ -177,10 +176,18 @@ void PopSetupRSS::OnInit(wxInitDialogEvent& event)
 	MinValue->SetValue( wxString::Format("%.6f", g_RSS_MinValue) );
 	MaxValue->SetValue( wxString::Format("%.6f", g_RSS_MaxValue) );
 	FrequencyOffset->SetValue( wxString::Format("%.6f", g_RSS_FrequencyOffset) );
-	// TODO: extension is disabled for now
-	//Extension->SetValue(g_RSS_Extension);
-	Extension->SetValue(false);
-	Extension->Enable(false);
+	Extension->SetValue(g_RSS_Extension);
+    //OnExtensionClick();    // update labels/range for channels
+    if( g_RSS_Extension ) {
+        ChannelsLabel->SetLabel("Channels          ");
+        Channels->SetMin(1);
+        Channels->SetMax(1<<14);    // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
+    } else {
+        ChannelsLabel->SetLabel("Channels (100-512)");
+        Channels->SetMin(100);
+        Channels->SetMax(512);
+    }
+	Channels->SetValue( g_RSS_Channels );
 }
 
 // settings that require a disconnect if changed
@@ -200,9 +207,7 @@ void PopSetupRSS::OnOKButtonClick(wxCommandEvent& event)
     g_RSS_Port = (unsigned short)atoi(Port->GetValue());
     g_RSS_Channels = Channels->GetValue();
     g_RSS_Enable = Enable->GetValue();
-	// TODO: extension is disabled for now
-    //g_RSS_Extension = Extension->GetValue();
-    g_RSS_Extension = false;
+    g_RSS_Extension = Extension->GetValue();
     g_RSS_Offset = (float)atof(Offset->GetValue());
     g_RSS_Gain = (float)atof(Gain->GetValue());
     g_RSS_Bias = (float)atof(Bias->GetValue());
@@ -231,4 +236,17 @@ void PopSetupRSS::OnApplyButtonClick(wxCommandEvent& event)
          << ", ChOffset " << g_RSS_Offset << ", ChGain " << g_RSS_Gain << ", ChBias " << g_RSS_Bias
          << ", ChMinValue " << g_RSS_MinValue << ", ChMaxValue " << g_RSS_MaxValue
          << endl;
+}
+
+void PopSetupRSS::OnExtensionClick(wxCommandEvent& event)
+{
+    if( Extension->GetValue() ) {
+        ChannelsLabel->SetLabel("Channels          ");
+        Channels->SetMin(1);
+        Channels->SetMax(1<<14);    // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
+    } else {
+        ChannelsLabel->SetLabel("Channels (100-512)");
+        Channels->SetMin(100);
+        Channels->SetMax(512);
+    }
 }

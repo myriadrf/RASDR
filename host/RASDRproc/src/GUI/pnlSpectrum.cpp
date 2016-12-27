@@ -2154,6 +2154,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 	}
 	++m_frames;
 	m_time = GetTickCount()-m_lastUpdate;
+
 	if(m_time >= 1000 * m_PwrIntTime)
     {
         double ratio_FPS = (double)m_frames / expect_FPS;

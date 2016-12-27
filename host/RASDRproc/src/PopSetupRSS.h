@@ -54,13 +54,13 @@ class PopSetupRSS: public wxDialog
 		wxTextCtrl* Port;
 		wxButton* OKButton;
 		wxStaticText* StaticText2;
+		wxStaticText* ChannelsLabel;
 		wxCheckBox* Extension;
 		wxStaticText* StaticText6;
 		wxTextCtrl* IP;
 		wxStaticText* StaticText8;
 		wxStaticText* StaticText11;
 		wxStaticText* StaticText1;
-		wxStaticText* StaticText3;
 		wxTextCtrl* FrequencyOffset;
 		wxTextCtrl* Bias;
 		wxStaticText* StaticText5;
@@ -110,6 +110,7 @@ class PopSetupRSS: public wxDialog
 		void OnInit(wxInitDialogEvent& event);
 		void OnOKButtonClick(wxCommandEvent& event);
 		void OnApplyButtonClick(wxCommandEvent& event);
+		void OnExtensionClick(wxCommandEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()
