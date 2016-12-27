@@ -1094,12 +1094,272 @@ void TestingModule::TransmitSpectra_RSS()
     cout << "::TransmitSpectra_RSS exit" << endl;
 }
 
+// See: https://github.com/myriadrf/RASDR/issues/16
+typedef struct _rssx_packet {
+    double timestamp;
+    float hz_low, hz_high, hz_step;
+    uint32_t samples;
+    uint32_t channels;          // track number of channels for this packet
+    float amplitudes[1<<14];    // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
+} rssx_packet_t;
+
+typedef struct _stream_info_packet {
+    unsigned int imin, imax, imid, channel, bandwidth;
+    float fmin, fmax, fmid, fcenter, foffset, fbin;
+} stream_info_t;
+
+// http://stackoverflow.com/questions/6084279/host-to-network-double
+/**
+	@brief Subroutine to convert data to Network Byte Order for transmission
+	@param buff pointer to memory block
+	@param buff_len length in bytes of memory block
+ */
+static inline void _swap_if_necessary (void* buff, int buff_len)
+{
+    uint32_t foo = 1;
+    if ( htonl(foo) != foo )
+    {
+        char* to_swap = (char*)buff;
+        int i;
+        for (i = 0; i < buff_len/2; i++)
+        {
+            char  swap_buff = to_swap[i];
+            to_swap[i] = to_swap[buff_len -1 -i];
+            to_swap[buff_len -1 -i] = swap_buff;
+        }
+    }
+}
+
+/**
+	@brief Subroutine to interpret FFTAvgPacket and produce a transmission packet in Network Byte Order
+	@param pkt  pointer to FFTAvgPacket containing averaged spectrogram
+	@param rssx pointer to rssx_packet_t holding prepared spectrogram for network transmission
+	@param info pointer to stream_info_t describing various stream information needed for connection string.  The pointer may be NULL if not needed.
+	@return true or false depending success
+ */
+static bool _avgPkt2rssxPkt(FFTAvgPacket *pkt, rssx_packet_t *rssx, stream_info_t *info)
+{
+    float *p = &(rssx->amplitudes[0]);
+    stream_info_t _info, *pi = info;
+
+    if(!pi) pi = &_info;
+    pi->fbin = fabs(pkt->offset_frequencies[1] - pkt->offset_frequencies[0])*1e6;
+    pi->fcenter = pkt->fcenter*1e9;
+    pi->foffset = pkt->foffset*1e9;
+    pi->channel = pkt->size;
+    pi->imin = 0;
+    pi->imid = pi->channel / 2;
+    pi->imax = pkt->size - 1;
+    pi->fmin = pkt->offset_frequencies[pi->imin]*1e6 + pi->fcenter;  // FIXME: normalize to Ghz
+    pi->fmid = pkt->offset_frequencies[pi->imid]*1e6 + pi->fcenter;
+    pi->fmax = pkt->offset_frequencies[pi->imax]*1e6 + pi->fcenter;
+    pi->bandwidth = (unsigned int)fabs(pi->fmax - pi->fmin);
+    if ( g_RSS_Channels > pi->channel ) // invalid channels
+    {
+        cout << "::TransmitSpectra_RSS(x) channels (" << g_RSS_Channels
+             << ") > actual (" << pi->channel << ") - STOP"
+             << endl;
+        return false;
+    }
+    if ( g_RSS_Channels < pi->channel ) // need to pick a subset to send to RSS
+    {
+        pi->channel = (unsigned int)g_RSS_Channels;
+        pi->imin = pi->imid - pi->channel / 2;
+        //imid stays where it is (at the fcenter)
+        pi->imax = pi->imid + pi->channel / 2 - 1;
+        pi->fmin = pkt->offset_frequencies[pi->imin]*1e6 + pi->fcenter;
+        pi->fmid = pkt->offset_frequencies[pi->imid]*1e6 + pi->fcenter;
+        pi->fmax = pkt->offset_frequencies[pi->imax]*1e6 + pi->fcenter;
+
+        // FIXME: offset_frequencies[-2,-1] appear to be incorrect
+        // so compute from the bin size
+        if (pi->imax >= pkt->size-2)
+        {
+            float _fmax = pi->fmax;
+            pi->fmax = pi->fmin + pi->channel * pi->fbin;
+
+            //cout << "::TransmitSpectra_RSS(x) BUG adjust"
+            //     << " fmax " << _fmax*1e-6 << " MHz -> " << pi->fmax*1e-6 << " MHz"
+            //     << endl;
+        }
+
+        pi->bandwidth = (unsigned int)fabs(pi->fmax - pi->fmin);
+    }
+    else
+    {
+        // FIXME: offset_frequencies[-2,-1] appear to be incorrect
+        // so compute from the bin size
+        float _fmax = pi->fmax;
+        pi->fmax = pi->fmin + pi->channel * pi->fbin;
+
+        //cout << "::TransmitSpectra_RSS(x) BUG adjust"
+        //     << " fmax " << _fmax*1e-6 << " MHz -> " << pi->fmax*1e-6 << " MHz"
+        //     << endl;
+
+        pi->bandwidth = (unsigned int)fabs(pi->fmax - pi->fmin);
+    }
+
+    // format the outgoing RSS(x) packet
+    rssx->hz_low    = pi->fmin;
+    rssx->hz_high   = pi->fmax;
+    rssx->hz_step   = fabs(pi->fmax - pi->fmin)/float(pi->channel);
+    rssx->samples   = (uint32_t)g_FFTavgCount;
+    rssx->channels  = pi->channel;
+    rssx->timestamp = pkt->timestamp;
+
+    // convert to NBO
+    _swap_if_necessary(&rssx->hz_low, sizeof(rssx->hz_low));
+    _swap_if_necessary(&rssx->hz_high, sizeof(rssx->hz_high));
+    _swap_if_necessary(&rssx->hz_step, sizeof(rssx->hz_step));
+    _swap_if_necessary(&rssx->samples, sizeof(rssx->samples));
+    _swap_if_necessary(&rssx->channels, sizeof(rssx->channels));
+    _swap_if_necessary(&rssx->timestamp, sizeof(rssx->timestamp));
+
+    // format the protocol buffer to match RSS requirement (high->low frequency)
+    for(unsigned int i=0,u=pi->imax;i<pi->channel;i++,u--,p++)
+    {
+        float v = ((pkt->amplitudes[u] + g_RSS_Offset) * g_RSS_Gain) + g_RSS_Bias;
+        // see protocol spec
+        if (v < g_RSS_MinValue) v = g_RSS_MinValue;
+        else if (v > g_RSS_MaxValue) v = g_RSS_MaxValue;
+        *p = v;
+        _swap_if_necessary(p, sizeof(v));
+    }
+    return true;
+}
+
 /**
 	@brief Reads data stream from board.
  */
 void TestingModule::TransmitSpectra_RSSx()
 {
-    cout << "::TransmitSpectra_RSSx not implemented at the moment..." << endl;
+/// BEGIN COMMON WITH TransmitSpectra_RSS
+    FFTAvgPacket avgPkt(FFTsamples);
+    int flag;
+	//const char *options = "ipv4";   // TODO: may need to provide options
+    int s, n, l;
+
+    // NB: socket_init() was called once in the TestingModule constructor
+
+    flag = SOCKET_VERBOSE;
+    //if( strstr(options,"ipv6") ) flag |= SOCKET_IPV6;
+    //if( strstr(options,"bsd") ) flag |= SOCKET_BSD;
+
+    // setup socket server
+    // accept connection
+
+    m_svr = socket_open_bind_and_listen(g_RSS_IP,g_RSS_Port,1,flag);
+    if (m_svr>0) do
+    {
+        cout << "::TransmitSpectra_RSSx accepting connection..." << endl;
+
+        s = socket_accept(m_svr,flag);
+        if (s>0)
+        {
+            unsigned channel;
+            rssx_packet_t nbo_packet;
+            stream_info_t info;
+#if 0
+            unsigned int cnt = 0;
+#endif
+
+/// END COMMON WITH TransmitSpectra_RSS
+
+            // obtain first buffer
+            m_fftAvgFIFO->pop(&avgPkt);     // NB: blocks until first buffer is received
+            if( readingData && _avgPkt2rssxPkt(&avgPkt,&nbo_packet,&info))
+            {
+                // if its the same, then imin/imax/fmin/fmax are already set correctly
+                g_RSS_MustDisconnect = false;
+
+                // send connection string as fixed 1024-byte buffer
+                // TODO: consider changing to JSON
+                {
+                    char buffer[1024];
+
+                    cout << "::TransmitSpectra_RSSx"
+                         << " fcenter=" << info.fcenter*1e-6 << " MHz"
+                         << ",channel=" << info.channel
+                         << ",fmin=" << info.fmin*1e-6 << " MHz"
+                         << ",fmid=" << info.fmid*1e-6 << " MHz"
+                         << ",fmax=" << info.fmax*1e-6 << " MHz"
+                         << ",bandwidth=" << info.bandwidth
+                         << endl;
+
+                    // send configuration string
+                    // see https://github.com/myriadrf/RASDR/issues/16
+                    memset(buffer, 0, sizeof(buffer));  // clear buffer to NUL
+                    n = snprintf(buffer,sizeof(buffer)-1,
+                        "CenterFrequencyHertz %u|" \
+                        "BandwidthHertz %u|" \
+                        "OffsetHertz %u|" \
+                        "NumberOfChannels %u|" \
+                        "\r\n",
+                        (unsigned int)info.fmid, info.bandwidth, (unsigned int)info.foffset, info.channel );
+
+                    cout << "::TransmitSpectra_RSSx send (" << n << "/" << sizeof(buffer) << ") " << buffer
+                         << endl
+                         << "::TransmitSpectra_RSSx "
+                         << info.fmin*1e-6 << " MHz" << " to " << info.fmax*1e-6 << " MHz"
+                         << ",[" << info.imin << "," << info.imid << "," << info.imax << "]"
+                         << endl
+                         << "::TransmitSpectra_RSSx offset "
+                         << avgPkt.offset_frequencies[info.imin]*1e3 << " KHz"
+                         << "," << avgPkt.offset_frequencies[info.imid]*1e3 << " KHz"
+                         << "," << avgPkt.offset_frequencies[info.imax]*1e3 << " KHz"
+                         << endl;
+
+                    l=socket_send(s,buffer,sizeof(buffer),0);
+                    if( l!=sizeof(buffer) ) cout << "::TransmitSpectra_RSSx send (" << l << "/" << sizeof(buffer) << ") -- EXIT " << endl;
+                    if( l!=sizeof(buffer) ) g_RSS_MustDisconnect = true;
+                }
+
+                // send current data buffer and get the next buffer
+                while( readingData && !g_RSS_MustDisconnect )
+                {
+                    size_t todo = sizeof(double)+2*sizeof(uint32_t)+(3+info.channel)*sizeof(float);
+
+#if 0
+                    //DEBUG
+                    {
+                        unsigned int *p = (unsigned int *)&nbo_packet;
+                        float *q = (float *)&nbo_packet;
+                        size_t todo = sizeof(double)+sizeof(uint32_t)+(3+info.channel)*sizeof(float);
+                        cout << "(NBO) PACKET " << cnt << std::endl;
+                        for(size_t xx=0;xx<todo;xx+=sizeof(unsigned int),p++,q++)
+                        {
+                            switch(xx) {
+                            case 0:  cout << std::hex << p << ": " << *p; break;
+                            case 4:  cout << std::hex << *p << " (TS)" << std::endl; break;
+                            case 8:  cout << q << ": " << *q << " (HZ_LOW)" << std::endl; break;
+                            case 12: cout << q << ": " << *q << " (HZ_HIGH)" << std::endl; break;
+                            case 16: cout << q << ": " << *q << " (HZ_STEP)" << std::endl; break;
+                            case 20: cout << std::hex << p << ": " << std::dec << *p << " (SAMPLES)" << std::endl; break;
+                            case 24: cout << std::hex << p << ": ";
+                                //fallthru
+                            default: cout << std::hex << *p << ","; break;
+                            }
+                        }
+                        cout << std::endl;
+                        cnt++;
+                    }
+#endif
+
+                    l = socket_send(s,&nbo_packet,todo,0);
+                    if ( l != todo ) break;
+
+                    m_fftAvgFIFO->pop(&avgPkt);             // NB: blocks until first packet is received
+                    if( !_avgPkt2rssxPkt(&avgPkt,&nbo_packet,&info)) break;
+                }
+            }
+
+            cout << "::TransmitSpectra_RSSx close" << endl;
+
+            socket_close(s);
+        }
+    } while( readingData );     // client disconnected, but we are still capturing...
+
+    cout << "::TransmitSpectra_RSSx exit" << endl;
 }
 
 /**
