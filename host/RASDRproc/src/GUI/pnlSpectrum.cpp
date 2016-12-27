@@ -159,13 +159,14 @@ pnlSpectrum::pnlSpectrum(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     m_PwrIntTime = 1;
     m_PwrMax = 10.0;
     m_PwrMin = 0.0;
-    m_lastUpdate = 0;
 //    m_capturingData = false;
     m_updating = false;
     m_restarting = false;
     m_dtLastRestart = m_dtLastRestart.UNow();
     m_restart_step = 0;
     m_time = 0;
+    m_lastUpdate = GetTickCount();
+
     m_frames = 0;
 
     m_addingMarkers = false;
