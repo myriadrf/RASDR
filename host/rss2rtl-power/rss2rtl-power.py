@@ -19,7 +19,7 @@ import traceback
 # http://stackoverflow.com/questions/13218506/how-to-get-system-timezone-setting-and-pass-it-to-pytz-timezone
 from dateutil.tz import tzlocal
 
-DEF_VERSION = '0.2.5.0'     # x.y.z.* to match RASDRproc version
+DEF_VERSION = '0.2.5.1'     # x.y.z.* to match RASDRproc version
 
 UNIX_EPOCH  = 518400    # 00:00 GMT January 6, 1970 
 PKT_FMT     = '!dfffII'
@@ -28,7 +28,7 @@ PKT_DTYPE   = np.dtype( [('timestamp','>f8'),('hz_low','>f4'),('hz_high','>f4'),
 
 class connection(asyncore.dispatcher):
     pktlen = 1024
-    data = ''
+    data = b''
     state = 'Disconnected'
     partial = False
     def __init__(self,ip,port,name='connection'):
@@ -48,7 +48,7 @@ class connection(asyncore.dispatcher):
 
     def packetDiscard(self,_buf):
         """Drop remaining bytes in connection object."""
-        self.data = ''
+        self.data = b''
         
     def parseConnectionString(self,buf):
         """
@@ -57,7 +57,7 @@ class connection(asyncore.dispatcher):
         @param buf: bytes received in connection string
         @return: a dictionary with key/value pairs interpreted from buf
         """
-        d  = buf.rpartition('|')
+        d  = buf.decode('utf-8').rpartition('|')
         connect = d[0].split('|')
         # parse key/value pairs in connection string
         conf = {}
@@ -77,7 +77,7 @@ class connection(asyncore.dispatcher):
         return not self.state.startswith('Disconnected')
 
     def handle_error(self):
-        traceback.print_exc(sys.stderr)
+        traceback.print_exc(file=sys.stderr)
         self.close()
     
     def handle_connect(self):
@@ -195,8 +195,7 @@ class rss(object):
         self.conn.OnConnectReceived = self.OnConnectReceived
         self.conn.pktlen = 1024
         self.conn.partial = True
-        data = '\xFE\xFE'
-        self.eos_marker = np.frombuffer(data,dtype=self.dtyp)
+        self.eos_marker = np.frombuffer(b'\xFE\xFE',dtype=self.dtyp)
         self.opts = opts
 
     def OnPacketReceived(self,buf):
@@ -235,10 +234,10 @@ class rss(object):
         conf = self.conn.parseConnectionString(buf)
 
         # ensure canonical connection string
-        assert(conf.has_key('F'))
-        assert(conf.has_key('S'))
-        assert(conf.has_key('O'))
-        assert(conf.has_key('C'))
+        assert('F' in conf.keys())
+        assert('S' in conf.keys())
+        assert('O' in conf.keys())
+        assert('C' in conf.keys())
 
         hz_low  = float((conf['F'] - conf['S']/2) + conf['O'])
         hz_step = float(conf['S']) / float(conf['C'])
@@ -266,8 +265,8 @@ class rss(object):
             self.stats = statistics()
             sys.stderr.write(self.stats.header()+os.linesep)
         # consume (variable) connection buffer leaving payload
-        d = buf.rpartition('|')
-        self.conn.data = d[2].strip()
+        d = buf.decode('utf-8').rpartition('|')
+        self.conn.data = bytes(d[2].strip(),'utf-8')
         # state to receive payloads
         self.conn.pktlen  = (self.channels+1)*self.dtyp.itemsize
         self.conn.partial = False
@@ -359,10 +358,10 @@ class rssx(object):
         conf = self.conn.parseConnectionString(buf)
 
         # ensure canonical connection string
-        assert(conf.has_key('CenterFrequencyHertz'))
-        assert(conf.has_key('BandwidthHertz'))
-        assert(conf.has_key('OffsetHertz'))
-        assert(conf.has_key('NumberOfChannels'))
+        assert('CenterFrequencyHertz' in conf.keys())
+        assert('BandwidthHertz' in conf.keys())
+        assert('OffsetHertz' in conf.keys())
+        assert('NumberOfChannels' in conf.keys())
 
         if not self.opts.quiet:    # diagnostic connection message
             msg  = 'CenterFrequencyHertz=%d\n'%conf['CenterFrequencyHertz']
@@ -434,5 +433,5 @@ if __name__ == '__main__':
     try:
         c = rssx(opts) if opts.extended else rss(opts)
         asyncore.loop(timeout=2)
-    except Exception, e:
-        logger.error('rss2rtl-power', exc_info=True)
+    except Exception as e:
+        logger.error('rss2rtl-power: '+str(e), exc_info=True)
