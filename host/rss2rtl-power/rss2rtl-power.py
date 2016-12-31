@@ -108,7 +108,7 @@ class connection(asyncore.dispatcher):
         Determine if more data is needed from socket and perform callbacks.
         """
         extra = self.pktlen - (len(self.data) % self.pktlen) if len(self.data)<self.pktlen else 0
-        logger.debug('%s:%s:handle_read().extra=%d'%(self.name,self.state,extra))
+        #logger.debug('%s:%s:handle_read().extra=%d'%(self.name,self.state,extra))
         if extra > 0:
             more = self.recv(extra)
             if len(more)==0:
@@ -116,7 +116,7 @@ class connection(asyncore.dispatcher):
                 return
             self.data += more
         if self.partial or len(self.data)==self.pktlen:
-            logger.debug('%s:%s:handle_read().len(self.data)=%d'%(self.name,self.state,len(self.data)))
+            #logger.debug('%s:%s:handle_read().len(self.data)=%d'%(self.name,self.state,len(self.data)))
             if self.state.startswith('Connecting'):
                 self.state = 'Connected'
                 self.OnConnectReceived(self.data)
@@ -213,8 +213,22 @@ class rss(object):
     def OnPacketReceived(self,buf):
         """Implement the callback when a spectrogram packet is received."""
         import binascii
-        logger.debug('%s:%s:OnPacketReceived().len(buf)=%d:\n%s'%(self.name,self.conn.state,len(buf),binascii.hexlify(buf)))
-        if self.conn.state.startswith('Payload'):
+        logger.debug('%s:%s:OnPacketReceived().len(buf)=%d'%(self.name,self.conn.state,len(buf)))
+        #logger.debug(binascii.hexlify(buf))
+        if self.conn.state.startswith('Synchronize'):
+            # find EOS marker in stream and flush
+            # https://docs.python.org/3/library/stdtypes.html?highlight=index#bytes.index
+            try:
+                i = buf.index(b'\xFE\xFE')
+                self.conn.data = buf[i+2:]
+                self.conn.partial = False
+                self.conn.state = 'Payload'
+            except ValueError:
+                # bytes.index() raises ValueError when not matched
+                # stay in 'Synchronize' state
+                pass
+            self.conn.packetDiscard(buf)
+        elif self.conn.state.startswith('Payload'):
             # RSS timestamp @reception of payload
             ts = time.time()
             dt = datetime.datetime.fromtimestamp(ts,tzlocal())
@@ -225,8 +239,13 @@ class rss(object):
             # parse payload as RSS would
             b = np.frombuffer(buf,dtype=self.dtyp)
             psd = np.reshape(b, (-1,self.channels+1))
-            logger.debug('%s:%s:OnPacketReceived().psd[0][%d]=%d ? %d'%(self.name,self.conn.state,self.channels,psd[0][self.channels],self.eos_marker))
-            assert(psd[0][self.channels] == self.eos_marker)
+            #assert(psd[0][self.channels] == self.eos_marker)
+            if not psd[0][self.channels] == self.eos_marker:
+                logger.warning('%s:%s:OnPacketReceived().psd[0][%d]=%d ? %d - Synchronizing'%(self.name,self.conn.state,self.channels,psd[0][self.channels],self.eos_marker))
+                self.conn.packetDiscard(buf)
+                self.conn.partial = True
+                self.conn.state = 'Synchronize'
+                return
             scan = psd[0][0:self.channels]
             db = ', '.join(format(x,'d') for x in scan)
             # handle statistics option (produce header to stderr)
@@ -237,7 +256,6 @@ class rss(object):
             # emit rtl-power string (with frequency info captured in header)
             sys.stdout.write(tstamp+self.header+db+os.linesep)
             self.conn.packetDiscard(buf)
-            return
         else:
             self.conn.close()
 
@@ -245,9 +263,7 @@ class rss(object):
         """Implement the callback when a connection to the server is made."""
         ts = time.time()
         conf = self.conn.parseConnectionString(buf)
-
         logger.debug('%s:%s:OnConnectReceived().conf=%s'%(self.name,self.conn.state,str(conf)))
-
         # ensure canonical connection string
         assert('F' in conf.keys())
         assert('S' in conf.keys())
@@ -292,17 +308,10 @@ class rss(object):
         # state to receive payloads
         self.conn.pktlen  = (self.channels+1)*self.dtyp.itemsize
         self.conn.partial = False
-        self.conn.state   = 'Payload'
-        # process any full payloads contained in the connection
-        while len(self.conn.data) > self.conn.pktlen:
-            buf = self.conn.data
-            logger.debug('%s:%s:OnConnectReceived().loop.len(buf2)=%d'%(self.name,self.conn.state,len(buf)))
-            self.OnPacketReceived(buf[0:self.conn.pktlen])   # NB: discards self.conn.data
-            self.conn.data = buf[self.conn.pktlen:]
-            logger.debug('%s:%s:OnConnectReceived().loop.len(buf3)=%d'%(self.name,self.conn.state,len(self.conn.data)))
-        # after this, the async system kicks in to give us packets
-        import binascii
-        logger.debug('%s:%s:OnConnectReceived().loop.len(buf)=%d:\n%s'%(self.name,self.conn.state,len(self.conn.data),binascii.hexlify(self.conn.data)))
+        self.conn.state   = 'Synchronize'
+        # begin the search for the EOS marker
+        if len(self.conn.data) > 0:
+            self.OnPacketReceived(self.conn.data)
 
 class rssx(object):
     name = 'rssx'
@@ -347,7 +356,8 @@ class rssx(object):
     def OnPacketReceived(self,buf):
         """Implement the callback when a spectrogram packet is received."""
         import binascii
-        logger.debug('%s:%s:OnPacketReceived().len(buf)=%d:\n%s'%(self.name,self.conn.state,len(buf),binascii.hexlify(buf)))
+        logger.debug('%s:%s:OnPacketReceived().len(buf)=%d'%(self.name,self.conn.state,len(buf)))
+        #logger.debug(binascii.hexlify(buf))
         if self.conn.state.startswith('Header'):
             ts, hz_low, hz_high, hz_step, samples, self.channels = struct.unpack(PKT_FMT, buf)
             self.dt = datetime.datetime.fromtimestamp(ts)
