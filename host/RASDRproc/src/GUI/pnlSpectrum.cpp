@@ -1216,6 +1216,9 @@ void pnlSpectrum::OnApply_btnClick(wxCommandEvent& event)
 	//cout << samprate << endl;
 	//cout << clockrate << endl;
 
+	// keep track of the time increment per sample (in sec)
+	g_seconds_per_sample = 1.0/samprate;
+
     LMLL_BoardSetFrequency(2,30.72,clockrate);	// ADC Clock 2,30.72 MHz reference input
     LMLL_BoardSetClockInversion(2,0); // Clock2 No Inversion
     LMLL_BoardSetClockOutputFormat(2,3); // Clock 2 Both on
@@ -1874,7 +1877,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 
 	bool averageFFT = chkAverage->GetValue();
 	bool calculated = false;
-	wxDateTime dt;
+	wxDateTime dt, _ts;
 
 	double sampleRateSps = (double)(1e6*spinSamplingFreq->GetValue());
 	unsigned long expect_dataRateKBps = (unsigned long)((4*sampleRateSps)/1024.0);
@@ -1891,7 +1894,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
     if( calculated )
     {
         float oneOverBuffersCountMask = 1.0;
-        wxDateTime _ts = dt.UNow();  // TODO: timestamp to pass through sample/FFT fifos
+        double timestamp = 0.0;
 
         switch( averageFFT ) {
         default:
@@ -1902,7 +1905,8 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                                       m_IQdataSize,
                                       m_FFTamplitudes,  // NB: I^2+Q^2 (w/o sqrt)
                                       m_FFTdataSize,
-                                      fftsLeft );
+                                      fftsLeft,
+                                      timestamp );
             break;
         case 1:
             oneOverBuffersCountMask = 1.0/(float)m_buffersCountMask;
@@ -1914,8 +1918,8 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                                       m_IQdataSize,
                                       m_FFTamplitudesBuffer[bufferPos],   // NB: I^2+Q^2 (w/o sqrt)
                                       m_FFTdataSize,
-                                      fftsLeft);
-                                      // TODO: timestamp to be extracted here
+                                      fftsLeft,
+                                      timestamp );
 
             // update acquisition buffer position index
             bufferPos = (bufferPos + 1) % m_buffersCountMask;
@@ -1934,6 +1938,14 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                 m_FFTamplitudes[j] = m_FFTamplitudesBuffer[m_buffersCount][j] * oneOverBuffersCountMask;
 
             break;
+        }
+
+        // compute timestamp according to the 1st sample of the amplitudes buffer
+        {
+            time_t tt = (time_t)floor(timestamp);
+            double ms = (timestamp - floor(timestamp))*1000.0;
+            _ts.Set(tt);
+            _ts.SetMillisecond(ms);
         }
 
         // manage background reference
@@ -2037,7 +2049,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
 
         // Write Time Stamp to file
         if(g_FFTfileRecording && m_FFTCounter == 0) {
-            wxDateTime ts = (g_FFT_TimeStandard == 0) ? dt.Now() : _ts; // localtime vs UTC
+            wxDateTime ts = (g_FFT_TimeStandard == 0) ? _ts.ToTimezone(wxDateTime::Local) : _ts;
             wxSprintf(outbuf,".%03d",ts.GetMillisecond());
             if(g_FFTFileType == 0 && g_FFT_TimeStandard == 0) {
                 m_FFTFileClassPtr->Write(ts.FormatTime().c_str());
@@ -2101,7 +2113,7 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
         else if(g_FFTfileRecording) m_FFTCounter++;
 
         // write FFT spectra to FIFO
-        double timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
+        timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
         LMLL_Testing_SetFFTSpectra(
             &m_FFTamplitudes[idx.min], &m_fftxaxisValues[idx.min],
             idx.max - idx.min, m_RxFreq, timestamp );
@@ -2631,7 +2643,7 @@ void pnlSpectrum::OnRecordFFTClick(wxCommandEvent& event)
             FFTsREC->SetValue(outbuf);
             // NB: moved headers and frequency tags to OpenFFTfile()
             g_FFTfileRecording = true;  // only *AFTER* the header has been written...
-        }
+        } else FFTsREC->SetValue("Not Recording");
     } else {
         g_FFTfileRecording = false;
         FFTRec_btn->SetLabel("FFT Record");
@@ -2901,7 +2913,14 @@ bool pnlSpectrum::OpenFFTfile()
             m_FFTFileClassPtr->Create(g_FFTfileName,g_OverwriteFFTfile,wxS_DEFAULT);
             if(m_FFTFileClassPtr->IsOpened()) {
 #ifdef _DEBUG
-                sprintf(outbuf,"To Record %d Frames Every %d-th Frame\0",g_FFTframesOut, g_FFTframeSkip);
+                const char *_tag = "-th";
+                switch(g_FFTframeSkip) {
+                case 1: _tag = ""; break;
+                case 2: _tag = "-nd"; break;
+                case 3: _tag = "-rd"; break;
+                default: break;
+                }
+                sprintf(outbuf,"To Record %d Frames Every %d%s Frame\0",g_FFTframesOut, g_FFTframeSkip, _tag);
                 cout << outbuf << endl;
 #endif
 #if 0       // remove code to forcibly minimize FFT samples in FFTFileType=0 (Excel)

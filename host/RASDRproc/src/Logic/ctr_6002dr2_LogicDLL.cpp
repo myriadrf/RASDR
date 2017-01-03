@@ -7776,8 +7776,9 @@ CTR_6002DR2_API int LMAL_GetPortCustomParameter(char *paramName, char *value)
 	@param Qch pointer to array for storing Q channel samples
 	@param IQsize returns the number of samples
 	@param itemsLeft returns number of sample packets left in buffer
+	@param timestamp returns UTC seconds since 1 January 1970 (Unix EPOCH)
 */
-CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize, int &itemsLeft)
+CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize, int &itemsLeft, double &timestamp)
 {
     SplitPacket *pkt;
     if(getMainModule()->getTesting()->m_hwDigiRed)
@@ -7793,6 +7794,8 @@ CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize
         memcpy(Ich, pkt->Idata, sizeof(float)*pkt->size);
         memcpy(Qch, pkt->Qdata, sizeof(float)*pkt->size);
     }
+    if(timestamp) timestamp = pkt->timestamp;
+    delete pkt; // NB: don't leak SplitPacket
 }
 
 /**
@@ -7821,8 +7824,9 @@ CTR_6002DR2_API void LMLL_Testing_SetFFTSpectra(float *FFTdataY, float *FFTdataX
 	@param *FFTdataY pointer to array for storing frequency amplitudes from FFT
 	@param &FFTsize returns number of amplitudes in FFTdataY
 	@param &itemsLeft returns number of FFT packets left in buffer
+	@param timestamp returns UTC seconds since 1 January 1970 (Unix EPOCH)
 */
-CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize, float *FFTdataY, int &FFTsize, int &itemsLeft)
+CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize, float *FFTdataY, int &FFTsize, int &itemsLeft, double &timestamp)
 {
     FFTPacket fftPkt(getMainModule()->getTesting()->FFTsamples);
     getMainModule()->getTesting()->m_fftFIFO->freeze();
@@ -7832,6 +7836,7 @@ CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize
         IQSize = 0;
         FFTsize = 0;
         itemsLeft = 0;
+        timestamp = 0.0;
         // FIXME: does it need to unfreeze?
         //getMainModule()->getTesting()->m_fftFIFO->unfreeze();
         return;
@@ -7853,12 +7858,8 @@ CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize
 		{
 			FFTdataY[i] = fftPkt.amplitudes[i];
 		}
-	int size = fftPkt.size-1;
-
-	////remove DC
-	//FFTdataY[0] = FFTdataY[1];
-	//FFTdataY[size/2] = (FFTdataY[size/2+1]+	FFTdataY[size/2-1])/2;
-	FFTsize = size;
+	timestamp = fftPkt.timestamp;
+	FFTsize = fftPkt.size-1;
 }
 
 /**

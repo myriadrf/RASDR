@@ -110,6 +110,7 @@ extern float g_Sim_Period;
 extern float g_Sim_Duty;
 extern float g_Sim_Factor;
 extern float g_dbTrigger;
+extern double g_seconds_per_sample;
 
 // Radio Sky Spectrograph integration
 extern char g_RSS_IP[1024];

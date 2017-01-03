@@ -984,8 +984,8 @@ CTR_6002DR2_API void LMLL_ADF_SendConfig();
 
 // Testing Module
 //==============================================================================
-CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize, int &itemsLeft);
-CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize, float *FFTdataY, int &FFTsize, int &itemsLeft);
+CTR_6002DR2_API void LMLL_Testing_GetSamples(float *Ich, float *Qch, int &IQsize, int &itemsLeft, double &timestamp);
+CTR_6002DR2_API void LMLL_Testing_GetFFTData(float *Ich, float *Qch, int &IQSize, float *FFTdataY, int &FFTsize, int &itemsLeft, double &timestamp);
 CTR_6002DR2_API void LMLL_Testing_SetCallbackUpdateInterface(void (*pCallbackFunction)(int, const char *));
 CTR_6002DR2_API bool LMLL_Testing_CalculateFFT();
 

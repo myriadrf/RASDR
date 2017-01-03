@@ -6,8 +6,10 @@
 // REVISIONS:
 // -----------------------------------------------------------------------------
 
+#include <wx/datetime.h>    // for wxDateTime; NB: must be before "TestingModule.h" or there are errors...
 #include "TestingModule.h"
 #include "..\globals.h"
+
 #ifdef WIN32
 
 
@@ -351,6 +353,7 @@ void TestingModule::ReadData()
 	unsigned int pos = 0; //position within received buffer
 	unsigned int currentSample = 0;
 	int tempInt; //used to store sample value during splitting
+	wxDateTime dt;
 
 	t1_info = GetTickCount();
 	while (readingData)
@@ -377,6 +380,7 @@ void TestingModule::ReadData()
         // BUG: this code does not really handle rLen >= len
 		if (rLen >= len) //start splitting buffer into IQ samples
 		{
+			wxDateTime _ts = dt.UNow(); // must be UTC to successfully convert to double
 			rLen = len;
 			pos = 0;
 			currentSample = 0;
@@ -404,6 +408,7 @@ void TestingModule::ReadData()
             }
 			//push received samples to FIFO
 			splitPkt.used = false;
+			splitPkt.timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
 			m_SamplesFIFO->push(&splitPkt);
 		}
 		// Re-submit this request to keep the queue full
@@ -542,6 +547,8 @@ void TestingModule::ReadData_DigiRed()
 
     long iq_select_errors = 0;
     long iq_select_errors_secondary = 0;
+    wxDateTime dt;
+
 	while (readingData)
 	{
 		if(!device->WaitForReading(contexts[i], 100))
@@ -575,6 +582,7 @@ void TestingModule::ReadData_DigiRed()
         // BUG: this doesn't really handle rLen>len
 		if (rLen >= len) //start splitting buffer into IQ samples
 		{
+			wxDateTime _ts = dt.UNow(); // must be UTC to successfully convert to double
 			rLen = len;
             if( (((m_Buffers[i][1]) & 0x10) >> 4) == !m_frameStart)
             {
@@ -596,6 +604,7 @@ void TestingModule::ReadData_DigiRed()
                     if(currentSample >= splitPkt->size)
                     {
                         splitPkt->used = false;
+                        splitPkt->timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
                         m_SamplesFIFO->push(splitPkt);
                         currentSample = 0;
                     }
@@ -628,6 +637,7 @@ void TestingModule::ReadData_DigiRed()
                     if(currentSample >= splitPkt->size)
                     {
                         splitPkt->used = false;
+                        splitPkt->timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
                         m_SamplesFIFO->push(splitPkt);
                         currentSample = 0;
                     }
@@ -745,6 +755,7 @@ bool TestingModule::externalCalculateFFT()
 
 	unsigned int samplesUsed = splitPkt->size; //number of samples used from packet
 	unsigned int samplesReceived = 0; //number of samples received
+	double timestamp = 0.0;         // updated with an m_SamplesFIFO->pop()
 
     if(m_SamplesFIFO->length() < 1+FFTsamples/splitPkt->size)
     {
@@ -758,6 +769,7 @@ bool TestingModule::externalCalculateFFT()
 		if (samplesUsed >= splitPkt->size) //if packet used up, pop another one
 		{
 			m_SamplesFIFO->pop(splitPkt); // popping from FIFO is blocked if no packets are left
+			timestamp = splitPkt->timestamp;    // of the current sample in the split packet
 			samplesUsed = 0;
 		}
 		//calculate averages for I and Q to perform DC correction
@@ -771,6 +783,7 @@ bool TestingModule::externalCalculateFFT()
                 //           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
                 ++samplesReceived;
                 ++samplesUsed;
+                timestamp += g_seconds_per_sample;  // always tracks current sample rate selection
             }
         }
         else
@@ -783,6 +796,7 @@ bool TestingModule::externalCalculateFFT()
                 //           (splitPkt->Qdata[samplesUsed] * splitPkt-> Qdata[samplesUsed]);
                 ++samplesReceived;
                 ++samplesUsed;
+                timestamp += g_seconds_per_sample;  // always tracks current sample rate selection
             }
         }
 		//enough samples received for FFT, start calculating
@@ -866,6 +880,7 @@ bool TestingModule::externalCalculateFFT()
 			}
 			//push FFT results to FIFO
 			fftPkt.used = false;
+			fftPkt.timestamp = timestamp - (g_seconds_per_sample*FFTsamples);   // rewind back to TS of 1st sample
 			m_fftFIFO->push(&fftPkt);
 			++countFFT;
 			m_SamplesFIFO->unfreeze();

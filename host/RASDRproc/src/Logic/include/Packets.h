@@ -69,6 +69,7 @@ public:
 		memcpy(this->Idata, obj.Idata, cpSize*sizeof(float));
 		memcpy(this->Qdata, obj.Qdata, cpSize*sizeof(float));
 		this->used = obj.used;
+		this->timestamp = obj.timestamp;
 		obj.used = true;
 		return *this;
 	}
@@ -77,6 +78,7 @@ public:
 	const unsigned int size;
 	float *Idata;
 	float *Qdata;
+	double timestamp;           // UTC seconds since 1 January 1970 (Unix EPOCH)
 };
 
 /**
@@ -110,6 +112,7 @@ public:
 		memcpy(this->qsamples, obj.qsamples, sizeof(float)*cpSize);
 		memcpy(this->amplitudes, obj.amplitudes, sizeof(float)*cpSize);
 		this->used = obj.used;
+		this->timestamp = obj.timestamp;
 		obj.used = true;
 		return *this;
 	}
@@ -119,6 +122,7 @@ public:
 	float *isamples;
 	float *qsamples;
 	float *amplitudes;
+	double timestamp;           // UTC seconds since 1 January 1970 (Unix EPOCH)
 };
 
 /**

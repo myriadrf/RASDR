@@ -72,6 +72,8 @@ bool g_PendingRestartCapture = false;
 bool g_capturingData = false;
 int g_PwrRecordRate = 30; // Default
 float g_dbTrigger = -999; // < -900 = no trigger
+double g_seconds_per_sample = 1.0/(2*1e6);  // default is 2MSPS
+
 //long ID_FFTOKBUTTON = wxID_OK;
 int g_MaxFFTbins = 16384;   // TODO: coordinate with pnlSpectrum.cpp, Packets.h, TestingModule.h/.cpp, globals.cpp and pnlSpectrum.wxs
 int g_FFTDataSource = 0;
