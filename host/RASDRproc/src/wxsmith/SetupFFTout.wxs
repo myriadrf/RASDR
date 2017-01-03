@@ -260,6 +260,7 @@
 												<underlined>0</underlined>
 												<family>swiss</family>
 											</font>
+											<handler function="OnFrameSkipChange" entry="EVT_SPINCTRL" />
 										</object>
 										<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
 										<border>5</border>

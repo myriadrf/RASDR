@@ -130,7 +130,7 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	FlexGridSizer3->Add(RadioButton1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	GridBagSizer1->Add(FlexGridSizer3, wxGBPosition(6, 0), wxDefaultSpan, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("File Output"));
-	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, g_FFTfileName, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
+	OutputFile = new wxFilePickerCtrl(this, ID_FILEPICKERCTRL1, wxEmptyString, wxEmptyString, _T("*.csv"), wxDefaultPosition, wxSize(259,57), wxFLP_OPEN|wxFLP_USE_TEXTCTRL, wxDefaultValidator, _T("ID_FILEPICKERCTRL1"));
 	wxFont OutputFileFont(12,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	OutputFile->SetFont(OutputFileFont);
 	StaticBoxSizer1->Add(OutputFile, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
@@ -202,6 +202,7 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	Connect(ID_FILEPICKERCTRL1,wxEVT_COMMAND_FILEPICKER_CHANGED,(wxObjectEventFunction)&SetupFFTout::OnOutputFileFileChanged);
 	Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&SetupFFTout::OnOverwriteChkClick);
 	Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&SetupFFTout::OnFFTsToRecChange);
+	Connect(ID_SPINCTRL2,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&SetupFFTout::OnFrameSkipChange);
 	//*)
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&SetupFFTout::OnFFTfileOKbtnClick);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&SetupFFTout::OnCancelClick);
@@ -210,10 +211,10 @@ SetupFFTout::SetupFFTout(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     NumbFiles->SetSelection(g_NumbFFTFiles-1);
     FileType->SetSelection(g_FFTFileType);
     TimeStandard->SetSelection(g_FFT_TimeStandard);
-    //FrameSkip->SetValue(g_FFTframeSkip);
+    SpinCtrl1->SetValue(g_FFTframeSkip);            // Keeps widget up-to-date w/o hacking the auto-generated code above
     FFTsToRec->SetValue(g_FFTframesOut);
     DataSource->SetSelection(g_FFTDataSource);
-//    OutputFile->SetPath(g_FFTfileName);
+    OutputFile->SetPath(g_FFTfileName);             // Keeps widget up-to-date w/o hacking the auto-generated code above
 }
 
 
@@ -300,7 +301,7 @@ void SetupFFTout::OnOverwriteChkClick(wxCommandEvent& event)
 
 void SetupFFTout::OnFrameSkipChange(wxSpinEvent& event)
 {
-    //g_FFTframeSkip = FrameSkip->GetValue();
+    g_FFTframeSkip = SpinCtrl1->GetValue();
 }
 
 void SetupFFTout::OnFFTsToRecChange(wxSpinEvent& event)
