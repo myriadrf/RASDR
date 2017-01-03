@@ -744,7 +744,7 @@ void FFTviewerFrame::OnSetupFFTOutSelected(wxCommandEvent& event)
   //                  while(mSpectrum->m_capturingData); //Wait ofr stop
  //                   mSpectrum->OpenFFTfile();
                     cout << "SetupFFTout Dialog Completed OK"<<endl;
-                    if(g_NumbFFTFiles == 2) mSpectrum->SuffixFFTFileName(); // sanitize the name
+//                    if(g_NumbFFTFiles == 2) mSpectrum->SuffixFFTFileName(); // sanitize the name
                     cout << g_FFTfileName << " Selected" << endl;
                     cout << "FFT File Type = " << g_FFTFileType << endl;
                     cout << "Number of FFT Files = " << g_NumbFFTFiles << endl;
