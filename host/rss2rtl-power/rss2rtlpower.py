@@ -7,6 +7,7 @@ The program captures spectrograph output from a streaming server and writes it i
 Basic Radio Sky Spectrograph (http://cygnusa.blogspot.com/2015/07/how-to-talk-to-radio-sky-spectrograph.html)
 Binary rtl-power/Extended RSS Spectrograph (https://github.com/myriadrf/RASDR/issues/16)
 '''
+
 import struct
 import os
 import sys
@@ -16,9 +17,10 @@ import logging
 import socket, asyncore
 import numpy as np
 import traceback
+from LogMixIn import LogMixIn
 # http://stackoverflow.com/questions/13218506/how-to-get-system-timezone-setting-and-pass-it-to-pytz-timezone
 from dateutil.tz import tzlocal
-
+TIMEOUT     = 2 #seconds
 DEF_VERSION = '0.2.5.1'     # x.y.z.* to match RASDRproc version
 
 UNIX_EPOCH  = 518400    # 00:00 GMT January 6, 1970 
@@ -40,7 +42,7 @@ def _ipsh():
     # This is needed because the call to ipshell is inside the function ipsh()
     ipshell(msg,stack_depth=2)
 
-class connection(asyncore.dispatcher):
+class connection(asyncore.dispatcher,LogMixIn):
     pktlen = 1024
     data = b''
     state = 'Disconnected'
@@ -108,7 +110,7 @@ class connection(asyncore.dispatcher):
         Determine if more data is needed from socket and perform callbacks.
         """
         extra = self.pktlen - (len(self.data) % self.pktlen) if len(self.data)<self.pktlen else 0
-        #logger.debug('%s:%s:handle_read().extra=%d'%(self.name,self.state,extra))
+        #self.logger.debug('%s:%s:handle_read().extra=%d'%(self.name,self.state,extra))
         if extra > 0:
             more = self.recv(extra)
             if len(more)==0:
@@ -116,7 +118,7 @@ class connection(asyncore.dispatcher):
                 return
             self.data += more
         if self.partial or len(self.data)==self.pktlen:
-            #logger.debug('%s:%s:handle_read().len(self.data)=%d'%(self.name,self.state,len(self.data)))
+            #self.logger.debug('%s:%s:handle_read().len(self.data)=%d'%(self.name,self.state,len(self.data)))
             if self.state.startswith('Connecting'):
                 self.state = 'Connected'
                 self.OnConnectReceived(self.data)
@@ -169,7 +171,7 @@ class statistics(object):
              self.stats['mean'], self.stats['var'])
         return self.dt.isoformat()+','+msg        
  
-class rss(object):
+class rss(LogMixIn):
     name = 'rss'
     dtyp = np.dtype('<i2')
     header = ''
@@ -213,8 +215,8 @@ class rss(object):
     def OnPacketReceived(self,buf):
         """Implement the callback when a spectrogram packet is received."""
         import binascii
-        logger.debug('%s:%s:OnPacketReceived().len(buf)=%d'%(self.name,self.conn.state,len(buf)))
-        #logger.debug(binascii.hexlify(buf))
+        self.logger.debug('%s:%s:OnPacketReceived().len(buf)=%d'%(self.name,self.conn.state,len(buf)))
+        #self.logger.debug(binascii.hexlify(buf))
         if self.conn.state.startswith('Synchronize'):
             # find EOS marker in stream and flush
             # https://docs.python.org/3/library/stdtypes.html?highlight=index#bytes.index
@@ -241,7 +243,7 @@ class rss(object):
             psd = np.reshape(b, (-1,self.channels+1))
             #assert(psd[0][self.channels] == self.eos_marker)
             if not psd[0][self.channels] == self.eos_marker:
-                logger.warning('%s:%s:OnPacketReceived().psd[0][%d]=%d ? %d - Synchronizing'%(self.name,self.conn.state,self.channels,psd[0][self.channels],self.eos_marker))
+                self.logger.warning('%s:%s:OnPacketReceived().psd[0][%d]=%d ? %d - Synchronizing'%(self.name,self.conn.state,self.channels,psd[0][self.channels],self.eos_marker))
                 self.conn.packetDiscard(buf)
                 self.conn.partial = True
                 self.conn.state = 'Synchronize'
@@ -263,7 +265,7 @@ class rss(object):
         """Implement the callback when a connection to the server is made."""
         ts = time.time()
         conf = self.conn.parseConnectionString(buf)
-        logger.debug('%s:%s:OnConnectReceived().conf=%s'%(self.name,self.conn.state,str(conf)))
+        self.logger.debug('%s:%s:OnConnectReceived().conf=%s'%(self.name,self.conn.state,str(conf)))
         # ensure canonical connection string
         assert('F' in conf.keys())
         assert('S' in conf.keys())
@@ -285,7 +287,7 @@ class rss(object):
             msg += 'Connect @%s\n'%dt.isoformat()
             hz_hdr = 'Hz low, Hz high, Hz step='
             msg += hz_hdr+self.header+'\n'
-            logger.info(msg)
+            self.logger.info(msg)
 
         # handle case where they only wanted to get connection metadata
         if self.opts.info:
@@ -313,7 +315,7 @@ class rss(object):
         if len(self.conn.data) > 0:
             self.OnPacketReceived(self.conn.data)
 
-class rssx(object):
+class rssx(LogMixIn):
     name = 'rssx'
     dtyp = np.dtype('>f4')
     dt = None
@@ -321,7 +323,7 @@ class rssx(object):
     channels = 0
     opts = None
     stats = None
-
+    spectrogram = None
     def __init__(self,opts):
         """
         Implement a client to an 'Extended' RSS protocol.
@@ -352,12 +354,13 @@ class rssx(object):
         self.conn.pktlen = 1024
         self.conn.partial = False
         self.opts = opts
+        self.spectrogram = None
 
     def OnPacketReceived(self,buf):
         """Implement the callback when a spectrogram packet is received."""
         import binascii
-        logger.debug('%s:%s:OnPacketReceived().len(buf)=%d'%(self.name,self.conn.state,len(buf)))
-        #logger.debug(binascii.hexlify(buf))
+        self.logger.debug('%s:%s:OnPacketReceived().len(buf)=%d'%(self.name,self.conn.state,len(buf)))
+        #self.logger.debug(binascii.hexlify(buf))
         if self.conn.state.startswith('Header'):
             ts, hz_low, hz_high, hz_step, samples, self.channels = struct.unpack(PKT_FMT, buf)
             self.dt = datetime.datetime.fromtimestamp(ts)
@@ -372,14 +375,18 @@ class rssx(object):
             return
         elif self.conn.state.startswith('Payload'):
             b = np.frombuffer(buf,dtype=self.dtyp)
-            psd = np.reshape(b, (-1,self.channels))
+            psd = np.reshape(b, (1,self.channels))
             # handle statistics option (produce header to stderr)
             if self.opts.statistics:
                 self.stats.update(self.dt,psd[0])
                 sys.stderr.write(str(self.stats)+' \r')
                 sys.stderr.flush()
-            db = ', '.join(format(x,'.4f') for x in psd[0])
-            sys.stdout.write(self.header+db+os.linesep)
+            if (self.spectrogram is not None):
+                self.spectrogram.add_scan(self.dt,psd[0])
+            else:
+                db = ', '.join(format(x, '.4f') for x in psd[0])
+                line = ''.join([self.header, db, os.linesep])
+                sys.stdout.write(line)
             self.conn.packetDiscard(buf)
             self.conn.pktlen = PKT_SZ
             self.conn.state = 'Header'
@@ -411,7 +418,7 @@ class rssx(object):
             hz_hdr = 'Hz low, Hz high, Hz step='
             hz_msg = '%.0f,%.0f,%.0f' % (hz_low, hz_high, hz_step)
             msg += hz_hdr+hz_msg+'\n'
-            logger.info(msg)
+            self.logger.info(msg)
 
         # dispose of this buffer
         self.conn.packetDiscard(buf)
@@ -426,6 +433,8 @@ class rssx(object):
         # setup to receive a header next
         self.conn.pktlen = PKT_SZ
         self.conn.state = 'Header'
+        if (self.spectrogram is not None):
+            self.spectrogram.set_connection_metadata(conf)
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -449,23 +458,12 @@ if __name__ == '__main__':
         help='Verbose')
     p.add_option('-q', '--quiet', dest='quiet', action='store_true', default=False,
         help='Do not display a connection message on stderr')
+    p.add_option('-c','--colormap',dest='verbose',action='store_true',default="magma",
+        help='Colormap from matplotlib color maps')
+    p.add_option('-f','--colormap-file',dest='verbose',action='store_true',default=None,
+        help='Colormap from file')
 
     opts, args = p.parse_args(sys.argv[1:])
 
     # logging boilerplate (screen+log file)
-    logging.basicConfig(format='%(message)s',level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
-    x,y,name = sys.argv[0].replace('\\','/').rpartition('/')
-    name,x,ext = name.rpartition('.')
-    handler = logging.FileHandler(name+'.log')
-    formatter = logging.Formatter('%(levelname)s:%(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG if opts.verbose else logging.INFO)
-    if not opts.quiet:
-        logger.info('*** STARTED ***')
-    try:
-        c = rssx(opts) if opts.extended else rss(opts)
-        asyncore.loop(timeout=2)
-    except Exception as e:
-        logger.error('rss2rtl-power: '+str(e), exc_info=True)
+
