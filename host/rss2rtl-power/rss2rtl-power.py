@@ -19,7 +19,7 @@ import traceback
 # http://stackoverflow.com/questions/13218506/how-to-get-system-timezone-setting-and-pass-it-to-pytz-timezone
 from dateutil.tz import tzlocal
 
-DEF_VERSION = '0.2.5.1'     # x.y.z.* to match RASDRproc version
+DEF_VERSION = '0.2.5.2'     # x.y.z.* to match RASDRproc version
 
 UNIX_EPOCH  = 518400    # 00:00 GMT January 6, 1970 
 PKT_FMT     = '!dfffII'
@@ -469,3 +469,5 @@ if __name__ == '__main__':
         asyncore.loop(timeout=2)
     except Exception as e:
         logger.error('rss2rtl-power: '+str(e), exc_info=True)
+    if not opts.quiet:
+        logger.info('*** DISCONNECTED ***')
