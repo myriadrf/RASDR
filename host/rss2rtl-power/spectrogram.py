@@ -209,7 +209,7 @@ class Spectrogram(LogMixIn):
             self.horiz_spacer * 3) + self.color_key_width + self.color_key_label_horiz_space), int(self.scans)
         self.stream_width = (self.channels / self.horizontal_compression) + self.horiz_spacer
         #print("stream_width", stream_width)
-        self.amplitudes = numpy.full((self.streams,self.height, self.channels),-999,numpy.float)
+        self.amplitudes = numpy.ones((self.streams,self.height, self.channels),dtype=numpy.float)*-999
         self.x_integrated = (self.channels / self.horizontal_compression) + self.horiz_spacer
         self.x_integrated_100 = ((self.channels * 2) / self.horizontal_compression) + (self.horiz_spacer * 2)
         self.spectrogram_size = self.channels / self.horizontal_compression, 600
