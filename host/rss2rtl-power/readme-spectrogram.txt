@@ -2,11 +2,11 @@ rss-power.py is the master program for both rss2rtl.py and spectrogram.py.
 The spectrogram display will be started by default--to disable it, specify -m print.
 
 Dependencies:
- -- Python 3.5+
- -- Numpy 1.11.1
+ -- Python 3.5+ (well actually, python 2.7.5+ also works)
+ -- Numpy 1.11.1 (well actually, numpy 1.7.1+ also works)
  -- Pygame 1.9.1
  -- Matplotlib 1.5.1
- -- rasdrproc .2.5.2+ (extended RSS producer)
+ -- rasdrproc 0.2.5.4+ (extended RSS producer, with fixed frequency plan)
 
 The spectrogram uses the extended RSS format, which is enabled by default.
 The spectrogram displays 3 temporal streams, left to right;
