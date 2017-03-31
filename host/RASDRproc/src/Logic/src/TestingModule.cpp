@@ -6,7 +6,6 @@
 // REVISIONS:
 // -----------------------------------------------------------------------------
 
-#include <wx/datetime.h>    // for wxDateTime; NB: must be before "TestingModule.h" or there are errors...
 #include "TestingModule.h"
 #include "..\globals.h"
 
@@ -39,6 +38,24 @@ pthread_t readThreadID;
 pthread_t calculateThreadID;    // huh... not used.. it could be...
 pthread_t transmitThreadID;
 
+// https://msdn.microsoft.com/en-us/library/windows/desktop/hh706895(v=vs.85).aspx
+// http://blog.quasardb.net/a-portable-high-resolution-timestamp-in-c/
+// http://www.windowstimestamp.com/description
+static inline double timestamp(void)
+{
+    FILETIME ft;
+    ULARGE_INTEGER ul;
+    const ULONGLONG deltaepoch = 116444736000000000;    // Jan 1, 1601 to Jan 1, 1970
+
+    // Windows 8+
+    //GetSystemTimePreciseAsFileTime(&ft);  // 100-nanosecond intervals since January 1, 1601 (UTC)
+    // Windows 2000 to Windows 7
+    GetSystemTimeAsFileTime(&ft);           // 100-nanosecond intervals since January 1, 1601 (UTC)
+
+    ul.HighPart = ft.dwHighDateTime;
+    ul.LowPart = ft.dwLowDateTime;
+    return (double)(ul.QuadPart - deltaepoch)*1e-7; // Seconds since January 1, 1970 (UTC)
+}
 
 using namespace std;
 
@@ -353,7 +370,6 @@ void TestingModule::ReadData()
 	unsigned int pos = 0; //position within received buffer
 	unsigned int currentSample = 0;
 	int tempInt; //used to store sample value during splitting
-	wxDateTime dt;
 
 	t1_info = GetTickCount();
 	while (readingData)
@@ -380,7 +396,6 @@ void TestingModule::ReadData()
         // BUG: this code does not really handle rLen >= len
 		if (rLen >= len) //start splitting buffer into IQ samples
 		{
-			wxDateTime _ts = dt.UNow(); // must be UTC to successfully convert to double
 			rLen = len;
 			pos = 0;
 			currentSample = 0;
@@ -408,7 +423,7 @@ void TestingModule::ReadData()
             }
 			//push received samples to FIFO
 			splitPkt.used = false;
-			splitPkt.timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
+			splitPkt.timestamp = timestamp();
 			m_SamplesFIFO->push(&splitPkt);
 		}
 		// Re-submit this request to keep the queue full
@@ -547,8 +562,6 @@ void TestingModule::ReadData_DigiRed()
 
     long iq_select_errors = 0;
     long iq_select_errors_secondary = 0;
-    wxDateTime dt;
-
 	while (readingData)
 	{
 		if(!device->WaitForReading(contexts[i], 100))
@@ -582,7 +595,6 @@ void TestingModule::ReadData_DigiRed()
         // BUG: this doesn't really handle rLen>len
 		if (rLen >= len) //start splitting buffer into IQ samples
 		{
-			wxDateTime _ts = dt.UNow(); // must be UTC to successfully convert to double
 			rLen = len;
             if( (((m_Buffers[i][1]) & 0x10) >> 4) == !m_frameStart)
             {
@@ -604,7 +616,7 @@ void TestingModule::ReadData_DigiRed()
                     if(currentSample >= splitPkt->size)
                     {
                         splitPkt->used = false;
-                        splitPkt->timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
+                        splitPkt->timestamp = timestamp();
                         m_SamplesFIFO->push(splitPkt);
                         currentSample = 0;
                     }
@@ -637,7 +649,7 @@ void TestingModule::ReadData_DigiRed()
                     if(currentSample >= splitPkt->size)
                     {
                         splitPkt->used = false;
-                        splitPkt->timestamp = (double)_ts.ToUTC().GetTicks() + (double)_ts.GetMillisecond()/1000.0;
+                        splitPkt->timestamp = timestamp();
                         m_SamplesFIFO->push(splitPkt);
                         currentSample = 0;
                     }
@@ -853,23 +865,22 @@ bool TestingModule::externalCalculateFFT()
 			}
 
 			// negative frequencies
-			int lim = FFTsamples / 2 - 1;
-			int itmp = 0;
-			for (int f = 0; f < lim; f++)
+			int lim = FFTsamples / 2;
+			//int itmp = lim;
+			for (int f = 0,itmp=lim; f < lim; f++,itmp++)
 			{
                 double ifreq2 = m_fftCalcOut[itmp][0] * m_fftCalcOut[itmp][0];
                 double qfreq2 = m_fftCalcOut[itmp][1] * m_fftCalcOut[itmp][1];
-				itmp = FFTsamples / 2 + f;
+
 				fftPkt.amplitudes[f] = (ifreq2 + qfreq2); // * g_integrationGain;
 			}
 
 			// positive frequencies
-			lim = FFTsamples / 2;
-			for (int f = 0; f < lim; f++)
+			for (int f = 0,itmp=lim; itmp < FFTsamples; f++,itmp++)
 			{
                 double ifreq2 = m_fftCalcOut[f][0] * m_fftCalcOut[f][0];
                 double qfreq2 = m_fftCalcOut[f][1] * m_fftCalcOut[f][1];
-				fftPkt.amplitudes[f + lim - 1] = (ifreq2 + qfreq2); // * g_integrationGain;
+                fftPkt.amplitudes[itmp] = (ifreq2 + qfreq2); // * g_integrationGain;
 			}
 
 			//samples used for current FFT
@@ -1230,8 +1241,8 @@ static bool _avgPkt2rssxPkt(FFTAvgPacket *pkt, rssx_packet_t *rssx, stream_info_
     _swap_if_necessary(&rssx->channels, sizeof(rssx->channels));
     _swap_if_necessary(&rssx->timestamp, sizeof(rssx->timestamp));
 
-    // format the protocol buffer to match RSS requirement (high->low frequency)
-    for(unsigned int i=0,u=pi->imax;i<pi->channel;i++,u--,p++)
+    // format the protocol buffer to match rtl-power (RSSx) requirement (low->high frequency)
+    for(unsigned int i=0,u=pi->imin;i<pi->channel;i++,u++,p++)
     {
         float v = ((pkt->amplitudes[u] + g_RSS_Offset) * g_RSS_Gain) + g_RSS_Bias;
         // see protocol spec
