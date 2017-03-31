@@ -1,4 +1,4 @@
-RASDRproc v0.2.5.2 -  Dec 27, 2016
+RASDRproc v0.2.5.4 -  Jan 22, 2017
 ==================================
 
 RASDRproc.exe is the open-source version of the RASDR device setup and data collection program
@@ -126,6 +126,8 @@ Following this, a constant stream of binary data will be provided. It is not nec
     [db-values] IEEE-754 4-byte float * channels (as given in the header above)
 
 At the moment, as with the Radio-Sky-Spectrograph version, any changes to the acquisition parameters will close the socket, requiring a re-connection.  Subsequent edits will eliminate this need and simply update the stream header dynamically.  If new metadata is desired, disconnect and re-connect to obtain it.
+
+In v0.2.5.4, a bug was fixed in the "Extended RSS" protocol:  The extended RSS protocol is intended to write frequency values from low frequency to high frequency, in order to match the rtl-power format.  Prior to this, it was writing values from high to low frequency like the standard RSS protocol requires.  Also, the timestamping code was updated slightly to propagate it through the buffers.  A future release will introduce a reworked buffer and thread management code.
 
 
 Background Subtraction:
