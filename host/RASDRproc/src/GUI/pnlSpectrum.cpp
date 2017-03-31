@@ -1405,17 +1405,16 @@ void pnlSpectrum::initializeInterfaceValues()
 */
 void pnlSpectrum::generateFFTxaxis(float samplingFreq)
 {
-	int FFTsamples = m_FFTsamplesCount;
 	if( m_fftxaxisValues != NULL)
 		delete []m_fftxaxisValues;
 
-	m_fftxaxisValues = new float[FFTsamples];
+	m_fftxaxisValues = new float[m_FFTsamplesCount];
     changeSamplingFrequency(samplingFreq);
 
 	if(samplesXaxis)
         delete []samplesXaxis;
-    samplesXaxis = new float[FFTsamples];
-	for(int i=0; i<FFTsamples; ++i)
+    samplesXaxis = new float[m_FFTsamplesCount];
+	for(int i=0; i<m_FFTsamplesCount; ++i)
 		samplesXaxis[i] = i;
 
     if(PwrcountXaxis != NULL)
@@ -1439,6 +1438,8 @@ void pnlSpectrum::changeSamplingFrequency(float samplingFrequency)
 {
     if(m_fftxaxisValues)
     {
+        int lim = m_FFTsamplesCount / 2;
+
         // NB: this is the only place we need to test for a sampling
         //     frequency change which determines if the frequency plan
         //     changes.  Clear g_FFTfileIsDefined or g_OverwriteFFTfile if so
@@ -1453,16 +1454,14 @@ void pnlSpectrum::changeSamplingFrequency(float samplingFrequency)
         }
 
         //negative frequencies
-        for (int f = 0; f < m_FFTsamplesCount / 2 - 1; f++)
+        for (int f = 0,itmp=lim-1; f < lim; f++,itmp--)
         {
-            m_fftxaxisValues[f] = (-1) * (m_FFTsamplesCount / 2 - 1 - f) *
-                (samplingFrequency / m_FFTsamplesCount);
+            m_fftxaxisValues[f] = (-1) * (itmp) * (samplingFrequency / m_FFTsamplesCount);
         }
         //positive frequencies
-        for (int f = 0; f < m_FFTsamplesCount / 2; f++)
+        for (int f = 0,itmp=lim-1; f < lim; f++,itmp++)
         {
-            m_fftxaxisValues[f + m_FFTsamplesCount / 2 - 1] =
-                (f) * (samplingFrequency / m_FFTsamplesCount);
+            m_fftxaxisValues[itmp] = (f) * (samplingFrequency / m_FFTsamplesCount);
         }
         m_samplingFrequency = samplingFrequency;
     }
@@ -1663,6 +1662,10 @@ void pnlSpectrum::StartCapturing()
         spinAvgCount->SetValue(m_buffersCount);
         m_buffersCountMask = g_FFTavgCount = m_buffersCount;
     }
+    // clear averaging buffer
+	for(int i=0; i<m_buffersCount+1; i++)
+        for(int j=0; j<m_FFTsamplesCount; j++)
+            m_FFTamplitudesBuffer[i][j] = 0.0;
 
     int interval = 15; // mSec
  //   int interval = 1; // mSec Test
@@ -1907,6 +1910,10 @@ void pnlSpectrum::UpdateGraphs(wxTimerEvent &event)
                                       m_FFTdataSize,
                                       fftsLeft,
                                       timestamp );
+            // clear averaging buffer
+            for(int i=0; i<m_buffersCount+1; i++)
+                for(int j=0; j<m_FFTsamplesCount; j++)
+                    m_FFTamplitudesBuffer[i][j] = 0.0;
             break;
         case 1:
             oneOverBuffersCountMask = 1.0/(float)m_buffersCountMask;
