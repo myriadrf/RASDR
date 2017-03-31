@@ -13,12 +13,7 @@ from rss2rtlpower import rss,rssx
 from spectrogram import Spectrogram
 
 TIMEOUT     = 2 #seconds
-DEF_VERSION = '0.2.5.1'     # x.y.z.* to match RASDRproc version
-
-UNIX_EPOCH  = 518400    # 00:00 GMT January 6, 1970
-PKT_FMT     = '!dfffII'
-PKT_SZ      = struct.calcsize(PKT_FMT)
-PKT_DTYPE   = np.dtype( [('timestamp','>f8'),('hz_low','>f4'),('hz_high','>f4'),('hz_step','>f4'),('samples','>u4'),('channels','>u4')] )
+DEF_VERSION = '0.2.5.2'     # x.y.z.* to match RASDRproc version
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -42,7 +37,7 @@ if __name__ == '__main__':
         help='Verbose')
     p.add_option('-q', '--quiet', dest='quiet', action='store_true', default=False,
         help='Do not display a connection message on stderr, default=%default')
-    p.add_option('-c','--colormap',dest='colormap',action='store_true',default="magma",
+    p.add_option('-c','--colormap',dest='colormap',default='gray',  # sorry, I didnt have 'magma' in my colormap
         help='Colormap from matplotlib color maps, default=%default')
     p.add_option('-f','--colormap-file',dest='colormapfile',type='string',default='',
         help='Colormap from file overrrides -c')
