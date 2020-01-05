@@ -21,20 +21,23 @@ PREPARATIONS BEFORE COMPILING
 
 Use the following two setup files (not any other version or file…):
 
-http://sourceforge.net/projects/codeblocks/files/Binaries/12.11/Windows/
-codeblocks-12.11mingw-setup.exe
+http://sourceforge.net/projects/codeblocks/files/Binaries/17.12/Windows/
+codeblocks-17.12mingw-setup.exe
 
-1)  Install codeblocks 12.11  in 
+0)  Create a folder c:\codeblocks and that contains a single empty file 'default.conf' in the folder
+
+1)  Install codeblocks 17.12 to 
         c:\codeblocks
 
-http://sourceforge.net/projects/wxwindows/files/2.9.5/
-wxWidgets-2.9.5.zip
+http://sourceforge.net/projects/wxwindows/files/3.0.2/
+wxWidgets-3.0.2.zip
 
-2)  Install wxWidgets 2.9.5 library in
-        c:\libraries\wxWidgets-2.9.5\
+2)  Install wxWidgets 3.0.2 library in
+        c:\libraries\wxWidgets-3.0.2\
 
-3)  In c:\libraries\wxWidgets-2.9.5\build\msw\config.gcc change the following lines:
+3)  In c:\libraries\wxWidgets-3.0.2\build\msw\config.gcc change the following lines:
         BUILD ?= release
+        CXXFLAGS ?= --std=gnu++11
         DEBUG_FLAG ?= 0
         RUNTIME_LIBS ?= static
 
@@ -42,7 +45,7 @@ wxWidgets-2.9.5.zip
         c:\CodeBlocks\MinGW\mingwvars.bat 
 
 5)  Execute this command in command prompt: 
-        cd c:\libraries\wxWidgets-2.9.5\build\msw\
+        cd c:\libraries\wxWidgets-3.0.2\build\msw\
 
 6)  Execute this command in command prompt:
         mingw32-make SHELL=CMD.exe -f makefile.gcc
@@ -50,11 +53,11 @@ wxWidgets-2.9.5.zip
 7) Test wxWidget installation as follows:
 
     Execute this command in command prompt: 
-        cd c:\libraries\wxWidgets-2.9.5\samples\minimal
+        cd c:\libraries\wxWidgets-3.0.2\samples\minimal
     Execute this command in command prompt: 
         mingw32-make SHELL=CMD.exe -f makefile.gcc
     Execute this command in command prompt:
-        c:\libraries\wxWidgets-2.9.5\samples\minimal\gcc_mswu\minimal.exe
+        c:\libraries\wxWidgets-3.0.2\samples\minimal\gcc_mswu\minimal.exe
     GUI should appear.
 
 8) RASDRproc

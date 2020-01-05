@@ -21,12 +21,11 @@
 					<Add directory="Logic/include" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
-					<Add directory="Logic/dependencies/pthreads-w32-2-9-1-release/Pre-built.2/include" />
 					<Add directory="Logic/dependencies/sockets" />
 				</Compiler>
 				<Linker>
 					<Add option="-static" />
-					<Add library="Logic\dependencies\fftw-3.3.3\libfftw3f-3.lib" />
+					<Add library="Logic/dependencies/fftw-3.3.3/libfftw3f-3.lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
 					<Add directory="Logic/dependencies/sockets" />
@@ -54,16 +53,16 @@
 				<Linker>
 					<Add option="-static" />
 					<Add library="libctr_6002dr2_d.a" />
-					<Add library="libwxmsw29u_richtext.a" />
-					<Add library="libwxmsw29u_gl.a" />
-					<Add library="libwxbase29u_xml.a" />
-					<Add library="libwxmsw29u_adv.a" />
-					<Add library="libwxmsw29u_html.a" />
-					<Add library="libwxmsw29u_core.a" />
-					<Add library="libwxbase29u.a" />
+					<Add library="libwxmsw30u_richtext.a" />
+					<Add library="libwxmsw30u_gl.a" />
+					<Add library="libwxbase30u_xml.a" />
+					<Add library="libwxmsw30u_adv.a" />
+					<Add library="libwxmsw30u_html.a" />
+					<Add library="libwxmsw30u_core.a" />
+					<Add library="libwxbase30u.a" />
 					<Add library="libwxpng.a" />
 					<Add library="libwxjpeg.a" />
-					<Add library="libwxmsw29u_xrc.a" />
+					<Add library="libwxmsw30u_xrc.a" />
 					<Add library="libwxtiff.a" />
 					<Add library="libwxzlib.a" />
 					<Add library="libkernel32.a" />
@@ -81,9 +80,8 @@
 					<Add library="libodbc32.a" />
 					<Add library="glu32" />
 					<Add library="openGL32" />
-					<Add library="Logic\dependencies\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGCE2.a" />
 					<Add library="libwxexpat.a" />
-					<Add library="Logic\dependencies\fftw-3.3.3\libfftw3f-3.lib" />
+					<Add library="Logic/dependencies/fftw-3.3.3/libfftw3f-3.lib" />
 					<Add library="Setupapi" />
 					<Add directory="Logic/lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
@@ -137,16 +135,16 @@
 					<Add option="-s" />
 					<Add option="-static" />
 					<Add library="libctr_6002dr2.a" />
-					<Add library="libwxmsw29u_richtext.a" />
-					<Add library="libwxmsw29u_gl.a" />
-					<Add library="libwxbase29u_xml.a" />
-					<Add library="libwxmsw29u_adv.a" />
-					<Add library="libwxmsw29u_html.a" />
-					<Add library="libwxmsw29u_core.a" />
-					<Add library="libwxbase29u.a" />
+					<Add library="libwxmsw30u_richtext.a" />
+					<Add library="libwxmsw30u_gl.a" />
+					<Add library="libwxbase30u_xml.a" />
+					<Add library="libwxmsw30u_adv.a" />
+					<Add library="libwxmsw30u_html.a" />
+					<Add library="libwxmsw30u_core.a" />
+					<Add library="libwxbase30u.a" />
 					<Add library="libwxpng.a" />
 					<Add library="libwxjpeg.a" />
-					<Add library="libwxmsw29u_xrc.a" />
+					<Add library="libwxmsw30u_xrc.a" />
 					<Add library="libwxtiff.a" />
 					<Add library="libwxzlib.a" />
 					<Add library="libkernel32.a" />
@@ -164,11 +162,10 @@
 					<Add library="libodbc32.a" />
 					<Add library="glu32" />
 					<Add library="openGL32" />
-					<Add library="Logic\dependencies\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGCE2.a" />
 					<Add library="libwxexpat.a" />
-					<Add library="Logic\dependencies\CyAPI\libCyAPI_fx3_GCC.a" />
+					<Add library="Logic/dependencies/CyAPI/libCyAPI_fx3_GCC.a" />
 					<Add library="Setupapi" />
-					<Add library="Logic\dependencies\fftw-3.3.3\libfftw3f-3.lib" />
+					<Add library="Logic/dependencies/fftw-3.3.3/libfftw3f-3.lib" />
 					<Add directory="Logic/lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
@@ -182,28 +179,27 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=gnu++11" />
 			<Add option='[[if (PLATFORM == PLATFORM_MSW &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) print(_T(&quot;-Wno-attributes&quot;));]]' />
 			<Add option="-DWINVER=0x0500" />
 			<Add option="-D_WIN32_WINNT=0x0500" />
-			<Add directory="C:/Libraries/wxWidgets-2.9.5/include" />
-			<Add directory="C:/Libraries/wxWidgets-2.9.5/contrib/include" />
-			<Add directory="C:/Libraries/wxWidgets-2.9.5/lib/gcc_lib/mswu" />
+			<Add directory="C:/Libraries/wxWidgets-3.0.2/include" />
+			<Add directory="C:/Libraries/wxWidgets-3.0.2/contrib/include" />
+			<Add directory="C:/Libraries/wxWidgets-3.0.2/lib/gcc_lib/mswu" />
 			<Add directory="Logic/include" />
 			<Add directory="Logic" />
 			<Add directory="GUI" />
 			<Add directory="GUI/glew" />
-			<Add directory="Logic/dependencies/pthreads-w32-2-9-1-release/Pre-built.2/include" />
 		</Compiler>
 		<ResourceCompiler>
-			<Add directory="C:/Libraries/wxWidgets-2.9.5/include" />
-			<Add directory="C:/Libraries/wxWidgets-2.9.5/lib/gcc_lib/mswu" />
+			<Add directory="C:/Libraries/wxWidgets-3.0.2/include" />
+			<Add directory="C:/Libraries/wxWidgets-3.0.2/lib/gcc_lib/mswu" />
 		</ResourceCompiler>
 		<Linker>
-			<Add directory="C:/Libraries/wxWidgets-2.9.5/lib/gcc_lib" />
+			<Add directory="C:/Libraries/wxWidgets-3.0.2/lib/gcc_lib" />
 		</Linker>
 		<ExtraCommands>
 			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\fftw-3.3.3\libfftw3f-3.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
-			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\pthreads-w32-2-9-1-release\Pre-built.2\dll\x86\pthreadGCE2.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
 			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\MinGW\libgcc_s_dw2-1.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
 			<Add after='cmd /c copy &quot;$(PROJECT_DIR)Logic\dependencies\MinGW\libstdc++-6.dll&quot; &quot;$(PROJECT_DIR)$(TARGET_OUTPUT_DIR)&quot;' />
 		</ExtraCommands>
@@ -952,7 +948,7 @@
 			</DoxyBlocks>
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
-				<Settings autoincrement="1" date_declarations="1" update_manifest="0" do_auto_increment="0" ask_to_increment="1" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Settings autoincrement="1" date_declarations="1" use_define="0" update_manifest="0" do_auto_increment="0" ask_to_increment="1" language="C++" svn="0" svn_directory="" header_path="version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
 			</AutoVersioning>
