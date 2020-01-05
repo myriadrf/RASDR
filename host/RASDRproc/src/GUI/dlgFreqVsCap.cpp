@@ -595,15 +595,17 @@ void dlgFreqVsCap::FormShow(wxCommandEvent& event)
 
 void dlgFreqVsCap::ShowVCOValues(sVcoVsCap *Vco, wxGrid *grdVco, wxSpinCtrl *VCOPts)
 {
-	char buffer[50];
-	int precision = 5;
+	//char buffer[50];
+	//int precision = 5;
 
 	VCOPts->SetValue(Vco->iRef);
 	SetTblRws(Vco->iRef, grdVco);
 	for (int i = 0; i < Vco->iRef; i++)
 	{
-		gcvt(Vco->dFreq[i], precision, buffer);
-		grdVco->SetCellValue(i, 0, buffer);
+	    // https://github.com/zsummer/log4z/issues/56#issuecomment-458807770
+		//gcvt(Vco->dFreq[i], precision, buffer);
+		//snprintf(buffer, sizeof(buffer), "%.5f", Vco->dFreq[i]);
+		grdVco->SetCellValue(i, 0, wxString::Format("%.0f", Vco->dFreq[i]));
 		//gcvt(Vco->iCap[i], 1, buffer);
 		grdVco->SetCellValue(i, 1, wxString::Format("%.0f", Vco->iCap[i]));
 	};
