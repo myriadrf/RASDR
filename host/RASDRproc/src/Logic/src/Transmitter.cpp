@@ -200,7 +200,10 @@ void Transmitter::Transmit()
 	unsigned char tempbuffer[bufSize];
 	memset(tempbuffer, 0, bufSize);
 
-    srand( time(NULL) );
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);           // 100-nanosecond intervals since January 1, 1601 (UTC)
+    //srand( time(NULL) );
+    srand( ft.dwLowDateTime );
 
     long patternPos = 0;
     int patternSize = pattern.size();
