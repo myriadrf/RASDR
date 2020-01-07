@@ -106,7 +106,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-static-libgcc -static-libstdc++ -static" />
-					<Add library="libCyAPI_fx3_GCC.a" />
 					<Add library="libfftw3f-3.lib" />
 					<Add directory="Logic/dependencies/CyAPI" />
 					<Add directory="Logic/dependencies/fftw-3.3.3" />
@@ -163,7 +162,6 @@
 					<Add library="glu32" />
 					<Add library="openGL32" />
 					<Add library="libwxexpat.a" />
-					<Add library="Logic/dependencies/CyAPI/libCyAPI_fx3_GCC.a" />
 					<Add library="Setupapi" />
 					<Add library="Logic/dependencies/fftw-3.3.3/libfftw3f-3.lib" />
 					<Add directory="Logic/lib" />
