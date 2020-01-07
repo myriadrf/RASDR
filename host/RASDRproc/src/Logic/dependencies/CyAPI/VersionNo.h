@@ -2,7 +2,7 @@
  ## Cypress CyAPI C++ library version number header file (VersionNo.h)
  ## =======================================================
  ##
- ##  Copyright Cypress Semiconductor Corporation, 2009-2012,
+ ##  Copyright Cypress Semiconductor Corporation, 2009-2018,
  ##  All Rights Reserved
  ##  UNPUBLISHED, LICENSED SOFTWARE.
  ##
@@ -19,8 +19,8 @@
  ##
  ## =======================================================
 */
-#define FILEVER        1,2,1,0
-#define PRODUCTVER     1,2,1,0
-#define STRFILEVER     "1, 2, 1, 0"
-#define STRPRODUCTVER  "1, 2, 1, 0"
-#define STRFILEVER_ASSENBLY   "1.2.1.0"
+#define FILEVER        1,2,3,0
+#define PRODUCTVER     1,2,3,0
+#define STRFILEVER     "1, 2, 3, 0"
+#define STRPRODUCTVER  "1, 2, 3, 0"
+#define STRFILEVER_ASSENBLY   "1.2.3.0"

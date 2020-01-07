@@ -2,7 +2,7 @@
  ## Cypress CyAPI C++ library USB3.0 defination header file (CyUSB30_def.h)
  ## =======================================================
  ##
- ##  Copyright Cypress Semiconductor Corporation, 2009-2012,
+ ##  Copyright Cypress Semiconductor Corporation, 2009-2018,
  ##  All Rights Reserved
  ##  UNPUBLISHED, LICENSED SOFTWARE.
  ##

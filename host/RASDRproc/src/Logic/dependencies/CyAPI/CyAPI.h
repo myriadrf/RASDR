@@ -2,7 +2,7 @@
  ## Cypress CyAPI C++ library header file (CyAPI.h)
  ## =======================================================
  ##
- ##  Copyright Cypress Semiconductor Corporation, 2009-2012,
+ ##  Copyright Cypress Semiconductor Corporation, 2009-2018,
  ##  All Rights Reserved
  ##  UNPUBLISHED, LICENSED SOFTWARE.
  ##
@@ -119,7 +119,7 @@ typedef enum {DIR_TO_DEVICE, DIR_FROM_DEVICE } CTL_XFER_DIR_TYPE;
 typedef enum {XMODE_BUFFERED, XMODE_DIRECT } XFER_MODE_TYPE;
 
 const int MAX_ENDPTS = 32;
-const int MAX_INTERFACES = 8;
+const int MAX_INTERFACES = 255;
 const int USB_STRING_MAXLEN = 256;
 
 #define BUFSIZE_UPORT 2048 //4096 - CDT 130492

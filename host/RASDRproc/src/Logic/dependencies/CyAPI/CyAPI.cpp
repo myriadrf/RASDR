@@ -31,7 +31,7 @@
 #include "UsbdStatus.h"
 #include "dbt.h"
 
-const char API_VERSION[8] = "1.2.1.0";
+const char API_VERSION[8] = "1.3.2.0";
 
 UINT SPI_FLASH_PAGE_SIZE_IN_BYTE = 256;
 UINT SPI_FLASH_SECTOR_SIZE_IN_BYTE = (64 * 1024);
@@ -1099,7 +1099,8 @@ CCyUSBEndPoint * CCyUSBDevice::EndPointOf(UCHAR addr) //throw(...)
         ept = USBCfgs[CfgNum]->Interfaces[IntfcIndex]->EndPoints[i];
 
         if (ept)
-        {if (addr == ept->Address) return ept; }
+        {
+            if (addr == ept->Address) return ept; }
         else
             throw "Failed to find endpoint.";
     }
@@ -1954,7 +1955,7 @@ bool CCyUSBEndPoint::Abort(void)
 	{
 		DWORD LastError = GetLastError();
 		if(LastError == ERROR_IO_PENDING)
-			WaitForSingleObject(ov.hEvent,INFINITE);
+			WaitForSingleObject(ov.hEvent,1000);
 	}
 	CloseHandle(ov.hEvent);
 	return true;
@@ -2037,7 +2038,7 @@ bool CCyUSBEndPoint::FinishDataXfer(PUCHAR buf, LONG &bufLen, OVERLAPPED *ov, PU
     }
 
     // If a buffer was provided, pass-back the Isoc packet info records
-    if (pktInfos && (bufLen > 0) && pTransfer->IsoPacketLength) {
+    if (pktInfos && (bufLen > 0)) {
         ZeroMemory(pktInfos, pTransfer->IsoPacketLength);
         PUCHAR pktPtr = pXmitBuf + pTransfer->IsoPacketOffset;
         memcpy(pktInfos, pktPtr, pTransfer->IsoPacketLength);
@@ -2130,9 +2131,10 @@ PUCHAR CCyUSBEndPoint::BeginDirectXfer(PUCHAR buf, LONG bufLen, OVERLAPPED *ov)
 bool CCyUSBEndPoint::WaitForXfer(OVERLAPPED *ov, ULONG tOut)
 {
 
-    if (LastError == ERROR_SUCCESS) return true;  // The command completed
+    //if (LastError == ERROR_SUCCESS) return true;  // The command completed
 
-    if (LastError == ERROR_IO_PENDING) {
+    //if (LastError == ERROR_IO_PENDING)
+    {
         DWORD waitResult = WaitForSingleObject(ov->hEvent,tOut);
 
         if (waitResult == WAIT_TIMEOUT)  return false;
@@ -2148,6 +2150,7 @@ bool CCyUSBEndPoint::WaitForXfer(OVERLAPPED *ov, ULONG tOut)
 bool CCyUSBEndPoint::WaitForIO(OVERLAPPED *ovLapStatus)
 {
     LastError = GetLastError();
+	DWORD retcode =1;
 
     if (LastError == ERROR_SUCCESS) return true;  // The command completed
 
@@ -2160,18 +2163,19 @@ bool CCyUSBEndPoint::WaitForIO(OVERLAPPED *ovLapStatus)
 		{
 			Abort();
 			//// Wait for the stalled command to complete - should be done already
-			DWORD  retcode = WaitForSingleObject(ovLapStatus->hEvent,50); // Wait for 50 milisecond
+			//retcode = WaitForSingleObject(ovLapStatus->hEvent,50); // Wait for 50 milisecond
+            Sleep(50);
 
-			if(retcode == WAIT_TIMEOUT || retcode==WAIT_FAILED)
-			{// Worst case condition , in multithreaded environment if user set time out to ZERO and cancel the IO the requiest, rarely first Abort() fail to cancel the IO, so reissueing second Abort(0.
-				Abort();
-				retcode = WaitForSingleObject(ovLapStatus->hEvent,INFINITE);
+			//if(retcode == WAIT_TIMEOUT || retcode==WAIT_FAILED)
+			//{// Worst case condition , in multithreaded environment if user set time out to ZERO and cancel the IO the requiest, rarely first Abort() fail to cancel the IO, so reissueing second Abort(0.
+				//Abort();
+				//retcode = WaitForSingleObject(ovLapStatus->hEvent,INFINITE);
 
-			}
+			//}
         }
     }
 
-    return false;
+	return (retcode==0) ? true:false;
 }
 
 //______________________________________________________________________________
@@ -3109,9 +3113,9 @@ FX3_FWDWNLOAD_ERROR_CODE CCyFX3Device::DownloadFw(char *fileName, FX3_FWDWNLOAD_
     UINT fwSize = 0;
     PUCHAR FwImage;
     FILE *FwImagePtr;
-    int error;
+    //int error;
 
-    ////error = fopen_s(&FwImagePtr, fileName, "rb");
+    //error = fopen_s(&FwImagePtr, fileName, "rb");
     FwImagePtr = fopen(fileName, "rb");
     if (FwImagePtr == NULL)
         return INVALID_FILE;
